@@ -101,7 +101,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "@xyflow/react": "^12.11.0",
-    "appwrite": "^25.2.0",
+    "appwrite": "^26.0.0",
     "audit": "^0.0.6",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
