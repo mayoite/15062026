@@ -7,6 +7,7 @@ import {
   normalizeCatalogMm,
   plannerCanvasUnits,
   resolveCatalogItemBlock2D,
+  shapePropsToCanvasCm,
 } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 
 function catalogItem(id: string): CatalogItem {
@@ -46,6 +47,17 @@ describe("planner canvas units", () => {
     expect(catalogMmToCanvasCm(1200, 600)).toBe(120);
     expect(catalogMmToCanvasCm(6000, 3500)).toBe(600);
     expect(catalogMmToCanvasCm(normalizeCatalogMm(120), normalizeCatalogMm(60))).toBe(120);
+  });
+
+  it("shapePropsToCanvasCm repairs legacy ×10 shape props", () => {
+    expect(shapePropsToCanvasCm(120, 60)).toEqual({ widthCm: 120, depthCm: 60 });
+    expect(shapePropsToCanvasCm(1200, 600)).toEqual({ widthCm: 120, depthCm: 60 });
+    expect(shapePropsToCanvasCm(600, 1200)).toEqual({ widthCm: 60, depthCm: 120 });
+  });
+
+  it("catalogMmToCanvasCm converts real millimetres to canvas cm", () => {
+    expect(catalogMmToCanvasCm(800)).toBe(80);
+    expect(catalogMmToCanvasCm(500)).toBe(50);
   });
 });
 

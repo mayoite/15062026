@@ -12,6 +12,7 @@ import type { CatalogItem} from "@/features/planner/store/catalogData";
 import { furnitureCatalog } from "@/features/planner/store/catalogData";
 import { getUnifiedCatalog } from "@/features/planner/store/unifiedCatalog";
 import { DEFAULT_FURNITURE_PROPS } from "../shapes/FurnitureShape";
+import { catalogMmToCanvasCm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 import { snapFurnitureAtPoint } from "./furnitureWallSnap";
 
 export interface FurniturePlacementOptions {
@@ -175,8 +176,8 @@ export class FurniturePlacementUtils {
 
   private furnitureFootprintMm(catalogItem: CatalogItem): { widthMm: number; heightMm: number } {
     return {
-      widthMm: catalogItem.widthMm / 10,
-      heightMm: catalogItem.depthMm / 10,
+      widthMm: catalogMmToCanvasCm(catalogItem.widthMm, catalogItem.depthMm),
+      heightMm: catalogMmToCanvasCm(catalogItem.depthMm, catalogItem.widthMm),
     };
   }
 
@@ -220,8 +221,8 @@ export class FurniturePlacementUtils {
         catalogId: catalogItem.id,
         furnitureCategory: catalogItem.category,
         furnitureType: catalogItem.shape,
-        widthMm: catalogItem.widthMm / 10,
-        heightMm: catalogItem.depthMm / 10,
+        widthMm: catalogMmToCanvasCm(catalogItem.widthMm, catalogItem.depthMm),
+        heightMm: catalogMmToCanvasCm(catalogItem.depthMm, catalogItem.widthMm),
         depthMm: catalogItem.depthMm ?? DEFAULT_FURNITURE_PROPS.depthMm ?? 600,
         height3dMm: catalogItem.heightMm ?? DEFAULT_FURNITURE_PROPS.height3dMm ?? 750,
         productName: catalogItem.name,

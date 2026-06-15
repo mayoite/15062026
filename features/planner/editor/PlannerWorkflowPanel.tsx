@@ -87,6 +87,7 @@ export function PlannerWorkflowPanel({
   const previous = previousPlannerStep(step);
   const exportBlocked = step === "review" && criticalCount > 0;
   const primaryDisabled = !canAdvance || exportBlocked;
+  const emphasis = step === "draw" ? "muted" : step === "review" ? "prominent" : "soft";
 
   const handlePrimary = () => {
     if (step === "review") {
@@ -104,6 +105,7 @@ export function PlannerWorkflowPanel({
       className="pw-workflow-panel"
       aria-label="Workflow and compliance"
       data-step={step}
+      data-emphasis={emphasis}
       data-export-blocked={exportBlocked || undefined}
     >
       <div className="pw-workflow-guidance">
@@ -146,7 +148,10 @@ export function PlannerWorkflowPanel({
         )}
       </div>
 
-      <div className="pw-workflow-actions">
+      <div
+        className="pw-workflow-actions"
+        data-role={step === "review" ? "export" : undefined}
+      >
         {previous ? (
           <button
             type="button"

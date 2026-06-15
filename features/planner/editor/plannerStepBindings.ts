@@ -17,5 +17,13 @@ export function getStepToolBinding(step: PlannerStep): PlannerToolBinding {
 }
 
 export function getStepLeftTab(step: PlannerStep): PlannerLeftTab {
-  return step === "draw" ? "blueprint" : "library";
+  switch (step) {
+    case "draw":
+    case "review":
+      return "blueprint";
+    case "place":
+      return "library";
+    default:
+      return "library";
+  }
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { LayoutGrid, Map, Sparkles, type LucideIcon } from "lucide-react";
+import { useState } from "react";
+import { LayoutGrid, Map, PanelLeftClose, Sparkles, type LucideIcon } from "lucide-react";
 import type { Editor } from "tldraw";
 
 import { AIAssistDrawer } from "@/features/planner/ai/AIAssistDrawer";
@@ -26,7 +26,7 @@ function getTabsForStep(step: PlannerStep): PlannerLeftTab[] {
     case "place":
       return ["library", "blueprint", "ai-assist"];
     case "review":
-      return ["library", "blueprint", "ai-assist"];
+      return ["blueprint", "ai-assist", "library"];
     default:
       return ["library", "blueprint", "ai-assist"];
   }
@@ -57,6 +57,9 @@ interface PlannerLeftPanelProps {
   guestMode: boolean;
   editor?: Editor | null;
   plannerStep?: PlannerStep;
+  panelOpen?: boolean;
+  showPanelToggle?: boolean;
+  onTogglePanel?: () => void;
   activeTab?: PlannerLeftTab;
   onTabChange?: (tab: PlannerLeftTab) => void;
   onItemClick: (item: CatalogItem) => void;
@@ -69,30 +72,40 @@ export function PlannerLeftPanel({
   guestMode,
   editor = null,
   plannerStep = "draw",
+  panelOpen = true,
+  showPanelToggle = false,
+  onTogglePanel,
   activeTab,
   onTabChange,
   onItemClick,
   onDragStart,
   onDragEnd,
 }: PlannerLeftPanelProps) {
-  const [internalTab, setInternalTab] = useState<PlannerLeftTab>(getStepLeftTab(plannerStep));
-  const tab = activeTab ?? internalTab;
+  const [pickedTab, setPickedTab] = useState<PlannerLeftTab | null>(null);
+  const [lastStep, setLastStep] = useState(plannerStep);
+
+  if (lastStep !== plannerStep) {
+    setLastStep(plannerStep);
+    if (!activeTab) setPickedTab(null);
+  }
+
+  const tab = activeTab ?? pickedTab ?? getStepLeftTab(plannerStep);
   const stepNote = getStepNote(plannerStep, tab);
   const tabs = getTabsForStep(plannerStep);
   const primaryTab = tabs[0];
 
-  useEffect(() => {
-    if (activeTab) return;
-    setInternalTab(getStepLeftTab(plannerStep));
-  }, [activeTab, plannerStep]);
-
   const selectTab = (next: PlannerLeftTab) => {
     if (onTabChange) onTabChange(next);
-    else setInternalTab(next);
+    else setPickedTab(next);
   };
 
   return (
-    <aside data-coach="catalog" data-step={plannerStep} className="pw-left-panel">
+    <aside
+      data-coach="catalog"
+      data-step={plannerStep}
+      data-open={panelOpen ? true : undefined}
+      className="pw-left-panel"
+    >
       <div className="pw-panel-tabs" role="tablist" aria-label="Left panel">
         {tabs.map((tabId) => {
           const { label, Icon } = TAB_META[tabId];
@@ -112,8 +125,18 @@ export function PlannerLeftPanel({
             </button>
           );
         })}
+        {showPanelToggle && onTogglePanel ? (
+          <button
+            type="button"
+            className="pw-panel-collapse pw-icon-btn"
+            onClick={onTogglePanel}
+            aria-label="Close left panel"
+          >
+            <PanelLeftClose size={14} strokeWidth={2} aria-hidden />
+          </button>
+        ) : null}
       </div>
-      <div className="pw-panel-body">
+      <div className="pw-panel-body" data-active-tab={tab}>
         <p className="pw-panel-step-note">{stepNote}</p>
         {tab === "library" ? (
           <CatalogSidebar

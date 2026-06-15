@@ -302,6 +302,7 @@ describe("planner step workflow", () => {
     expect(getStepToolBinding("review").toolId).toBe("select");
     expect(getStepLeftTab("draw")).toBe("blueprint");
     expect(getStepLeftTab("place")).toBe("library");
+    expect(getStepLeftTab("review")).toBe("blueprint");
   });
 });
 

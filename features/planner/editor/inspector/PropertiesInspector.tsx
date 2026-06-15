@@ -33,6 +33,13 @@ import {
   applyInspectorChanges,
   shapeToInspectorData,
 } from "@/features/planner/editor/shapeInspectorBridge";
+import type { PlannerStep } from "@/features/planner/editor/plannerStep";
+
+function inspectorEmphasis(step: PlannerStep): "muted" | "soft" | "prominent" {
+  if (step === "draw") return "muted";
+  if (step === "review") return "prominent";
+  return "soft";
+}
 
 // --- Types ---
 
@@ -54,6 +61,7 @@ export interface PropertiesInspectorData {
 
 interface PropertiesInspectorProps {
   editor: Editor | null;
+  step?: PlannerStep;
 }
 
 type EditorShapeUpdate = Parameters<Editor["updateShape"]>[0];
@@ -125,7 +133,8 @@ function getSelectedShape(editor: Editor, id: string | null) {
 
 // --- Component ---
 
-export function PropertiesInspector({ editor }: PropertiesInspectorProps) {
+export function PropertiesInspector({ editor, step = "review" }: PropertiesInspectorProps) {
+  const emphasis = inspectorEmphasis(step);
   const [selectionVersion, setSelectionVersion] = useState(0);
 
   useEffect(() => {
@@ -229,7 +238,7 @@ export function PropertiesInspector({ editor }: PropertiesInspectorProps) {
 
   if (!data) {
     return (
-      <aside className="pwx-inspector">
+      <aside className="pwx-inspector" data-emphasis={emphasis} data-step={step}>
         <div className="pwx-inspector-header">
           <p className="typ-label text-muted">Properties</p>
           <p className="mt-1 text-xs text-soft">Nothing selected</p>
@@ -266,7 +275,7 @@ export function PropertiesInspector({ editor }: PropertiesInspectorProps) {
   const TypeIcon = TYPE_ICONS[data.type] ?? RectangleHorizontal;
 
   return (
-    <aside className="pwx-inspector">
+    <aside className="pwx-inspector" data-emphasis={emphasis} data-step={step}>
       <div className="pwx-inspector-header">
         <div className="pwx-inspector-id">
           <span className="pwx-inspector-icon" aria-hidden>

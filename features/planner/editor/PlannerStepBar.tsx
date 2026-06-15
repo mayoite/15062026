@@ -21,6 +21,7 @@ interface PlannerStepBarProps {
   disabledSteps?: Partial<Record<PlannerStep, boolean>>;
   onChange: (step: PlannerStep) => void;
   compact?: boolean;
+  showIntro?: boolean;
 }
 
 export function PlannerStepBar({
@@ -28,23 +29,45 @@ export function PlannerStepBar({
   disabledSteps = {},
   onChange,
   compact = false,
+  showIntro = false,
 }: PlannerStepBarProps) {
   const currentIndex = PLANNER_STEPS.indexOf(current);
+  const introHintId = "pw-step-bar-intro-hint";
 
   return (
     <nav
       className="pw-step-bar"
       data-compact={compact || undefined}
+      data-intro={showIntro || undefined}
+      data-current={current}
       aria-label="Planner workflow"
+      aria-describedby={showIntro ? introHintId : undefined}
     >
-      <div className="pw-step-bar__intro">
-        <p className="pw-step-bar__eyebrow">Guided workflow</p>
-        {!compact ? (
-          <p className="pw-step-bar__summary">
-            Work through Draw, Place, and Review — or jump back anytime.
+      {showIntro ? (
+        <div className="pw-step-bar__intro-card">
+          <p className="pw-step-bar__eyebrow">Welcome to your planner</p>
+          {!compact ? (
+            <p className="pw-step-bar__summary">
+              Start with Draw to map walls and rooms, then place products and review your layout.
+            </p>
+          ) : null}
+          <p id={introHintId} className="pw-step-bar__hint">
+            {compact
+              ? "Tap any step to jump ahead or go back."
+              : "Click any step below to jump ahead or revisit an earlier stage."}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : (
+        <div className="pw-step-bar__intro">
+          <p className="pw-step-bar__eyebrow">Guided workflow</p>
+          {!compact ? (
+            <p className="pw-step-bar__summary">
+              Work through Draw, Place, and Review — or jump back anytime.
+            </p>
+          ) : null}
+        </div>
+      )}
+      <p className="pw-step-bar__steps-label">Steps</p>
       <div
         className="pw-step-bar__steps"
         style={{ ["--pw-step-count" as string]: String(PLANNER_STEPS.length) }}
@@ -60,12 +83,20 @@ export function PlannerStepBar({
               key={step}
               type="button"
               className="pw-step-bar__btn"
+              data-step={step}
               data-active={isActive}
               data-done={isDone}
               data-disabled={isDisabled || undefined}
+              data-jumpable={showIntro && !isActive && !isDisabled ? true : undefined}
               aria-current={isActive ? "step" : undefined}
               aria-disabled={isDisabled}
-              aria-label={isDisabled ? `${stepLabel} (unavailable)` : stepLabel}
+              aria-label={
+                isDisabled
+                  ? `${stepLabel} (unavailable)`
+                  : showIntro && !isActive
+                    ? `Jump to ${stepLabel}`
+                    : stepLabel
+              }
               disabled={isDisabled}
               onClick={() => {
                 if (!isDisabled) onChange(step);

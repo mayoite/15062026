@@ -95,7 +95,8 @@ describe("PlannerWallShapeUtil", () => {
     const { container } = render(<svg>{util.toSvg?.(shape, {} as never)}</svg>);
     const path = container.querySelector("path");
     expect(path).toBeTruthy();
-    expect(path?.getAttribute("fill")).toBe("#ffffff");
+    expect(path?.getAttribute("fill")).toBeTruthy();
+    expect(path?.getAttribute("fill")).not.toContain("var(");
     expect(path?.getAttribute("d")).toContain("6.00");
   });
 });

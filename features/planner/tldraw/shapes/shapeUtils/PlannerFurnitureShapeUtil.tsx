@@ -4,7 +4,7 @@
 
 import { Rectangle2d, ShapeUtil, SVGContainer, type SvgExportContext, type TLShapePartial } from "@tldraw/editor";
 import { BLOCK_STYLE } from "@/lib/catalog/blocks2d";
-import { createBlockColorResolver } from "@/lib/catalog/resolveBlockColors";
+import { createPlannerSvgColorResolver } from "@/features/planner/lib/plannerSvgExportColors";
 import { TldrawFurnitureShapeProps } from "../tldrawShapeRegistry";
 import type { PlannerFurnitureTLShape } from "../tldrawShapeTypes";
 import { applyFurnitureWallSnap } from "@/features/planner/tldraw/tools/furnitureWallSnap";
@@ -35,8 +35,6 @@ export function fitCanvasLabel(label: string, footprintWidth: number, fontSize: 
   return `${text.slice(0, Math.max(1, maxChars - 1)).trimEnd()}…`;
 }
 
-const resolveExportColor = createBlockColorResolver();
-
 function FurnitureGraphic({
   shape,
   exportColors = false,
@@ -48,7 +46,9 @@ function FurnitureGraphic({
   const { productName, showLabel } = shape.props;
   const block = resolveBuddyBlock2D(shape);
   const idPrefix = `furn-${String(shape.id).replace(/[^a-zA-Z0-9_-]/g, "")}`;
-  const resolveColor = exportColors ? resolveExportColor : ((value: string | undefined) => value ?? "none");
+  const resolveColor = exportColors
+    ? createPlannerSvgColorResolver()
+    : ((value: string | undefined) => value ?? "none");
   const surface = resolveColor(BLOCK_STYLE.surface);
   const againstWall = shape.props.isAgainstWall;
   const surfaceStroke = resolveColor(

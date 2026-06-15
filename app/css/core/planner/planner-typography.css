@@ -283,11 +283,30 @@
   text-transform: none;
 }
 
+.planner-workspace .pw-step-bar[data-intro="true"] .pw-step-bar__eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--pw-text-sm);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: var(--pw-letter-tight);
+  color: var(--text-heading);
+}
+
+.planner-workspace .pw-step-bar__hint {
+  font-size: var(--pw-text-xs);
+  font-weight: 500;
+  letter-spacing: var(--pw-letter-ui);
+}
+
 .planner-workspace .pw-step-bar__summary,
 .planner-workspace .pw-step-bar__detail,
 .planner-workspace .pw-panel-step-note {
   font-size: var(--pw-text-sm);
   line-height: var(--pw-leading-copy);
+}
+
+.planner-workspace .pw-panel-step-note {
+  font-weight: 500;
+  color: var(--text-body);
 }
 
 .planner-workspace .pw-workflow-kicker {

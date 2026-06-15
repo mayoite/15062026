@@ -43,8 +43,14 @@ export function shapeToInspectorData(shape: TLShape): InspectorData | null {
   const teamName = typeof props.teamName === "string" ? props.teamName : undefined;
 
   if (shape.type === "planner-furniture") {
-    const widthCm = typeof props.widthMm === "number" ? props.widthMm : 120;
-    const heightCm = typeof props.heightMm === "number" ? props.heightMm : 60;
+    const widthCm = plannerCanvasUnits(
+      typeof props.widthMm === "number" ? props.widthMm : 120,
+      typeof props.heightMm === "number" ? props.heightMm : 60,
+    );
+    const heightCm = plannerCanvasUnits(
+      typeof props.heightMm === "number" ? props.heightMm : 60,
+      typeof props.widthMm === "number" ? props.widthMm : 120,
+    );
     const seatCount =
       typeof props.seatCount === "number" ? props.seatCount : catalogSeatCount(catalogId);
     return {

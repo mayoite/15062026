@@ -9,7 +9,10 @@ import {
   type PlannerCanvasShape,
 } from "@/features/planner/editor/plannerShapeFactories";
 import { getWallThicknessCanvasUnits } from "@/features/planner/tldraw/shapes/WallShape";
-import { plannerCanvasUnits } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import {
+  catalogMmToCanvasCm,
+  plannerCanvasUnits,
+} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 
 import type { SuggestedLayoutJson } from "./types";
 
@@ -17,9 +20,9 @@ function catalogById(id: string) {
   return PLANNER_CATALOG_ITEMS.find((item) => item.id === id);
 }
 
-/** Real-world millimetres from layout JSON → planner canvas units. */
-function layoutMmToCanvasUnits(mm: number): number {
-  return plannerCanvasUnits(mm);
+/** Real-world millimetres from layout JSON → planner canvas cm. */
+function layoutMmToCanvasUnits(mm: number, pairedMm?: number): number {
+  return catalogMmToCanvasCm(mm, pairedMm);
 }
 
 export function buildShapesFromSuggestedLayout(layout: SuggestedLayoutJson): PlannerCanvasShape[] {

@@ -7,7 +7,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { X } from "lucide-react";
+import { PanelLeftOpen, X } from "lucide-react";
 import type { Editor } from "tldraw";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { Planner3DViewer } from "@/features/planner/3d";
@@ -145,6 +145,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const setPlannerStep = usePlannerWorkspaceStore((s) => s.setPlannerStep);
   const workspaceUnitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
   const [leftTab, setLeftTab] = useState<PlannerLeftTab>(getStepLeftTab(plannerStep));
+  const [stepIntroVisible, setStepIntroVisible] = useState(true);
   const setPlannerTool = usePlannerStore((s) => s.setTool);
   const {
     status: saveStatus,
@@ -209,17 +210,17 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     setPlannerStep(step);
     setLeftTab(getStepLeftTab(step));
     applyToolBinding(getStepToolBinding(step));
-
-    if (panels.isCompact) {
-      if (step === "draw" || step === "place") {
-        panels.setLeftOpen(true);
-        panels.setRightOpen(false);
-      } else {
-        panels.setRightOpen(true);
-        panels.setLeftOpen(false);
-      }
-    }
+    panels.applyStepLayout(step);
   }, [applyToolBinding, panels, setPlannerStep]);
+
+  const handlePlannerStepChange = useCallback((step: PlannerStep) => {
+    setStepIntroVisible(false);
+    syncPlannerStep(step);
+  }, [syncPlannerStep]);
+
+  useEffect(() => {
+    panels.applyStepLayout(plannerStep);
+  }, [panels.isCompact, panels.applyStepLayout, plannerStep]);
 
   const handleToolSelect = useCallback((
     tool: PlannerToolId,
@@ -727,8 +728,8 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
   const handleOpenAiAssist = useCallback(() => {
     setLeftTab("ai-assist");
+    panels.setLeftOpen(true);
     if (panels.isCompact) {
-      panels.setLeftOpen(true);
       panels.setRightOpen(false);
     }
   }, [panels]);
@@ -758,7 +759,10 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         onCanvasReset={handleCanvasReset}
       />
 
-      <div className={`pw-workspace${panels.isCompact ? " pw-workspace--compact" : ""}`}>
+      <div
+        className={`pw-workspace${panels.isCompact ? " pw-workspace--compact" : ""}`}
+        data-step={plannerStep}
+      >
         {panels.isCompact && (panels.leftOpenRaw || panels.rightOpenRaw) && (
           <button
             type="button"
@@ -776,10 +780,24 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           onSelect={handleToolSelect}
         />
 
+        {!panels.isCompact && !panels.leftOpen ? (
+          <button
+            type="button"
+            className="pw-panel-reopen pw-icon-btn"
+            onClick={panels.toggleLeft}
+            aria-label="Open left panel"
+          >
+            <PanelLeftOpen size={16} strokeWidth={2} aria-hidden />
+          </button>
+        ) : null}
+
         <PlannerLeftPanel
           guestMode={guestMode}
           editor={editor}
           plannerStep={plannerStep}
+          panelOpen={panels.leftOpen}
+          showPanelToggle={!panels.isCompact && panels.leftOpen}
+          onTogglePanel={panels.toggleLeft}
           activeTab={leftTab}
           onTabChange={setLeftTab}
           onItemClick={handleCatalogItemClick}
@@ -827,17 +845,21 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           <PlannerStepBar
             current={plannerStep}
             disabledSteps={disabledSteps}
-            onChange={syncPlannerStep}
+            onChange={handlePlannerStepChange}
             compact={panels.isCompact}
+            showIntro={stepIntroVisible}
           />
           <PlannerWorkflowPanel
             editor={editor}
             metrics={planMetrics}
             step={plannerStep}
-            onStepChange={syncPlannerStep}
-            onOpenExport={() => setIsExportOpen(true)}
+            onStepChange={handlePlannerStepChange}
+            onOpenExport={() => {
+              setStepIntroVisible(false);
+              setIsExportOpen(true);
+            }}
           />
-          {plannerStep === "review" ? <PropertiesInspector editor={editor} /> : null}
+          <PropertiesInspector editor={editor} step={plannerStep} />
           {plannerStep === "review" ? <LayerVisibilityPanel editor={editor} /> : null}
           {plannerStep === "review" ? <LayerManagerPanel editor={editor} unitSystem={workspaceUnitSystem} /> : null}
         </aside>

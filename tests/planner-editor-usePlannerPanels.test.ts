@@ -1,7 +1,20 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
+import {
+  getStepLeftOpenDefault,
+  usePlannerPanels,
+} from "@/features/planner/editor/usePlannerPanels";
+
+describe("getStepLeftOpenDefault", () => {
+  it("opens the catalog on place and collapses the left panel on draw and review", () => {
+    expect(getStepLeftOpenDefault("place", false)).toBe(true);
+    expect(getStepLeftOpenDefault("place", true)).toBe(true);
+    expect(getStepLeftOpenDefault("draw", false)).toBe(false);
+    expect(getStepLeftOpenDefault("draw", true)).toBe(false);
+    expect(getStepLeftOpenDefault("review", false)).toBe(false);
+  });
+});
 
 describe("usePlannerPanels", () => {
   let matchMediaListeners: Array<() => void> = [];
@@ -55,5 +68,54 @@ describe("usePlannerPanels", () => {
     });
     expect(result.current.leftOpenRaw).toBe(false);
     expect(result.current.rightOpenRaw).toBe(false);
+  });
+
+  it("applies step-based left panel defaults until the user overrides", () => {
+    const { result } = renderHook(() => usePlannerPanels());
+
+    act(() => {
+      result.current.applyStepLayout("draw");
+    });
+    expect(result.current.leftOpen).toBe(false);
+
+    act(() => {
+      result.current.applyStepLayout("place");
+    });
+    expect(result.current.leftOpen).toBe(true);
+
+    act(() => {
+      result.current.toggleLeft();
+    });
+    expect(result.current.leftOpen).toBe(false);
+    expect(result.current.leftManualOverride).toBe(true);
+
+    act(() => {
+      result.current.applyStepLayout("draw");
+    });
+    expect(result.current.leftOpen).toBe(false);
+    expect(result.current.leftManualOverride).toBe(false);
+
+    matchMedia.matches = true;
+    act(() => {
+      for (const listener of matchMediaListeners) listener();
+    });
+
+    act(() => {
+      result.current.applyStepLayout("draw");
+    });
+    expect(result.current.leftOpen).toBe(false);
+    expect(result.current.rightOpenRaw).toBe(false);
+
+    act(() => {
+      result.current.applyStepLayout("place");
+    });
+    expect(result.current.leftOpen).toBe(true);
+    expect(result.current.rightOpenRaw).toBe(false);
+
+    act(() => {
+      result.current.applyStepLayout("review");
+    });
+    expect(result.current.leftOpen).toBe(false);
+    expect(result.current.rightOpen).toBe(true);
   });
 });

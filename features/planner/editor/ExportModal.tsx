@@ -33,6 +33,7 @@ import {
   downloadPlannerPng,
   downloadPlannerSvg,
   getExportShapeIds,
+  getVectorExportShapeIds,
 } from "./exportActions";
 
 interface ExportModalProps {
@@ -91,7 +92,7 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
   const [linkCopied, setLinkCopied] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const scopeLabel = describeExportScope(editor);
-  const canExportVectors = getExportShapeIds(editor).length > 0;
+  const canExportVectors = getVectorExportShapeIds(editor).length > 0;
 
   // Focus trap + Escape
   useEffect(() => {
@@ -309,4 +310,4 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
   );
 }
 
-export { getExportShapeIds, getSafePngPixelRatio } from "./exportActions";
+export { getExportShapeIds, getSafePngPixelRatio, getVectorExportShapeIds } from "./exportActions";

@@ -10,10 +10,12 @@ import {
   catalogMmToCanvasCm,
   normalizeCatalogMm,
   plannerCanvasUnits,
+  shapePropsToCanvasCm,
 } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 import { buildBoq, type PlacedItemLike } from "@/features/planner/shared/boq/buildBoq";
 import type { PdfBoqRow } from "@/features/planner/shared/export/pdfExport";
 import type { CatalogItem } from "@/features/planner/shared/catalog/types";
+import { finalizePlannerExportSvg } from "@/features/planner/lib/plannerSvgExportColors";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 
 const MAX_PNG_EXPORT_PIXELS = 16_000_000;
@@ -74,19 +76,32 @@ function shapesToPlacedItems(editor: Editor): PlacedItemLike[] {
       (typeof props.productName === "string" && props.productName) ||
       (typeof props.label === "string" && props.label) ||
       "Furniture";
-    const widthMm = typeof props.widthMm === "number" ? props.widthMm : 120;
-    const heightMm = typeof props.heightMm === "number" ? props.heightMm : 80;
-    const wCm = plannerCanvasUnits(widthMm, heightMm);
-    const dCm = plannerCanvasUnits(heightMm, widthMm);
+    const widthProp = typeof props.widthMm === "number" ? props.widthMm : 120;
+    const depthProp = typeof props.heightMm === "number" ? props.heightMm : 80;
+    const { widthCm, depthCm } = shapePropsToCanvasCm(widthProp, depthProp);
     return [{
       catalogId,
       name,
       category: "furniture",
-      widthCm: wCm,
-      depthCm: dCm,
+      widthCm,
+      depthCm,
       heightCm: 75,
     }];
   });
+}
+
+function placedItemToExportFurniture(item: PlacedItemLike): PlannerExportMeta["furniture"][number] {
+  const widthMm = normalizeCatalogMm(item.widthCm ?? 60, item.depthCm);
+  const depthMm = normalizeCatalogMm(item.depthCm ?? 60, item.widthCm);
+  const heightMm = normalizeCatalogMm(item.heightCm ?? 75);
+  return {
+    catalogId: item.catalogId,
+    name: item.name,
+    widthMm,
+    depthMm,
+    heightMm,
+    spec: `${widthMm}×${depthMm}×${heightMm} mm`,
+  };
 }
 
 function resolveExportRoomMm(editor: Editor): { widthMm: number; depthMm: number } {
@@ -134,6 +149,14 @@ export function getExportShapeIds(editor: Editor): TLShapeId[] {
   return [...editor.getCurrentPageShapeIds()];
 }
 
+/** Vector export skips layer-hidden shapes (same rule as BOQ furniture rows). */
+export function getVectorExportShapeIds(editor: Editor): TLShapeId[] {
+  return getExportShapeIds(editor).filter((id) => {
+    const shape = editor.getShape(id);
+    return shape && !isShapeLayerHidden(shape);
+  });
+}
+
 export function getExportScope(editor: Editor): PlannerExportMeta["scope"] {
   return editor.getSelectedShapeIds().length > 0 ? "selection" : "page";
 }
@@ -156,7 +179,6 @@ export function getSafePngPixelRatio(width: number, height: number): number {
 }
 
 export function buildExportMeta(editor: Editor): PlannerExportMeta {
-  const rows = buildPdfRows(editor);
   const room = resolveExportRoomMm(editor);
   const ids = getExportShapeIds(editor);
 
@@ -166,14 +188,7 @@ export function buildExportMeta(editor: Editor): PlannerExportMeta {
     scope: getExportScope(editor),
     shapeCount: ids.length,
     room: room.widthMm > 0 && room.depthMm > 0 ? room : null,
-    furniture: rows.map((row) => ({
-      catalogId: row.sku ?? row.name,
-      name: row.name,
-      widthMm: normalizeCatalogMm(row.widthCm, row.depthCm),
-      depthMm: normalizeCatalogMm(row.depthCm, row.widthCm),
-      heightMm: normalizeCatalogMm(row.heightCm),
-      spec: row.spec ?? "",
-    })),
+    furniture: shapesToPlacedItems(editor).map(placedItemToExportFurniture),
   };
 }
 
@@ -226,7 +241,7 @@ export async function downloadPlannerBoqPdf(
 
 export async function downloadPlannerSvg(
   editor: Editor,
-  shapeIds: TLShapeId[] = getExportShapeIds(editor),
+  shapeIds: TLShapeId[] = getVectorExportShapeIds(editor),
 ) {
   if (shapeIds.length === 0) {
     throw new PlannerExportError("Add shapes to the canvas before exporting.");
@@ -237,13 +252,14 @@ export async function downloadPlannerSvg(
     throw new PlannerExportError("SVG export failed. Try again or reload the canvas.");
   }
 
-  const blob = new Blob([svgExport.svg], { type: "image/svg+xml;charset=utf-8" });
+  const svg = finalizePlannerExportSvg(svgExport.svg);
+  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   triggerDownload(blob, "workspace-plan.svg");
 }
 
 export async function downloadPlannerPng(
   editor: Editor,
-  shapeIds: TLShapeId[] = getExportShapeIds(editor),
+  shapeIds: TLShapeId[] = getVectorExportShapeIds(editor),
 ) {
   if (shapeIds.length === 0) {
     throw new PlannerExportError("Add shapes to the canvas before exporting.");

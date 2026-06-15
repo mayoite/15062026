@@ -22,13 +22,24 @@ import { isLShapedDesk, resolveFurnitureBlockKind, type FurnitureBlockKind } fro
 
 /**
  * Planner canvas coordinates are centimetres (see room editor prompts: m × 100).
- * Catalog seed data uses the same compact cm values in `widthMm` / `heightMm`.
+ * Shape props `widthMm` / `heightMm` store catalog cm (misnamed); autosave briefly
+ * stored cm × 10 — values ≥ 1000 (or a paired leg ≥ 1000) are repaired on read.
  */
 export function plannerCanvasUnits(value: number, pairedValue?: number): number {
   if (value <= 0) return 1;
-  // Undo brief placement bug that stored catalog cm × 10 (120 cm desk → 1200).
   if (value >= 1000 || (pairedValue ?? 0) >= 1000) return value / 10;
   return value;
+}
+
+/** Read planner-furniture / room / zone shape props as canvas cm. */
+export function shapePropsToCanvasCm(
+  widthProp: number,
+  depthProp: number,
+): { widthCm: number; depthCm: number } {
+  return {
+    widthCm: Math.max(1, plannerCanvasUnits(widthProp, depthProp)),
+    depthCm: Math.max(1, plannerCanvasUnits(depthProp, widthProp)),
+  };
 }
 
 /** Convert canvas/catalog cm to millimetres for lib/catalog/blocks2d primitives. */
@@ -36,7 +47,7 @@ export function normalizeCatalogMm(value: number, pairedValue?: number): number 
   return plannerCanvasUnits(value, pairedValue) * 10;
 }
 
-/** Inverse of `normalizeCatalogMm` — millimetres from BOQ/inspector back to canvas cm. */
+/** Real-world millimetres (catalog CSV, legacy store data) → canvas cm. */
 export function catalogMmToCanvasCm(mm: number, pairedMm?: number): number {
   return plannerCanvasUnits(mm / 10, pairedMm !== undefined ? pairedMm / 10 : undefined);
 }

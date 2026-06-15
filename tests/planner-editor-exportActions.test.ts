@@ -30,6 +30,28 @@ describe("exportActions", () => {
     document.body.innerHTML = '<div class="pw-canvas-surface"></div>';
   });
 
+  it("buildExportMeta matches canvas cm shape props after legacy repair", () => {
+    const editor = createPlannerEditorMock({
+      shapes: [
+        makeShape("shape:1", "planner-furniture", {
+          catalogId: "desk",
+          productName: "Desk",
+          widthMm: 120,
+          heightMm: 60,
+        }),
+      ],
+    });
+    editor.store = { listen: vi.fn() } as never;
+
+    const meta = buildExportMeta(editor);
+    expect(meta.furniture[0]).toMatchObject({
+      name: "Desk",
+      widthMm: 1200,
+      depthMm: 600,
+      spec: "1200×600×750 mm",
+    });
+  });
+
   it("buildExportMeta normalizes furniture dimensions to mm", () => {
     const editor = createPlannerEditorMock({
       shapes: [
@@ -81,6 +103,47 @@ describe("exportActions", () => {
 
     const blob = createObjectURL.mock.calls[0][0] as Blob;
     expect(blob.type).toContain("json");
+  });
+
+  it("downloadPlannerSvg inlines theme tokens into exported svg", async () => {
+    const svg = '<svg><path fill="var(--block-surface)" stroke="var(--color-accent)"/></svg>';
+    const click = vi.fn();
+    const createObjectURL = vi.fn(() => "blob:svg");
+    const revokeObjectURL = vi.fn();
+    vi.spyOn(document, "createElement").mockReturnValue({
+      href: "",
+      download: "",
+      click,
+    } as HTMLAnchorElement);
+    vi.stubGlobal("URL", { createObjectURL, revokeObjectURL });
+
+    const editor = createPlannerEditorMock({
+      shapes: [
+        makeShape("shape:1", "planner-wall"),
+        makeShape("shape:2", "planner-furniture", { productName: "Desk" }),
+      ],
+    });
+    editor.getSvgString = vi.fn(async () => ({ svg, width: 100, height: 80 })) as never;
+    editor.store = { listen: vi.fn() } as never;
+
+    const { downloadPlannerSvg } = await import("@/features/planner/editor/exportActions");
+    await downloadPlannerSvg(editor);
+
+    const blob = createObjectURL.mock.calls[0][0] as Blob;
+    const text = await blob.text();
+    expect(text).not.toContain("var(--");
+    expect(click).toHaveBeenCalled();
+  });
+
+  it("getVectorExportShapeIds skips layer-hidden shapes", async () => {
+    const { getVectorExportShapeIds } = await import("@/features/planner/editor/exportActions");
+    const editor = createPlannerEditorMock({
+      shapes: [
+        makeShape("shape:1", "planner-wall"),
+        makeShape("shape:2", "planner-furniture", {}, { meta: { layerHidden: true } }),
+      ],
+    });
+    expect(getVectorExportShapeIds(editor)).toEqual(["shape:1"]);
   });
 
   it("throws PlannerExportError when svg export has no shapes", async () => {

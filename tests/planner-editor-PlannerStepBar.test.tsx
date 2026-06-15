@@ -25,4 +25,14 @@ describe("PlannerStepBar", () => {
     render(<PlannerStepBar current="draw" onChange={vi.fn()} compact />);
     expect(screen.queryByText("Draw")).not.toBeInTheDocument();
   });
+
+  it("shows a first-load intro with jump hint", () => {
+    render(<PlannerStepBar current="draw" onChange={vi.fn()} showIntro />);
+
+    expect(screen.getByText("Welcome to your planner")).toBeInTheDocument();
+    expect(
+      screen.getByText("Click any step below to jump ahead or revisit an earlier stage."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Jump to Place/i })).toBeInTheDocument();
+  });
 });

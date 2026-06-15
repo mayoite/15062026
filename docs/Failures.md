@@ -22,5 +22,5 @@ When you fix something: remove its row from **Open**, commit with a clear messag
 - **No Supabase env:** catalog falls back to local seed data; `DATABASE_URL` still required for Drizzle plan APIs.
 - **Stale dev servers:** multiple `next dev` instances cause EADDRINUSE / stale UI — prefer `next start` after a fresh build for Playwright.
 - **Planner localhost checks:** an older `next dev` process can keep the workspace lock while `127.0.0.1` still refuses connections; restart the active dev server before browser verification if localhost looks dead.
-- **Planner canvas units:** shape `widthMm`/`heightMm` props store catalog **cm**; use `plannerCanvasUnits` / `normalizeCatalogMm` / `catalogMmToCanvasCm` in `catalogBlockBridge.ts` — do not scatter `* 10` / `/ 10` in export or display paths.
+- **Planner canvas units:** shape `widthMm`/`heightMm` props store catalog **cm** (legacy autosave may have cm × 10). Single bridge in `catalogBlockBridge.ts`: `plannerCanvasUnits` / `shapePropsToCanvasCm` for shape props; `catalogMmToCanvasCm` for real mm; `normalizeCatalogMm` for mm output. Export meta reads canvas via `shapesToPlacedItems` — do not scatter `* 10` / `/ 10`.
 - **TypeScript:** stay on **6.x**; do not upgrade to TS 7 without an explicit decision.

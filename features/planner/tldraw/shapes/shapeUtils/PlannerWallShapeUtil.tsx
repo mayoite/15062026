@@ -12,7 +12,12 @@
 
 import { Polygon2d, ShapeUtil, SVGContainer, Vec, type Editor, type SvgExportContext } from "@tldraw/editor";
 import { useEditor, useValue } from "tldraw";
-import { canvasUnitsToMillimeters, millimetersToCanvasUnits } from "@/features/planner/lib/calibrationScale";
+import {
+  canvasUnitsToMillimeters,
+  DEFAULT_MM_PER_CANVAS_UNIT,
+  millimetersToCanvasUnits,
+} from "@/features/planner/lib/calibrationScale";
+import { createPlannerSvgColorResolver } from "@/features/planner/lib/plannerSvgExportColors";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 import {
   computeSolidSpans,
@@ -120,22 +125,9 @@ function pointsToSVGPath(pts: { x: number; y: number }[]): string {
   return pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ") + " Z";
 }
 
-const WALL_EXPORT_COLORS: Record<string, string> = {
-  "--surface-page": "#ffffff",
-  "--surface-soft": "#f7f3ed",
-  "--surface-panel": "#ffffff",
-  "--text-body": "#1B2940",
-  "--text-muted": "#3F5168",
-  "--color-accent": "#8A6B49",
-  "--color-bronze-600": "#66533F",
-};
-
-function resolveWallExportColor(value: string | undefined, fallback: string): string {
-  if (!value) return fallback;
-  if (value === "none" || value.startsWith("#") || /^rgba?\(/i.test(value)) return value;
-  return value.replace(/var\(--([a-z0-9-]+)(?:,\s*([^)]+))?\)/gi, (_, name: string, cssFallback?: string) => {
-    return WALL_EXPORT_COLORS[`--${name}`] ?? cssFallback?.trim() ?? fallback;
-  });
+function wallGeometryLengthMm(shape: PlannerWallTLShape): number {
+  const { startX, startY, endX, endY } = shape.props;
+  return Math.round(Math.hypot(endX - startX, endY - startY) * DEFAULT_MM_PER_CANVAS_UNIT);
 }
 
 /** Doors/windows on the current page, reduced to page-space opening candidates. */
@@ -252,14 +244,16 @@ function WallSvg({
     : isLoadBearing
       ? "var(--color-accent)"
       : (strokeColor || "var(--text-body)");
-  const fill = exportColors ? resolveWallExportColor(fillCol, "#ffffff") : fillCol;
-  const stroke = exportColors ? resolveWallExportColor(strokeCol, "#1B2940") : strokeCol;
-  const hatchStroke = exportColors
-    ? resolveWallExportColor("var(--color-bronze-600)", "#66533F")
+  const resolveExportColor = exportColors ? createPlannerSvgColorResolver() : null;
+  const fill = resolveExportColor ? resolveExportColor(fillCol) : fillCol;
+  const stroke = resolveExportColor ? resolveExportColor(strokeCol) : strokeCol;
+  const hatchStroke = resolveExportColor
+    ? resolveExportColor("var(--color-bronze-600)")
     : "var(--color-bronze-600)";
-  const labelFill = exportColors
-    ? resolveWallExportColor("var(--text-muted)", "#3F5168")
+  const labelFill = resolveExportColor
+    ? resolveExportColor("var(--text-muted)")
     : "var(--text-muted)";
+  const geometryLengthMm = wallGeometryLengthMm(shape);
 
   // Dimension label parameters
   const midX = (startX + endX) / 2;
@@ -316,9 +310,9 @@ function WallSvg({
             fill={labelFill}
             transform={`rotate(${angleDeg}, ${midX}, ${midY}) translate(0, ${labelOffsetY})`}
           >
-            {shape.props.lengthMm >= 1000
-              ? `${(shape.props.lengthMm / 1000).toFixed(2)} m`
-              : `${shape.props.lengthMm} mm`}
+            {geometryLengthMm >= 1000
+              ? `${(geometryLengthMm / 1000).toFixed(2)} m`
+              : `${geometryLengthMm} mm`}
           </text>
         ) : (
           <EditableWallDimensionLabel
