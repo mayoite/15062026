@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ShieldCheck, Zap, Leaf, Activity } from "lucide-react";
+import { HOMEPAGE_WHY_CHOOSE_US_CONTENT } from "@/data/site/homepage";
 import { useInViewOnce } from "@/lib/hooks/useInViewOnce";
 import { staggerContainer, staggerItem } from "@/lib/helpers/motion";
 
@@ -34,44 +35,25 @@ const features = [
 
 export function WhyChooseUs() {
   const { ref, isVisible } = useInViewOnce();
+  const { titleLead, titleAccent } = HOMEPAGE_WHY_CHOOSE_US_CONTENT;
 
   return (
-    <section className="scheme-section-soft scheme-border w-full border-y section-y">
-      <div className="container px-6 2xl:px-0">
+    <section className="home-section--white border-t border-b border-theme-soft section-y-sm">
+      <div className="home-shell-xl">
         <div
           ref={ref}
-          className={`mb-12 max-w-3xl reveal-on-scroll ${isVisible ? "visible" : ""}`}
+          className={`mb-10 max-w-3xl reveal-on-scroll ${isVisible ? "visible" : ""}`}
         >
-          <h2 className="typ-section-title">
-            We engineer workspace systems,{" "}
-            <span className="text-accent-italic">not just furniture.</span>
+          <h2 className="home-heading">
+            {titleLead}{" "}
+            <span className="text-accent-italic">{titleAccent}</span>
           </h2>
-          <p className="typ-section-subtitle max-w-2xl">
-            We build planning-led furniture systems that improve usability, durability, and rollout
-            confidence for corporate, government, and institutional teams across Bihar and beyond.
-          </p>
-
-          <ul className="mt-8 flex flex-wrap gap-4">
-            {[
-              "Performance-graded components",
-              "Enterprise-grade durability",
-              "Sustainable engineering",
-            ].map((bullet) => (
-              <li
-                key={bullet}
-                className="scheme-panel scheme-border text-body typ-body-sm flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
-              >
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                {bullet}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <motion.div
           className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4"
           variants={staggerContainer}
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
         >
@@ -79,14 +61,12 @@ export function WhyChooseUs() {
             <motion.div
               key={feature.title}
               variants={staggerItem}
-              className="scheme-panel scheme-border group rounded-xl border p-8 transition-colors hover:border-strong"
+              className="home-tool-card group flex h-full flex-col items-center text-center"
             >
-              <div className="mb-6 text-strong transition-colors group-hover:text-primary">
-                <feature.icon className="h-8 w-8" strokeWidth={1} />
-              </div>
-              <h3 className="typ-h3 mb-3 text-strong">
-                {feature.title}
-              </h3>
+              <span className="home-tool-icon mb-6">
+                <feature.icon className="h-8 w-8" strokeWidth={1} aria-hidden="true" />
+              </span>
+              <h3 className="typ-h3 mb-2">{feature.title}</h3>
               <p className="page-copy-sm text-body">{feature.description}</p>
             </motion.div>
           ))}

@@ -185,51 +185,71 @@
   border: 1px solid var(--border-soft);
   background: var(--surface-soft);
   box-shadow: var(--shadow-soft);
+  transition:
+    box-shadow var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard);
+}
+
+.home-collection-card:hover {
+  border-color: color-mix(in srgb, var(--color-ocean-boat-blue-700) 35%, var(--border-soft));
+  box-shadow: 0 24px 48px -28px color-mix(in srgb, var(--color-ocean-boat-blue-900) 28%, transparent);
 }
 
 .home-collection-card__overlay {
   position: absolute;
   inset: 0;
-  transition: all 500ms;
+  transition: opacity 500ms;
   background: linear-gradient(
     180deg,
-    var(--overlay-inverse-12) 0%,
-    var(--overlay-inverse-35) 52%,
-    var(--overlay-inverse-35) 100%
+    rgb(0 0 0 / 0.08) 0%,
+    rgb(0 0 0 / 0.02) 38%,
+    rgb(0 0 0 / 0.42) 72%,
+    rgb(0 0 0 / 0.78) 100%
   );
-  opacity: 0.86;
+  opacity: 0.92;
 }
 
 .home-collection-card:hover .home-collection-card__overlay {
   opacity: 1;
 }
 
-.home-collection-card__title {
-  color: var(--text-inverse);
-  font-family: var(--font-display);
-  font-size: clamp(1.45rem, 1.2rem + 0.65vw, 1.95rem);
+.home-collection-card__footer {
+  z-index: 1;
+}
+
+.home-collection-card__tagline {
+  margin: 0;
+  max-width: 22rem;
+  color: color-mix(in srgb, white 82%, transparent);
+  font-family: var(--font-sans);
+  font-size: clamp(0.8125rem, 0.78rem + 0.12vw, 0.9375rem);
   font-weight: 400;
-  letter-spacing: -0.035em;
-  line-height: 1;
+  line-height: 1.45;
+  letter-spacing: -0.008em;
+  text-wrap: pretty;
 }
 
 .home-collection-card__arrow {
   display: flex;
   height: 3rem;
   width: 3rem;
-  transform: translateY(10px);
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--overlay-panel-14);
-  background: var(--surface-glass-strong);
+  border: 1px solid color-mix(in srgb, white 28%, transparent);
+  background: color-mix(in srgb, white 88%, transparent);
   color: var(--text-strong);
-  opacity: 0;
-  transition: all 500ms;
+  opacity: 0.94;
+  transform: translateY(0);
+  transition:
+    transform 500ms,
+    opacity 500ms,
+    background-color 300ms;
 }
 
 .group:hover .home-collection-card__arrow {
-  transform: translateY(0);
   opacity: 1;
+  background: var(--surface-glass-strong);
+  transform: translate(5px, -3px);
 }
 

@@ -75,6 +75,7 @@ Markdown under `archive/` is a **frozen snapshot** for things worth keeping read
 | Folder cleanup roadmap | `plans/REPO-STRUCTURE-PLAN.md` |
 | Hardcoding inventory | `docs/HARDCODING-INVENTORY.md` |
 | Hardcoding remediation plan | `plans/HARDCODING-PLAN.md` |
+| Homepage layout + typography | `plans/HOMEPAGE-LAYOUT-TYPOGRAPHY.md` |
 | Archived plans crosswalk | `plans/ARCHIVE-MAP.md` |
 | Test file list | `tests/INVENTORY.md` or `results/test-inventory.json` |
 | Coverage baseline | `results/coverage-summary.json` |

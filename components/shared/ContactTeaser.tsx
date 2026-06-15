@@ -10,7 +10,7 @@ import {
   trackContactSubmission,
   trackSiteCtaClick,
 } from "@/lib/analytics/siteEvents";
-import { fadeUp, staggerContainer, staggerItem } from "@/lib/helpers/motion";
+import { fadeUp } from "@/lib/helpers/motion";
 
 export function ContactTeaser() {
   const [name, setName] = useState("");
@@ -101,9 +101,6 @@ export function ContactTeaser() {
                 {HOMEPAGE_CONTACT_CONTENT.titleLead}{" "}
                 <span className="text-accent-italic">{HOMEPAGE_CONTACT_CONTENT.titleAccent}</span>
               </h2>
-              <p className="home-copy mt-2 max-w-2xl text-muted">
-                {HOMEPAGE_CONTACT_CONTENT.description}
-              </p>
             </motion.div>
 
             <motion.form
@@ -114,7 +111,7 @@ export function ContactTeaser() {
             >
               <div className="contact-teaser__mini-grid">
                 <label className="contact-teaser__field">
-                  <span className="contact-teaser__field-label">Name</span>
+                  <span className="typ-label text-muted">Name</span>
                   <input
                     id="contact-teaser-name"
                     name="name"
@@ -129,7 +126,7 @@ export function ContactTeaser() {
                   />
                 </label>
                 <label className="contact-teaser__field">
-                  <span className="contact-teaser__field-label">City</span>
+                  <span className="typ-label text-muted">City</span>
                   <input
                     id="contact-teaser-city"
                     name="city"
@@ -144,7 +141,7 @@ export function ContactTeaser() {
                   />
                 </label>
                 <label className="contact-teaser__field contact-teaser__field--span">
-                  <span className="contact-teaser__field-label">Phone or Email</span>
+                  <span className="typ-label text-muted">Phone or Email</span>
                   <input
                     id="contact-teaser-contact"
                     name="contact"
@@ -161,7 +158,7 @@ export function ContactTeaser() {
               </div>
               <label className="contact-teaser__field mt-2">
                 <div className="flex items-center justify-between">
-                  <span className="contact-teaser__field-label">Brief</span>
+                  <span className="typ-label text-muted">Brief</span>
                   <span className="typ-body-sm text-subtle" aria-live="polite" aria-atomic="true">
                     {brief.length}/5000
                   </span>
@@ -179,51 +176,40 @@ export function ContactTeaser() {
                 />
               </label>
 
-              <div className="contact-teaser__actions mt-3">
+              <div className="contact-teaser__cta-stack mt-3">
                 <button type="submit" disabled={isSubmitting} className="btn-primary">
                   <ChatText size={16} weight="duotone" aria-hidden="true" />
                   {isSubmitting ? "Sending..." : "Send Brief"}
                 </button>
-              </div>
 
-              <div className="contact-teaser__support-row mt-2">
-                <motion.div
-                  className="contents"
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, amount: 0.2 }}
-                >
+                <div className="contact-teaser__support-row">
                   {directActions.map((action) => {
-                  const Icon = action.icon;
-                  return (
-                    <motion.a
-                      key={action.label}
-                      variants={staggerItem}
-                      whileHover={{ y: -1 }}
-                      whileTap={{ y: 0 }}
-                      href={action.href}
-                      target={action.external ? "_blank" : undefined}
-                      rel={action.external ? "noopener noreferrer" : undefined}
-                      className="contact-teaser__support-link"
-                      onClick={() =>
-                        trackSiteCtaClick({
-                          href: action.href,
-                          label: action.label,
-                          pathname: window.location.pathname,
-                          surface: "contact-teaser",
-                        })
-                      }
-                    >
-                      <span className="contact-teaser__support-link-icon">
-                        <Icon size={16} weight="duotone" />
-                      </span>
-                      <span>{action.label}</span>
-                      <ArrowUpRight size={14} weight="bold" />
-                    </motion.a>
-                  );
-                })}
-                </motion.div>
+                    const Icon = action.icon;
+                    return (
+                      <a
+                        key={action.label}
+                        href={action.href}
+                        target={action.external ? "_blank" : undefined}
+                        rel={action.external ? "noopener noreferrer" : undefined}
+                        className="contact-teaser__support-link typ-cta"
+                        onClick={() =>
+                          trackSiteCtaClick({
+                            href: action.href,
+                            label: action.label,
+                            pathname: window.location.pathname,
+                            surface: "contact-teaser",
+                          })
+                        }
+                      >
+                        <span className="contact-teaser__support-link-icon">
+                          <Icon size={16} weight="duotone" />
+                        </span>
+                        <span>{action.label}</span>
+                        <ArrowUpRight size={14} weight="bold" />
+                      </a>
+                    );
+                  })}
+                </div>
               </div>
 
               {formStatus.type !== "idle" ? (

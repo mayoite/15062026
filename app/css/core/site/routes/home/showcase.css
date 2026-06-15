@@ -17,8 +17,6 @@
 @utility home-showcase-section {
   width: 100%;
   overflow: hidden;
-  padding-block: 3rem;
-  @media (min-width: 768px) { padding-block: 5rem; }
 }
 
 @utility home-showcase-section--light {
@@ -73,8 +71,6 @@
   margin-left: 1rem;
   border-bottom: 1px solid transparent;
   padding-bottom: 0.125rem;
-  font-size: 0.875rem;
-  font-weight: 500;
   transition: color var(--motion-fast) var(--ease-standard),
               border-color var(--motion-fast) var(--ease-standard);
 }
@@ -106,6 +102,29 @@
 
 .group:hover .home-showcase-overlay {
   opacity: 0.9;
+}
+
+@utility home-showcase-card__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.15rem + 1.1vw, 2.25rem);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  text-align: left;
+  color: var(--text-inverse);
+  text-shadow: 0 2px 20px rgb(0 0 0 / 0.5);
+  text-wrap: balance;
+}
+
+@utility home-showcase-card__caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 1.25rem 1.5rem 0.75rem;
+  pointer-events: none;
 }
 
 @utility home-showcase-mobile-count {
@@ -197,9 +216,14 @@
 }
 
 @utility home-trust-kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 7.5rem;
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-soft);
-  padding: 1.5rem;
+  padding: 1.75rem 1.25rem;
   text-align: center;
 }
 
@@ -211,32 +235,40 @@
 
 @utility home-trust-kpi--light {
   border-color: var(--border-soft);
-  background: color-mix(in srgb, white 60%, transparent);
+  background: var(--color-white-50);
 }
 
 @utility home-trust-kpi-value--dark {
   font-family: var(--font-display);
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 350;
+  font-weight: var(--font-weight-display-light);
   line-height: 0.96;
   letter-spacing: -0.045em;
   color: var(--color-accent);
 }
 
 @utility home-trust-kpi-label--dark {
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: var(--font-weight-copy-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--text-inverse-muted);
 }
 
-@utility home-trust-section {
-  width: 100%;
-  background: var(--surface-soft);
-  padding-block: 2rem;
-  @media (min-width: 768px) { padding-block: 2.5rem; }
+@utility home-trust-kpi-value--light {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 2.5vw, 2.75rem);
+  font-weight: var(--font-weight-display-light);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-ocean-boat-blue-900);
+}
+
+@utility home-trust-kpi-label--light {
+  margin-top: 0.625rem;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--color-ocean-boat-blue-800);
 }
 
 /* Hero buttons */

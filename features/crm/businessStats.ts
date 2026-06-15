@@ -1,7 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { supabase } from '@/platform/drizzle/db';
+import { hasSupabasePublicEnv, supabase } from '@/platform/drizzle/db';
 import type { BusinessStats, BusinessStatsResult, StatsSource } from "@/lib/types/businessStats";
 import {
   BUSINESS_STATS_FETCH_TIMEOUT_MS,
@@ -29,8 +29,32 @@ function isExpectedStatsFallback(message: string): boolean {
   const normalized = message.toLowerCase();
   return (
     normalized.includes("public.business_stats_current") ||
-    normalized.includes("missing_active_business_stats")
+    normalized.includes("missing_active_business_stats") ||
+    normalized.includes("next_public_supabase_url") ||
+    normalized.includes("next_public_supabase_anon_key") ||
+    normalized.includes("timeout>") ||
+    normalized.includes("fetch failed") ||
+    normalized.includes("econnrefused") ||
+    normalized.includes("enotfound") ||
+    normalized.includes("network")
   );
+}
+
+function resolveBusinessStatsPayload(): Promise<BusinessStatsPayload> {
+  if (!hasSupabasePublicEnv()) {
+    return Promise.resolve(buildFallbackPayload());
+  }
+
+  return fetchLiveBusinessStats()
+    .then((stats) => {
+      lastKnownGoodStats = stats;
+      return { stats, source: "supabase" as const };
+    })
+    .catch((error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      logUnexpectedBusinessStatsFallback(message);
+      return buildFallbackPayload();
+    });
 }
 
 function logUnexpectedBusinessStatsFallback(message: string) {
@@ -105,17 +129,7 @@ const getCachedLiveBusinessStats = unstable_cache(fetchLiveBusinessStats, ["busi
   tags: ["business-stats"],
 });
 const getCachedBusinessStatsPayload = unstable_cache(
-  async (): Promise<BusinessStatsPayload> => {
-    try {
-      const stats = await fetchLiveBusinessStats();
-      lastKnownGoodStats = stats;
-      return { stats, source: "supabase" };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      logUnexpectedBusinessStatsFallback(message);
-      return buildFallbackPayload();
-    }
-  },
+  resolveBusinessStatsPayload,
   ["business-stats-live-payload"],
   {
     revalidate: BUSINESS_STATS_REVALIDATE_SECONDS,
@@ -131,6 +145,10 @@ export async function getBusinessStats(options?: {
   if (!options?.forceLive) {
     const payload = await getCachedBusinessStatsPayload();
     return { ...payload, fetchedAt };
+  }
+
+  if (!hasSupabasePublicEnv()) {
+    return { ...buildFallbackPayload(), fetchedAt };
   }
 
   try {

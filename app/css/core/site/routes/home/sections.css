@@ -3,6 +3,20 @@
   text-decoration: underline;
 }
 
+.home-catalog-cta {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-ocean-boat-blue-900);
+  transition:
+    color var(--motion-fast) var(--ease-standard),
+    gap var(--motion-fast) var(--ease-standard);
+}
+
+.home-catalog-cta:hover {
+  color: var(--color-ocean-boat-blue-700);
+  gap: 0.5rem;
+}
+
 @utility home-collections-arrow {
   display: flex;
   height: 2.75rem;

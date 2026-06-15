@@ -7,7 +7,7 @@ export function BrandStatement() {
       <div className="home-shell-xl">
         <Reveal y={25}>
           <div className="max-w-4xl">
-            <p className="typ-section">
+            <p className="typ-section text-strong">
               {HOMEPAGE_BRAND_STATEMENT_CONTENT.lead}
             </p>
             <p className="page-copy text-body mt-5 max-w-3xl">

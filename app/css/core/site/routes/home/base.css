@@ -145,21 +145,6 @@
   }
 }
 
-.home-hero__copy::before {
-  content: "";
-  position: absolute;
-  inset: -2rem -1.5rem;
-  z-index: -1;
-  border-radius: 1.25rem;
-  background: radial-gradient(
-    ellipse 120% 100% at 12% 50%,
-    rgb(0 0 0 / 0.72) 0%,
-    rgb(0 0 0 / 0.34) 52%,
-    transparent 78%
-  );
-  pointer-events: none;
-}
-
 @utility home-hero-glass-stack {
   display: flex;
   flex-direction: column;
@@ -237,6 +222,7 @@
   gap: 0.375rem;
   margin-top: 0.15rem;
   white-space: nowrap;
+  flex-wrap: nowrap;
   transition: opacity var(--motion-fast) var(--ease-standard);
 }
 
@@ -277,6 +263,15 @@
   object-fit: contain;
   opacity: 0.9;
   filter: grayscale(1) brightness(1.75);
+}
+
+/* Override global `img { max-width: 100% }` so trust logos stay in a row */
+.home-hero-trust-bar__logos img {
+  display: block;
+  height: 1.5rem;
+  width: auto;
+  max-width: 5.25rem;
+  object-fit: contain;
 }
 
 @utility home-feature-grid {
@@ -579,22 +574,70 @@
 
 @utility home-tool-title {
   margin-bottom: 0.5rem;
-  font-size: 1.125rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
   color: var(--text-strong);
 }
 
 @utility home-tool-link {
-  margin-top: 1.5rem;
-  display: flex;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: var(--font-weight-copy-semibold);
-  color: var(--text-muted);
   transition: gap var(--motion-fast) var(--ease-standard),
               color var(--motion-fast) var(--ease-standard);
+}
+
+@utility home-tool-card--dark {
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  background: color-mix(in srgb, white 6%, transparent);
+  box-shadow: 0 24px 60px -32px color-mix(in srgb, black 55%, transparent);
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+    background: color-mix(in srgb, white 10%, transparent);
+    box-shadow: 0 28px 64px -28px color-mix(in srgb, black 45%, transparent);
+  }
+}
+
+@utility home-tool-icon--dark {
+  border-color: color-mix(in srgb, white 16%, transparent);
+  background: color-mix(in srgb, white 8%, transparent);
+  color: var(--color-accent);
+}
+
+.home-tool-icon--dark svg {
+  color: var(--color-accent);
+  stroke: currentColor;
+}
+
+@utility home-tool-link--dark {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  color: var(--color-accent);
+  transition: gap var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard);
+}
+
+@utility home-tool-heading--dark {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+  font-size: var(--type-title-sm-size);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: -0.038em;
+  line-height: var(--type-leading-h3);
+  color: var(--text-inverse);
+  text-wrap: balance;
+}
+
+.home-tool-card--dark:hover .home-tool-link--dark {
+  color: var(--text-inverse);
 }
 
 @utility home-inline-link {

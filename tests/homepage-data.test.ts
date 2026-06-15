@@ -5,6 +5,7 @@ import {
   HOMEPAGE_COLLECTIONS_CONTENT,
   HOMEPAGE_PLANNER_SUITE_CONTENT,
   HOMEPAGE_PROJECTS_CONTENT,
+  HOMEPAGE_WHY_CHOOSE_US_CONTENT,
 } from "@/data/site/homepage";
 
 describe("homepage data", () => {
@@ -41,8 +42,13 @@ describe("homepage data", () => {
     expect(HOMEPAGE_PLANNER_SUITE_CONTENT.overviewHref).toBe("/planner");
   });
 
-  it("collections and projects show three featured items", () => {
-    expect(HOMEPAGE_COLLECTIONS_CONTENT.items).toHaveLength(3);
+  it("why choose us keeps the workspace systems headline", () => {
+    expect(HOMEPAGE_WHY_CHOOSE_US_CONTENT.titleLead).toBe("We engineer");
+    expect(HOMEPAGE_WHY_CHOOSE_US_CONTENT.titleAccent).toBe("workspaces");
+  });
+
+  it("collections shows six featured categories", () => {
+    expect(HOMEPAGE_COLLECTIONS_CONTENT.items).toHaveLength(6);
     expect(HOMEPAGE_PROJECTS_CONTENT.cards).toHaveLength(3);
   });
 });

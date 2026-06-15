@@ -1,4 +1,4 @@
-﻿/** Shared fallback when a category or page has no flagship image. */
+/** Shared fallback when a category or page has no flagship image. */
 export const DEFAULT_HERO_FALLBACK = "/images/hero/dmrc-hero.webp";
 
 export const HOMEPAGE_HERO_IMAGES = [
@@ -11,7 +11,7 @@ export const HOMEPAGE_HERO_IMAGES = [
 ] as const;
 
 export const HOMEPAGE_HERO_CONTENT = {
-  title: ["Spaces that work", "as hard as", "your team."],
+  title: ["Spaces that work", "as hard as", "your team"],
   kicker: "Pan-India · Since 2011",
   primaryCta: { label: "Explore Products", href: "/products" },
   secondaryCta: { label: "Request a quote", href: "/contact" },
@@ -67,24 +67,39 @@ export const HOMEPAGE_BRAND_STATEMENT_CONTENT = {
 } as const;
 
 export const HOMEPAGE_COLLECTIONS_CONTENT = {
-  titleLead: "What can",
-  titleAccent: "you buy?",
-  catalogCta: { label: "Browse catalog for more", href: "/products" },
+  titleLead: "Browse",
+  titleAccent: "workspace categories",
+  catalogCta: { label: "Browse full catalog", href: "/products" },
   items: [
     {
       name: "Seating",
-      image: "/images/products/seating-myel-1.webp",
+      image: "/images/catalog/oando-seating--fluid-x/image-01.webp",
       href: "/products/seating",
     },
     {
       name: "Workstations",
-      image: "/images/products/deskpro-workstation-1.webp",
+      image: "/images/catalog/oando-workstations--deskpro/image-1.jpg",
       href: "/products/workstations",
     },
     {
       name: "Tables",
       image: "/images/products/meeting-table-10pax.webp",
       href: "/products/tables",
+    },
+    {
+      name: "Storage",
+      image: "/images/catalog/oando-storage--metal-storages/image-1.jpg",
+      href: "/products/storages",
+    },
+    {
+      name: "Soft Seating",
+      image: "/images/products/softseating-solace-1.webp",
+      href: "/products/soft-seating",
+    },
+    {
+      name: "Education",
+      image: "/images/products/chair-cafeteria.webp",
+      href: "/products/education",
     },
   ],
 } as const;
@@ -101,81 +116,38 @@ export const HOMEPAGE_PROJECTS_CONTENT = {
 } as const;
 
 export const HOMEPAGE_SHOWCASE_CONTENT = {
-  sectionLabel: "Selected Projects",
-  sectionTitle: "Delivered at scale for India's leading organizations.",
+  sectionLabel: "",
+  sectionTitleLead: "Delivered for",
+  sectionTitleAccent: "leading organizations",
+  browseCta: { label: "View portfolio", href: "/portfolio" },
   items: [
     {
-      id: "dmrc-patna",
-      name: "DMRC Patna HQ",
-      label: "Government",
-      image: "/images/projects/DMRC/dmrc-hero.webp",
-      description: "Complete workstation rollout for the Patna Metro project headquarters.",
-      link: "/portfolio"
+      id: "dmrc",
+      name: "DMRC",
+      label: "",
+      image: "/images/projects/DMRC/hero.webp",
+      link: "/portfolio",
     },
     {
-      id: "titan-hq",
-      name: "Titan Bihar HQ",
-      label: "Corporate",
-      image: "/images/projects/Titan/titan-hero.webp",
-      description: "Full-floor operations zone including executive cabins and staff zones.",
-      link: "/portfolio"
+      id: "titan",
+      name: "Titan",
+      label: "",
+      image: "/images/projects/Titan/hero.webp",
+      link: "/portfolio",
     },
     {
-      id: "green-desk-1",
-      name: "Tata Steel Operations",
-      label: "Industrial",
-      image: "/images/projects/DMRC/dmrc-workspace-01.webp",
-      description: "Custom layout optimized for durability and heavy-duty documentation flow.",
-      link: "/portfolio"
-    },
-    {
-      id: "tvs-bihar",
-      name: "TVS Motors",
-      label: "Automobile",
+      id: "tvs",
+      name: "TVS",
+      label: "",
       image: "/images/projects/TVS/hero.webp",
-      description: "Modular seating and desk systems for regional service hubs.",
-      link: "/portfolio"
+      link: "/portfolio",
     },
-    {
-      id: "boardroom-client",
-      name: "Executive Boardroom",
-      label: "Corporate",
-      image: "/images/projects/DMRC/dmrc-facility.webp",
-      description: "Custom conference table with ergonomic high-back executive seating.",
-      link: "/portfolio"
-    },
-    {
-      id: "open-office-client",
-      name: "Operations Hub",
-      label: "Enterprise",
-      image: "/images/projects/Titan/27-06-2025 Image 05_edited_edited.webp",
-      description: "Scalable 100+ seater open plan layout with acoustic screening.",
-      link: "/portfolio"
-    },
-    {
-      id: "green-workstations-client",
-      name: "Collaborative Zone",
-      label: "Public Sector",
-      image: "/images/projects/Usha/DSC_0077_edited.webp",
-      description: "Modular workstations featuring integrated storage hubs and privacy dividers.",
-      link: "/portfolio"
-    },
-    {
-      id: "blue-workstations-client",
-      name: "Technical Staff Wing",
-      label: "Institutional",
-      image: "/images/projects/Govenment/20140707_124458_compressed.webp",
-      description: "Ergonomic linear workstations with task-focused layout optimization.",
-      link: "/portfolio"
-    }
-  ]
+  ],
 } as const;
 
 export const HOMEPAGE_CONTACT_CONTENT = {
-  titleLead: "Contact",
-  titleAccent: "us",
-  description:
-    "Share your city and scope. We scope customised furniture before quoting — expect a conversation, not an instant price.",
+  titleLead: "Share your",
+  titleAccent: "requirement",
   directActions: [
     {
       type: "whatsapp",
@@ -197,7 +169,7 @@ export const HOMEPAGE_CLOSING_CTA_CONTENT = {
   description:
     "Share your city, scope, and timeline. We will route the right next step without forcing the whole brief into the home page.",
   actions: {
-    primary: { label: "Launch planner", href: "/planning" },
+    primary: { label: "Planning service", href: "/planning" },
     whatsapp: {
       label: "WhatsApp now",
       message: "I need help starting a workspace planning brief.",
@@ -343,6 +315,11 @@ export const HOMEPAGE_SOLUTIONS_CONTENT = {
       image: "/images/catalog/oando-storage--metal-storages/image-1.jpg",
     },
   ],
+} as const;
+
+export const HOMEPAGE_WHY_CHOOSE_US_CONTENT = {
+  titleLead: "We engineer",
+  titleAccent: "workspaces",
 } as const;
 
 export const HOMEPAGE_TESTIMONIALS_CONTENT = {

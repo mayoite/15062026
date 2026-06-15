@@ -75,6 +75,29 @@
 
 @utility contact-teaser__input--textarea { min-height: 5rem; resize: vertical; }
 
+.contact-teaser__cta-stack {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+}
+
+.contact-teaser__cta-stack .btn-primary {
+  align-self: flex-start;
+  width: auto;
+}
+
+.contact-teaser__support-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.625rem;
+  width: auto;
+}
+
 @utility contact-teaser__actions {
   display: flex;
   flex-wrap: wrap;

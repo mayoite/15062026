@@ -8,10 +8,35 @@ test.describe("site navigation smoke", () => {
 
     await expect(page.locator("#home-hero")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toContainText(/Spaces that work/i);
+    await expect(page.getByText(/Pan-India/i)).toBeVisible();
 
     const secondDot = page.getByRole("button", { name: "Show project image 2" });
     await secondDot.click();
     await expect(secondDot).toHaveAttribute("aria-current", "true");
+  });
+
+  test("homepage shows Final0704-inspired sections", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { name: /Browse/i })).toBeVisible();
+    await expect(page.getByTestId("kpi-client-organisations")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Delivered for/i })).toContainText(
+      /leading organizations/i,
+    );
+    await expect(page.getByRole("heading", { name: /Design your workspace/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Oando Planner/i })).toBeVisible();
+    await expect(page.locator("a.home-tool-card", { hasText: /Planning service/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /We engineer workspaces/i }),
+    ).toBeVisible();
+  });
+
+  test("/planning service page loads with workflow section", async ({ page }) => {
+    await page.goto("/planning");
+
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/Planning Service/i);
+    await expect(page.getByRole("heading", { name: /From intent to implementation-ready plans/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Request planning call/i }).first()).toBeVisible();
   });
 
   test("/products catalog loads with first category card visible", async ({ page }) => {

@@ -55,6 +55,10 @@ export function buildSiteMetadata(siteUrl: string): Metadata {
       telephone: false,
     },
     robots: { index: true, follow: true },
+    icons: {
+      icon: "/catalog-logo-sharp.webp",
+      shortcut: "/catalog-logo-sharp.webp",
+    },
     alternates: { canonical: "/" },
     openGraph: {
       type: "website",

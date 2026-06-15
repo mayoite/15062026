@@ -23,7 +23,6 @@ export function OneAndOnlyLogo({ className, variant = "orange" }: LogoProps) {
         height={263}
         priority
         sizes="(max-width: 768px) 150px, 240px"
-        quality={100}
         unoptimized
         className="h-full w-auto object-contain"
       />

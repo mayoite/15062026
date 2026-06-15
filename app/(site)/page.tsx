@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import "@/app/css/core/site/bundles/homepage.css";
 import { HomepageHero } from "@/components/home/HomepageHero";
 import { PartnershipBanner } from "@/components/home/PartnershipBanner";
-import { BrandStatement } from "@/components/home/BrandStatement";
 import { Collections } from "@/components/home/Collections";
-import { PlannerSuite } from "@/features/planner/landing/PlannerSuite";
-import { Projects } from "@/components/home/Projects";
+import { TrustStrip } from "@/components/home/TrustStrip";
+import { ShowcaseCarousel } from "@/components/home/ShowcaseCarousel";
+import { InteractiveTools } from "@/components/home/InteractiveTools";
+import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 
 import { SITE_BRAND } from "@/lib/analytics/seo";
 import { buildPageJsonLd, buildPageMetadata } from "@/lib/analytics/seo";
+import { HOMEPAGE_SHOWCASE_CONTENT } from "@/data/site/homepage";
+import { getBusinessStats } from "@/features/crm/businessStats";
 import { SITE_URL } from "@/lib/siteUrl";
 
 export const metadata: Metadata = buildPageMetadata(SITE_URL, {
@@ -18,7 +20,8 @@ export const metadata: Metadata = buildPageMetadata(SITE_URL, {
   path: "/",
 });
 
-export default function Home() {
+export default async function Home() {
+  const { stats } = await getBusinessStats();
   const homeJsonLd = buildPageJsonLd(SITE_URL, {
     path: "/",
     title: SITE_BRAND.defaultTitle,
@@ -35,10 +38,25 @@ export default function Home() {
 
       <HomepageHero />
       <PartnershipBanner />
-      <BrandStatement />
       <Collections />
-      <Projects />
-      <PlannerSuite />
+      <TrustStrip stats={stats} showLogos={false} />
+      <ShowcaseCarousel
+        sectionLabel={HOMEPAGE_SHOWCASE_CONTENT.sectionLabel}
+        sectionAriaLabel={`${HOMEPAGE_SHOWCASE_CONTENT.sectionTitleLead} ${HOMEPAGE_SHOWCASE_CONTENT.sectionTitleAccent}`}
+        sectionTitle={
+          <>
+            {HOMEPAGE_SHOWCASE_CONTENT.sectionTitleLead}{" "}
+            <span className="text-accent-italic">
+              {HOMEPAGE_SHOWCASE_CONTENT.sectionTitleAccent}
+            </span>
+          </>
+        }
+        items={[...HOMEPAGE_SHOWCASE_CONTENT.items]}
+        browseLink={HOMEPAGE_SHOWCASE_CONTENT.browseCta.href}
+        browseLabel={HOMEPAGE_SHOWCASE_CONTENT.browseCta.label}
+      />
+      <InteractiveTools />
+      <WhyChooseUs />
       <ContactTeaser />
     </div>
   );
