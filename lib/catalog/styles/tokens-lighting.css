@@ -1,0 +1,15 @@
+/* tokens-lighting.css */
+:root {
+  /* Ambient Occlusion (Contact Shadows) */
+  --block-light-ao-soft: rgba(0, 0, 0, 0.15);
+  --block-light-ao-medium: rgba(0, 0, 0, 0.3);
+  --block-light-ao-hard: rgba(0, 0, 0, 0.5);
+
+  /* Specular Highlights (Bevels & Glare) */
+  --block-light-specular-soft: rgba(255, 255, 255, 0.2);
+  --block-light-specular-sharp: rgba(255, 255, 255, 0.6);
+
+  /* Drop Shadows (Elevation) */
+  --block-shadow-color-light: rgba(15, 23, 42, 0.1);
+  --block-shadow-color-heavy: rgba(15, 23, 42, 0.25);
+}

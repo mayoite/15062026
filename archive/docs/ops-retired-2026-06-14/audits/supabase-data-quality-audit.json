@@ -1,0 +1,838 @@
+{
+  "productCount": 279,
+  "categoryCount": 13,
+  "blankSlugs": 0,
+  "duplicateSlugs": [],
+  "missingCategoryIds": 0,
+  "missingSubcategorySlug": 279,
+  "missingAltText": 279,
+  "missingPrimaryImage": 0,
+  "duplicateNameKeysByCategory": [
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "prelam",
+      "count": 4,
+      "slugs": [
+        "oando-storage--pedestal",
+        "oando-storage--prelam-storage",
+        "pedestal",
+        "prelam-storage"
+      ]
+    },
+    {
+      "category_id": "oando-collaborative",
+      "normalized_name_key": "cocoon-pod",
+      "count": 2,
+      "slugs": [
+        "cocoon-pod",
+        "oando-collaborative--cocoon-pod"
+      ]
+    },
+    {
+      "category_id": "oando-collaborative",
+      "normalized_name_key": "solace-pod",
+      "count": 2,
+      "slugs": [
+        "oando-collaborative--solace-pod",
+        "solace-pod"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "academia",
+      "count": 2,
+      "slugs": [
+        "academia",
+        "oando-educational--academia"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "audi-chair",
+      "count": 2,
+      "slugs": [
+        "audi-chair",
+        "oando-educational--audi-chair"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "classcraft",
+      "count": 2,
+      "slugs": [
+        "classcraft",
+        "oando-educational--classcraft"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "connecta",
+      "count": 2,
+      "slugs": [
+        "connecta",
+        "oando-educational--connecta"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "forma",
+      "count": 2,
+      "slugs": [
+        "forma",
+        "oando-educational--forma"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "learnix",
+      "count": 2,
+      "slugs": [
+        "learnix",
+        "oando-educational--learnix"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "magazine-rack",
+      "count": 2,
+      "slugs": [
+        "magazine-rack",
+        "oando-educational--magazine-rack"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "metal-bed",
+      "count": 2,
+      "slugs": [
+        "metal-bed",
+        "oando-educational--metal-bed"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "performer",
+      "count": 2,
+      "slugs": [
+        "oando-educational--performer",
+        "performer"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "podium",
+      "count": 2,
+      "slugs": [
+        "oando-educational--podium",
+        "podium"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "wooden-bed",
+      "count": 2,
+      "slugs": [
+        "oando-educational--wooden-bed",
+        "wooden-bed"
+      ]
+    },
+    {
+      "category_id": "oando-educational",
+      "normalized_name_key": "xplorer",
+      "count": 2,
+      "slugs": [
+        "oando-educational--xplorer",
+        "xplorer"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "accent",
+      "count": 2,
+      "slugs": [
+        "accent",
+        "oando-soft-seating--accent"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "adam",
+      "count": 2,
+      "slugs": [
+        "adam",
+        "oando-soft-seating--adam"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "alonzo",
+      "count": 2,
+      "slugs": [
+        "alonzo",
+        "oando-soft-seating--alonzo"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "arcana",
+      "count": 2,
+      "slugs": [
+        "arcana",
+        "oando-soft-seating--arcana"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "arco",
+      "count": 2,
+      "slugs": [
+        "arco",
+        "oando-soft-seating--arco"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "armora",
+      "count": 2,
+      "slugs": [
+        "armora",
+        "oando-soft-seating--armora"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "brim",
+      "count": 2,
+      "slugs": [
+        "brim",
+        "oando-soft-seating--brim"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "ceda",
+      "count": 2,
+      "slugs": [
+        "ceda",
+        "oando-soft-seating--ceda"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "cirq",
+      "count": 2,
+      "slugs": [
+        "cirq",
+        "oando-soft-seating--cirq"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "cocoon",
+      "count": 2,
+      "slugs": [
+        "cocoon",
+        "oando-soft-seating--cocoon"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "como",
+      "count": 2,
+      "slugs": [
+        "como",
+        "oando-soft-seating--como"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "cone",
+      "count": 2,
+      "slugs": [
+        "cone",
+        "oando-soft-seating--cone"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "cove",
+      "count": 2,
+      "slugs": [
+        "cove",
+        "oando-soft-seating--cove"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "covea",
+      "count": 2,
+      "slugs": [
+        "covea",
+        "oando-soft-seating--covea"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "cozy",
+      "count": 2,
+      "slugs": [
+        "cozy",
+        "oando-soft-seating--cozy"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "crossa",
+      "count": 2,
+      "slugs": [
+        "crossa",
+        "oando-soft-seating--crossa"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "eclips",
+      "count": 2,
+      "slugs": [
+        "eclips",
+        "oando-soft-seating--eclips"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "embrace",
+      "count": 2,
+      "slugs": [
+        "embrace",
+        "oando-soft-seating--embrace"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "esmor",
+      "count": 2,
+      "slugs": [
+        "esmor",
+        "oando-soft-seating--esmor"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "fynn",
+      "count": 2,
+      "slugs": [
+        "fynn",
+        "oando-soft-seating--fynn"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "grace",
+      "count": 2,
+      "slugs": [
+        "grace",
+        "oando-soft-seating--grace"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "high-cafe",
+      "count": 2,
+      "slugs": [
+        "high-cafe",
+        "oando-soft-seating--high-cafe"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "hush",
+      "count": 2,
+      "slugs": [
+        "hush",
+        "oando-soft-seating--hush"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "luna",
+      "count": 2,
+      "slugs": [
+        "luna",
+        "oando-soft-seating--luna"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "lura",
+      "count": 2,
+      "slugs": [
+        "lura",
+        "oando-soft-seating--lura"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "luxar",
+      "count": 2,
+      "slugs": [
+        "luxar",
+        "oando-soft-seating--luxar"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "margas",
+      "count": 2,
+      "slugs": [
+        "margas",
+        "oando-soft-seating--margas"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "moon",
+      "count": 2,
+      "slugs": [
+        "moon",
+        "oando-soft-seating--moon"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "nook",
+      "count": 2,
+      "slugs": [
+        "nook",
+        "oando-soft-seating--nook"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "nuvora",
+      "count": 2,
+      "slugs": [
+        "nuvora",
+        "oando-soft-seating--nuvora"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "opera",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--opera",
+        "opera"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "orb",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--orb",
+        "orb"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "padora",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--padora",
+        "padora"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "plumb",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--plumb",
+        "plumb"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "rattique",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--rattique",
+        "rattique"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "relax",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--relax",
+        "relax"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "spectrum",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--spectrum",
+        "spectrum"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "tectara",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--tectara",
+        "tectara"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "trion",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--trion",
+        "trion"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "twig",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--twig",
+        "twig"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "velto",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--velto",
+        "velto"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "verka",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--verka",
+        "verka"
+      ]
+    },
+    {
+      "category_id": "oando-soft-seating",
+      "normalized_name_key": "virello",
+      "count": 2,
+      "slugs": [
+        "oando-soft-seating--virello",
+        "virello"
+      ]
+    },
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "compactor",
+      "count": 2,
+      "slugs": [
+        "compactor",
+        "oando-storage--compactor"
+      ]
+    },
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "heavy-dut",
+      "count": 2,
+      "slugs": [
+        "heavy-duty-racks",
+        "oando-storage--heavy-duty-racks"
+      ]
+    },
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "metal",
+      "count": 2,
+      "slugs": [
+        "metal-storages",
+        "oando-storage--metal-storages"
+      ]
+    },
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "metal-locker",
+      "count": 2,
+      "slugs": [
+        "metal-locker",
+        "oando-storage--metal-locker"
+      ]
+    },
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "metal-pedestal",
+      "count": 2,
+      "slugs": [
+        "metal-pedestal",
+        "oando-storage--metal-pedestal"
+      ]
+    },
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "wooden",
+      "count": 2,
+      "slugs": [
+        "oando-storage--prelam-locker",
+        "prelam-locker"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "apex",
+      "count": 2,
+      "slugs": [
+        "apex",
+        "oando-tables--apex"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "consulate",
+      "count": 2,
+      "slugs": [
+        "consulate",
+        "oando-tables--consulate"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "convene",
+      "count": 2,
+      "slugs": [
+        "convene",
+        "oando-tables--convene"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "convesso",
+      "count": 2,
+      "slugs": [
+        "convesso",
+        "oando-tables--convesso"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "crest",
+      "count": 2,
+      "slugs": [
+        "crest",
+        "oando-tables--crest"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "curvivo",
+      "count": 2,
+      "slugs": [
+        "curvivo-meet",
+        "oando-tables--curvivo-meet"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "desk-meet",
+      "count": 2,
+      "slugs": [
+        "desk-meet",
+        "oando-tables--desk-meet"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "exquisite",
+      "count": 2,
+      "slugs": [
+        "exquisite",
+        "oando-tables--exquisite"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "impulse",
+      "count": 2,
+      "slugs": [
+        "impulse",
+        "oando-tables--impulse"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "inox",
+      "count": 2,
+      "slugs": [
+        "inox",
+        "oando-tables--inox"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "letz",
+      "count": 2,
+      "slugs": [
+        "letz-think",
+        "oando-tables--letz-think"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "modulus",
+      "count": 2,
+      "slugs": [
+        "modulus",
+        "oando-tables--modulus"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "nextable",
+      "count": 2,
+      "slugs": [
+        "nextable",
+        "oando-tables--nextable"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "opus",
+      "count": 2,
+      "slugs": [
+        "oando-tables--opus-2",
+        "opus-2"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "presidency",
+      "count": 2,
+      "slugs": [
+        "oando-tables--presidency",
+        "presidency"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "sleek",
+      "count": 2,
+      "slugs": [
+        "oando-tables--sleek-tab",
+        "sleek-tab"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "sleek-meet",
+      "count": 2,
+      "slugs": [
+        "oando-tables--sleek-meet",
+        "sleek-meet"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "stake",
+      "count": 2,
+      "slugs": [
+        "oando-tables--stake",
+        "stake"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "uniflip",
+      "count": 2,
+      "slugs": [
+        "oando-tables--uniflip",
+        "uniflip"
+      ]
+    },
+    {
+      "category_id": "oando-tables",
+      "normalized_name_key": "x-meet",
+      "count": 2,
+      "slugs": [
+        "oando-tables--x-meet",
+        "x-meet"
+      ]
+    },
+    {
+      "category_id": "oando-workstations",
+      "normalized_name_key": "adaptable",
+      "count": 2,
+      "slugs": [
+        "adaptable",
+        "oando-workstations--adaptable"
+      ]
+    },
+    {
+      "category_id": "oando-workstations",
+      "normalized_name_key": "deskpro",
+      "count": 2,
+      "slugs": [
+        "deskpro",
+        "oando-workstations--deskpro"
+      ]
+    },
+    {
+      "category_id": "oando-workstations",
+      "normalized_name_key": "fenix",
+      "count": 2,
+      "slugs": [
+        "fenix",
+        "oando-workstations--fenix"
+      ]
+    },
+    {
+      "category_id": "oando-workstations",
+      "normalized_name_key": "panel-pro",
+      "count": 2,
+      "slugs": [
+        "oando-workstations--panel-pro",
+        "panel-pro"
+      ]
+    },
+    {
+      "category_id": "oando-workstations",
+      "normalized_name_key": "sleek",
+      "count": 2,
+      "slugs": [
+        "oando-workstations--sleek",
+        "sleek"
+      ]
+    },
+    {
+      "category_id": "oando-workstations",
+      "normalized_name_key": "trio",
+      "count": 2,
+      "slugs": [
+        "oando-workstations--trio-2",
+        "trio-2"
+      ]
+    },
+    {
+      "category_id": "oando-workstations",
+      "normalized_name_key": "x-bench",
+      "count": 2,
+      "slugs": [
+        "oando-workstations--x-bench",
+        "x-bench"
+      ]
+    }
+  ],
+  "aliasCount": 93,
+  "blankAliasRows": 0,
+  "selfAliasRows": 0,
+  "missingBusinessStatsRows": 0,
+  "activeBusinessStatsRows": 1
+}

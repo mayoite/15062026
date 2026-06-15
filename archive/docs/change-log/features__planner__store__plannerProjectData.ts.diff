@@ -1,0 +1,91 @@
+diff --git a/features/planner/store/plannerProjectData.ts b/features/planner/store/plannerProjectData.ts
+index 031382a..34d5834 100644
+--- a/features/planner/store/plannerProjectData.ts
++++ b/features/planner/store/plannerProjectData.ts
+@@ -43,7 +43,13 @@ export interface LoadedProjectData {
+   structuralElements: StructuralElement[];
+   tags: string[];
+   lightingPreset: PlannerState["lightingPreset"];
+-  selectedId: null;
++  selectedId: string | null;
++  selectedIds: string[];
++  zoom: number;
++  panOffset: { x: number; y: number };
++  gridSize: number;
++  showGrid: boolean;
++  viewMode: "2d" | "3d" | "split";
+   isDirty: false;
+   lastSavedAt: string | null;
+   backgroundImage: BackgroundImage | null;
+@@ -52,9 +58,17 @@ export interface LoadedProjectData {
+ }
+ 
+ export function buildProjectSaveData(
+-  state: ProjectSnapshotFields & { projectName: string },
+-  existing: { thumbnail?: string | null; clientName?: string; description?: string },
+-  thumbnail?: string
++  state: ProjectSnapshotFields & {
++    projectName: string;
++    selectedId?: string | null;
++    selectedIds?: string[];
++    zoom?: number;
++    panOffset?: { x: number; y: number };
++    gridSize?: number;
++    showGrid?: boolean;
++    viewMode?: "2d" | "3d" | "split";
++    thumbnail?: string;
++  }
+ ) {
+   return {
+     projectName: state.projectName,
+@@ -67,13 +81,18 @@ export function buildProjectSaveData(
+     zones: state.zones,
+     textLabels: state.textLabels,
+     structuralElements: state.structuralElements,
+-    tags: state.tags,
++    tags: state.tags ?? [],
+     lightingPreset: state.lightingPreset,
+     savedAt: new Date().toISOString(),
+-    thumbnail: thumbnail || existing.thumbnail || null,
+-    clientName: existing.clientName || "",
+-    description: existing.description || "",
++    thumbnail: state.thumbnail ?? null,
+     backgroundImage: state.backgroundImage,
++    selectedId: state.selectedId ?? null,
++    selectedIds: state.selectedIds ?? [],
++    zoom: state.zoom ?? 1,
++    panOffset: state.panOffset ?? { x: 0, y: 0 },
++    gridSize: state.gridSize ?? 20,
++    showGrid: state.showGrid ?? true,
++    viewMode: state.viewMode ?? "2d",
+   };
+ }
+ 
+@@ -103,10 +122,10 @@ export function buildProjectCopyData(
+   };
+ }
+ 
+-export function normalizeLoadedProjectData(rawData: Record<string, unknown>, key: string): LoadedProjectData {
++export function normalizeLoadedProjectData(rawData: Record<string, unknown>): LoadedProjectData {
+   return {
+     projectName: (rawData.projectName as string) || "Untitled",
+-    currentProjectKey: key,
++    currentProjectKey: "",
+     tool:
+       rawData.tool === "select" ||
+       rawData.tool === "wall" ||
+@@ -134,7 +153,13 @@ export function normalizeLoadedProjectData(rawData: Record<string, unknown>, key
+     structuralElements: (rawData.structuralElements as StructuralElement[]) || [],
+     tags: Array.isArray(rawData.tags) ? (rawData.tags as string[]) : [],
+     lightingPreset: (rawData.lightingPreset as PlannerState["lightingPreset"]) || "day",
+-    selectedId: null,
++    selectedId: (rawData.selectedId as string | null) ?? null,
++    selectedIds: Array.isArray(rawData.selectedIds) ? (rawData.selectedIds as string[]) : [],
++    zoom: typeof rawData.zoom === "number" ? rawData.zoom : 1,
++    panOffset: rawData.panOffset ? (rawData.panOffset as { x: number; y: number }) : { x: 0, y: 0 },
++    gridSize: typeof rawData.gridSize === "number" ? rawData.gridSize : 20,
++    showGrid: typeof rawData.showGrid === "boolean" ? rawData.showGrid : true,
++    viewMode: rawData.viewMode === "2d" || rawData.viewMode === "3d" || rawData.viewMode === "split" ? rawData.viewMode : "2d",
+     isDirty: false,
+     lastSavedAt: (rawData.savedAt as string) || null,
+     backgroundImage: rawData.backgroundImage

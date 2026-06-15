@@ -1,0 +1,26 @@
+{
+  "productCount": 85,
+  "categoryCount": 11,
+  "blankSlugs": 0,
+  "duplicateSlugs": [],
+  "missingCategoryIds": 0,
+  "missingSubcategorySlug": 85,
+  "missingAltText": 85,
+  "missingPrimaryImage": 43,
+  "duplicateNameKeysByCategory": [
+    {
+      "category_id": "oando-storage",
+      "normalized_name_key": "prelam",
+      "count": 2,
+      "slugs": [
+        "pedestal",
+        "prelam-storage"
+      ]
+    }
+  ],
+  "aliasCount": 0,
+  "blankAliasRows": 0,
+  "selfAliasRows": 0,
+  "missingBusinessStatsRows": 0,
+  "activeBusinessStatsRows": 1
+}

@@ -1,0 +1,104 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+.agent/
+.claude/
+.continue/
+old/
+chat-logs/
+.tmp-nav-report.json
+result.json
+font_summary.json
+font_usage.json
+fonts_extraction.json
+fonts_report.txt
+*.pem
+*.old
+*.bak
+*.orig
+.tmp-start.err
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+*.err
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+local.env
+
+# vercel
+.vercel
+.lh-chrome-manual/
+.lh-profiles/
+.lh-temp/
+.playwright-cli/
+.vscode/
+.swc/
+/0
+playwright-report/
+test-results/
+.netlify/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+lib/backup/
+reports/
+backup/
+/backups/
+/tmp/
+/docs/migrations/backups/
+supabase/.temp/
+.DONOTDELETE/
+archive/tool-state/
+archive/test-artifacts/
+archive/duplicate-assets/
+docs/archive/root-reports/
+docs/ops/artifacts/
+/new-repo-20260306-235837/
+
+.vercel
+.wrangler/
+oando_website/.DONOTDELETE/keys/raw-values-*/
+oando_website/.DONOTDELETE/keys/.env.local
+oando_website/.DONOTDELETE/keys/wrangler-account.json
+oando_website/.DONOTDELETE/keys/github-token.txt
+oando_website/.DONOTDELETE/keys/vercel-user.txt
+oando_website/99_bundles/*.zip
+oando_website/99_bundles/archive/*.zip
+oando_website/99_bundles/_tmp_*
+docs/ops/generated-artifacts-*.zip
+docs/ops/~$*.xlsx
+
+.vercel
+
+# amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*

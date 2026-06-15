@@ -1,0 +1,20 @@
+diff --git a/features/buddy-planner/stores/canvasStore.ts b/features/buddy-planner/stores/canvasStore.ts
+index f1ed762..3e75e88 100644
+--- a/features/buddy-planner/stores/canvasStore.ts
++++ b/features/buddy-planner/stores/canvasStore.ts
+@@ -41,8 +41,15 @@ export type ToolType =
+   // sticky note; click empty canvas → create a floor-position note. The
+   // create-popover is a DOM overlay; see AnnotationPopover.tsx.
+   | 'pin'
++  // Neighborhood zone tool. Drag on empty canvas to paint a labeled zone
++  // that tints a seat region for a team/group. Registered in the engine
++  // capability matrix and surfaced in ToolSelector.
++  | 'neighborhood'
++  // Booking tool. Reserved tool id used by the engine capability matrix.
++  | 'book'
+ 
+ export type WallDrawStyle = 'solid' | 'dashed' | 'dotted'
++
+ /**
+  * Stroke style for newly-drawn lines + arrows. Same three options as
+  * walls; persisted on the canvas store so the choice survives a tool

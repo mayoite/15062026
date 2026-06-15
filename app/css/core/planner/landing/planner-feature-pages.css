@@ -1,0 +1,166 @@
+/* Planner marketing sub-pages: /planner/features, /planner/features/[slug], /planner/help.
+   All values come from FOCSS tokens; hover language mirrors the landing feature cards. */
+
+/* ── Capability / help cards ── */
+.pfp-card {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: 0.85rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-panel-strong);
+  padding: 1.5rem;
+  transition:
+    transform var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard);
+}
+.pfp-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft));
+  box-shadow: var(--shadow-soft);
+}
+.pfp-card:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ── Demo frame: blueprint-grid panel hosting the animated SVG ── */
+.pfp-demo {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-soft);
+  background-color: var(--surface-panel-strong);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--border-soft) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--border-soft) 55%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  box-shadow: var(--shadow-soft);
+}
+.pfp-demo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pfp-demo-label {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 1rem;
+}
+
+/* ── In-help anchor link, revealed on hover/focus ── */
+.pfp-anchor {
+  color: var(--text-muted);
+  opacity: 0.72;
+  transition: opacity var(--motion-base) var(--ease-standard), color var(--motion-base) var(--ease-standard);
+}
+.pfp-anchor:hover { color: var(--color-primary); opacity: 1; }
+.pfp-anchor:focus-visible {
+  opacity: 1;
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm, 0.375rem);
+}
+.pfp-card:hover .pfp-anchor,
+.pfp-card:focus-within .pfp-anchor {
+  opacity: 1;
+}
+
+/* ── Footer link row inside cards ── */
+.pfp-card-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-soft);
+}
+.pfp-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  transition: color var(--motion-base) var(--ease-standard), gap var(--motion-base) var(--ease-standard);
+}
+.pfp-card-link:hover { color: var(--color-primary); gap: 0.6rem; }
+.pfp-card-link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-pill);
+}
+
+/* ── SVG demo animations.
+      Base (un-animated) state is the finished frame, so reduced-motion
+      users and non-supporting browsers see the complete illustration. ── */
+.pfp-anim-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: pfp-draw 1.2s var(--ease-standard) both;
+}
+.pfp-anim-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pfp-pop 0.5s var(--ease-standard) both;
+}
+.pfp-anim-rise {
+  animation: pfp-rise 0.7s var(--ease-standard) both;
+}
+.pfp-anim-slide {
+  animation: pfp-slide 0.6s var(--ease-standard) both;
+}
+.pfp-anim-fade {
+  animation: pfp-fade 0.6s var(--ease-out) both;
+}
+.pfp-anim-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pfp-pulse 2.6s ease-in-out infinite;
+}
+
+.pfp-delay-1 { animation-delay: 0.25s; }
+.pfp-delay-2 { animation-delay: 0.5s; }
+.pfp-delay-3 { animation-delay: 0.75s; }
+.pfp-delay-4 { animation-delay: 1s; }
+.pfp-delay-5 { animation-delay: 1.25s; }
+.pfp-delay-6 { animation-delay: 1.5s; }
+.pfp-delay-7 { animation-delay: 1.75s; }
+.pfp-delay-8 { animation-delay: 2s; }
+
+@keyframes pfp-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes pfp-pop {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes pfp-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pfp-slide {
+  from { opacity: 0; transform: translateX(-18px); }
+  70% { opacity: 1; transform: translateX(2px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pfp-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pfp-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pfp-anim-draw,
+  .pfp-anim-pop,
+  .pfp-anim-rise,
+  .pfp-anim-slide,
+  .pfp-anim-fade,
+  .pfp-anim-pulse {
+    animation: none;
+  }
+}

@@ -1,0 +1,35 @@
+import { PlannerFeaturesHubPage } from "@/features/planner/landing/PlannerFeaturesHubPage";
+import { SITE_URL } from "@/lib/siteUrl";
+import { buildPageJsonLd, buildPageMetadata } from "@/lib/helpers/seo";
+
+export const metadata = buildPageMetadata(SITE_URL, {
+  title: "Planner Features — Blueprint, 3D, AI & Export",
+  description:
+    "Explore workspace planner capabilities: blueprint tracing, measurements, catalog furniture, 3D view, AI assist, and branded PDF export.",
+  path: "/planner/features",
+  keywords: [
+    "planner features",
+    "floor plan blueprint",
+    "office layout 3d",
+    "furniture catalog planner",
+  ],
+});
+
+const PAGE_JSON_LD = buildPageJsonLd(SITE_URL, {
+  path: "/planner/features",
+  title: "Planner Features",
+  description: "Capability overview for the One&Only workspace planner.",
+  pageType: "CollectionPage",
+});
+
+export default function PlannerFeaturesHubRoute() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(PAGE_JSON_LD) }}
+      />
+      <PlannerFeaturesHubPage />
+    </>
+  );
+}

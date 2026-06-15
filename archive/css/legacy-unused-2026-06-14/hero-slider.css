@@ -1,0 +1,327 @@
+/* ==========================================================================
+   SOURCE: focss/css/page-hero-slider.css
+   ========================================================================== */
+
+.hero-slider {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  background: var(--surface-inverse);
+}
+
+.hero-slider__slide {
+  position: absolute;
+  inset: 0;
+  transition: opacity 700ms;
+}
+
+.hero-slider__slide--active {
+  opacity: 1;
+}
+
+.hero-slider__slide--inactive {
+  opacity: 0;
+}
+
+.hero-slider__image {
+  object-fit: cover;
+}
+
+.hero-slider__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--overlay-inverse-35) 0%, var(--overlay-inverse-18) 50%, var(--overlay-inverse-06) 100%);
+}
+
+.hero-slider__content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: opacity var(--motion-slow);
+}
+
+.hero-slider__content--hidden {
+  opacity: 0;
+}
+
+.hero-slider__content--visible {
+  opacity: 1;
+}
+
+.hero-slider__shell {
+  margin-inline: auto;
+  padding: 0 var(--padding-inline) 5rem;
+  max-width: var(--container-max-width);
+}
+
+@media (min-width: 768px) {
+  .hero-slider__shell {
+    padding-bottom: 7rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-slider__shell {
+    padding-inline: 3rem;
+  }
+}
+
+.hero-slider__label {
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  color: var(--text-inverse-muted);
+  letter-spacing: 0.3em;
+}
+
+.hero-slider__title {
+  margin-bottom: 1.5rem;
+  max-width: 48rem;
+  white-space: pre-line;
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  color: var(--text-inverse);
+}
+
+.hero-slider__copy {
+  margin-bottom: 2rem;
+  max-width: 32rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--text-inverse-body);
+}
+
+.hero-slider__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--overlay-panel-72);
+  padding: 0.875rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-inverse);
+  transition: all var(--motion-slow);
+}
+
+.hero-slider__cta:hover {
+  background: var(--surface-panel);
+  color: var(--text-strong);
+}
+
+.hero-slider__indicator-row {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-slider__indicator {
+  display: block;
+  border-radius: 0;
+  transition: all var(--motion-slow);
+}
+
+.hero-slider__indicator--active {
+  height: 0.375rem;
+  width: 2rem;
+  background: var(--text-inverse);
+}
+
+.hero-slider__indicator--idle {
+  height: 0.375rem;
+  width: 0.375rem;
+  background: var(--overlay-panel-24);
+}
+
+.hero-slider__indicator--idle:hover {
+  background: var(--overlay-panel-72);
+}
+
+.hero-slider__scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  transform: translateX(-50%);
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-inverse-subtle);
+}
+
+.hero-slider__scroll-shell {
+  display: flex;
+  height: 2rem;
+  width: 1.25rem;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1px solid var(--overlay-panel-24);
+  padding-top: 0.375rem;
+}
+
+.hero-slider__scroll-dot {
+  height: 0.5rem;
+  width: 0.125rem;
+  background: var(--text-inverse-subtle);
+  animation: hero-slider-bounce 1.4s infinite;
+}
+
+.feature-grid {
+  width: 100%;
+  background: var(--surface-page);
+  padding-block: 6rem;
+}
+
+.feature-grid__shell {
+  margin-inline: auto;
+  padding-inline: var(--padding-inline);
+  max-width: var(--container-max-width);
+}
+
+.feature-grid__header {
+  margin-bottom: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.feature-grid__title {
+  font-size: clamp(1.875rem, 3vw, 2.25rem);
+  letter-spacing: -0.025em;
+  color: var(--text-strong);
+}
+
+.feature-grid__title-accent {
+  color: var(--color-primary);
+}
+
+.feature-grid__rule {
+  height: 0.25rem;
+  width: 5rem;
+  background: var(--color-primary);
+}
+
+.feature-grid__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem 3rem;
+}
+
+@media (min-width: 768px) {
+  .feature-grid__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .feature-grid__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.feature-grid__card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.feature-grid__icon-wrap {
+  display: flex;
+  height: 3.5rem;
+  width: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: var(--surface-soft);
+  color: var(--text-subtle);
+  box-shadow: var(--shadow-soft);
+  transition: all var(--motion-slow);
+}
+
+.group:hover .feature-grid__icon-wrap {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.feature-grid__title-row {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-strong);
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+
+.group:hover .feature-grid__title-row {
+  color: var(--color-primary);
+}
+
+.feature-grid__copy {
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-subtle);
+}
+
+.values-section {
+  width: 100%;
+  background: var(--surface-page);
+  padding-block: 6rem;
+}
+
+@media (min-width: 768px) {
+  .values-section {
+    padding-block: 8rem;
+  }
+}
+
+.values-section__shell {
+  margin-inline: auto;
+  padding-inline: var(--padding-inline);
+  max-width: var(--container-max-width);
+}
+
+.values-section__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+@media (min-width: 768px) {
+  .values-section__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+.values-section__item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.values-section__title {
+  border-left: 2px solid var(--color-primary);
+  padding-left: 1rem;
+  font-size: 1.875rem;
+  font-weight: 300;
+  color: var(--text-strong);
+  transition: padding-left var(--motion-slow);
+}
+
+.group:hover .values-section__title {
+  padding-left: 1.5rem;
+}
+
+.values-section__copy {
+  padding-left: 1rem;
+  font-size: 1.125rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+

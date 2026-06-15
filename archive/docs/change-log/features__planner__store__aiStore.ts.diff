@@ -1,0 +1,12 @@
+diff --git a/features/planner/store/aiStore.ts b/features/planner/store/aiStore.ts
+index 629c377..96b6a1b 100644
+--- a/features/planner/store/aiStore.ts
++++ b/features/planner/store/aiStore.ts
+@@ -35,6 +35,7 @@ interface AIStore {
+ 
+   setOpen: (open: boolean) => void;
+   setStyle: (style: StylePreset) => void;
++
+   addMessage: (msg: Omit<ChatMessage, "id" | "timestamp">) => string;
+   updateMessage: (id: string, updates: Partial<ChatMessage>) => void;
+   clearMessages: () => void;

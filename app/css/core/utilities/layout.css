@@ -1,0 +1,49 @@
+/* ==========================================================================
+   THEME UTILITIES — Tailwind v4 @utility format
+   Semantic text, surface, border, shadow, scheme, and layout helpers.
+   All values via var() from theme-tokens.css
+   ========================================================================== */
+
+/* ── Containers ── */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  @media (min-width: 768px) { padding-inline: 2.5rem; }
+  max-width: 1680px;
+}
+
+/* EXCEPTIONAL USE ONLY — prefer container (1680px) */
+@utility container-wide {
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  @media (min-width: 768px) { padding-inline: 2.5rem; }
+  max-width: 1940px;
+}
+
+@utility shell-section {
+  width: 100%;
+}
+
+@utility shell-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1680px;
+  padding-inline: 1.5rem;
+  @media (min-width: 768px) { padding-inline: 2.75rem; }
+}
+
+@utility shell-container-wide {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1940px;
+  padding-inline: 1.5rem;
+  @media (min-width: 768px) { padding-inline: 2.5rem; }
+}
+
+/* ── Section vertical rhythm ──
+   Canonical top-level <section> padding. Replaces ad-hoc py-* values.
+   See docs/plans/04-DESIGN-SYSTEM-AND-THEME.md for the active section-rhythm contract. */
+@utility section-y    { padding-block: var(--section-space-md); }
+@utility section-y-sm { padding-block: var(--section-space-sm); }
+@utility section-y-lg { padding-block: var(--section-space-lg); }
+

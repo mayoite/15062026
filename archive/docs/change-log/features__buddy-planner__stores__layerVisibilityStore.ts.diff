@@ -1,0 +1,16 @@
+diff --git a/features/buddy-planner/stores/layerVisibilityStore.ts b/features/buddy-planner/stores/layerVisibilityStore.ts
+index 5385cf7..ec486e1 100644
+--- a/features/buddy-planner/stores/layerVisibilityStore.ts
++++ b/features/buddy-planner/stores/layerVisibilityStore.ts
+@@ -68,8 +68,11 @@ const ALL_VISIBLE: Record<LayerCategory, boolean> = {
+   rooms: true,
+   furniture: true,
+   underlay: true,
++  annotations: true,
++  'it-device': true,
+ }
+ 
++
+ export const useLayerVisibilityStore = create<LayerVisibilityState>((set) => ({
+   visible: { ...ALL_VISIBLE },
+   toggle: (cat) =>

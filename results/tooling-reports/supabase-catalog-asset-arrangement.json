@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-05-31T11:26:11.736Z",
+  "expectedCount": 607,
+  "createdCount": 7,
+  "skippedCount": 599,
+  "unresolvedCount": 8,
+  "aliases": {
+    "oando-soft-seating--brim": {
+      "sourceDir": "/images/catalog/oando-seating--brim",
+      "note": "Use existing seating catalog set for soft-seating brim canonical paths."
+    },
+    "oando-soft-seating--fynn": {
+      "sourceDir": "/images/catalog/oando-seating--fynn",
+      "note": "Use existing seating catalog set for soft-seating fynn canonical paths."
+    },
+    "oando-soft-seating--grace": {
+      "sourceDir": "/images/catalog/oando-seating--grace",
+      "note": "Use existing seating catalog set for soft-seating grace canonical paths."
+    },
+    "oando-soft-seating--halo": {
+      "sourceDir": "/images/catalog/oando-seating--halo",
+      "note": "Use existing seating catalog set for soft-seating halo canonical paths."
+    },
+    "oando-seating--casca": {
+      "sourceDir": "/images/catalog/oando-soft-seating--casca",
+      "note": "Use existing soft-seating catalog set for seating casca canonical paths."
+    },
+    "oando-seating--crox": {
+      "sourceDir": "/images/catalog/oando-seating--crotch",
+      "note": "Crox assets currently live under the legacy crotch folder name."
+    },
+    "oando-soft-seating--moon": {
+      "sourceDir": "/images/catalog/oando-seating--moonlight",
+      "note": "Moon assets live under the moonlight source set."
+    },
+    "oando-soft-seating--orb": {
+      "sourceDir": "/images/catalog/oando-seating--orbit",
+      "note": "Orb assets derive from the orbit source set."
+    },
+    "oando-seating--revoq": {
+      "sourceDir": "/images/products/imported/revoq",
+      "note": "Revoq source exists in the legacy imported tree only."
+    }
+  },
+  "created": [
+    "/images/catalog/oando-seating--cafe-sleek/image-1.jpg",
+    "/images/catalog/oando-storage--prelam-locker/image-6.webp",
+    "/images/catalog/oando-seating--solace/image-1.jpg",
+    "/images/catalog/oando-seating--solace/image-2.jpg",
+    "/images/catalog/oando-seating--solace/image-3.jpg",
+    "/images/catalog/oando-collaborative--solace-pod/image-1.webp",
+    "/images/catalog/oando-collaborative--cocoon-pod/image-1.webp"
+  ],
+  "unresolved": [
+    {
+      "slug": "oando-seating--cafe-sleek",
+      "image": "/images/catalog/oando-seating--cafe-sleek/image-2.jpg"
+    },
+    {
+      "slug": "oando-seating--cafe-sleek",
+      "image": "/images/catalog/oando-seating--cafe-sleek/image-3.jpg"
+    },
+    {
+      "slug": "oando-seating--cafe-sleek",
+      "image": "/images/catalog/oando-seating--cafe-sleek/image-4.jpg"
+    },
+    {
+      "slug": "oando-soft-seating--lura",
+      "image": "/images/catalog/oando-soft-seating--lura/image-7.webp"
+    },
+    {
+      "slug": "oando-soft-seating--opera",
+      "image": "/images/catalog/oando-soft-seating--opera/image-5.webp"
+    },
+    {
+      "slug": "oando-seating--solace",
+      "image": "/images/catalog/oando-seating--solace/image-4.jpg"
+    },
+    {
+      "slug": "oando-seating--solace",
+      "image": "/images/catalog/oando-seating--solace/image-5.jpg"
+    },
+    {
+      "slug": "oando-soft-seating--trion",
+      "image": "/images/catalog/oando-soft-seating--trion/image-5.webp"
+    }
+  ]
+}

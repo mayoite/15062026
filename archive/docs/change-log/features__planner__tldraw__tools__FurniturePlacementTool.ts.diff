@@ -1,0 +1,134 @@
+diff --git a/features/planner/tldraw/tools/FurniturePlacementTool.ts b/features/planner/tldraw/tools/FurniturePlacementTool.ts
+index 7101cb8..5a7f9ab 100644
+--- a/features/planner/tldraw/tools/FurniturePlacementTool.ts
++++ b/features/planner/tldraw/tools/FurniturePlacementTool.ts
+@@ -5,8 +5,9 @@
+  * with snapping, rotation, and wall alignment features.
+  */
+ 
+-import type { Editor, TLShape } from "@tldraw/editor";
++import type { Editor, TLShape, TLShapeId } from "@tldraw/editor";
+ import { Vec, createShapeId } from "@tldraw/editor";
++import type { PlannerFurnitureTLShape } from "../shapes/tldrawShapeTypes";
+ import type { CatalogItem} from "@/features/planner/store/catalogData";
+ import { furnitureCatalog } from "@/features/planner/store/catalogData";
+ import { getUnifiedCatalog } from "@/features/planner/store/unifiedCatalog";
+@@ -145,7 +146,8 @@ export class FurniturePlacementUtils {
+     const furnitureShape = this.createFurnitureShape(this.currentPreview);
+ 
+     if (furnitureShape) {
+-      this.editor.createShape(furnitureShape as unknown);
++      // eslint-disable-next-line @typescript-eslint/no-explicit-any
++      this.editor.createShape(furnitureShape as any);
+ 
+       // Hide preview
+       if (this.options.showPreview) {
+@@ -286,7 +288,8 @@ export class FurniturePlacementUtils {
+     if (previewShape) {
+       // Add opacity to indicate preview
+       previewShape.opacity = 0.5;
+-      this.editor.createShape(previewShape as unknown);
++      // eslint-disable-next-line @typescript-eslint/no-explicit-any
++      this.editor.createShape(previewShape as any);
+     }
+   }
+ 
+@@ -300,7 +303,8 @@ export class FurniturePlacementUtils {
+ 
+     if (previewShape) {
+       previewShape.opacity = 0.5;
+-      this.editor.updateShape(previewShape as unknown);
++      // eslint-disable-next-line @typescript-eslint/no-explicit-any
++      this.editor.updateShape(previewShape as any);
+     }
+   }
+ 
+@@ -319,35 +323,36 @@ export class FurniturePlacementUtils {
+ 
+   // Rotate furniture
+   rotateFurniture(furnitureId: string, angle: number) {
+-    const shape = this.editor.getShape(furnitureId as unknown);
++    const shape = this.editor.getShape(furnitureId as TLShapeId);
+     if (shape) {
+       this.editor.updateShape({
+-        id: furnitureId,
++        id: furnitureId as TLShapeId,
++        type: shape.type,
+         rotation: (shape.rotation || 0) + angle,
+-      } as unknown);
++      });
+     }
+   }
+ 
+   // Scale furniture
+   scaleFurniture(furnitureId: string, scaleFactor: number) {
+-    const shape = this.editor.getShape(furnitureId as unknown);
+-    if (shape) {
+-      const furnitureShape = shape as unknown;
++    const shape = this.editor.getShape(furnitureId as TLShapeId);
++    if (shape && shape.type === "planner-furniture") {
++      const furnitureShape = shape as PlannerFurnitureTLShape;
+       this.editor.updateShape({
+-        id: furnitureId,
++        id: furnitureId as TLShapeId,
+         type: "planner-furniture",
+         props: {
+-          widthMm: Math.max(1, (furnitureShape.props?.widthMm ?? 1200) * scaleFactor),
+-          heightMm: Math.max(1, (furnitureShape.props?.heightMm ?? 700) * scaleFactor),
+-          depthMm: Math.max(1, (furnitureShape.props?.depthMm ?? 600) * scaleFactor),
++          widthMm: Math.max(1, (furnitureShape.props.widthMm ?? 1200) * scaleFactor),
++          heightMm: Math.max(1, (furnitureShape.props.heightMm ?? 700) * scaleFactor),
++          depthMm: Math.max(1, (furnitureShape.props.depthMm ?? 600) * scaleFactor),
+         },
+-      } as unknown);
++      });
+     }
+   }
+ 
+   // Duplicate furniture
+   duplicateFurniture(furnitureId: string, offset: Vec = new Vec(20, 20)) {
+-    const shape = this.editor.getShape(furnitureId as unknown);
++    const shape = this.editor.getShape(furnitureId as TLShapeId);
+     if (shape) {
+       const newShape = {
+         ...shape,
+@@ -355,13 +360,13 @@ export class FurniturePlacementUtils {
+         x: shape.x + offset.x,
+         y: shape.y + offset.y,
+       };
+-      this.editor.createShape(newShape as unknown);
++      this.editor.createShape(newShape);
+     }
+   }
+ 
+   // Delete furniture
+   deleteFurniture(furnitureId: string) {
+-    this.editor.deleteShape(furnitureId as unknown);
++    this.editor.deleteShape(furnitureId as TLShapeId);
+   }
+ 
+   // Get all furniture shapes on canvas
+@@ -374,8 +379,9 @@ export class FurniturePlacementUtils {
+   getFurnitureByCatalogId(catalogId: string): TLShape[] {
+     const allFurniture = this.getFurnitureShapes();
+     return allFurniture.filter(shape => {
+-      const furnitureShape = shape as unknown;
+-      return furnitureShape.catalogId === catalogId;
++      if (shape.type !== "planner-furniture") return false;
++      const furnitureShape = shape as PlannerFurnitureTLShape;
++      return furnitureShape.props.catalogId === catalogId;
+     });
+   }
+ 
+@@ -385,8 +391,9 @@ export class FurniturePlacementUtils {
+     const furniture = this.getFurnitureShapes();
+ 
+     for (const item of furniture) {
+-      const furnitureShape = item as unknown;
+-      const type = furnitureShape.furnitureType || "unknown";
++      if (item.type !== "planner-furniture") continue;
++      const furnitureShape = item as PlannerFurnitureTLShape;
++      const type = furnitureShape.props.furnitureType || "unknown";
+       counts.set(type, (counts.get(type) || 0) + 1);
+     }
+ 

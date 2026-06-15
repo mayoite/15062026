@@ -1,0 +1,13 @@
+diff --git a/features/planner/model/plannerIdentity.ts b/features/planner/model/plannerIdentity.ts
+index 05a90b9..5b43798 100644
+--- a/features/planner/model/plannerIdentity.ts
++++ b/features/planner/model/plannerIdentity.ts
+@@ -73,7 +73,7 @@ export function getPlannerIdentityConfig(id: PlannerIdentityId): PlannerIdentity
+ }
+ 
+ export function listPlannerIdentityConfigs(): PlannerIdentityConfig[] {
+-  return ["oando", "buddy", "oofpl"].map((id) => PLANNER_IDENTITY_CONFIGS[id]);
++  return (["oando", "buddy", "oofpl"] as const).map((id) => PLANNER_IDENTITY_CONFIGS[id]);
+ }
+ 
+ export function getPlannerWorkflowStages(id: PlannerIdentityId): readonly PlannerWorkflowStage[] {

@@ -1,0 +1,33 @@
+diff --git a/app/admin/themes/ThemeEditor.tsx b/app/admin/themes/ThemeEditor.tsx
+index 73716be..f9aefc2 100644
+--- a/app/admin/themes/ThemeEditor.tsx
++++ b/app/admin/themes/ThemeEditor.tsx
+@@ -5,9 +5,17 @@ import { createClient } from '@/lib/supabase/client';
+ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+ import { Save, UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
+ 
++interface ThemeRow {
++  id: string;
++  name: string;
++  is_active: boolean;
++}
++
++type TabType = 'woods' | 'metals' | 'fabrics' | 'lighting';
++
+ export function ThemeEditor() {
+-  const [themes, setThemes] = useState<unknown[]>([]);
+-  const [activeTab, setActiveTab] = useState<'woods' | 'metals' | 'fabrics' | 'lighting'>('woods');
++  const [themes, setThemes] = useState<ThemeRow[]>([]);
++  const [activeTab, setActiveTab] = useState<TabType>('woods');
+   const [loading, setLoading] = useState(true);
+   const [isPublishing, setIsPublishing] = useState(false);
+   
+@@ -106,7 +114,7 @@ export function ThemeEditor() {
+                {['woods', 'metals', 'fabrics', 'lighting'].map(tab => (
+                  <button 
+                    key={tab}
+-                   onClick={() => setActiveTab(tab as unknown)}
++                   onClick={() => setActiveTab(tab as TabType)}
+                    className={`px-6 py-4 text-sm font-medium capitalize border-b-2 transition-colors ${activeTab === tab ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                  >
+                    {tab}

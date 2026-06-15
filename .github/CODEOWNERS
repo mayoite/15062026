@@ -1,0 +1,9 @@
+# CODEOWNERS - Minimal starting version
+
+/docs/ @platform-team
+*.md @platform-team
+
+/features/space-planner/ @space-planner-lead
+/features/ @tech-lead
+
+/.github/ @platform-team

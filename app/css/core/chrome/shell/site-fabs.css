@@ -1,0 +1,66 @@
+/* Floating action buttons — explicit viewport anchoring (avoids missing dynamic Tailwind offsets). */
+
+@utility site-fab-anchor {
+  position: fixed;
+  z-index: 40;
+}
+
+@utility site-fab-anchor--left {
+  left: 0.75rem;
+  @media (min-width: 640px) {
+    left: 1rem;
+  }
+}
+
+@utility site-fab-anchor--right {
+  right: 0.75rem;
+  @media (min-width: 640px) {
+    right: 1.25rem;
+  }
+}
+
+@utility site-fab-anchor--inset-x {
+  left: 0.75rem;
+  right: 0.75rem;
+}
+
+@utility site-fab-anchor--bottom {
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+@utility site-fab-anchor--bottom-raised {
+  bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+@utility site-fab-anchor--panel {
+  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@utility site-fab-anchor--panel-raised {
+  bottom: calc(10.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@utility site-fab-launcher {
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 24px 48px -28px var(--overlay-inverse-35);
+  transition-property: transform, background-color, box-shadow;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--ease-standard);
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@utility site-fab-launcher--assistant {
+  border: 1px solid var(--overlay-inverse-12);
+  background-color: var(--overlay-inverse-88, #171717);
+  color: var(--text-inverse);
+  &:hover {
+    background-color: var(--color-primary);
+  }
+}

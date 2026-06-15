@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>One and Only Furniture | Products Fallback</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #ffffff;
+        color: #1a1f71;
+      }
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .card {
+        max-width: 760px;
+        border: 1px solid #e6e8f3;
+        border-radius: 18px;
+        padding: 28px;
+      }
+      h1 {
+        margin: 0 0 10px;
+      }
+      p {
+        color: #75787b;
+        line-height: 1.6;
+      }
+      ul {
+        color: #75787b;
+      }
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+      }
+      a {
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .primary {
+        background: #fdbb0a;
+        color: #1a1f71;
+      }
+      .secondary {
+        border: 1px solid #d8dbe7;
+        color: #1a1f71;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>Product Fallback Loaded</h1>
+        <p>
+          Product APIs are temporarily unavailable. Use these quick links while the
+          live catalog reconnects:
+        </p>
+        <ul>
+          <li><a href="/products/seating">Seating</a></li>
+          <li><a href="/products/workstations">Workstations</a></li>
+          <li><a href="/products/tables">Tables</a></li>
+          <li><a href="/products/storages">Storages</a></li>
+        </ul>
+        <div class="actions">
+          <a class="primary" href="/products">Try Live Products</a>
+          <a class="secondary" href="/">Back to Home</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+

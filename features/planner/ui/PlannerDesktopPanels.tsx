@@ -1,0 +1,198 @@
+"use client";
+
+import type { Editor } from "tldraw";
+
+import type { PlannerSelectionDimensions } from "../lib/editorTools";
+import type { BoqItem, CatalogProduct, PlannerStep, RoomPreset } from "@/features/planner/shared/types/planner";
+
+import { CatalogPanel } from "./CatalogPanel";
+import { InspectorPanel } from "./InspectorPanel";
+import { LayersPanel } from "./LayersPanel";
+import {
+  DEFAULT_PLANNER_PANEL_DOCK_GAP_PX,
+  DEFAULT_PLANNER_PANEL_WIDTH_PX,
+  WorkspacePanel,
+} from "./WorkspacePanel";
+
+interface PlannerDesktopPanelsProps {
+  editor: Editor | null;
+  catalogProducts: CatalogProduct[];
+  roomPresets: RoomPreset[];
+  boqItems: BoqItem[];
+  totalBoq: number;
+  currentStep: PlannerStep;
+  canContinueFromRoom: boolean;
+  roomMetrics: string;
+  selectedMetrics: string | null;
+  selectionDimensions: PlannerSelectionDimensions | null;
+  unitSystem: "mm" | "ft-in";
+  showCatalog: boolean;
+  showLayers: boolean;
+  showInspector: boolean;
+  catalogPinned: boolean;
+  layersPinned: boolean;
+  inspectorPinned: boolean;
+  activePanel: "catalog" | "layers" | "inspector" | null;
+  isSnapMode: boolean;
+  onDropFurniture: (product: CatalogProduct | { name: string; category: string }) => void;
+  onApplyRoomPreset: (preset: RoomPreset) => void;
+  onActivateWallTool: () => void;
+  onActivateBasicShapeTool: () => void;
+  onAddWallSegment: () => void;
+  onAddDoorOpening: () => void;
+  onResolveWallJoins: () => void;
+  onFitSelection: () => void;
+  onAlignSelection: (operation: "left" | "center-horizontal" | "right" | "top" | "center-vertical" | "bottom") => void;
+  onDistributeSelection: (operation: "horizontal" | "vertical") => void;
+  onCloseCatalog: () => void;
+  onCloseLayers: () => void;
+  onCloseInspector: () => void;
+  onToggleCatalogPin: () => void;
+  onToggleLayersPin: () => void;
+  onToggleInspectorPin: () => void;
+  onFocusCatalog: () => void;
+  onFocusLayers: () => void;
+  onFocusInspector: () => void;
+  onToggleSnap: () => void;
+  onUpdateSelectionDimensions: (next: { widthMm?: number; heightMm?: number | null }) => void;
+  onUnitSystemChange: (unit: "mm" | "ft-in") => void;
+  onAdvanceBoqFlow: () => void;
+  topInsetPx?: number;
+  panelDockedSpanPx?: number;
+}
+
+export function PlannerDesktopPanels({
+  editor,
+  catalogProducts,
+  roomPresets,
+  boqItems,
+  totalBoq,
+  currentStep,
+  canContinueFromRoom,
+  roomMetrics,
+  selectedMetrics,
+  selectionDimensions,
+  unitSystem,
+  showCatalog,
+  showLayers,
+  showInspector,
+  catalogPinned,
+  layersPinned,
+  inspectorPinned,
+  activePanel,
+  isSnapMode,
+  onDropFurniture,
+  onApplyRoomPreset,
+  onActivateWallTool,
+  onActivateBasicShapeTool,
+  onAddWallSegment,
+  onAddDoorOpening,
+  onResolveWallJoins,
+  onFitSelection,
+  onAlignSelection,
+  onDistributeSelection,
+  onCloseCatalog,
+  onCloseLayers,
+  onCloseInspector,
+  onToggleCatalogPin,
+  onToggleLayersPin,
+  onToggleInspectorPin,
+  onFocusCatalog,
+  onFocusLayers,
+  onFocusInspector,
+  onToggleSnap,
+  onUpdateSelectionDimensions,
+  onUnitSystemChange,
+  onAdvanceBoqFlow,
+  topInsetPx = 188,
+  panelDockedSpanPx = DEFAULT_PLANNER_PANEL_WIDTH_PX + DEFAULT_PLANNER_PANEL_DOCK_GAP_PX,
+}: PlannerDesktopPanelsProps) {
+  const rightPanelOffset = showInspector && inspectorPinned ? panelDockedSpanPx : 0;
+
+  return (
+    <>
+      {showCatalog ? (
+        <WorkspacePanel
+          id="catalog-panel"
+          side="left"
+          docked={catalogPinned}
+          isActive={activePanel === "catalog"}
+          onFocus={onFocusCatalog}
+          topPx={topInsetPx}
+        >
+          <CatalogPanel
+            products={catalogProducts}
+            editor={editor}
+            currentStep={currentStep}
+            canPlaceFurniture={currentStep === "catalog"}
+            roomPresets={roomPresets}
+            unitSystem={unitSystem}
+            onApplyRoomPreset={onApplyRoomPreset}
+            onActivateWallTool={onActivateWallTool}
+            onActivateBasicShapeTool={onActivateBasicShapeTool}
+            onAddWallSegment={onAddWallSegment}
+            onAddDoorOpening={onAddDoorOpening}
+            onResolveWallJoins={onResolveWallJoins}
+            onDropFurniture={onDropFurniture}
+            onClose={onCloseCatalog}
+            pinned={catalogPinned}
+            onTogglePin={onToggleCatalogPin}
+          />
+        </WorkspacePanel>
+      ) : null}
+
+      {showInspector ? (
+        <WorkspacePanel
+          id="inspector-panel"
+          side="right"
+          docked={inspectorPinned}
+          isActive={activePanel === "inspector"}
+          onFocus={onFocusInspector}
+          topPx={topInsetPx}
+        >
+          <InspectorPanel
+            boqItems={boqItems}
+            totalBoq={totalBoq}
+            currentStep={currentStep}
+            canContinueFromRoom={canContinueFromRoom}
+            roomMetrics={roomMetrics}
+            selectedMetrics={selectedMetrics}
+            selectionDimensions={selectionDimensions}
+            unitSystem={unitSystem}
+            onUnitSystemChange={onUnitSystemChange}
+            isSnapMode={isSnapMode}
+            onToggleSnap={onToggleSnap}
+            onUpdateSelectionDimensions={onUpdateSelectionDimensions}
+            onAdvanceBoqFlow={onAdvanceBoqFlow}
+            onClose={onCloseInspector}
+            pinned={inspectorPinned}
+            onTogglePin={onToggleInspectorPin}
+          />
+        </WorkspacePanel>
+      ) : null}
+
+      {showLayers ? (
+        <WorkspacePanel
+          id="layers-panel"
+          side="right"
+          docked={layersPinned}
+          isActive={activePanel === "layers"}
+          onFocus={onFocusLayers}
+          offsetPx={rightPanelOffset}
+          topPx={topInsetPx}
+        >
+          <LayersPanel
+            editor={editor}
+            unitSystem={unitSystem}
+            onFitSelection={onFitSelection}
+            onAlignSelection={onAlignSelection}
+            onDistributeSelection={onDistributeSelection}
+            onClose={onCloseLayers}
+            pinned={layersPinned}
+            onTogglePin={onToggleLayersPin}
+          />
+        </WorkspacePanel>
+      ) : null}
+    </>
+  );
+}

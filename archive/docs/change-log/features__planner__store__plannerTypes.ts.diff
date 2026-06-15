@@ -1,0 +1,93 @@
+diff --git a/features/planner/store/plannerTypes.ts b/features/planner/store/plannerTypes.ts
+index 6d4c99d..ea6d4fe 100644
+--- a/features/planner/store/plannerTypes.ts
++++ b/features/planner/store/plannerTypes.ts
+@@ -1,4 +1,5 @@
+ import type { MaterialPreset, LightingPreset } from "@/features/planner/lib/lightingPresets";
++export type { LightingPreset };
+ import type { FloorTemplate } from "./floorTemplates";
+ import type { HistorySnapshot } from "./plannerStoreSupport";
+ 
+@@ -85,6 +86,8 @@ export interface Room {
+   color: string;
+   floorMaterial?: FloorMaterial;
+   wallColor?: string;
++  /** Computed area in square units */
++  area?: number;
+ }
+ 
+ export interface FurnitureItem {
+@@ -109,8 +112,13 @@ export interface DoorItem {
+   y: number;
+   width: number;
+   rotation: number;
+-  swing: "left" | "right" | "double";
+-  openAngle: number;
++  swing: "left" | "right" | "double" | number;
++  openAngle?: number;
++  /** Wall ID this door is attached to (geometry store model) */
++  wallId?: string;
++  /** Position along wall (0-1 normalized or absolute px) */
++  position?: number;
++  style?: "single" | "double" | "french";
+ }
+ 
+ export interface WindowItem {
+@@ -119,15 +127,56 @@ export interface WindowItem {
+   y: number;
+   width: number;
+   rotation: number;
+-  style: "single" | "double" | "sliding";
++  style: "single" | "double" | "sliding" | "casement";
++  /** Wall ID this window is attached to (geometry store model) */
++  wallId?: string;
++  /** Position along wall (0-1 normalized or absolute px) */
++  position?: number;
+ }
+ 
+ export interface MeasurementItem {
+   id: string;
+   start: Point;
+   end: Point;
++  label?: string;
+ }
+ 
++/** Alias for backwards compatibility */
++export type MeasurementDraft = MeasurementItem;
++
++/** Project index entry for saved projects list */
++export interface ProjectIndexEntry {
++  id: string;
++  name: string;
++  updatedAt?: string;
++  thumbnail?: string;
++}
++
++/** Loaded project data from storage */
++export interface LoadedProjectData {
++  walls: Wall[];
++  rooms: Room[];
++  furniture: FurnitureItem[];
++  doors: DoorItem[];
++  windows: WindowItem[];
++  measurements: MeasurementItem[];
++  zones: Zone[];
++  textLabels: TextLabel[];
++  structuralElements: StructuralElement[];
++  selectedId: string | null;
++  selectedIds: string[];
++  zoom: number;
++  panOffset: Point;
++  gridSize: number;
++  showGrid: boolean;
++  viewMode: ViewMode;
++  projectName: string;
++  tags?: string[];
++}
++
++/** Alias for document stored in storage */
++export type PlannerDocument = LoadedProjectData;
++
+ export interface TextLabel {
+   id: string;
+   x: number;

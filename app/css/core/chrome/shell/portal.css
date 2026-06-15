@@ -1,0 +1,190 @@
+.shell-portal-page {
+  min-height: 100vh;
+  background: var(--surface-page);
+  color: var(--text-body);
+}
+
+.shell-portal-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-page);
+}
+
+.shell-portal-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  border: 3px solid var(--color-primary);
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.shell-portal-subheader {
+  position: sticky;
+  top: 4rem;
+  z-index: 10;
+  border-bottom: 1px solid var(--border-soft);
+  background: color-mix(in srgb, white 95%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.shell-portal-search,
+.shell-portal-select,
+.shell-portal-input {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: white;
+  color: var(--text-body);
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.shell-portal-search::placeholder,
+.shell-portal-input::placeholder {
+  color: var(--text-muted);
+}
+
+.shell-portal-search:focus,
+.shell-portal-select:focus,
+.shell-portal-input:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-color: transparent;
+}
+
+.shell-portal-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius-pill);
+  margin-bottom: 1rem;
+}
+
+.shell-portal-empty-icon--brand {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.shell-portal-empty-icon--soft {
+  background: var(--surface-soft);
+}
+
+.shell-portal-empty-icon svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.shell-portal-grid-card {
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: white;
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.shell-portal-grid-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-soft);
+}
+
+.shell-portal-thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--surface-soft);
+}
+
+.shell-portal-panel {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  background: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.shell-portal-panel-soft {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface-soft);
+}
+
+.shell-portal-table {
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  background: white;
+  box-shadow: var(--shadow-soft);
+}
+
+.shell-portal-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+}
+
+.shell-portal-table-label {
+  color: var(--text-heading);
+}
+
+.shell-portal-table-meta {
+  color: var(--text-muted);
+}
+
+.shell-portal-table-row {
+  border-top: 1px solid var(--border-soft);
+}
+
+.shell-portal-table-total {
+  border-top: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+  color: var(--text-heading);
+}
+
+.shell-portal-button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--text-inverse);
+  font-weight: var(--font-weight-copy-semibold);
+  transition: background-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.shell-portal-button-primary:hover {
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-soft);
+}
+
+.shell-portal-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface-soft);
+  color: var(--text-body);
+  font-weight: var(--font-weight-copy-semibold);
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard);
+}
+
+.shell-portal-button-secondary:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-page);
+}
+

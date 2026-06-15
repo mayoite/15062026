@@ -1,0 +1,473 @@
+/* ==========================================================================
+   FOCSS — Design Tokens
+   Single source of truth for all custom values.
+   Components reference var() from here only.
+   Reference: e:\Final0704\Final0704\src\app\theme-tokens.css (canonical)
+   ========================================================================== */
+
+@theme {
+  /* ── Font families ── */
+  --font-display:
+    var(--font-cisco-sans), "Cisco Sans", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --font-sans:
+    var(--font-helvetica-neue), "Helvetica Neue", var(--font-cisco-sans),
+    "Cisco Sans", Helvetica, Arial, sans-serif;
+
+  /* ── Font weights ── */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  /* Semibold maps to medium (500) — only 300/400/500/700 faces are loaded. */
+  --font-weight-semibold: 500;
+  --font-weight-bold: 700;
+  --font-weight-display-light: 300;
+  --font-weight-display-regular: 400;
+  --font-weight-copy-regular: 400;
+  --font-weight-copy-medium: 500;
+  --font-weight-copy-semibold: 500;
+
+  /* ── Type scale ── */
+  --type-display-size: clamp(64px, 6.2vw, 90px);
+  --type-title-lg-size: clamp(32px, 2.3vw, 45px);
+  --type-title-sm-size: clamp(18px, 1.04rem + 0.24vw, 20px);
+  --type-card-title-size: clamp(1rem, 0.98rem + 0.18vw, 1.15rem);
+  --type-project-title-size: clamp(1.1rem, 1rem + 0.35vw, 1.4rem);
+  --type-project-display-size: clamp(1.75rem, 2.4vw, 2.75rem);
+  --type-partner-title-size: clamp(1.5rem, 1.8vw, 2.1rem);
+  --type-stat-size: clamp(2rem, 3.5vw, 3.25rem);
+  --type-body-lg-size: clamp(16px, 0.99rem + 0.14vw, 17px);
+  --type-body-size: 16px;
+  --type-small-size: 13px;
+  --type-tiny-size: 11px;
+  --type-label-size: 12px;
+
+  /* ── Letter spacing ── */
+  --type-letter-tight: -0.05em;
+  --type-letter-title: -0.04em;
+  --type-letter-h3: -0.038em;
+  --type-letter-copy: -0.008em;
+  --type-letter-card: -0.035em;
+  --type-letter-stat: -0.06em;
+  --type-letter-label: 0.05em;
+  --type-letter-label-wide: 0.11em;
+  --type-letter-nav: 0.01em;
+  --type-letter-nav-sm: 0.02em;
+  --type-letter-cta: 0.04em;
+  --type-letter-micro: 0.08em;
+
+  /* ── Line heights ── */
+  --type-leading-display: 0.94;
+  --type-leading-title: 1.08;
+  --type-leading-h3: 1.14;
+  --type-leading-copy: 1.52;
+  --type-leading-copy-sm: 1.6;
+  --type-leading-nav: 1.4;
+  --type-leading-label: 1.3;
+  --type-leading-cta: 1.3;
+  --type-leading-stat: 1;
+  --type-leading-body: 1.7;
+
+  /* ── Color palettes ── */
+
+  /* Ocean Boat Blue */
+  --color-ocean-boat-blue-50: #EDF4FA;
+  --color-ocean-boat-blue-100: #DDEAF6;
+  --color-ocean-boat-blue-150: #CDDFEF;
+  --color-ocean-boat-blue-200: #BCD3E8;
+  --color-ocean-boat-blue-250: #ACC7E1;
+  --color-ocean-boat-blue-300: #9BBBDA;
+  --color-ocean-boat-blue-350: #89AFD2;
+  --color-ocean-boat-blue-400: #77A2C9;
+  --color-ocean-boat-blue-450: #6595C0;
+  --color-ocean-boat-blue-500: #5488B6;
+  --color-ocean-boat-blue-550: #4A7CA8;
+  --color-ocean-boat-blue-600: #406F99;
+  --color-ocean-boat-blue-650: #36638A;
+  --color-ocean-boat-blue-700: #2D577B;
+  --color-ocean-boat-blue-750: #244A6A;
+  --color-ocean-boat-blue-800: #1C3D59;
+  --color-ocean-boat-blue-850: #153148;
+  --color-ocean-boat-blue-900: #0F2538;
+  --color-ocean-boat-blue-950: #0A1A29;
+
+  /* Dark Midnight Blue */
+  --color-dark-midnight-blue-50: #CCD6E3;
+  --color-dark-midnight-blue-100: #B2C2D6;
+  --color-dark-midnight-blue-150: #98AEC8;
+  --color-dark-midnight-blue-200: #7E9ABB;
+  --color-dark-midnight-blue-250: #6485AD;
+  --color-dark-midnight-blue-300: #4B719F;
+  --color-dark-midnight-blue-350: #3F628C;
+  --color-dark-midnight-blue-400: #335479;
+  --color-dark-midnight-blue-450: #294566;
+  --color-dark-midnight-blue-500: #1F3653;
+  --color-dark-midnight-blue-550: #1B3049;
+  --color-dark-midnight-blue-600: #182A40;
+  --color-dark-midnight-blue-650: #142436;
+  --color-dark-midnight-blue-700: #111E2D;
+  --color-dark-midnight-blue-750: #0E1925;
+  --color-dark-midnight-blue-800: #0B141D;
+  --color-dark-midnight-blue-850: #091117;
+  --color-dark-midnight-blue-900: #070D12;
+  --color-dark-midnight-blue-950: #05080C;
+
+  /* White scale */
+  --color-white-50: #FFFFFF;
+  --color-white-100: #FAFBFC;
+  --color-white-150: #F5F7FA;
+  --color-white-200: #EEF2F6;
+  --color-white-250: #E6ECF3;
+  --color-white-300: #DDE5ED;
+  --color-white-350: #D2DCE7;
+  --color-white-400: #C6D3E0;
+  --color-white-450: #B9C8D8;
+  --color-white-500: #ACBDD1;
+  --color-white: var(--color-white-50);
+
+  /* Ecru — warm paper-neutral scale (50–950) */
+  --color-ecru-50: #FBF9F4;
+  --color-ecru-100: #F5F1E7;
+  --color-ecru-200: #ECE5D3;
+  --color-ecru-300: #DED2B6;
+  --color-ecru-400: #CBB78F;
+  --color-ecru-500: #B7A079;
+  --color-ecru-600: #9C8560;
+  --color-ecru-700: #7E6B4E;
+  --color-ecru-800: #5C4F3B;
+  --color-ecru-900: #3D3528;
+  --color-ecru-950: #221E16;
+
+  /* Bronze */
+  --color-bronze-50: #f5f6f7;
+  --color-bronze-100: #e8ebed;
+  --color-bronze-200: #d1d6da;
+  --color-bronze-300: #BEAF9A;
+  --color-bronze-400: #9D876C;
+  --color-bronze-500: #7F6A52;
+  --color-bronze-600: #66533F;
+  --color-bronze-700: #586167;
+  --color-bronze-800: #42494e;
+  --color-bronze-900: #2c3134;
+
+  /* Sustain */
+  --color-sustain-300: #7FAF96;
+  --color-sustain-400: #5E8E74;
+  --color-sustain-500: #476D58;
+
+  /* Support */
+  --color-support-mist: #EEF2F7;
+  --color-support-fog: #E2E8F0;
+
+  /* ── Semantic color aliases ── */
+  --color-primary: var(--color-dark-midnight-blue-500);
+  --color-primary-hover: var(--color-dark-midnight-blue-550);
+  --color-primary-active: var(--color-dark-midnight-blue-600);
+
+  --color-accent: var(--color-bronze-400);
+  --color-accent-hover: var(--color-bronze-500);
+  --color-accent-soft: var(--color-bronze-300);
+  --color-accent-strong: var(--color-bronze-500);
+  --color-accent1: var(--color-bronze-400);
+  --color-accent2: var(--color-ocean-boat-blue-600);
+
+  --color-contrast-accent: var(--color-bronze-500);
+  --color-contrast-accent-soft: var(--color-bronze-300);
+  --color-contrast-accent-strong: var(--color-bronze-600);
+
+  --color-success: var(--color-ocean-boat-blue-550);
+  --color-warning: var(--color-bronze-400);
+  --color-danger: var(--color-dark-midnight-blue-450);
+
+  --color-whatsapp: var(--color-ocean-boat-blue-500);
+  --color-whatsapp-hover: var(--color-ocean-boat-blue-600);
+  --color-whatsapp-footer-hover: var(--color-ocean-boat-blue-700);
+
+  /* ── Surfaces (Light theme) ── */
+  --surface-page: var(--color-white-50);
+  --surface-soft: var(--color-white-100);
+  --surface-muted: var(--color-white-150);
+  --surface-card: var(--color-white-50);
+  --surface-panel: var(--color-white-50);
+  --surface-panel-strong: var(--color-white-50);
+  --surface-panel-soft: var(--color-white-100);
+  --surface-hover: var(--color-white-100);
+  --surface-hover-soft: var(--color-white-150);
+  --surface-focus: var(--color-white-200);
+  --surface-inverse: var(--color-dark-midnight-blue-900);
+  --surface-inverse-soft: var(--color-dark-midnight-blue-800);
+  --surface-canvas: var(--color-dark-midnight-blue-950);
+  --surface-canvas-soft: var(--color-dark-midnight-blue-900);
+  --surface-canvas-panel: var(--color-dark-midnight-blue-800);
+  --surface-accent-wash: var(--color-support-mist);
+  --surface-glass: #FFFFFFD1;
+  --surface-glass-strong: #FFFFFFEB;
+  --surface-tint-soft: #FFFFFFEB;
+  --surface-tint-muted: #FFFFFFC7;
+  --surface-status-ok: #E8EFF6;
+  --surface-status-bad: #EEF1F5;
+  --surface-sustain-soft: #7FAF9614;
+  --surface-sustain-soft-strong: #7FAF9624;
+  --surface-sustain-glow: #7FAF9633;
+  --surface-sustain-glow-strong: #7FAF9647;
+
+  /* ── Text ── */
+  --text-strong: #0B1324;
+  --text-heading: #050B17;
+  --text-heading-soft: #3B4756;
+  --text-body: #1B2940;
+  --text-muted: #3F5168;
+  --text-subtle: #56697E;
+  --text-brand: var(--color-primary);
+  --text-link: var(--color-primary);
+  --text-link-hover: var(--color-primary-hover);
+  --text-inverse: #F8FAFC;
+  --text-inverse-body: #E2E8F0;
+  --text-inverse-muted: #CBD5E1;
+  --text-inverse-subtle: #94A3B8;
+  --text-sustain: var(--color-sustain-300);
+
+  /* ── Borders ── */
+  --border-soft: var(--color-white-350);
+  --border-muted: var(--color-white-450);
+  --border-strong: var(--color-dark-midnight-blue-300);
+  --border-accent: #1F36532E;
+  --border-hover: #1F365347;
+  --border-inverse: #FFFFFF47;
+  --border-sustain-soft: #7FAF9652;
+  --border-contrast-accent: #7F6A522E;
+
+  /* ── Overlays ── */
+  --overlay-inverse-06: #070D120F;
+  --overlay-inverse-12: #070D121F;
+  --overlay-inverse-18: #070D122E;
+  --overlay-inverse-24: #070D123D;
+  --overlay-inverse-35: #070D1259;
+  --overlay-panel-08: #FFFFFF14;
+  --overlay-panel-10: #FFFFFF1A;
+  --overlay-panel-12: #FFFFFF1F;
+  --overlay-panel-14: #FFFFFF24;
+  --overlay-panel-72: #FFFFFFB8;
+  --overlay-panel-88: #FFFFFFE0;
+  --overlay-panel-92: #FFFFFFEB;
+  --overlay-panel-95: #FFFFFFF2;
+  --overlay-panel-98: #FFFFFFFA;
+
+  /* ── Scrim & glass tints (image overlays, hero buttons, frosted panels) ── */
+  --scrim-black-20: #00000033;
+  --scrim-black-40: #00000066;
+  --scrim-black-80: #000000CC;
+  --glass-white-18: #FFFFFF2E;
+  --glass-white-20: #FFFFFF33;
+  --glass-white-28: #FFFFFF47;
+  --glass-white-40: #FFFFFF66;
+  --glass-white-90: #FFFFFFE6;
+  --hero-btn-bg: #080C12E6;
+  --hero-btn-bg-hover: #060A10FA;
+  --hero-btn-shadow: #000000F2;
+  --hero-btn-secondary-shadow: #0408108C;
+  --panel-frost-96: #F8FAFDF5;
+  --shadow-tint-pdp-22: #111E2D38;
+  --shadow-tint-pdp-28: #111E2D47;
+  --shadow-tint-pdp-30: #111E2D4D;
+
+  /* ── Shadows ── */
+  --shadow-soft: 0 16px 48px -30px #111E2D29;
+  --shadow-panel: 0 24px 56px -42px #111E2D33;
+  --shadow-lift: 0 22px 44px -30px #1F36534A;
+  --shadow-float: 0 32px 80px -48px #111E2D42;
+  --shadow-inverse: 0 28px 72px -48px #111E2D99;
+  --focus-ring: 0 0 0 3px #406F9940;
+
+  /* ── Blur ── */
+  --blur-sm: 8px;
+  --blur-md: 16px;
+  --blur-lg: 24px;
+  --blur-xl: 40px;
+
+  /* ── Border radius ── */
+  --radius-none: 0px;
+  --radius-sm: 0.875rem;
+  --radius-md: 1.125rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 1.75rem;
+  --radius-giant: 1.6rem;
+  --radius-huge: 1.75rem;
+  --radius-blob: 2rem;
+  --radius-pill: 999px;
+  --radius-default: 0.875rem;
+
+  /* ── Control dimensions ── */
+  --control-height-xs: 2.25rem;
+  --control-height-sm: 2.75rem;
+  --control-height-md: 3.125rem;
+  --control-height-lg: 3.625rem;
+  --control-pad-inline-xs: 1.25rem;
+  --control-pad-inline-sm: 1rem;
+  --control-pad-inline-md: 1.5rem;
+  --control-pad-inline-lg: 2rem;
+  --control-pad-block-xs: 0.625rem;
+  --control-pad-block-sm: 0.75rem;
+  --control-pad-block-md: 0.875rem;
+
+  /* ── Section spacing ── */
+  --section-space-sm: clamp(3.5rem, 5vw, 4.5rem);
+  --section-space-md: clamp(4.5rem, 6vw, 5.75rem);
+  --section-space-lg: clamp(5.5rem, 7vw, 7rem);
+
+  /* ── Container ── */
+  --container-max: 1680px;
+  --container-wide-max: 1940px;
+  --container-home-max: 1320px;
+  --container-padding-mobile: 1.5rem;
+  --container-padding-desktop: 2.5rem;
+
+  /* ── Spacing base ── */
+  --spacing: 0.25rem;
+
+  /* ── Motion ── */
+  --motion-fast: 180ms;
+  --motion-base: 240ms;
+  --motion-slow: 320ms;
+  --motion-slower: 480ms;
+  --motion-slowest: 600ms;
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* ── Breakpoints ── */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1720px;
+
+  /* ── Layout system tokens (shell, spacing scale, responsive) — see docs/plans/04-DESIGN-SYSTEM-AND-THEME.md ── */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+  --space-10: 64px;
+  --space-12: 96px;
+  --space-16: 128px;
+
+  --section-gap: var(--space-12);
+  --section-gap-tight: var(--space-8);
+
+  --shell-topbar-h: 56px;
+  --shell-rail-w: 64px;
+  --shell-panel-w: 320px;
+  --shell-panel-w-wide: 380px;
+
+
+
+
+  /* ── Canvas & Blocks Aesthetics (Phase 06) ── */
+  --color-block-wall: var(--color-dark-midnight-blue-800);
+  --color-block-wall-hover: var(--color-dark-midnight-blue-700);
+  --color-block-wall-active: var(--color-bronze-400);
+  
+  --color-block-desk: var(--color-dark-midnight-blue-600);
+  --color-block-desk-hover: var(--color-dark-midnight-blue-500);
+  --color-block-desk-active: var(--color-bronze-400);
+  
+  --color-block-chair: var(--color-dark-midnight-blue-400);
+  --color-block-chair-hover: var(--color-dark-midnight-blue-300);
+  --color-block-chair-active: var(--color-bronze-400);
+
+  --color-canvas-bg: var(--color-dark-midnight-blue-950);
+  --color-canvas-grid: var(--color-dark-midnight-blue-900);
+
+  /* ── Planner legacy aliases (buddy / auth / tailwind utilities) ── */
+  --color-surface: var(--surface-page);
+  --color-surface-raised: var(--surface-panel);
+  --color-surface-sunken: var(--surface-soft);
+  --color-border: var(--border-soft);
+  --color-border-strong: var(--border-muted);
+  --color-text: var(--text-strong);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-danger-soft: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  --color-success-soft: color-mix(in srgb, var(--color-success) 10%, transparent);
+  --color-warning-soft: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  --color-paper: var(--surface-page);
+  --color-paper-raised: var(--surface-panel);
+  --color-paper-sunken: var(--surface-soft);
+  --color-paper-line: var(--border-soft);
+  --color-blueprint: var(--color-primary);
+  --color-blueprint-strong: var(--color-primary-hover);
+  --color-blueprint-soft: var(--surface-accent-wash);
+  --color-blueprint-line: var(--color-primary);
+}
+
+/* Planner canvas uses primary as accent; site marketing keeps bronze from @theme above. */
+body.planner-workspace {
+  --color-accent: var(--color-primary);
+  --color-accent-hover: var(--color-primary-hover);
+  --color-accent-soft: var(--surface-accent-wash);
+}
+
+/* ── Dark color scheme (html.dark via planner WorkspaceThemeProvider) ── */
+html.dark {
+  --color-primary: var(--color-ocean-boat-blue-400);
+  --color-primary-hover: var(--color-ocean-boat-blue-350);
+  --color-primary-active: var(--color-ocean-boat-blue-300);
+
+  --color-accent: var(--color-bronze-300);
+  --color-accent-hover: var(--color-bronze-400);
+  --color-accent-soft: var(--color-bronze-500);
+
+  --surface-page: var(--color-dark-midnight-blue-950);
+  --surface-soft: var(--color-dark-midnight-blue-900);
+  --surface-muted: var(--color-dark-midnight-blue-850);
+  --surface-card: var(--color-dark-midnight-blue-800);
+  --surface-panel: var(--color-dark-midnight-blue-800);
+  --surface-panel-strong: var(--color-dark-midnight-blue-750);
+  --surface-panel-soft: var(--color-dark-midnight-blue-850);
+  --surface-hover: var(--color-dark-midnight-blue-750);
+  --surface-hover-soft: var(--color-dark-midnight-blue-700);
+  --surface-focus: var(--color-dark-midnight-blue-700);
+  --surface-inverse: var(--color-white-100);
+  --surface-inverse-soft: var(--color-white-150);
+  --surface-accent-wash: color-mix(in srgb, var(--color-ocean-boat-blue-500) 14%, var(--color-dark-midnight-blue-900));
+  --surface-glass: #0B141DD9;
+  --surface-glass-strong: #111E2DEB;
+  --surface-status-ok: color-mix(in srgb, var(--color-ocean-boat-blue-500) 18%, var(--color-dark-midnight-blue-900));
+  --surface-status-bad: color-mix(in srgb, var(--color-bronze-400) 12%, var(--color-dark-midnight-blue-900));
+
+  --text-strong: #F1F5F9;
+  --text-heading: #F8FAFC;
+  --text-heading-soft: #CBD5E1;
+  --text-body: #E2E8F0;
+  --text-muted: #94A3B8;
+  --text-subtle: #64748B;
+  --text-link: var(--color-ocean-boat-blue-300);
+  --text-link-hover: var(--color-ocean-boat-blue-200);
+
+  --border-soft: var(--color-dark-midnight-blue-700);
+  --border-muted: var(--color-dark-midnight-blue-650);
+  --border-strong: var(--color-dark-midnight-blue-500);
+  --border-accent: #77A2C93D;
+  --border-hover: #77A2C966;
+
+  --shadow-soft: 0 16px 48px -30px #00000066;
+  --shadow-panel: 0 24px 56px -42px #00000073;
+  --shadow-lift: 0 22px 44px -30px #00000059;
+  --shadow-float: 0 32px 80px -48px #00000080;
+  --focus-ring: 0 0 0 3px #77A2C966;
+
+  --color-block-wall: var(--color-dark-midnight-blue-600);
+  --color-block-wall-hover: var(--color-dark-midnight-blue-500);
+  --color-block-desk: var(--color-dark-midnight-blue-500);
+  --color-block-desk-hover: var(--color-dark-midnight-blue-400);
+  --color-block-chair: var(--color-dark-midnight-blue-400);
+  --color-block-chair-hover: var(--color-dark-midnight-blue-350);
+
+  --color-canvas-bg: var(--color-dark-midnight-blue-950);
+  --color-canvas-grid: var(--color-dark-midnight-blue-850);
+}

@@ -1,0 +1,27 @@
+diff --git a/features/buddy-planner/components/editor/LeftSidebar/LayerVisibilityPanel.tsx b/features/buddy-planner/components/editor/LeftSidebar/LayerVisibilityPanel.tsx
+index 3753cad..20e0888 100644
+--- a/features/buddy-planner/components/editor/LeftSidebar/LayerVisibilityPanel.tsx
++++ b/features/buddy-planner/components/editor/LeftSidebar/LayerVisibilityPanel.tsx
+@@ -13,8 +13,11 @@ const CATEGORY_LABELS: Record<LayerCategory, string> = {
+   rooms: 'Rooms',
+   furniture: 'Furniture',
+   underlay: 'Underlay',
++  annotations: 'Annotations',
++  'it-device': 'IT & AV devices',
+ }
+ 
++
+ /**
+  * Compact checkbox panel that sits directly under the tool picker in the
+  * LeftSidebar. Each row toggles one `LayerCategory` on or off and shows the
+@@ -45,7 +48,10 @@ export function LayerVisibilityPanel() {
+       rooms: 0,
+       furniture: 0,
+       underlay: 0,
++      annotations: 0,
++      'it-device': 0,
+     }
++
+     for (const el of Object.values(elements)) {
+       c[categoryForElement(el)]++
+     }

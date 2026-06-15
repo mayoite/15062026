@@ -1,0 +1,190 @@
+.shell-admin-layout {
+  min-height: 100vh;
+  transition: color var(--motion-fast) var(--ease-standard),
+              background-color var(--motion-fast) var(--ease-standard);
+}
+
+.shell-admin-layout[data-theme="dark"] {
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+}
+
+.shell-admin-layout[data-theme="light"] {
+  background: var(--surface-page);
+  color: var(--text-body);
+}
+
+.shell-admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.shell-admin-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 0.75rem 1.5rem;
+}
+
+.shell-admin-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-header {
+  background: var(--color-dark-midnight-blue-800);
+  border-color: var(--color-dark-midnight-blue-700);
+}
+
+[data-admin-layout][data-theme="light"] .shell-admin-header {
+  background: white;
+  border-color: var(--border-soft);
+}
+
+.shell-admin-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-link {
+  color: var(--color-dark-midnight-blue-200);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-link:hover {
+  color: var(--text-inverse);
+}
+
+[data-admin-layout][data-theme="light"] .shell-admin-link {
+  color: var(--text-muted);
+}
+
+[data-admin-layout][data-theme="light"] .shell-admin-link:hover {
+  color: var(--text-body);
+}
+
+.shell-admin-divider {
+  color: var(--border-soft);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-divider {
+  color: var(--color-dark-midnight-blue-600);
+}
+
+.shell-admin-heading {
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-copy-semibold);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-heading {
+  color: var(--text-inverse);
+}
+
+[data-admin-layout][data-theme="light"] .shell-admin-heading {
+  color: var(--text-heading);
+}
+
+.shell-admin-page-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.shell-admin-page-copy {
+  color: var(--text-muted);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-page-copy {
+  color: var(--color-dark-midnight-blue-200);
+}
+
+.shell-admin-card {
+  display: block;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              box-shadow var(--motion-fast) var(--ease-standard),
+              opacity var(--motion-fast) var(--ease-standard);
+}
+
+.shell-admin-card__title {
+  color: var(--text-heading);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-card__title {
+  color: var(--text-inverse);
+}
+
+.shell-admin-card__desc {
+  color: var(--text-muted);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-card__desc {
+  color: var(--color-dark-midnight-blue-200);
+}
+
+.shell-admin-card__icon {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-card__icon {
+  color: var(--color-ocean-boat-blue-200);
+  background: color-mix(in srgb, var(--color-ocean-boat-blue-500) 24%, transparent);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-card {
+  background: var(--color-dark-midnight-blue-800);
+  border-color: var(--color-dark-midnight-blue-700);
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-card:hover {
+  border-color: var(--color-ocean-boat-blue-500);
+  box-shadow: var(--shadow-soft);
+}
+
+[data-admin-layout][data-theme="light"] .shell-admin-card {
+  background: white;
+  border-color: var(--border-soft);
+}
+
+[data-admin-layout][data-theme="light"] .shell-admin-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-soft);
+}
+
+.shell-admin-card--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shell-admin-card--disabled,
+.shell-admin-card--disabled:hover {
+  box-shadow: none;
+}
+
+[data-admin-layout][data-theme="dark"] .shell-admin-card--disabled {
+  background: var(--color-dark-midnight-blue-900);
+  border-color: var(--color-dark-midnight-blue-800);
+}
+
+[data-admin-layout][data-theme="light"] .shell-admin-card--disabled {
+  background: var(--surface-soft);
+  border-color: var(--border-soft);
+}
+

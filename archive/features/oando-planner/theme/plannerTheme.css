@@ -1,0 +1,259 @@
+/* ==========================================================================
+   One&Only Planner Theme — tldraw overrides + glass-panel design system
+   ==========================================================================
+   All values use design tokens from tokens/ directory.
+   ========================================================================== */
+
+/* ==========================================================================
+   PLANNER DARK MODE OVERRIDES
+   The planner uses a dark workspace shell. Override light-mode tokens
+   so text/borders/surfaces are visible against dark backgrounds.
+   ========================================================================== */
+.planner-dark-shell,
+.planner-dark-shell * {
+  --text-strong: #F0F2F5;
+  --text-heading: #FFFFFF;
+  --text-body: #CBD2DC;
+  --text-muted: #8B96A8;
+  --text-inverse: #0B1324;
+  --surface-page: #0A1020;
+  --surface-soft: #101828;
+  --surface-muted: #1A2538;
+  --surface-card: #141E2E;
+  --surface-panel: #0E1726;
+  --surface-glass: rgba(255, 255, 255, 0.04);
+  --surface-glass-strong: rgba(255, 255, 255, 0.08);
+  --surface-accent-wash: rgba(59, 130, 246, 0.12);
+  --border-soft: rgba(255, 255, 255, 0.10);
+  --border-hover: rgba(255, 255, 255, 0.18);
+  --border-accent: rgba(59, 130, 246, 0.40);
+  --shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --color-primary: #3B82F6;
+  --color-primary-hover: #2563EB;
+  --color-accent: #3B82F6;
+  --color-paper: #FFFFFF;
+  --color-ocean-boat-blue-500: #3B82F6;
+  --overlay-inverse-35: rgba(7, 13, 18, 0.35);
+  --surface-inverse: #0A1020;
+}
+
+.planner-dark-shell {
+  background-color: #0A1020;
+  color: #F0F2F5;
+  /* Missing utility tokens */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-ui: 13px;
+  --leading-label: 1.3;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-pill: 9999px;
+  --blur-md: 12px;
+  --motion-fast: 150ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  --focus-ring: 0 0 0 2px rgba(59, 130, 246, 0.4);
+  --border-width-thick: 2px;
+  --surface-panel-strong: #141E2E;
+  --color-dark-midnight-blue-900: #0A1020;
+}
+
+/* ==========================================================================
+   PLANNER LAYOUT TOKENS
+   ========================================================================== */
+:root {
+  --toolbar-width: 200px;
+  --toolbar-width-collapsed: 48px;
+  --toolbar-icon-size: 1em;
+  --toolbar-icon-stroke: 1.5;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --toolbar-width: 220px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --toolbar-width: 240px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --toolbar-width: 260px;
+  }
+}
+
+/* ==========================================================================
+   TLDRAW CANVAS OVERRIDES
+   ========================================================================== */
+.tl-container {
+  background-color: var(--surface-soft);
+  color: var(--text-strong);
+  font-family: var(--font-sans);
+}
+
+.tl-theme__light {
+  --color-accent: var(--color-ocean-boat-blue-500);
+  --color-selection-stroke: var(--color-ocean-boat-blue-500);
+  --color-grid: var(--surface-glass);
+  --color-background: var(--surface-soft);
+  --color-low: var(--surface-glass);
+  --color-muted-0: var(--surface-glass);
+  --color-muted-1: var(--surface-glass);
+  --color-muted-2: var(--surface-glass);
+  /* tldraw v5 CSS vars */
+  --tl-color-background: var(--surface-soft);
+  --tl-color-selection-stroke: var(--color-ocean-boat-blue-500);
+  --tl-color-selected: var(--color-ocean-boat-blue-500);
+  --tl-color-focus: var(--color-accent);
+  --tl-color-grid: var(--surface-glass);
+}
+
+
+/* ==========================================================================
+   PLANNER COMPONENTS
+   ========================================================================== */
+
+/* Glass-panel surface utility */
+.planner-glass {
+  background: color-mix(in srgb, var(--surface-panel) 86%, transparent);
+  backdrop-filter: blur(var(--blur-md));
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-panel);
+  color: var(--text-strong);
+}
+
+.planner-card {
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-soft);
+  background-color: var(--surface-card);
+  color: var(--text-strong);
+}
+
+.planner-input {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-accent);
+  background: var(--surface-glass);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-family: inherit;
+  color: var(--text-strong);
+  transition: border-color var(--motion-fast) var(--ease-standard), 
+              box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.planner-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* Buttons */
+.planner-btn-primary {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-5);
+  font-family: inherit;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-standard),
+              transform var(--motion-fast) var(--ease-standard);
+}
+
+.planner-btn-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.planner-btn-primary:active {
+  transform: translateY(1px);
+}
+
+.planner-btn-secondary {
+  background: transparent;
+  color: var(--text-strong);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2) var(--spacing-5);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-standard),
+              color var(--motion-fast) var(--ease-standard),
+              background var(--motion-fast) var(--ease-standard);
+}
+
+.planner-btn-secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--surface-accent-wash);
+}
+
+/* Active/selected accent */
+.planner-active {
+  border-color: var(--color-accent) !important;
+  color: var(--color-accent) !important;
+}
+
+/* ==========================================================================
+   ZONE OVERLAYS
+   ========================================================================== */
+.zone-open-plan {
+  background: var(--surface-glass);
+}
+
+.zone-executive {
+  background: var(--surface-glass);
+}
+
+.zone-meeting {
+  background: var(--surface-glass);
+}
+
+.zone-reception {
+  background: var(--surface-glass);
+}
+
+.zone-cafeteria {
+  background: var(--surface-glass);
+}
+
+.zone-server-room {
+  background: var(--surface-glass);
+}
+
+.zone-custom {
+  background: var(--surface-glass);
+}
+
+/* ==========================================================================
+   MOBILE TOUCH TARGETS
+   ========================================================================== */
+@media (max-width: 768px) {
+  .planner-touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ==========================================================================
+   TLDRAW WATERMARK HIDE
+   ========================================================================== */
+.tl-watermark-indicator,
+.tl-watermark_SEE-LICENSE {
+  display: none !important;
+}

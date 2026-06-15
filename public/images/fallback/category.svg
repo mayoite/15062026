@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Product image unavailable</title>
+  <desc id="desc">Neutral fallback illustration used when a product image is missing.</desc>
+  <rect width="1200" height="900" fill="#f5f7fa"/>
+  <rect x="120" y="120" width="960" height="660" rx="48" fill="#ffffff" stroke="#d2dce7" stroke-width="16"/>
+  <rect x="220" y="240" width="760" height="320" rx="28" fill="#edf4fa"/>
+  <circle cx="360" cy="400" r="84" fill="#cddfef"/>
+  <path d="M520 520 676 350l106 116 72-82 126 136H520Z" fill="#77a2c9"/>
+  <rect x="220" y="612" width="260" height="28" rx="14" fill="#1f3653" opacity="0.88"/>
+  <rect x="220" y="662" width="412" height="22" rx="11" fill="#4a5c76" opacity="0.7"/>
+</svg>

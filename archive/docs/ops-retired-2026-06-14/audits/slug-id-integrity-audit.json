@@ -1,0 +1,1344 @@
+{
+  "generatedAt": "2026-06-04T18:09:41.940Z",
+  "totals": {
+    "products": 279,
+    "missingCanonicalCategoryId": 0,
+    "missingCanonicalSubcategoryId": 0,
+    "missingCanonicalSlugV2": 0,
+    "missingCanonicalSeriesId": 0,
+    "aliasCoverageMissing": 172,
+    "canonicalSlugConflicts": 91
+  },
+  "missingCanonicalFields": [],
+  "aliasCoverageMissing": [
+    {
+      "currentSlug": "arvo",
+      "expectedCanonicalSlug": "hairs-leather-chairs-arvo"
+    },
+    {
+      "currentSlug": "fluid-x",
+      "expectedCanonicalSlug": "hairs-leather-chairs-fluid-x"
+    },
+    {
+      "currentSlug": "halo",
+      "expectedCanonicalSlug": "hairs-mesh-chairs-halo"
+    },
+    {
+      "currentSlug": "myel",
+      "expectedCanonicalSlug": "hairs-leather-chairs-myel"
+    },
+    {
+      "currentSlug": "sway",
+      "expectedCanonicalSlug": "hairs-leather-chairs-sway"
+    },
+    {
+      "currentSlug": "cocoon-pod",
+      "expectedCanonicalSlug": "ollaborative-collaborative-cocoon-pod"
+    },
+    {
+      "currentSlug": "solace-pod",
+      "expectedCanonicalSlug": "ollaborative-collaborative-solace-pod"
+    },
+    {
+      "currentSlug": "academia",
+      "expectedCanonicalSlug": "ducational-classroom-academia"
+    },
+    {
+      "currentSlug": "audi-chair",
+      "expectedCanonicalSlug": "ducational-classroom-audi-chair"
+    },
+    {
+      "currentSlug": "classcraft",
+      "expectedCanonicalSlug": "ducational-classroom-classcraft"
+    },
+    {
+      "currentSlug": "oando-educational--connecta",
+      "expectedCanonicalSlug": "ducational-classroom-connecta"
+    },
+    {
+      "currentSlug": "forma",
+      "expectedCanonicalSlug": "ducational-classroom-forma"
+    },
+    {
+      "currentSlug": "oando-educational--learnix",
+      "expectedCanonicalSlug": "ducational-classroom-learnix"
+    },
+    {
+      "currentSlug": "magazine-rack",
+      "expectedCanonicalSlug": "ducational-classroom-magazine-rack"
+    },
+    {
+      "currentSlug": "oando-educational--metal-bed",
+      "expectedCanonicalSlug": "ducational-classroom-metal-bed"
+    },
+    {
+      "currentSlug": "performer",
+      "expectedCanonicalSlug": "ducational-classroom-performer"
+    },
+    {
+      "currentSlug": "podium",
+      "expectedCanonicalSlug": "ducational-classroom-podium"
+    },
+    {
+      "currentSlug": "oando-educational--wooden-bed",
+      "expectedCanonicalSlug": "ducational-classroom-wooden-bed"
+    },
+    {
+      "currentSlug": "oando-educational--xplorer",
+      "expectedCanonicalSlug": "ducational-classroom-xplorer"
+    },
+    {
+      "currentSlug": "breeze",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-breeze"
+    },
+    {
+      "currentSlug": "canaret",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-canaret"
+    },
+    {
+      "currentSlug": "caneva-high",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-caneva-high"
+    },
+    {
+      "currentSlug": "casca",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-casca"
+    },
+    {
+      "currentSlug": "crox",
+      "expectedCanonicalSlug": "ther-seating-cafe-chairs-crox"
+    },
+    {
+      "currentSlug": "dive",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-dive"
+    },
+    {
+      "currentSlug": "flare",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-flare"
+    },
+    {
+      "currentSlug": "flex",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-flex"
+    },
+    {
+      "currentSlug": "flip",
+      "expectedCanonicalSlug": "ther-seating-study-chairs-flip"
+    },
+    {
+      "currentSlug": "fusion",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-fusion"
+    },
+    {
+      "currentSlug": "leaf",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-leaf"
+    },
+    {
+      "currentSlug": "lexus",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-lexus"
+    },
+    {
+      "currentSlug": "lisbo",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-lisbo"
+    },
+    {
+      "currentSlug": "logica",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-logica"
+    },
+    {
+      "currentSlug": "nordic",
+      "expectedCanonicalSlug": "ther-seating-fabric-chairs-nordic"
+    },
+    {
+      "currentSlug": "nuvic",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-nuvic"
+    },
+    {
+      "currentSlug": "orbit",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-orbit"
+    },
+    {
+      "currentSlug": "rock",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-rock"
+    },
+    {
+      "currentSlug": "cafe-sleek",
+      "expectedCanonicalSlug": "ther-seating-cafe-chairs-sleek-cafe"
+    },
+    {
+      "currentSlug": "sullion",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-sullion"
+    },
+    {
+      "currentSlug": "toro",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-toro"
+    },
+    {
+      "currentSlug": "wing",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-wing"
+    },
+    {
+      "currentSlug": "x-mesh",
+      "expectedCanonicalSlug": "ther-seating-mesh-chairs-x-mesh"
+    },
+    {
+      "currentSlug": "zilo",
+      "expectedCanonicalSlug": "ther-seating-leather-chairs-zilo"
+    },
+    {
+      "currentSlug": "oando-seating--arvo",
+      "expectedCanonicalSlug": "eating-cafe-chairs-arvo"
+    },
+    {
+      "currentSlug": "oando-seating--breeze",
+      "expectedCanonicalSlug": "eating-mesh-chairs-breeze"
+    },
+    {
+      "currentSlug": "oando-seating--brim",
+      "expectedCanonicalSlug": "eating-cafe-chairs-brim"
+    },
+    {
+      "currentSlug": "oando-seating--canaret",
+      "expectedCanonicalSlug": "eating-cafe-chairs-canaret"
+    },
+    {
+      "currentSlug": "oando-seating--caneva",
+      "expectedCanonicalSlug": "eating-cafe-chairs-caneva"
+    },
+    {
+      "currentSlug": "oando-seating--caneva-high",
+      "expectedCanonicalSlug": "eating-cafe-chairs-caneva-high"
+    },
+    {
+      "currentSlug": "oando-seating--copse",
+      "expectedCanonicalSlug": "eating-cafe-chairs-copse"
+    },
+    {
+      "currentSlug": "oando-seating--crotch",
+      "expectedCanonicalSlug": "eating-cafe-chairs-crotch"
+    },
+    {
+      "currentSlug": "oando-seating--dive",
+      "expectedCanonicalSlug": "eating-cafe-chairs-dive"
+    },
+    {
+      "currentSlug": "oando-seating--ember",
+      "expectedCanonicalSlug": "eating-cafe-chairs-ember"
+    },
+    {
+      "currentSlug": "oando-seating--flare",
+      "expectedCanonicalSlug": "eating-cafe-chairs-flare"
+    },
+    {
+      "currentSlug": "oando-seating--flex",
+      "expectedCanonicalSlug": "eating-mesh-chairs-flex"
+    },
+    {
+      "currentSlug": "oando-seating--flip",
+      "expectedCanonicalSlug": "eating-mesh-chairs-flip"
+    },
+    {
+      "currentSlug": "oando-seating--fluid-with-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-fluid-with-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--fluid-without-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-fluid-without-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--fluid-x-with-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-fluid-x-with-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--fluid-x-without-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-fluid-x-without-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--fusion",
+      "expectedCanonicalSlug": "eating-cafe-chairs-fusion"
+    },
+    {
+      "currentSlug": "oando-seating--fynn",
+      "expectedCanonicalSlug": "eating-cafe-chairs-fynn"
+    },
+    {
+      "currentSlug": "oando-seating--grace",
+      "expectedCanonicalSlug": "eating-leather-chairs-grace"
+    },
+    {
+      "currentSlug": "oando-seating--leaf",
+      "expectedCanonicalSlug": "eating-cafe-chairs-leaf"
+    },
+    {
+      "currentSlug": "oando-seating--lexus",
+      "expectedCanonicalSlug": "eating-cafe-chairs-lexus"
+    },
+    {
+      "currentSlug": "oando-seating--lisbo",
+      "expectedCanonicalSlug": "eating-cafe-chairs-lisbo"
+    },
+    {
+      "currentSlug": "oando-seating--logica",
+      "expectedCanonicalSlug": "eating-mesh-chairs-logica"
+    },
+    {
+      "currentSlug": "oando-seating--moonlight",
+      "expectedCanonicalSlug": "eating-leather-chairs-moonlight"
+    },
+    {
+      "currentSlug": "oando-seating--myel-with-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-myel-with-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--myel-without-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-myel-without-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--nordic",
+      "expectedCanonicalSlug": "eating-cafe-chairs-nordic"
+    },
+    {
+      "currentSlug": "oando-seating--nuvic",
+      "expectedCanonicalSlug": "eating-mesh-chairs-nuvic"
+    },
+    {
+      "currentSlug": "oando-seating--orbit",
+      "expectedCanonicalSlug": "eating-mesh-chairs-orbit"
+    },
+    {
+      "currentSlug": "oando-seating--phoenix-with-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-phoenix-with-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--phoenix-without-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-phoenix-without-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--pinnacle",
+      "expectedCanonicalSlug": "eating-leather-chairs-pinnacle"
+    },
+    {
+      "currentSlug": "oando-seating--revoq-with-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-revoq-with-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--revoq-without-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-revoq-without-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--rider",
+      "expectedCanonicalSlug": "eating-leather-chairs-rider"
+    },
+    {
+      "currentSlug": "oando-seating--rio",
+      "expectedCanonicalSlug": "eating-cafe-chairs-rio"
+    },
+    {
+      "currentSlug": "oando-seating--rock",
+      "expectedCanonicalSlug": "eating-mesh-chairs-rock"
+    },
+    {
+      "currentSlug": "oando-seating--smile",
+      "expectedCanonicalSlug": "eating-cafe-chairs-smile"
+    },
+    {
+      "currentSlug": "oando-seating--snap",
+      "expectedCanonicalSlug": "eating-study-chairs-snap"
+    },
+    {
+      "currentSlug": "oando-seating--spino-with-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-spino-with-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--spino-without-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-spino-without-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--sullion",
+      "expectedCanonicalSlug": "eating-mesh-chairs-sullion"
+    },
+    {
+      "currentSlug": "oando-seating--sway-with-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-sway-with-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--sway-without-headrest",
+      "expectedCanonicalSlug": "eating-mesh-chairs-sway-without-headrest"
+    },
+    {
+      "currentSlug": "oando-seating--toro",
+      "expectedCanonicalSlug": "eating-mesh-chairs-toro"
+    },
+    {
+      "currentSlug": "oando-seating--wing",
+      "expectedCanonicalSlug": "eating-cafe-chairs-wing"
+    },
+    {
+      "currentSlug": "oando-seating--x-mesh",
+      "expectedCanonicalSlug": "eating-mesh-chairs-x-mesh"
+    },
+    {
+      "currentSlug": "oando-seating--zilo",
+      "expectedCanonicalSlug": "eating-cafe-chairs-zilo"
+    },
+    {
+      "currentSlug": "accent",
+      "expectedCanonicalSlug": "oft-seating-lounge-accent"
+    },
+    {
+      "currentSlug": "oando-soft-seating--adam",
+      "expectedCanonicalSlug": "oft-seating-lounge-adam"
+    },
+    {
+      "currentSlug": "alonzo",
+      "expectedCanonicalSlug": "oft-seating-lounge-alonzo"
+    },
+    {
+      "currentSlug": "arcana",
+      "expectedCanonicalSlug": "oft-seating-lounge-arcana"
+    },
+    {
+      "currentSlug": "arco",
+      "expectedCanonicalSlug": "oft-seating-lounge-arco"
+    },
+    {
+      "currentSlug": "oando-soft-seating--armora",
+      "expectedCanonicalSlug": "oft-seating-lounge-armora"
+    },
+    {
+      "currentSlug": "brim",
+      "expectedCanonicalSlug": "oft-seating-lounge-brim"
+    },
+    {
+      "currentSlug": "oando-soft-seating--casca",
+      "expectedCanonicalSlug": "oft-seating-lounge-casca"
+    },
+    {
+      "currentSlug": "ceda",
+      "expectedCanonicalSlug": "oft-seating-lounge-ceda"
+    },
+    {
+      "currentSlug": "cirq",
+      "expectedCanonicalSlug": "oft-seating-collaborative-cirq"
+    },
+    {
+      "currentSlug": "oando-soft-seating--cocoon",
+      "expectedCanonicalSlug": "oft-seating-lounge-cocoon"
+    },
+    {
+      "currentSlug": "como",
+      "expectedCanonicalSlug": "oft-seating-lounge-como"
+    },
+    {
+      "currentSlug": "cone",
+      "expectedCanonicalSlug": "oft-seating-lounge-cone"
+    },
+    {
+      "currentSlug": "oando-soft-seating--cove",
+      "expectedCanonicalSlug": "oft-seating-lounge-cove"
+    },
+    {
+      "currentSlug": "covea",
+      "expectedCanonicalSlug": "oft-seating-lounge-covea"
+    },
+    {
+      "currentSlug": "cozy",
+      "expectedCanonicalSlug": "oft-seating-lounge-cozy"
+    },
+    {
+      "currentSlug": "crossa",
+      "expectedCanonicalSlug": "oft-seating-lounge-crossa"
+    },
+    {
+      "currentSlug": "eclips",
+      "expectedCanonicalSlug": "oft-seating-lounge-eclips"
+    },
+    {
+      "currentSlug": "oando-soft-seating--embrace",
+      "expectedCanonicalSlug": "oft-seating-collaborative-embrace"
+    },
+    {
+      "currentSlug": "oando-soft-seating--esmor",
+      "expectedCanonicalSlug": "oft-seating-lounge-esmor"
+    },
+    {
+      "currentSlug": "oando-soft-seating--fynn",
+      "expectedCanonicalSlug": "oft-seating-lounge-fynn"
+    },
+    {
+      "currentSlug": "oando-soft-seating--grace",
+      "expectedCanonicalSlug": "oft-seating-lounge-grace"
+    },
+    {
+      "currentSlug": "oando-soft-seating--halo",
+      "expectedCanonicalSlug": "oft-seating-lounge-halo"
+    },
+    {
+      "currentSlug": "high-cafe",
+      "expectedCanonicalSlug": "oft-seating-collaborative-high-cafe"
+    },
+    {
+      "currentSlug": "oando-soft-seating--hush",
+      "expectedCanonicalSlug": "oft-seating-lounge-hush"
+    },
+    {
+      "currentSlug": "luna",
+      "expectedCanonicalSlug": "oft-seating-lounge-luna"
+    },
+    {
+      "currentSlug": "oando-soft-seating--lura",
+      "expectedCanonicalSlug": "oft-seating-lounge-lura"
+    },
+    {
+      "currentSlug": "luxar",
+      "expectedCanonicalSlug": "oft-seating-lounge-luxar"
+    },
+    {
+      "currentSlug": "oando-soft-seating--margas",
+      "expectedCanonicalSlug": "oft-seating-lounge-margas"
+    },
+    {
+      "currentSlug": "moon",
+      "expectedCanonicalSlug": "oft-seating-lounge-moon"
+    },
+    {
+      "currentSlug": "oando-soft-seating--nook",
+      "expectedCanonicalSlug": "oft-seating-lounge-nook"
+    },
+    {
+      "currentSlug": "nuvora",
+      "expectedCanonicalSlug": "oft-seating-lounge-nuvora"
+    },
+    {
+      "currentSlug": "oando-soft-seating--opera",
+      "expectedCanonicalSlug": "oft-seating-lounge-opera"
+    },
+    {
+      "currentSlug": "orb",
+      "expectedCanonicalSlug": "oft-seating-collaborative-orb"
+    },
+    {
+      "currentSlug": "oando-soft-seating--padora",
+      "expectedCanonicalSlug": "oft-seating-lounge-padora"
+    },
+    {
+      "currentSlug": "oando-soft-seating--plumb",
+      "expectedCanonicalSlug": "oft-seating-lounge-plumb"
+    },
+    {
+      "currentSlug": "rattique",
+      "expectedCanonicalSlug": "oft-seating-lounge-rattique"
+    },
+    {
+      "currentSlug": "relax",
+      "expectedCanonicalSlug": "oft-seating-lounge-relax"
+    },
+    {
+      "currentSlug": "spectrum",
+      "expectedCanonicalSlug": "oft-seating-lounge-spectrum"
+    },
+    {
+      "currentSlug": "tectara",
+      "expectedCanonicalSlug": "oft-seating-lounge-tectara"
+    },
+    {
+      "currentSlug": "trion",
+      "expectedCanonicalSlug": "oft-seating-lounge-trion"
+    },
+    {
+      "currentSlug": "oando-soft-seating--twig",
+      "expectedCanonicalSlug": "oft-seating-lounge-twig"
+    },
+    {
+      "currentSlug": "velto",
+      "expectedCanonicalSlug": "oft-seating-lounge-velto"
+    },
+    {
+      "currentSlug": "oando-soft-seating--verka",
+      "expectedCanonicalSlug": "oft-seating-lounge-verka"
+    },
+    {
+      "currentSlug": "oando-soft-seating--virello",
+      "expectedCanonicalSlug": "oft-seating-lounge-virello"
+    },
+    {
+      "currentSlug": "compactor",
+      "expectedCanonicalSlug": "torage-compactor-storage-compactor"
+    },
+    {
+      "currentSlug": "oando-storage--heavy-duty-racks",
+      "expectedCanonicalSlug": "torage-prelam-storage-heavy-dut"
+    },
+    {
+      "currentSlug": "metal-storages",
+      "expectedCanonicalSlug": "torage-metal-storage-metal"
+    },
+    {
+      "currentSlug": "metal-locker",
+      "expectedCanonicalSlug": "torage-locker-metal-locker"
+    },
+    {
+      "currentSlug": "oando-storage--metal-pedestal",
+      "expectedCanonicalSlug": "torage-metal-storage-metal-pedestal"
+    },
+    {
+      "currentSlug": "oando-storage--prelam-storage",
+      "expectedCanonicalSlug": "torage-prelam-storage-prelam"
+    },
+    {
+      "currentSlug": "prelam-locker",
+      "expectedCanonicalSlug": "torage-locker-wooden"
+    },
+    {
+      "currentSlug": "apex",
+      "expectedCanonicalSlug": "ables-cabin-tables-apex"
+    },
+    {
+      "currentSlug": "oando-tables--consulate",
+      "expectedCanonicalSlug": "ables-cabin-tables-consulate"
+    },
+    {
+      "currentSlug": "oando-tables--convene",
+      "expectedCanonicalSlug": "ables-meeting-tables-convene"
+    },
+    {
+      "currentSlug": "convesso",
+      "expectedCanonicalSlug": "ables-meeting-tables-convesso"
+    },
+    {
+      "currentSlug": "crest",
+      "expectedCanonicalSlug": "ables-cabin-tables-crest"
+    },
+    {
+      "currentSlug": "oando-tables--curvivo-meet",
+      "expectedCanonicalSlug": "ables-training-tables-curvivo"
+    },
+    {
+      "currentSlug": "desk-meet",
+      "expectedCanonicalSlug": "ables-meeting-tables-desk-meet"
+    },
+    {
+      "currentSlug": "exquisite",
+      "expectedCanonicalSlug": "ables-cabin-tables-exquisite"
+    },
+    {
+      "currentSlug": "oando-tables--impulse",
+      "expectedCanonicalSlug": "ables-cabin-tables-impulse"
+    },
+    {
+      "currentSlug": "inox",
+      "expectedCanonicalSlug": "ables-cabin-tables-inox"
+    },
+    {
+      "currentSlug": "letz-think",
+      "expectedCanonicalSlug": "ables-training-tables-letz"
+    },
+    {
+      "currentSlug": "modulus",
+      "expectedCanonicalSlug": "ables-cabin-tables-modulus"
+    },
+    {
+      "currentSlug": "nextable",
+      "expectedCanonicalSlug": "ables-cabin-tables-nextable"
+    },
+    {
+      "currentSlug": "oando-tables--opus-2",
+      "expectedCanonicalSlug": "ables-cabin-tables-opus"
+    },
+    {
+      "currentSlug": "presidency",
+      "expectedCanonicalSlug": "ables-cabin-tables-presidency"
+    },
+    {
+      "currentSlug": "sleek-tab",
+      "expectedCanonicalSlug": "ables-meeting-tables-sleek"
+    },
+    {
+      "currentSlug": "oando-tables--sleek-meet",
+      "expectedCanonicalSlug": "ables-meeting-tables-sleek-meet"
+    },
+    {
+      "currentSlug": "stake",
+      "expectedCanonicalSlug": "ables-cabin-tables-stake"
+    },
+    {
+      "currentSlug": "uniflip",
+      "expectedCanonicalSlug": "ables-training-tables-uniflip"
+    },
+    {
+      "currentSlug": "x-meet",
+      "expectedCanonicalSlug": "ables-meeting-tables-x-meet"
+    },
+    {
+      "currentSlug": "adaptable",
+      "expectedCanonicalSlug": "orkstations-desking-series-adaptable"
+    },
+    {
+      "currentSlug": "oando-workstations--curvivo",
+      "expectedCanonicalSlug": "orkstations-desking-series-curvivo"
+    },
+    {
+      "currentSlug": "oando-workstations--deskpro",
+      "expectedCanonicalSlug": "orkstations-desking-series-deskpro"
+    },
+    {
+      "currentSlug": "fenix",
+      "expectedCanonicalSlug": "orkstations-desking-series-fenix"
+    },
+    {
+      "currentSlug": "panel-pro",
+      "expectedCanonicalSlug": "orkstations-panel-series-panel-pro"
+    },
+    {
+      "currentSlug": "oando-workstations--sleek",
+      "expectedCanonicalSlug": "orkstations-desking-series-sleek"
+    },
+    {
+      "currentSlug": "trio-2",
+      "expectedCanonicalSlug": "orkstations-desking-series-trio"
+    },
+    {
+      "currentSlug": "oando-workstations--x-bench",
+      "expectedCanonicalSlug": "orkstations-desking-series-x-bench"
+    }
+  ],
+  "canonicalConflicts": [
+    {
+      "canonicalSlug": "ables-cabin-tables-apex",
+      "legacySlugs": [
+        "apex",
+        "oando-tables--apex"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-consulate",
+      "legacySlugs": [
+        "consulate",
+        "oando-tables--consulate"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-crest",
+      "legacySlugs": [
+        "crest",
+        "oando-tables--crest"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-exquisite",
+      "legacySlugs": [
+        "exquisite",
+        "oando-tables--exquisite"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-impulse",
+      "legacySlugs": [
+        "impulse",
+        "oando-tables--impulse"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-inox",
+      "legacySlugs": [
+        "inox",
+        "oando-tables--inox"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-modulus",
+      "legacySlugs": [
+        "modulus",
+        "oando-tables--modulus"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-nextable",
+      "legacySlugs": [
+        "nextable",
+        "oando-tables--nextable"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-opus",
+      "legacySlugs": [
+        "oando-tables--opus-2",
+        "opus-2"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-presidency",
+      "legacySlugs": [
+        "oando-tables--presidency",
+        "presidency"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-cabin-tables-stake",
+      "legacySlugs": [
+        "oando-tables--stake",
+        "stake"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-meeting-tables-convene",
+      "legacySlugs": [
+        "convene",
+        "oando-tables--convene"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-meeting-tables-convesso",
+      "legacySlugs": [
+        "convesso",
+        "oando-tables--convesso"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-meeting-tables-desk-meet",
+      "legacySlugs": [
+        "desk-meet",
+        "oando-tables--desk-meet"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-meeting-tables-sleek",
+      "legacySlugs": [
+        "oando-tables--sleek-tab",
+        "sleek-tab"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-meeting-tables-sleek-meet",
+      "legacySlugs": [
+        "oando-tables--sleek-meet",
+        "sleek-meet"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-meeting-tables-x-meet",
+      "legacySlugs": [
+        "oando-tables--x-meet",
+        "x-meet"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-training-tables-curvivo",
+      "legacySlugs": [
+        "curvivo-meet",
+        "oando-tables--curvivo-meet"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-training-tables-letz",
+      "legacySlugs": [
+        "letz-think",
+        "oando-tables--letz-think"
+      ]
+    },
+    {
+      "canonicalSlug": "ables-training-tables-uniflip",
+      "legacySlugs": [
+        "oando-tables--uniflip",
+        "uniflip"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-academia",
+      "legacySlugs": [
+        "academia",
+        "oando-educational--academia"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-audi-chair",
+      "legacySlugs": [
+        "audi-chair",
+        "oando-educational--audi-chair"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-classcraft",
+      "legacySlugs": [
+        "classcraft",
+        "oando-educational--classcraft"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-connecta",
+      "legacySlugs": [
+        "connecta",
+        "oando-educational--connecta"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-forma",
+      "legacySlugs": [
+        "forma",
+        "oando-educational--forma"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-learnix",
+      "legacySlugs": [
+        "learnix",
+        "oando-educational--learnix"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-magazine-rack",
+      "legacySlugs": [
+        "magazine-rack",
+        "oando-educational--magazine-rack"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-metal-bed",
+      "legacySlugs": [
+        "metal-bed",
+        "oando-educational--metal-bed"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-performer",
+      "legacySlugs": [
+        "oando-educational--performer",
+        "performer"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-podium",
+      "legacySlugs": [
+        "oando-educational--podium",
+        "podium"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-wooden-bed",
+      "legacySlugs": [
+        "oando-educational--wooden-bed",
+        "wooden-bed"
+      ]
+    },
+    {
+      "canonicalSlug": "ducational-classroom-xplorer",
+      "legacySlugs": [
+        "oando-educational--xplorer",
+        "xplorer"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-collaborative-cirq",
+      "legacySlugs": [
+        "cirq",
+        "oando-soft-seating--cirq"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-collaborative-embrace",
+      "legacySlugs": [
+        "embrace",
+        "oando-soft-seating--embrace"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-collaborative-high-cafe",
+      "legacySlugs": [
+        "high-cafe",
+        "oando-soft-seating--high-cafe"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-collaborative-orb",
+      "legacySlugs": [
+        "oando-soft-seating--orb",
+        "orb"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-accent",
+      "legacySlugs": [
+        "accent",
+        "oando-soft-seating--accent"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-adam",
+      "legacySlugs": [
+        "adam",
+        "oando-soft-seating--adam"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-alonzo",
+      "legacySlugs": [
+        "alonzo",
+        "oando-soft-seating--alonzo"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-arcana",
+      "legacySlugs": [
+        "arcana",
+        "oando-soft-seating--arcana"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-arco",
+      "legacySlugs": [
+        "arco",
+        "oando-soft-seating--arco"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-armora",
+      "legacySlugs": [
+        "armora",
+        "oando-soft-seating--armora"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-brim",
+      "legacySlugs": [
+        "brim",
+        "oando-soft-seating--brim"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-ceda",
+      "legacySlugs": [
+        "ceda",
+        "oando-soft-seating--ceda"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-cocoon",
+      "legacySlugs": [
+        "cocoon",
+        "oando-soft-seating--cocoon"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-como",
+      "legacySlugs": [
+        "como",
+        "oando-soft-seating--como"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-cone",
+      "legacySlugs": [
+        "cone",
+        "oando-soft-seating--cone"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-cove",
+      "legacySlugs": [
+        "cove",
+        "oando-soft-seating--cove"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-covea",
+      "legacySlugs": [
+        "covea",
+        "oando-soft-seating--covea"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-cozy",
+      "legacySlugs": [
+        "cozy",
+        "oando-soft-seating--cozy"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-crossa",
+      "legacySlugs": [
+        "crossa",
+        "oando-soft-seating--crossa"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-eclips",
+      "legacySlugs": [
+        "eclips",
+        "oando-soft-seating--eclips"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-esmor",
+      "legacySlugs": [
+        "esmor",
+        "oando-soft-seating--esmor"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-fynn",
+      "legacySlugs": [
+        "fynn",
+        "oando-soft-seating--fynn"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-grace",
+      "legacySlugs": [
+        "grace",
+        "oando-soft-seating--grace"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-hush",
+      "legacySlugs": [
+        "hush",
+        "oando-soft-seating--hush"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-luna",
+      "legacySlugs": [
+        "luna",
+        "oando-soft-seating--luna"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-lura",
+      "legacySlugs": [
+        "lura",
+        "oando-soft-seating--lura"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-luxar",
+      "legacySlugs": [
+        "luxar",
+        "oando-soft-seating--luxar"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-margas",
+      "legacySlugs": [
+        "margas",
+        "oando-soft-seating--margas"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-moon",
+      "legacySlugs": [
+        "moon",
+        "oando-soft-seating--moon"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-nook",
+      "legacySlugs": [
+        "nook",
+        "oando-soft-seating--nook"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-nuvora",
+      "legacySlugs": [
+        "nuvora",
+        "oando-soft-seating--nuvora"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-opera",
+      "legacySlugs": [
+        "oando-soft-seating--opera",
+        "opera"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-padora",
+      "legacySlugs": [
+        "oando-soft-seating--padora",
+        "padora"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-plumb",
+      "legacySlugs": [
+        "oando-soft-seating--plumb",
+        "plumb"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-rattique",
+      "legacySlugs": [
+        "oando-soft-seating--rattique",
+        "rattique"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-relax",
+      "legacySlugs": [
+        "oando-soft-seating--relax",
+        "relax"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-spectrum",
+      "legacySlugs": [
+        "oando-soft-seating--spectrum",
+        "spectrum"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-tectara",
+      "legacySlugs": [
+        "oando-soft-seating--tectara",
+        "tectara"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-trion",
+      "legacySlugs": [
+        "oando-soft-seating--trion",
+        "trion"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-twig",
+      "legacySlugs": [
+        "oando-soft-seating--twig",
+        "twig"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-velto",
+      "legacySlugs": [
+        "oando-soft-seating--velto",
+        "velto"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-verka",
+      "legacySlugs": [
+        "oando-soft-seating--verka",
+        "verka"
+      ]
+    },
+    {
+      "canonicalSlug": "oft-seating-lounge-virello",
+      "legacySlugs": [
+        "oando-soft-seating--virello",
+        "virello"
+      ]
+    },
+    {
+      "canonicalSlug": "ollaborative-collaborative-cocoon-pod",
+      "legacySlugs": [
+        "cocoon-pod",
+        "oando-collaborative--cocoon-pod"
+      ]
+    },
+    {
+      "canonicalSlug": "ollaborative-collaborative-solace-pod",
+      "legacySlugs": [
+        "oando-collaborative--solace-pod",
+        "solace-pod"
+      ]
+    },
+    {
+      "canonicalSlug": "orkstations-desking-series-adaptable",
+      "legacySlugs": [
+        "adaptable",
+        "oando-workstations--adaptable"
+      ]
+    },
+    {
+      "canonicalSlug": "orkstations-desking-series-deskpro",
+      "legacySlugs": [
+        "deskpro",
+        "oando-workstations--deskpro"
+      ]
+    },
+    {
+      "canonicalSlug": "orkstations-desking-series-fenix",
+      "legacySlugs": [
+        "fenix",
+        "oando-workstations--fenix"
+      ]
+    },
+    {
+      "canonicalSlug": "orkstations-desking-series-sleek",
+      "legacySlugs": [
+        "oando-workstations--sleek",
+        "sleek"
+      ]
+    },
+    {
+      "canonicalSlug": "orkstations-desking-series-trio",
+      "legacySlugs": [
+        "oando-workstations--trio-2",
+        "trio-2"
+      ]
+    },
+    {
+      "canonicalSlug": "orkstations-desking-series-x-bench",
+      "legacySlugs": [
+        "oando-workstations--x-bench",
+        "x-bench"
+      ]
+    },
+    {
+      "canonicalSlug": "orkstations-panel-series-panel-pro",
+      "legacySlugs": [
+        "oando-workstations--panel-pro",
+        "panel-pro"
+      ]
+    },
+    {
+      "canonicalSlug": "torage-compactor-storage-compactor",
+      "legacySlugs": [
+        "compactor",
+        "oando-storage--compactor"
+      ]
+    },
+    {
+      "canonicalSlug": "torage-locker-metal-locker",
+      "legacySlugs": [
+        "metal-locker",
+        "oando-storage--metal-locker"
+      ]
+    },
+    {
+      "canonicalSlug": "torage-locker-wooden",
+      "legacySlugs": [
+        "oando-storage--prelam-locker",
+        "prelam-locker"
+      ]
+    },
+    {
+      "canonicalSlug": "torage-metal-storage-metal",
+      "legacySlugs": [
+        "metal-storages",
+        "oando-storage--metal-storages"
+      ]
+    },
+    {
+      "canonicalSlug": "torage-metal-storage-metal-pedestal",
+      "legacySlugs": [
+        "metal-pedestal",
+        "oando-storage--metal-pedestal"
+      ]
+    },
+    {
+      "canonicalSlug": "torage-prelam-storage-heavy-dut",
+      "legacySlugs": [
+        "heavy-duty-racks",
+        "oando-storage--heavy-duty-racks"
+      ]
+    },
+    {
+      "canonicalSlug": "torage-prelam-storage-prelam",
+      "legacySlugs": [
+        "oando-storage--pedestal",
+        "oando-storage--prelam-storage",
+        "pedestal",
+        "prelam-storage"
+      ]
+    }
+  ]
+}

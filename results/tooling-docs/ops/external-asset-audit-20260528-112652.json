@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-05-28T11:26:52",
+  "blockedHosts": [
+    "catalogindia.in",
+    "images.unsplash.com",
+    "res.cloudinary.com",
+    "static.wixstatic.com",
+    "www.catalogindia.in"
+  ],
+  "supabase": {
+    "skipped": true,
+    "reason": "Missing NEXT_PUBLIC_SUPABASE_URL and/or service key"
+  },
+  "source": {
+    "matchCount": 0,
+    "matches": []
+  },
+  "summary": {
+    "blockedDbRows": 0,
+    "blockedCodeMatches": 0
+  }
+}

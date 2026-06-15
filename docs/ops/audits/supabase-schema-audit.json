@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2026-06-14T12:44:20.314Z",
+  "supabaseHost": "erpweaiypimorcunaimz.supabase.co",
+  "tables": [
+    {
+      "table": "categories",
+      "exists": true,
+      "rowCount": 11,
+      "error": null
+    },
+    {
+      "table": "products",
+      "exists": true,
+      "rowCount": 85,
+      "error": null
+    },
+    {
+      "table": "product_specs",
+      "exists": true,
+      "rowCount": 0,
+      "error": null
+    },
+    {
+      "table": "product_images",
+      "exists": true,
+      "rowCount": 0,
+      "error": null
+    },
+    {
+      "table": "product_slug_aliases",
+      "exists": true,
+      "rowCount": 0,
+      "error": null
+    },
+    {
+      "table": "business_stats_current",
+      "exists": true,
+      "rowCount": 1,
+      "error": null
+    },
+    {
+      "table": "customer_queries",
+      "exists": true,
+      "rowCount": 0,
+      "error": null
+    },
+    {
+      "table": "catalog_categories",
+      "exists": true,
+      "rowCount": 11,
+      "error": null
+    },
+    {
+      "table": "catalog_products",
+      "exists": true,
+      "rowCount": 85,
+      "error": null
+    },
+    {
+      "table": "catalog_product_specs",
+      "exists": true,
+      "rowCount": 0,
+      "error": null
+    },
+    {
+      "table": "catalog_product_images",
+      "exists": true,
+      "rowCount": 0,
+      "error": null
+    },
+    {
+      "table": "catalog_product_slug_aliases",
+      "exists": true,
+      "rowCount": 0,
+      "error": null
+    }
+  ],
+  "runtimeQueries": [
+    {
+      "label": "Products list",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "label": "Categories list",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "label": "Product specs",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "label": "Product images",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "label": "Alias table",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "label": "Business stats",
+      "ok": true,
+      "detail": "ok"
+    },
+    {
+      "label": "Customer queries",
+      "ok": false,
+      "detail": "Could not find the table 'public.customer_queries' in the schema cache"
+    }
+  ],
+  "dataQuality": {
+    "productCount": 85,
+    "categoryCount": 11,
+    "blankSlugs": 0,
+    "duplicateSlugs": [],
+    "missingCategoryIds": 0,
+    "missingSubcategorySlug": 85,
+    "missingAltText": 85,
+    "missingPrimaryImage": 43,
+    "duplicateNameKeysByCategory": [
+      {
+        "category_id": "oando-storage",
+        "normalized_name_key": "prelam",
+        "count": 2,
+        "slugs": [
+          "pedestal",
+          "prelam-storage"
+        ]
+      }
+    ],
+    "aliasCount": 0,
+    "blankAliasRows": 0,
+    "selfAliasRows": 0,
+    "missingBusinessStatsRows": 0,
+    "activeBusinessStatsRows": 1
+  }
+}

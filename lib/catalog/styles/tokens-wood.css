@@ -1,0 +1,20 @@
+/* tokens-wood.css */
+:root {
+  /* Ash / Birch (Light) */
+  --block-wood-ash-base: #e6d3ba;
+  --block-wood-ash-grain: #d4b895;
+  --block-wood-ash-edge: #c6a67d;
+  --block-wood-ash-shadow: #b39164;
+
+  /* Oak (Medium) */
+  --block-wood-oak-base: #d2a679;
+  --block-wood-oak-grain: #b88654;
+  --block-wood-oak-edge: #a37241;
+  --block-wood-oak-shadow: #8f5f30;
+
+  /* Walnut (Dark) */
+  --block-wood-walnut-base: #5c4033;
+  --block-wood-walnut-grain: #463025;
+  --block-wood-walnut-edge: #38251c;
+  --block-wood-walnut-shadow: #2a1a13;
+}

@@ -1,0 +1,56 @@
+{
+  "extends": "./config/build/tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/types/*": ["./config/database/types/*"],
+      "@/app/*": ["./app/*"],
+      "@/components/*": ["./components/*"],
+      "@/data/*": ["./data/*"],
+      "@/features/*": ["./features/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "features/**/*.ts",
+    "features/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "data/**/*.ts",
+    "data/**/*.tsx",
+    "platform/**/*.ts",
+    "platform/**/*.tsx",
+    "config/database/types/**/*.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "platform/drizzle/drizzle.config.ts",
+    "node_modules",
+    "unused",
+    "scripts",
+    "archive",
+    "trashfiles",
+    "tmp",
+    "backups",
+    "backup",
+    "chat-logs",
+    "reports",
+    "coverage",
+    "results",
+    "assets/data",
+    "superb_codex_supabase",
+    "old",
+    "new-repo-20260306-235837",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "tests"
+  ]
+}

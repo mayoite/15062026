@@ -1,0 +1,17 @@
+/* tokens-fabric.css */
+:root {
+  /* Mesh (Task Chairs) */
+  --block-fabric-mesh-black: #1e293b;
+  --block-fabric-mesh-grey: #64748b;
+  --block-fabric-mesh-blue: #1e3a8a;
+  
+  /* Weaves (Sofas / Soft Seating) */
+  --block-fabric-weave-stone: #a8a29e;
+  --block-fabric-weave-sand: #d6d3d1;
+  --block-fabric-weave-charcoal: #44403c;
+  --block-fabric-weave-navy: #172554;
+  
+  /* Leather */
+  --block-fabric-leather-tan: #b45309;
+  --block-fabric-leather-black: #171717;
+}

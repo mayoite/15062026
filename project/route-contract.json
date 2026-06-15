@@ -1,0 +1,99 @@
+{
+  "version": 3,
+  "status": "live-route-auth-contract",
+  "entry": {
+    "access": "/access",
+    "chooseProduct": "/choose-product",
+    "dashboard": "/dashboard"
+  },
+  "planner": {
+    "landing": "/planner",
+    "guest": "/planner/guest",
+    "help": "/planner/help",
+    "canvas": "/planner/canvas",
+    "dashboardRedirect": "/dashboard",
+    "_legacyRedirects": {
+      "oando-planner": "/planner",
+      "buddy-planner": "/planner/canvas"
+    }
+  },
+  "configurator": {
+    "landing": "/buddy-planner",
+    "guest": "/buddy-planner/guest",
+    "editor": "/buddy-planner/editor",
+    "workspaceCompatibility": "/buddy-planner/[...slug]",
+    "dashboardRedirect": "/buddy-planner/dashboard",
+    "_status": "compatibility-redirects-to-unified-planner",
+    "_note": "Legacy buddy routes 301 to /planner/** via Next.js page redirects."
+  },
+  "protectedPrefixes": [
+    "/dashboard",
+    "/portal",
+    "/admin",
+    "/crm",
+    "/planner/canvas",
+    "/oando-planner/canvas",
+    "/oando-planner/shared",
+    "/buddy-planner/editor",
+    "/buddy-planner/t/"
+  ],
+  "publicGuestRoutes": [
+    "/choose-product?mode=guest",
+    "/planner/guest",
+    "/oando-planner/guest",
+    "/buddy-planner/guest"
+  ],
+  "plannerGuestCookie": {
+    "name": "planner_guest_pass",
+    "allowedPaths": [
+      "/planner",
+      "/planner/guest",
+      "/planner/canvas",
+      "/oando-planner",
+      "/oando-planner/guest",
+      "/oando-planner/onboarding",
+      "/oando-planner/canvas"
+    ],
+    "blockedActions": [
+      "persist",
+      "import",
+      "export",
+      "publish",
+      "share"
+    ]
+  },
+  "redirects": {
+    "unauthenticatedProtected": "/access?next=<path>",
+    "plannerDashboard": "/dashboard",
+    "configuratorDashboard": "/dashboard",
+    "configuratorWorkspaceCompatibility": "/buddy-planner/[...slug]",
+    "legacyOandoPlanner": "/planner",
+    "legacyBuddyPlanner": "/planner/canvas"
+  },
+  "notes": [
+    "Canonical workspace planner lives at /planner/**.",
+    "Legacy /oando-planner/** and /buddy-planner/** redirect to unified routes.",
+    "Planner guest access: dedicated /planner/guest route plus cookie on allowed paths.",
+    "Canvas routes are noindex; landing and help are indexable."
+  ],
+  "support": {
+    "ivr": "/support-ivr"
+  },
+  "docs": {
+    "backendArchitecture": "/backend-architecture"
+  },
+  "api": {
+    "planner": {
+      "aiAdvisor": {
+        "path": "/api/planner/ai-advisor",
+        "method": "POST"
+      }
+    },
+    "theme": {
+      "active": {
+        "path": "/api/theme/active",
+        "method": "GET"
+      }
+    }
+  }
+}

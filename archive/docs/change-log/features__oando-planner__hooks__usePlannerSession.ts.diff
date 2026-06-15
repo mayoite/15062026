@@ -1,0 +1,40 @@
+diff --git a/features/oando-planner/hooks/usePlannerSession.ts b/features/oando-planner/hooks/usePlannerSession.ts
+index 025c4a7..3d37dd2 100644
+--- a/features/oando-planner/hooks/usePlannerSession.ts
++++ b/features/oando-planner/hooks/usePlannerSession.ts
+@@ -72,6 +72,18 @@ export function usePlannerSession(options: UsePlannerSessionOptions) {
+   // Refs for timers and state
+   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+   const pendingSaveRef = useRef<PlannerDocument | null>(null);
++  const prevUserIdRef = useRef<string | null>(userId ?? null);
++
++  // Keep session userId in sync with the authenticated user from options.
++  // Adjust state during render when the prop changes (React-recommended) rather
++  // than in an effect, which would trigger an extra cascading render.
++  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
++  const normalizedUserId = userId ?? null;
++  if (prevUserIdRef.current !== normalizedUserId) {
++    prevUserIdRef.current = normalizedUserId;
++    setSessionState(prev => ({ ...prev, userId: normalizedUserId }));
++  }
++
+ 
+   // LocalStorage fallback
+   const saveToLocalStorage = useCallback((document: PlannerDocument, source: SaveSource) => {
+@@ -169,15 +181,8 @@ export function usePlannerSession(options: UsePlannerSessionOptions) {
+     }
+   }, [sessionState.isOnline, sessionState.userId, sessionState.documentId, enableOffline, saveToLocalStorage]);
+ 
+-  // Keep session userId in sync with the authenticated user from options
+-  useEffect(() => {
+-    setSessionState(prev => ({
+-      ...prev,
+-      userId: userId ?? null,
+-    }));
+-  }, [userId]);
+-
+   // Monitor online/offline status
++
+   useEffect(() => {
+     const handleOnline = () => {
+       setSessionState(prev => ({

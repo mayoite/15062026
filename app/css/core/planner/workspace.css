@@ -1,0 +1,140 @@
+@import "../../../../lib/catalog/styles/index.css";
+
+@layer base {
+  /* Selection color */
+  ::selection {
+    background-color: var(--surface-accent-wash);
+    color: inherit;
+  }
+
+  /* Focus and transitions — match site FOCSS focus ring (04-DESIGN-SYSTEM) */
+  button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="tab"] {
+    @apply focus-visible:outline-none transition-all duration-150;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible,
+  [role="menuitem"]:focus-visible,
+  [role="tab"]:focus-visible {
+    box-shadow: var(--focus-ring);
+  }
+  
+  /* Mono features */
+  code, kbd, pre, samp {
+    font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1;
+  }
+}
+
+/* Animations */
+@keyframes dropdown-enter {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dropdown-enter { animation: dropdown-enter 120ms ease-out; }
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-panel-enter { animation: modal-enter 140ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+@keyframes modal-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-backdrop-enter { animation: modal-backdrop-enter 100ms ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-panel-enter, .modal-backdrop-enter, .dropdown-enter { animation: none; }
+}
+
+/* Scrollbar — scoped to planner workspace so site routes are unaffected */
+.planner-workspace,
+.planner-workspace * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-soft) transparent;
+}
+.planner-workspace ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.planner-workspace ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.planner-workspace ::-webkit-scrollbar-thumb {
+  background-color: var(--border-soft);
+  border-radius: 4px;
+}
+.planner-workspace ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--border-muted);
+}
+
+/* Snap indicator — visible when geometry snap engages during draw tools */
+.pw-snap-indicator {
+  position: fixed;
+  z-index: 40;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+}
+
+.pw-snap-indicator__ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid var(--color-accent);
+  border-radius: 50%;
+  opacity: 0.55;
+  animation: pw-snap-pulse 0.9s ease-out infinite;
+}
+
+.pw-snap-indicator__dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--surface-page) 80%, transparent);
+}
+
+.pw-snap-indicator[data-kind="angle-constraint"] .pw-snap-indicator__ring {
+  border-color: var(--color-warning);
+}
+
+.pw-snap-indicator[data-kind="angle-constraint"] .pw-snap-indicator__dot {
+  background: var(--color-warning);
+}
+
+@keyframes pw-snap-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.15);
+    opacity: 0.15;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pw-snap-indicator__ring {
+    animation: none;
+    opacity: 0.45;
+  }
+}
+

@@ -1,0 +1,25 @@
+:root {
+  --block-primitive-white: #ffffff;
+  --block-primitive-slate-50: #f8fafc;
+  --block-primitive-slate-100: #f1f5f9;
+  --block-primitive-slate-200: #e2e8f0;
+  --block-primitive-slate-300: #cbd5e1;
+  --block-primitive-slate-400: #94a3b8;
+  --block-primitive-slate-500: #64748b;
+  --block-primitive-slate-600: #475569;
+  --block-primitive-slate-700: #334155;
+  --block-primitive-slate-800: #1e293b;
+  --block-primitive-slate-900: #0f172a;
+  
+  --block-primitive-stone-400: #a8a29e;
+  --block-primitive-stone-500: #78716c;
+  --block-primitive-stone-600: #57534e;
+  --block-primitive-stone-700: #44403c;
+  
+  --block-primitive-lime-600: #65a30d;
+  --block-primitive-lime-800: #3f6212;
+  --block-primitive-lime-900: #365314;
+  
+  --block-primitive-blue-500: #3b82f6;
+  --block-primitive-amber-900: #78350f;
+}

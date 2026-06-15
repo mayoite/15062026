@@ -1,0 +1,388 @@
+/* ── Display / H1 ── */
+@utility typ-h1 {
+  font-family: var(--font-display);
+  font-size: var(--type-display-size);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-tight);
+  line-height: var(--type-leading-display);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+@utility typ-display {
+  font-family: var(--font-display);
+  font-size: var(--type-display-size);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-tight);
+  line-height: var(--type-leading-display);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+@utility hero-title {
+  font-family: var(--font-display);
+  font-size: var(--type-display-size);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-tight);
+  line-height: var(--type-leading-display);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* ── Section / H2 ── */
+@utility typ-h2 {
+  font-family: var(--font-display);
+  font-size: var(--type-title-lg-size);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-title);
+  line-height: var(--type-leading-title);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  color: var(--text-heading);
+}
+
+@utility typ-section {
+  font-family: var(--font-display);
+  font-size: var(--type-title-lg-size);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-title);
+  line-height: var(--type-leading-title);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  color: var(--text-heading);
+}
+
+@utility typ-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+@utility typ-section-subtitle {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-lg-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy);
+  color: var(--text-muted);
+}
+
+@utility home-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.6vw, 2.9rem);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-title);
+  line-height: 1.08;
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+
+@utility section-title {
+  font-family: var(--font-display);
+  font-size: var(--type-title-lg-size);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: var(--type-letter-title);
+  line-height: var(--type-leading-title);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* ── Utility page titles (compare, quote cart, access) ── */
+@utility typ-page-title {
+  font-family: var(--font-display);
+  font-size: var(--type-title-lg-size);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-title);
+  line-height: var(--type-leading-title);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  color: var(--text-heading);
+}
+
+@utility typ-subsection-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 2.4vw, 2.25rem);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-title);
+  line-height: var(--type-leading-title);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  color: var(--text-heading);
+}
+
+@utility typ-proof-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2vw, 1.75rem);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-card);
+  line-height: 1.08;
+  font-kerning: normal;
+}
+
+/* ── H3 ── */
+@utility typ-h3 {
+  font-family: var(--font-display);
+  font-size: var(--type-title-sm-size);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: -0.038em;
+  line-height: var(--type-leading-h3);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  color: var(--text-heading);
+}
+
+/* ── Lead / body-lg ── */
+@utility typ-lead {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-lg-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy);
+  color: var(--text-body);
+}
+
+@utility home-copy {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-lg-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy);
+}
+
+@utility hero-subtitle {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-lg-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy);
+}
+
+@utility page-copy {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-lg-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy);
+}
+
+/* ── Body small ── */
+@utility page-copy-sm {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy-sm);
+}
+
+@utility typ-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy-sm);
+  color: var(--text-body);
+}
+
+@utility catalog-card__description {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy-sm);
+}
+
+/* ── Nav ── */
+@utility typ-nav {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+@utility typ-nav-sm {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+@utility typ-micro {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+/* ── Label / eyebrow ── */
+@utility typ-label {
+  font-family: var(--font-sans);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+@utility typ-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+@utility typ-overline {
+  font-family: var(--font-sans);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+@utility typ-chip {
+  font-family: var(--font-sans);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+@utility home-kicker {
+  font-family: var(--font-sans);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+@utility catalog-card__eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+/* ── CTA ── */
+@utility typ-cta {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+
+/* ── Stat ── */
+@utility typ-stat {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 67px);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: -0.06em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Accent styles ── */
+@utility home-heading__accent {
+  color: var(--color-ocean-boat-blue-500);
+  font-style: normal;
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: inherit;
+}
+
+@utility hero-accent {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-display-regular);
+}
+
+/* ── Body ── */
+@utility typ-body {
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy);
+  color: var(--text-body);
+}
+
+/* ── Hero title variants ── */
+@utility hero-title-default {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 6vw, 93px);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-tight);
+  line-height: var(--type-leading-display);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+@utility hero-title-small {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 5vw, 75px);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-tight);
+  line-height: var(--type-leading-display);
+  font-kerning: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* ── Canonical heading accent (the hero's italic-bronze emphasis) ──
+   Single source for the stressed word in a heading.
+   Light surfaces → text-accent-italic · dark/inverse surfaces → -on-dark.
+   Active contract: docs/plans/04-DESIGN-SYSTEM-AND-THEME.md. */
+@utility text-accent-italic {
+  font-style: italic;
+  color: var(--color-bronze-400);
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+@utility text-accent-italic-on-dark {
+  font-style: italic;
+  color: var(--color-bronze-300);
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+/* ── Image-overlay title ──
+   Display-light title permitted at large size over imagery.
+   Active contract: docs/plans/04-DESIGN-SYSTEM-AND-THEME.md. */
+@utility typ-overlay-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.75rem);
+  font-weight: var(--font-weight-display-light);
+  letter-spacing: var(--type-letter-card);
+  line-height: 1.02;
+  font-kerning: normal;
+  text-wrap: balance;
+}
+
+/* ── Tracking helpers ── */
+@utility tracking-ultra { letter-spacing: 0.18em; }
+@utility tracking-max { letter-spacing: 0.2em; }

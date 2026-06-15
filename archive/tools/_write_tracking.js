@@ -1,0 +1,1 @@
+const fs=require('fs');const content=fs.readFileSync('_layout_content.txt','utf8');fs.writeFileSync('features/planner/lib/layoutAdvisor.ts',content,'utf8');console.log('done');

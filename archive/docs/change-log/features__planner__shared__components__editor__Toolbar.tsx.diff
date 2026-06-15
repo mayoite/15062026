@@ -1,0 +1,13 @@
+diff --git a/features/planner/shared/components/editor/Toolbar.tsx b/features/planner/shared/components/editor/Toolbar.tsx
+index 970293d..4a67daf 100644
+--- a/features/planner/shared/components/editor/Toolbar.tsx
++++ b/features/planner/shared/components/editor/Toolbar.tsx
+@@ -92,7 +92,7 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
+       <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide py-4 px-3 flex flex-col gap-6">
+         {!collapsed && (
+           <div className="flex items-center justify-center px-2 pb-2">
+-            <OneAndOnlyLogo variant="dark" className="h-7 w-auto" />
++            <OneAndOnlyLogo variant="white" className="h-7 w-auto" />
+           </div>
+         )}
+ 

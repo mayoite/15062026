@@ -1,0 +1,287 @@
+/**
+ * Planner workspace typography — tokens on .planner-workspace (planner-shell.css).
+ * Import last in the workspace bundle.
+ */
+
+/* ─── Size utilities (replace inline text-[10px] / text-[12px]) ─────────────── */
+
+.planner-workspace .pw-ui-2xs {
+  font-size: var(--pw-text-2xs);
+  line-height: var(--pw-leading-tight);
+}
+
+.planner-workspace .pw-ui-xs {
+  font-size: var(--pw-text-xs);
+  line-height: var(--pw-leading-tight);
+}
+
+.planner-workspace .pw-ui-sm {
+  font-size: var(--pw-text-sm);
+  line-height: var(--pw-leading-copy);
+}
+
+.planner-workspace .pw-catalog-warning {
+  color: var(--color-bronze-600);
+  background: color-mix(in srgb, var(--color-bronze-300) 28%, var(--surface-panel));
+}
+
+/* ─── Global workspace rhythm ───────────────────────────────────────────────── */
+
+.planner-workspace .pw-catalog,
+.planner-workspace .pwx-inspector,
+.planner-workspace .pwx-modal-body {
+  color: var(--text-body);
+}
+
+/* ─── Shell chrome ─────────────────────────────────────────────────────────── */
+
+.planner-workspace .pw-history-reset-label,
+.planner-workspace .pw-menu-item {
+  font-size: var(--pw-text-sm);
+  font-weight: 500;
+  color: var(--text-body);
+}
+
+.planner-workspace .pw-badge,
+.planner-workspace .pw-panel-tab,
+.planner-workspace .pw-status-bar,
+.planner-workspace .pw-segment-btn,
+.planner-workspace .pw-save-pill,
+.planner-workspace .pw-icon-btn--labeled span {
+  font-size: var(--pw-text-xs);
+  letter-spacing: var(--pw-letter-ui);
+  text-transform: none;
+}
+
+.planner-workspace .pw-badge {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-panel-tab {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.planner-workspace .pw-status-bar {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-status-bar strong {
+  color: var(--text-strong);
+  font-weight: var(--font-weight-copy-semibold);
+}
+
+/* ─── Catalog ─────────────────────────────────────────────────────────────── */
+
+.planner-workspace .pw-catalog-title,
+.planner-workspace .pw-catalog-section-label {
+  font-size: var(--pw-text-xs);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-catalog-search {
+  font-size: var(--pw-text-base);
+  line-height: var(--pw-leading-tight);
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-catalog-search::placeholder {
+  color: var(--text-subtle);
+}
+
+.planner-workspace .pw-catalog-purpose-tab {
+  font-size: var(--pw-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-ui);
+  text-transform: none;
+}
+
+.planner-workspace .pw-catalog-subchip {
+  font-size: var(--pw-text-sm);
+  font-weight: 500;
+}
+
+.planner-workspace .pw-catalog-card-sku {
+  font-size: var(--pw-text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+  color: var(--text-subtle);
+}
+
+.planner-workspace .pw-catalog-card-name {
+  font-size: var(--pw-text-sm);
+  font-weight: var(--font-weight-copy-medium);
+  line-height: var(--pw-leading-tight);
+  letter-spacing: var(--pw-letter-tight);
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-catalog-card-footprint {
+  font-size: var(--pw-text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-catalog-empty p {
+  font-size: var(--pw-text-base);
+  line-height: var(--pw-leading-copy);
+  color: var(--text-body);
+}
+
+/* ─── Canvas + empty state ────────────────────────────────────────────────── */
+
+.planner-workspace .pw-empty-canvas-kicker {
+  font-size: var(--pw-text-xs);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-empty-canvas-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.2vw, var(--pw-text-display));
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: var(--type-letter-title, -0.035em);
+  line-height: 1.1;
+  color: var(--text-heading);
+}
+
+.planner-workspace .pw-empty-canvas-copy,
+.planner-workspace .pw-empty-canvas-note {
+  font-size: var(--pw-text-base);
+  line-height: var(--pw-leading-copy);
+  color: var(--text-body);
+}
+
+.planner-workspace .pw-empty-canvas-primary,
+.planner-workspace .pw-empty-canvas-secondary,
+.planner-workspace .pw-empty-canvas-link {
+  font-size: var(--pw-text-sm);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-ui);
+}
+
+/* ─── Editor chrome (pwx-*) ───────────────────────────────────────────────── */
+
+.planner-workspace .pwx-meta-chip,
+.planner-workspace .pwx-chip,
+.planner-workspace .pwx-field-unit,
+.planner-workspace .pwx-action-btn {
+  font-size: var(--pw-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-ui);
+  text-transform: none;
+}
+
+.planner-workspace .pwx-rail-group-label {
+  font-size: var(--pw-text-2xs);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+}
+
+.planner-workspace .pwx-inspector-name {
+  font-family: var(--font-display);
+  font-size: var(--pw-text-md);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: var(--pw-letter-tight);
+  line-height: 1.2;
+  color: var(--text-heading);
+}
+
+.planner-workspace .pwx-inspector-kind {
+  font-size: var(--pw-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pwx-field-label,
+.planner-workspace .pwx-choice {
+  font-size: var(--pw-text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pwx-field-input,
+.planner-workspace .pwx-select,
+.planner-workspace .pwx-delete-btn {
+  font-size: var(--pw-text-base);
+  font-weight: 500;
+  color: var(--text-strong);
+}
+
+.planner-workspace .pwx-field-input,
+.planner-workspace .pwx-select {
+  font-variant-numeric: tabular-nums;
+}
+
+.planner-workspace .pwx-modal-title {
+  font-family: var(--font-display);
+  font-size: var(--pw-text-lg);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: var(--pw-letter-tight);
+  color: var(--text-heading);
+}
+
+.planner-workspace .pwx-modal-sub,
+.planner-workspace .pwx-template-desc,
+.planner-workspace .pwx-bubble,
+.planner-workspace .pwx-chat-input {
+  font-size: var(--pw-text-base);
+  line-height: var(--pw-leading-copy);
+  color: var(--text-body);
+}
+
+.planner-workspace .pwx-bubble--user {
+  color: var(--text-inverse);
+}
+
+/* ─── Right panel workflow chrome ─────────────────────────────────────────── */
+
+.planner-workspace .pw-step-bar__label {
+  font-size: var(--pw-text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-ui);
+  text-transform: none;
+}
+
+.planner-workspace .pw-workflow-kicker {
+  font-size: var(--pw-text-xs);
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-workflow-step {
+  font-family: var(--font-display);
+  font-size: var(--pw-text-sm);
+  font-weight: var(--font-weight-display-regular);
+  color: var(--text-heading);
+}
+
+.planner-workspace .pw-workflow-hint,
+.planner-workspace .pw-workflow-ok,
+.planner-workspace .pw-workflow-finding {
+  font-size: var(--pw-text-sm);
+  line-height: var(--pw-leading-copy);
+}
+
+.planner-workspace .pwx-layers > .typ-label {
+  font-size: var(--pw-text-xs);
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pwx-layer-name {
+  font-size: var(--pw-text-sm);
+  font-weight: 500;
+  letter-spacing: var(--pw-letter-ui);
+}

@@ -1,0 +1,39 @@
+diff --git a/app/api/admin/buddy-catalog/[id]/route.ts b/app/api/admin/buddy-catalog/[id]/route.ts
+index e94c101..f6da706 100644
+--- a/app/api/admin/buddy-catalog/[id]/route.ts
++++ b/app/api/admin/buddy-catalog/[id]/route.ts
+@@ -7,6 +7,7 @@ import {
+   isMissingTableError,
+ } from "@/app/api/admin/_lib/server";
+ import { buildConfiguratorRow } from "@/lib/catalog/configuratorCatalogPayload";
++import type { SupabaseClient } from "@supabase/supabase-js";
+ 
+ const TABLE = "configurator_products";
+ 
+@@ -29,7 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
+   const keys = Object.keys(body);
+   if (keys.length === 1 && keys[0] === "active") {
+      
+-    const { data, error } = await (supabase as unknown)
++    const { data, error } = await (supabase as SupabaseClient)
+       .from(TABLE)
+       .update({ active: body.active !== false })
+       .eq("id", id)
+@@ -47,7 +48,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
+   }
+ 
+    
+-  const { data, error } = await (supabase as unknown)
++  const { data, error } = await (supabase as SupabaseClient)
+     .from(TABLE)
+     .update(result.row)
+     .eq("id", id)
+@@ -80,7 +81,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
+   }
+ 
+    
+-  const { data, error } = await (supabase as unknown)
++  const { data, error } = await (supabase as SupabaseClient)
+     .from(TABLE)
+     .update({ active: false })
+     .eq("id", id)

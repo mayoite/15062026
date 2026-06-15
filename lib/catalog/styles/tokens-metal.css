@@ -1,0 +1,19 @@
+/* tokens-metal.css */
+:root {
+  /* Powder Coat (Matte) */
+  --block-metal-powder-white: #f8fafc;
+  --block-metal-powder-silver: #cbd5e1;
+  --block-metal-powder-charcoal: #334155;
+  --block-metal-powder-black: #0f172a;
+
+  /* Polished / Chrome */
+  --block-metal-chrome-base: #e2e8f0;
+  --block-metal-chrome-highlight: #ffffff;
+  --block-metal-chrome-shadow: #94a3b8;
+  --block-metal-chrome-edge: #64748b;
+
+  /* Brass / Bronze */
+  --block-metal-brass-base: #d4af37;
+  --block-metal-brass-highlight: #f9e596;
+  --block-metal-brass-shadow: #aa8620;
+}

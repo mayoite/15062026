@@ -1,0 +1,51 @@
+diff --git a/features/planner/store/plannerStore.ts b/features/planner/store/plannerStore.ts
+index 19932f6..986a1b9 100644
+--- a/features/planner/store/plannerStore.ts
++++ b/features/planner/store/plannerStore.ts
+@@ -15,9 +15,10 @@ import { usePlannerFurnitureStore } from "./plannerFurnitureStore";
+ import { usePlannerUIStore } from "./plannerUIStore";
+ import { usePlannerHistoryStore } from "./plannerHistoryStore";
+ import { usePlannerProjectStore } from "./plannerProjectStore";
+-import type { PlannerState, Tool, FurnitureItem, StructuralElementDraft, BackgroundImage, StructuralType, Point, DoorItem, WindowItem, Zone, ZoneType, MeasurementItem, TextLabel, Wall, Room, ViewMode } from "./plannerTypes";
++import type { PlannerState, Tool, FurnitureItem, StructuralElementDraft, BackgroundImage, StructuralType, Point, DoorItem, WindowItem, Zone, ZoneType, MeasurementItem, TextLabel, Wall, Room, ViewMode, LoadedProjectData } from "./plannerTypes";
+ import type { HistorySnapshot } from "./plannerStoreSupport";
+ import type { LightingPreset } from "@/features/planner/lib/lightingPresets";
++import type { FloorTemplate } from "./floorTemplates";
+ 
+ // Resolved at call-time to avoid pulling tldraw (ESM) into the module graph
+ // during Jest runs. Do NOT convert to a static import.
+@@ -98,6 +99,7 @@ export const usePlannerStore = create<PlannerState>((set) => ({
+   get zones()              { return usePlannerGeometryStore.getState().zones; },
+   get measurements()       { return usePlannerGeometryStore.getState().measurements; },
+   get structuralElements() { return usePlannerGeometryStore.getState().structuralElements; },
++  get textLabels()         { return [] as TextLabel[]; },
+   get drawingWall()        { return usePlannerGeometryStore.getState().drawingWall; },
+   get drawingRoom()        { return usePlannerGeometryStore.getState().drawingRoom; },
+   get drawingZone()        { return usePlannerGeometryStore.getState().drawingZone; },
+@@ -258,7 +260,7 @@ export const usePlannerStore = create<PlannerState>((set) => ({
+   duplicateSelected: () => {},
+   selectAll:         () => {},
+ 
+-  saveProject:      (thumb: string | null) => usePlannerProjectStore.getState().saveProject(thumb),
++  saveProject:      (thumb?: string) => usePlannerProjectStore.getState().saveProject(thumb),
+   saveAsCopy:       (_n: string) => ({ success: false, error: "Not implemented" }),
+   loadProject:      (k: string) => usePlannerProjectStore.getState().loadProject(k),
+   getSavedProjects: () => [],
+@@ -266,7 +268,7 @@ export const usePlannerStore = create<PlannerState>((set) => ({
+   duplicateProject: () => usePlannerProjectStore.getState().duplicateProject(),
+   deleteProject:    (k: string) => usePlannerProjectStore.getState().deleteProject(k),
+   listProjects:     () => usePlannerProjectStore.getState().listProjects(),
+-  importProject:    (d: unknown) => usePlannerProjectStore.getState().importProject(d),
++  importProject:    (d: LoadedProjectData) => usePlannerProjectStore.getState().importProject(d),
+   exportProject:    () => usePlannerProjectStore.getState().exportProject(),
+   clearAll:         () => usePlannerProjectStore.getState().clearAll(),
+   hasContent:       () => usePlannerProjectStore.getState().hasContent(),
+@@ -275,7 +277,7 @@ export const usePlannerStore = create<PlannerState>((set) => ({
+     const g = usePlannerGeometryStore.getState().gridSize;
+     return { x: Math.round(p.x / g) * g, y: Math.round(p.y / g) * g };
+   },
+-  loadTemplate: (_t: string) => {},
++  loadTemplate: (_t: FloorTemplate) => {},
+ 
+   getSelectedItemType: () => {
+     const sel = usePlannerFurnitureStore.getState().selectedId;

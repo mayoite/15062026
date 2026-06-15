@@ -1,0 +1,49 @@
+/* Site footer — via app/css/core/site/bundles/footer.css */
+
+.site-footer {
+  position: relative;
+  background: var(--surface-inverse);
+  color: var(--text-inverse-body);
+}
+
+.site-footer__heading {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: var(--font-weight-copy-semibold);
+  color: var(--text-inverse-subtle);
+}
+
+.site-footer__link {
+  border-radius: 2px;
+  color: var(--text-inverse-muted);
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+
+.site-footer__link:hover {
+  color: var(--text-inverse-body);
+}
+
+.site-footer__social {
+  border-radius: 2px;
+  color: var(--text-inverse-muted);
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+
+.site-footer__social:hover {
+  color: var(--text-inverse);
+}
+
+.site-footer__legal {
+  border-radius: 2px;
+  color: var(--text-inverse-muted);
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+
+.site-footer__legal:hover {
+  color: var(--text-inverse-body);
+}
+
+.site-footer__divider {
+  border-top: 1px solid var(--border-inverse);
+  margin-top: 3rem;
+}

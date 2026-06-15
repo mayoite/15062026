@@ -1,0 +1,182 @@
+diff --git a/features/planner/tldraw/tools/ZoneOverlayTool.ts b/features/planner/tldraw/tools/ZoneOverlayTool.ts
+index 9ba6900..626f1c6 100644
+--- a/features/planner/tldraw/tools/ZoneOverlayTool.ts
++++ b/features/planner/tldraw/tools/ZoneOverlayTool.ts
+@@ -6,8 +6,9 @@
+  * different colors, labels, and transparency levels.
+  */
+ 
+-import type { Editor, TLShape } from "@tldraw/editor";
++import type { Editor, TLShape, TLShapeId } from "@tldraw/editor";
+ import { Box, Vec, createShapeId } from "@tldraw/editor";
++import type { PlannerZoneTLShape } from "../shapes/tldrawShapeTypes";
+ 
+ export type ZoneType = "work" | "meeting" | "circulation" | "storage" | "utility" | "custom";
+ 
+@@ -186,7 +187,7 @@ export class ZoneOverlayUtils {
+     const maxY = Math.max(...ys);
+ 
+     const zoneShape = {
+-      id: zone.id as unknown,
++      id: zone.id,
+       type: "planner-zone" as const,
+       x: minX,
+       y: minY,
+@@ -218,7 +219,8 @@ export class ZoneOverlayUtils {
+       },
+     };
+ 
+-    this.editor.createShape(zoneShape as unknown);
++    // eslint-disable-next-line @typescript-eslint/no-explicit-any
++    this.editor.createShape(zoneShape as any);
+   }
+ 
+   // Calculate area of polygon
+@@ -318,60 +320,57 @@ export class ZoneOverlayUtils {
+     const allZones = this.getZoneOverlays();
+     const mapped = this.toPlannerZoneType(type);
+     return allZones.filter((shape) => {
+-      const s = shape as unknown;
+-      return s.props?.zoneType === mapped;
++      if (shape.type !== "planner-zone") return false;
++      const zoneShape = shape as PlannerZoneTLShape;
++      return zoneShape.props.zoneType === mapped;
+     });
+   }
+ 
+   // Update zone properties
+   updateZone(zoneId: string, updates: Partial<ZoneConfig>): void {
+-    const shape = this.editor.getShape(zoneId as unknown);
++    const shape = this.editor.getShape(zoneId as TLShapeId);
+     if (!shape || shape.type !== "planner-zone") return;
+ 
+-    const s = shape as unknown;
+-    const currentProps = s.props ?? {};
++    const zoneShape = shape as PlannerZoneTLShape;
+     this.editor.updateShape({
+-      id: zoneId as unknown,
++      id: zoneId as TLShapeId,
+       type: "planner-zone",
+       props: {
+-        ...currentProps,
+-        zoneColor: updates.color ?? currentProps.zoneColor,
+-        fillColor: updates.fillColor ?? currentProps.fillColor,
+-        fillPattern: updates.pattern ? this.toFillPattern(updates.pattern) : currentProps.fillPattern,
+-        color: updates.color ?? currentProps.color,
+-        strokeColor: updates.color ?? currentProps.strokeColor,
++        zoneColor: updates.color ?? zoneShape.props.zoneColor,
++        fillColor: updates.fillColor ?? zoneShape.props.fillColor,
++        fillPattern: updates.pattern ? this.toFillPattern(updates.pattern) : zoneShape.props.fillPattern,
++        color: updates.color ?? zoneShape.props.color,
++        strokeColor: updates.color ?? zoneShape.props.strokeColor,
+       },
+-      opacity: updates.opacity ?? s.opacity,
+-    } as unknown);
++      opacity: updates.opacity ?? zoneShape.opacity,
++    });
+   }
+ 
+   // Update zone label
+   updateZoneLabel(zoneId: string, newLabel: string): void {
+-    const shape = this.editor.getShape(zoneId as unknown);
++    const shape = this.editor.getShape(zoneId as TLShapeId);
+     if (!shape || shape.type !== "planner-zone") return;
+ 
+-    const s = shape as unknown;
+     this.editor.updateShape({
+-      id: zoneId as unknown,
++      id: zoneId as TLShapeId,
+       type: "planner-zone",
+       props: {
+-        ...(s.props ?? {}),
+         label: newLabel,
+         showLabel: true,
+       },
+-    } as unknown);
++    });
+   }
+ 
+   // Delete zone
+   deleteZone(zoneId: string): void {
+-    this.editor.deleteShape(zoneId as unknown);
++    this.editor.deleteShape(zoneId as TLShapeId);
+   }
+ 
+   // Clear all zones
+   clearAllZones(): void {
+     const zones = this.getZoneOverlays();
+     for (const zone of zones) {
+-      this.editor.deleteShape(zone.id as unknown);
++      this.editor.deleteShape(zone.id);
+     }
+   }
+ 
+@@ -381,8 +380,9 @@ export class ZoneOverlayUtils {
+     const zones = this.getZoneOverlays();
+ 
+     for (const zone of zones) {
+-      const z = zone as unknown;
+-      const zoneType = (z.props?.zoneType as string) || "custom";
++      if (zone.type !== "planner-zone") continue;
++      const zoneShape = zone as PlannerZoneTLShape;
++      const zoneType = zoneShape.props.zoneType || "custom";
+       const type: ZoneType =
+         zoneType === "focus"
+           ? "work"
+@@ -393,7 +393,7 @@ export class ZoneOverlayUtils {
+               : "custom";
+       const currentArea = areas.get(type) || 0;
+ 
+-      const points = z.props?.points || [];
++      const points = zoneShape.props.points || [];
+       let area = 0;
+       if (points.length >= 3) {
+         for (let i = 0; i < points.length; i++) {
+@@ -420,7 +420,7 @@ export class ZoneOverlayUtils {
+     let maxX = -Infinity, maxY = -Infinity;
+ 
+     for (const id of selectionIds) {
+-      const shape = this.editor.getShape(id as unknown);
++      const shape = this.editor.getShape(id);
+       if (shape) {
+         minX = Math.min(minX, shape.x);
+         minY = Math.min(minY, shape.y);
+@@ -445,31 +445,30 @@ export class ZoneOverlayUtils {
+ 
+   // Set zone opacity
+   setZoneOpacity(zoneId: string, opacity: number): void {
+-    const shape = this.editor.getShape(zoneId as unknown);
++    const shape = this.editor.getShape(zoneId as TLShapeId);
+     if (!shape) return;
+ 
+     this.editor.updateShape({
+-      id: zoneId as unknown,
++      id: zoneId as TLShapeId,
++      type: shape.type,
+       opacity,
+-    } as unknown);
++    });
+   }
+ 
+   // Set zone color
+   setZoneColor(zoneId: string, color: string, fillColor?: string): void {
+-    const shape = this.editor.getShape(zoneId as unknown);
++    const shape = this.editor.getShape(zoneId as TLShapeId);
+     if (!shape || shape.type !== "planner-zone") return;
+ 
+-    const s = shape as unknown;
+     this.editor.updateShape({
+-      id: zoneId as unknown,
++      id: zoneId as TLShapeId,
+       type: "planner-zone",
+       props: {
+-        ...(s.props ?? {}),
+         zoneColor: color,
+         fillColor: fillColor || color,
+         color,
+         strokeColor: color,
+       },
+-    } as unknown);
++    });
+   }
+ }

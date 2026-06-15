@@ -1,0 +1,188 @@
+{
+  "generatedAt": "2026-06-15T09:36:05.068Z",
+  "vitestExitCode": 0,
+  "vitestSiteExitCode": 0,
+  "coverageRunExclude": [],
+  "targetPlannerPct": 75,
+  "targetSitePct": 50,
+  "scopes": {
+    "all": {
+      "statements": {
+        "covered": 9436,
+        "total": 12034,
+        "pct": 78.4
+      },
+      "functions": {
+        "covered": 2216,
+        "total": 2982,
+        "pct": 74.3
+      },
+      "branches": {
+        "covered": 5715,
+        "total": 8158,
+        "pct": 70.1
+      },
+      "lines": {
+        "covered": 8544,
+        "total": 10627,
+        "pct": 80.4
+      }
+    },
+    "features/planner": {
+      "statements": {
+        "covered": 9436,
+        "total": 12034,
+        "pct": 78.4
+      },
+      "functions": {
+        "covered": 2216,
+        "total": 2982,
+        "pct": 74.3
+      },
+      "branches": {
+        "covered": 5715,
+        "total": 8158,
+        "pct": 70.1
+      },
+      "lines": {
+        "covered": 8544,
+        "total": 10627,
+        "pct": 80.4
+      }
+    },
+    "features/other": {
+      "statements": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "functions": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "branches": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "lines": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      }
+    },
+    "lib": {
+      "statements": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "functions": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "branches": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "lines": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      }
+    },
+    "components": {
+      "statements": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "functions": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "branches": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "lines": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      }
+    },
+    "app": {
+      "statements": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "functions": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "branches": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "lines": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      }
+    },
+    "data": {
+      "statements": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "functions": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "branches": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      },
+      "lines": {
+        "covered": 0,
+        "total": 0,
+        "pct": 0
+      }
+    },
+    "site": {
+      "statements": {
+        "covered": 2220,
+        "total": 2297,
+        "pct": 96.6
+      },
+      "functions": {
+        "covered": 441,
+        "total": 458,
+        "pct": 96.3
+      },
+      "branches": {
+        "covered": 1747,
+        "total": 1988,
+        "pct": 87.9
+      },
+      "lines": {
+        "covered": 1971,
+        "total": 2015,
+        "pct": 97.8
+      }
+    }
+  },
+  "reportDir": "results/coverage/",
+  "siteReportDir": "results/coverage-site/"
+}

@@ -1,0 +1,108 @@
+import { useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Compass } from "lucide-react";
+import { useDocumentTitle } from "../lib/useDocumentTitle";
+
+/**
+ * Wave 18A: a real 404 surface.
+ *
+ * Pre-18A the catch-all route was `<Navigate href="/" replace />` which
+ * silently bounced any unknown URL to the landing page. That looked
+ * like a bug to anyone who clicked a stale link — they'd expect to
+ * land on the page named in their address bar, not on marketing copy.
+ * A typo in `/dashbord` ended up on the hero with no way to figure
+ * out what happened.
+ *
+ * This page is intentionally narrow — wordmark + tinted-icon block +
+ * two actions, on the same gradient + centered-card chrome the auth
+ * screens use. The `Compass` icon reads as "we'll help you find your
+ * way" without being whiny ("oops! page not found!" is exactly the
+ * tone we don't want — see ux-copy guidelines).
+ *
+ * `role="alert"` on the container so a screen reader announces the
+ * 404 immediately on mount instead of silently re-rendering the URL.
+ *
+ * We log the missing path through `console.warn` rather than the
+ * `audit.emit` plumbing — audit events are a team-scoped writeable
+ * table and an unauth'd visitor (the most common 404 case) wouldn't
+ * have a team to attach the event to. Until there's a dedicated
+ * client-side error sink, console is the simplest place engineers
+ * looking at a Sentry or LogRocket replay can reliably find the
+ * dropped path.
+ */
+export function NotFoundPage() {
+  const pathname = usePathname();
+  useDocumentTitle("Page not found — Buddycraft");
+
+  useEffect(() => {
+    // Logged once per missing path so a parent re-render doesn't spam
+    // the console. Future telemetry plugs in here.
+    console.warn("[404] no route matched", pathname);
+  }, [pathname]);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[color:var(--color-paper)] dark:bg-gray-950">
+      <header className="px-6 pt-6 sm:pt-8">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2.5 font-semibold tracking-tight text-gray-900 dark:text-gray-100"
+        >
+          {/* Compass-rose monogram — same idiom used by LandingNav,
+              AuthShell, DemoBanner, HelpPage so the brand reads
+              consistently no matter which surface a broken link drops
+              the user onto. */}
+          <span
+            aria-hidden="true"
+            className="relative inline-flex h-6 w-6 items-center justify-center"
+          >
+            <span className="absolute inset-0 rounded-md border border-[color:var(--color-blueprint)]" />
+            <span className="absolute inset-[5px] rotate-45 border border-[color:var(--color-blueprint)]" />
+          </span>
+          <span>Buddycraft</span>
+        </Link>
+      </header>
+      <main className="flex-1 flex items-start justify-center px-6 pt-10 pb-12 sm:pt-16">
+        <div
+          role="alert"
+          className="w-full max-w-md rounded-md border border-[color:var(--color-paper-line)] bg-[color:var(--color-paper-raised)] p-8 shadow-sm text-center dark:border-gray-800 dark:bg-gray-900/80"
+        >
+          <div
+            aria-hidden="true"
+            className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--color-blueprint-soft)] text-[color:var(--color-blueprint-strong)] dark:text-[color:var(--color-blueprint)]"
+          >
+            <Compass size={28} />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+            We can&apos;t find that page
+          </h1>
+          <p className="mt-2 text-ui-13 text-gray-500 dark:text-gray-400">
+            The link may be broken, or the page may have moved. Let&apos;s get
+            you somewhere useful.
+          </p>
+          <div className="mt-6 flex flex-col items-center gap-3">
+            {/* Render the primary action as a styled `<Link>` instead of
+                wrapping a `<Button>` — a `<button>` inside an `<a>` is
+                invalid HTML and most screen readers announce only the
+                outer link role anyway. We mirror Button's primary
+                variant tokens by hand here so visual parity is preserved
+                without inventing a `LinkButton` primitive for one site. */}
+            <Link
+              href="/"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded bg-[color:var(--color-blueprint)] px-3 py-2 text-ui-13 font-medium text-white transition-colors hover:bg-[color:var(--color-blueprint-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-blueprint)] focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+            >
+              Back to home
+            </Link>
+            <Link
+              href="/help"
+              className="text-ui-13 font-medium text-[color:var(--color-blueprint-strong)] dark:text-[color:var(--color-blueprint)] hover:underline"
+            >
+              Help center
+            </Link>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+

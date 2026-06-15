@@ -1,0 +1,406 @@
+/*
+ * Planner marketing landing.
+ * Plain selectors only — this file is component-imported, so Tailwind
+ * @utility directives are NOT compiled here.
+ */
+
+.planner-landing-hero-proof {
+  display: grid;
+  width: fit-content;
+  max-width: 100%;
+  gap: 0.75rem 1rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  background: color-mix(in srgb, white 9%, transparent);
+  padding: 1rem 1.15rem;
+  box-shadow: 0 30px 80px -50px var(--surface-glass);
+  backdrop-filter: blur(16px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .planner-landing-hero-proof {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem 1.5rem;
+  }
+}
+
+.planner-landing-proof__value {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1rem + 0.6vw, 1.65rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text-inverse);
+}
+
+.planner-landing-proof__label {
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-inverse-body);
+}
+
+.planner-landing-features {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .planner-landing-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .planner-landing-features {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.planner-landing-feature {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: 0.85rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-panel-strong);
+  padding: 1.25rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.planner-landing-feature:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft));
+  box-shadow: var(--shadow-soft);
+}
+
+.planner-landing-feature__icon {
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--surface-accent-wash);
+  color: var(--color-primary);
+}
+
+.planner-landing-steps {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .planner-landing-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.planner-landing-step {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-panel-strong);
+  padding: 1.35rem 1.25rem;
+}
+
+.planner-landing-step__num {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-bronze-600, var(--color-bronze-500));
+}
+
+.planner-landing-cta {
+  border-radius: var(--radius-xl);
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 88%, black) 0%,
+    color-mix(in srgb, var(--surface-inverse) 92%, black) 100%
+  );
+  padding: 2rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .planner-landing-cta {
+    padding: 2.25rem 2rem;
+  }
+}
+
+/* CTA micro-interaction: hover lift, scoped to the planner hero */
+#planner-hero .btn-hero-primary:hover,
+#planner-hero .btn-hero-secondary:hover {
+  transform: translateY(-2px);
+}
+
+#planner-hero .btn-hero-primary:active,
+#planner-hero .btn-hero-secondary:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #planner-hero .btn-hero-primary:hover,
+  #planner-hero .btn-hero-secondary:hover {
+    transform: none;
+  }
+}
+
+/* ─── Immersive hero demo window ─────────────────────────────────────────── */
+
+.planner-hero-demo {
+  position: relative;
+  width: min(33rem, 100%);
+  overflow: hidden;
+  border-radius: 1.1rem;
+  border: 1px solid color-mix(in srgb, white 18%, transparent);
+  background: var(--surface-panel);
+  box-shadow:
+    0 50px 110px -36px rgb(0 0 0 / 0.65),
+    0 18px 44px -24px rgb(0 0 0 / 0.5);
+  animation: planner-demo-float 7s ease-in-out infinite;
+}
+
+@keyframes planner-demo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planner-hero-demo {
+    animation: none;
+  }
+}
+
+.planner-hero-demo__chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+}
+
+.planner-hero-demo__dots {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.planner-hero-demo__dots i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-muted) 36%, transparent);
+}
+
+.planner-hero-demo__title {
+  flex: 1;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.planner-hero-demo__segment {
+  display: inline-flex;
+  gap: 0.125rem;
+  padding: 0.16rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.5rem;
+  background: var(--surface-panel);
+}
+
+.planner-hero-demo__segment i {
+  padding: 0.18rem 0.55rem;
+  border-radius: 0.35rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.planner-hero-demo__segment i[data-active="true"] {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.planner-hero-demo__canvas {
+  position: relative;
+  aspect-ratio: 8 / 5;
+  background-color: var(--surface-panel);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--text-muted) 22%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 17px 17px;
+}
+
+.planner-hero-demo__canvas svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-sans);
+}
+
+.planner-hero-demo__canvas .pl-wall {
+  fill: none;
+  stroke: var(--text-strong);
+  stroke-width: 3;
+  stroke-linecap: square;
+}
+
+.planner-hero-demo__canvas .pl-door {
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.25;
+  stroke-dasharray: 3 3;
+}
+
+.planner-hero-demo__canvas .pl-desk {
+  fill: color-mix(in srgb, var(--color-bronze-300) 38%, var(--surface-panel));
+  stroke: var(--text-strong);
+  stroke-width: 1.4;
+}
+
+.planner-hero-demo__canvas .pl-desk-divider {
+  stroke: color-mix(in srgb, var(--text-strong) 45%, transparent);
+  stroke-width: 1;
+}
+
+.planner-hero-demo__canvas .pl-chair {
+  fill: color-mix(in srgb, var(--text-strong) 58%, transparent);
+}
+
+.planner-hero-demo__canvas .pl-storage {
+  fill: color-mix(in srgb, var(--text-muted) 22%, transparent);
+  stroke: var(--text-muted);
+  stroke-width: 1;
+}
+
+.planner-hero-demo__canvas .pl-zone {
+  fill: color-mix(in srgb, var(--color-primary) 7%, transparent);
+  stroke: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  stroke-width: 1.25;
+  stroke-dasharray: 5 4;
+}
+
+.planner-hero-demo__canvas .pl-zone--alt {
+  fill: color-mix(in srgb, var(--color-bronze-300) 12%, transparent);
+  stroke: color-mix(in srgb, var(--color-bronze-500) 60%, transparent);
+}
+
+.planner-hero-demo__canvas .pl-zone-label {
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  fill: var(--text-muted);
+}
+
+.planner-hero-demo__canvas .pl-room-label {
+  font-size: 9px;
+  font-weight: 600;
+  fill: var(--text-muted);
+}
+
+.planner-hero-demo__canvas .pl-soft-shape {
+  fill: color-mix(in srgb, var(--color-bronze-300) 30%, var(--surface-panel));
+  stroke: var(--text-strong);
+  stroke-width: 1.2;
+}
+
+.planner-hero-demo__canvas .pl-dim-line {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+}
+
+.planner-hero-demo__canvas .pl-dim-badge {
+  fill: var(--surface-panel);
+  stroke: var(--border-soft);
+  stroke-width: 1;
+}
+
+.planner-hero-demo__canvas .pl-dim-badge--accent {
+  stroke: color-mix(in srgb, var(--color-primary) 55%, transparent);
+}
+
+.planner-hero-demo__canvas .pl-dim-text {
+  font-size: 9px;
+  font-weight: 650;
+  fill: var(--text-muted);
+}
+
+.planner-hero-demo__canvas .pl-dim-text--accent {
+  fill: var(--color-primary);
+}
+
+.planner-hero-demo__canvas .pl-cursor {
+  fill: var(--text-strong);
+  stroke: var(--surface-panel);
+  stroke-width: 1;
+}
+
+.planner-hero-demo__canvas .pl-selection {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.25;
+  stroke-dasharray: 5 3;
+}
+
+.planner-hero-demo__canvas .pl-handle {
+  fill: var(--surface-panel);
+  stroke: var(--color-primary);
+  stroke-width: 1.25;
+}
+
+.planner-hero-demo__saved {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-success, #16a34a) 35%, transparent);
+  background: color-mix(in srgb, var(--color-success, #16a34a) 10%, var(--surface-panel));
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-success, #16a34a);
+}
+
+.planner-hero-demo__status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.45rem 0.9rem;
+  border-top: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.planner-hero-demo__status strong {
+  color: var(--text-strong);
+  font-weight: 650;
+}
+
+.planner-hero-demo__status-right {
+  margin-left: auto;
+  color: var(--color-primary);
+}

@@ -1,0 +1,56 @@
+node_modules/
+
+# Local AI/editor tooling
+.claude/
+
+# Local environment files
+.env.local
+
+# Build and temporary output
+.next/
+.next-dev.log
+.swc/
+coverage/
+playwright-report/
+test-results/
+results/reviews/
+results/coverage-site/
+tsconfig.tsbuildinfo
+tmp/
+tmp-*.json
+
+# Local logs and temp state
+logs/
+supabase/.temp/
+.codex-runtime/
+docs-rendered/
+project-rendered/
+.worktrees/
+tmp/launch-smoke*/
+tmp
+screenshots
+test-results
+.next
+
+# Local scratch files
+.tmp-*.txt
+
+# Patch/reject artifacts
+*.rej
+
+.vercel
+
+# GitHub workflows
+.github/workflows/
+
+# Agent memory / context (local only)
+memory/
+.agents/
+.Agents/
+
+# Debug artifacts
+*.png
+!/public/**/*.png
+!/docs/**/*.png
+features_diff.txt
+.blackboxcli/

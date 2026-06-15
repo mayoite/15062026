@@ -1,0 +1,16 @@
+/* Sustainability page */
+
+.eco-score-index {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.125rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sustain-soft-strong);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-semibold);
+  color: var(--text-sustain);
+}

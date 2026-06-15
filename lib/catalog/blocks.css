@@ -1,0 +1,70 @@
+/* Standalone CSS for 2D Block Geometry Tokens */
+
+:root {
+  /* Workstations */
+  --block-ws-surface: #ffffff;
+  --block-ws-grad-end: #f8fafc;
+  --block-ws-stroke: #cbd5e1;
+  --block-ws-panel: #94a3b8;
+  --block-ws-panel-grad: #cbd5e1;
+  --block-ws-screen: #1e293b;
+  --block-ws-screen-grad: #0f172a;
+  
+  /* Tables (Meeting / Discussion) */
+  --block-table-surface: #ffffff;
+  --block-table-grad-end: #f8fafc;
+  --block-table-stroke: #cbd5e1;
+
+  /* Storage (Pedestals / Cabinets) */
+  --block-storage: #e2e8f0;
+  --block-storage-grad-start: #f1f5f9;
+  --block-storage-stroke: #94a3b8;
+  
+  /* Chairs (Task) */
+  --block-chair-seat: #475569;
+  --block-chair-stroke: #1e293b;
+  --block-chair-contour: #64748b;
+  --block-chair-backrest: #334155;
+  --block-chair-backrest-stroke: #0f172a;
+  --block-chair-arm: #1e293b;
+  --block-chair-arm-soft: #334155;
+  --block-chair-caster-base: #e2e8f0;
+  --block-chair-caster-spoke: #94a3b8;
+  --block-chair-caster-wheel: #475569;
+  
+  /* Soft Seating (Sofas) */
+  --block-sofa: #8c7e71;
+  --block-sofa-stroke: #5a5047;
+  --block-sofa-arm: #7a6e61;
+  --block-sofa-seam: #9c8e80;
+  
+  /* Plants */
+  --block-plant-base: #65a30d;
+  --block-plant-dark: #4d7c0f;
+  --block-plant-outline: #3f6212;
+  --block-pot-base: #f8fafc;
+
+  /* Equipment (Printers, Whiteboards, Vending) */
+  --block-equip-white: #ffffff;
+  --block-equip-gray: #f1f5f9;
+  --block-equip-dark: #94a3b8;
+  
+  /* Accessories & Glyphs */
+  --block-glyph: #e2e8f0;
+  --block-glyph-dark: #64748b;
+  --block-acc-mousepad: #334155;
+  --block-acc-phone: #1e293b;
+  --block-acc-phone-stroke: #94a3b8;
+  --block-acc-laptop: #cbd5e1;
+  --block-acc-laptop-kb: #1e293b;
+  --block-acc-cup: #ffffff;
+  --block-acc-coffee: #78350f;
+  --block-acc-notebook: #ffffff;
+  --block-acc-notebook-stroke: #e2e8f0;
+  --block-acc-notebook-bind: #3b82f6;
+  --block-acc-kb-base: #ffffff;
+  --block-acc-kb-keys: #f1f5f9;
+
+  /* Universal Shadows */
+  --block-shadow-color: #0f172a;
+}

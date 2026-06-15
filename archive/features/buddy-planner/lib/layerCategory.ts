@@ -1,0 +1,111 @@
+import type { CanvasElement } from '../types/elements'
+import type { LayerCategory } from '../stores/layerVisibilityStore'
+
+/**
+ * Map an element to one of the five layer categories used by the visibility
+ * panel. The function is total over `CanvasElement`: unknown unknown / future
+ * element type falls through to `'furniture'`, which is the safest default
+ * (hiding "furniture" leaves the map's structure — walls, rooms, seating —
+ * intact) and avoids an exhaustiveness-check compile error when a new
+ * element type is added without updating this file.
+ *
+ * The grouping is intentional, not arbitrary:
+ *
+ *   - `walls`       wall + door + window — the structural shell of a floor.
+ *                   Hiding this usually reveals furniture arrangement.
+ *   - `seating`     desks + multi-seat workstations + private
+ *                   offices — every element that represents a workpoint.
+ *   - `rooms`       conference rooms, phone booths, common areas (kitchens,
+ *                   lounges) — named non-assignable spaces.
+ *   - `furniture`   tables, decor (couches, columns, etc.), custom SVG,
+ *                   background images — visual/physical but not part of the
+ *                   shell or assignment schema.
+ *   - `annotations` drawing primitives + text + arrows — purely editorial
+ *                   markup that doesn't represent a physical object.
+ *
+ * See `LayerCategory` for the canonical ordering the sidebar renders.
+ */
+export function categoryForElement(el: CanvasElement): LayerCategory {
+  switch (el.type) {
+    // Structural shell
+    case 'wall':
+    case 'door':
+    case 'window':
+      return 'walls'
+
+    // Assignable seating
+    case 'desk':
+    case 'hot-desk':
+    case 'workstation':
+    case 'private-office':
+      return 'seating'
+
+    // Named rooms / areas
+    case 'conference-room':
+    case 'phone-booth':
+    case 'common-area':
+      return 'rooms'
+
+    // Annotations: drawing primitives + free text + arrows
+    case 'rect-shape':
+    case 'ellipse':
+    case 'line-shape':
+    case 'arrow':
+    case 'free-text':
+    case 'text-label':
+      return 'annotations'
+
+    // Everything else is "furniture" — tables, decor, custom SVG uploads,
+    // background images, plus legacy/unknown types via the default branch.
+    // Tracing underlay imports (Brief 3 — PDF/image plans). Has its
+    // own category so the operator can hide just the trace target
+    // for a clean export without dragging tables/decor with it.
+    case 'background-image':
+      return 'underlay'
+
+    case 'table-rect':
+    case 'table-conference':
+    case 'table-round':
+    case 'table-oval':
+    case 'decor':
+    case 'custom-svg':
+    case 'custom-shape':
+    case 'chair':
+    case 'counter':
+    case 'divider':
+    case 'planter':
+    // Furniture catalog — decorative/context props. See
+    // `src/types/elements.ts`. Grouped under the "furniture" toggle so
+    // hiding furniture also hides these.
+    // falls through
+    case 'sofa':
+    case 'plant':
+    case 'printer':
+    case 'whiteboard':
+      return 'furniture'
+
+    // IT/AV/Network/Power infrastructure (M2). These six element types
+    // are non-assignable physical devices that ride on top of the floor
+    // plan rather than belonging to walls, seating, or decor. They
+    // collapse into a single `'it-device'` category at the LayerVisibility
+    // grain so the user has one toggle for "hide all infrastructure";
+    // the per-sub-layer (network/av/security/power) refinement lives on
+    // `useITLayerStore` and is surfaced through the View menu instead.
+    case 'access-point':
+    case 'network-jack':
+    case 'display':
+    case 'video-bar':
+    case 'badge-reader':
+    case 'outlet':
+      return 'it-device'
+
+    default:
+      // Unknown / future element types land here. Returning 'furniture'
+      // keeps them visible under the most general toggle rather than
+      // orphaning them under a missing category.
+      return 'furniture'
+  }
+}
+
+
+

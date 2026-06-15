@@ -1,0 +1,56 @@
+/* Legal pages — privacy, terms, imprint, refund */
+
+.legal-cookie-table {
+  min-width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--type-body-size);
+}
+
+.legal-cookie-table thead {
+  background: var(--surface-glass);
+}
+
+.legal-cookie-table th {
+  padding: 0.75rem 1.5rem;
+  font-weight: var(--font-weight-copy-medium);
+  color: var(--text-strong);
+}
+
+@media (min-width: 768px) {
+  .legal-cookie-table th {
+    padding-inline: 2rem;
+  }
+}
+
+.legal-cookie-table tbody {
+  background: var(--surface-glass-strong);
+}
+
+.legal-cookie-table tr + tr {
+  border-top: 1px solid var(--border-soft);
+}
+
+.legal-cookie-table td {
+  padding: 0.75rem 1.5rem;
+  color: var(--text-body);
+}
+
+@media (min-width: 768px) {
+  .legal-cookie-table td {
+    padding-inline: 2rem;
+  }
+}
+
+.legal-cookie-table td:first-child {
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.06em;
+  color: var(--text-strong);
+}
+
+.legal-aside-divider {
+  margin-top: 2rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--border-inverse);
+}

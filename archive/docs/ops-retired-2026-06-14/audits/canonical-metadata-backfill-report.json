@@ -1,0 +1,653 @@
+{
+  "generatedAt": "2026-06-04T18:10:41.708Z",
+  "productsUpdated": 279,
+  "aliasesInserted": 0,
+  "aliasConflictsSkipped": [
+    {
+      "aliasSlug": "education-classroom-academia",
+      "legacySlugs": [
+        "academia",
+        "oando-educational--academia"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-audi-chair",
+      "legacySlugs": [
+        "oando-educational--audi-chair",
+        "audi-chair"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-classcraft",
+      "legacySlugs": [
+        "oando-educational--classcraft",
+        "classcraft"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-connecta",
+      "legacySlugs": [
+        "oando-educational--connecta",
+        "connecta"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-forma",
+      "legacySlugs": [
+        "oando-educational--forma",
+        "forma"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-learnix",
+      "legacySlugs": [
+        "learnix",
+        "oando-educational--learnix"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-magazine-rack",
+      "legacySlugs": [
+        "oando-educational--magazine-rack",
+        "magazine-rack"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-metal-bed",
+      "legacySlugs": [
+        "metal-bed",
+        "oando-educational--metal-bed"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-performer",
+      "legacySlugs": [
+        "performer",
+        "oando-educational--performer"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-podium",
+      "legacySlugs": [
+        "oando-educational--podium",
+        "podium"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-wooden-bed",
+      "legacySlugs": [
+        "oando-educational--wooden-bed",
+        "wooden-bed"
+      ]
+    },
+    {
+      "aliasSlug": "education-classroom-xplorer",
+      "legacySlugs": [
+        "xplorer",
+        "oando-educational--xplorer"
+      ]
+    },
+    {
+      "aliasSlug": "seating-mesh-x-mesh",
+      "legacySlugs": [
+        "x-mesh",
+        "oando-seating--x-mesh"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-collaborative-cirq",
+      "legacySlugs": [
+        "oando-soft-seating--cirq",
+        "cirq"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-collaborative-cocoon-pod",
+      "legacySlugs": [
+        "cocoon-pod",
+        "oando-collaborative--cocoon-pod"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-collaborative-embrace",
+      "legacySlugs": [
+        "oando-soft-seating--embrace",
+        "embrace"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-collaborative-high-cafe",
+      "legacySlugs": [
+        "oando-soft-seating--high-cafe",
+        "high-cafe"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-collaborative-orb",
+      "legacySlugs": [
+        "oando-soft-seating--orb",
+        "orb"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-collaborative-solace-pod",
+      "legacySlugs": [
+        "solace-pod",
+        "oando-collaborative--solace-pod"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-accent",
+      "legacySlugs": [
+        "oando-soft-seating--accent",
+        "accent"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-adam",
+      "legacySlugs": [
+        "adam",
+        "oando-soft-seating--adam"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-alonzo",
+      "legacySlugs": [
+        "alonzo",
+        "oando-soft-seating--alonzo"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-arcana",
+      "legacySlugs": [
+        "oando-soft-seating--arcana",
+        "arcana"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-arco",
+      "legacySlugs": [
+        "oando-soft-seating--arco",
+        "arco"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-armora",
+      "legacySlugs": [
+        "oando-soft-seating--armora",
+        "armora"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-brim",
+      "legacySlugs": [
+        "brim",
+        "oando-soft-seating--brim"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-ceda",
+      "legacySlugs": [
+        "oando-soft-seating--ceda",
+        "ceda"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-cocoon",
+      "legacySlugs": [
+        "cocoon",
+        "oando-soft-seating--cocoon"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-como",
+      "legacySlugs": [
+        "oando-soft-seating--como",
+        "como"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-cone",
+      "legacySlugs": [
+        "oando-soft-seating--cone",
+        "cone"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-cove",
+      "legacySlugs": [
+        "cove",
+        "oando-soft-seating--cove"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-covea",
+      "legacySlugs": [
+        "oando-soft-seating--covea",
+        "covea"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-cozy",
+      "legacySlugs": [
+        "oando-soft-seating--cozy",
+        "cozy"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-crossa",
+      "legacySlugs": [
+        "crossa",
+        "oando-soft-seating--crossa"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-eclips",
+      "legacySlugs": [
+        "eclips",
+        "oando-soft-seating--eclips"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-esmor",
+      "legacySlugs": [
+        "esmor",
+        "oando-soft-seating--esmor"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-fynn",
+      "legacySlugs": [
+        "fynn",
+        "oando-soft-seating--fynn"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-grace",
+      "legacySlugs": [
+        "oando-soft-seating--grace",
+        "grace"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-hush",
+      "legacySlugs": [
+        "hush",
+        "oando-soft-seating--hush"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-luna",
+      "legacySlugs": [
+        "luna",
+        "oando-soft-seating--luna"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-lura",
+      "legacySlugs": [
+        "lura",
+        "oando-soft-seating--lura"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-luxar",
+      "legacySlugs": [
+        "oando-soft-seating--luxar",
+        "luxar"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-margas",
+      "legacySlugs": [
+        "oando-soft-seating--margas",
+        "margas"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-moon",
+      "legacySlugs": [
+        "moon",
+        "oando-soft-seating--moon"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-nook",
+      "legacySlugs": [
+        "oando-soft-seating--nook",
+        "nook"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-nuvora",
+      "legacySlugs": [
+        "nuvora",
+        "oando-soft-seating--nuvora"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-opera",
+      "legacySlugs": [
+        "oando-soft-seating--opera",
+        "opera"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-padora",
+      "legacySlugs": [
+        "oando-soft-seating--padora",
+        "padora"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-plumb",
+      "legacySlugs": [
+        "plumb",
+        "oando-soft-seating--plumb"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-rattique",
+      "legacySlugs": [
+        "oando-soft-seating--rattique",
+        "rattique"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-relax",
+      "legacySlugs": [
+        "relax",
+        "oando-soft-seating--relax"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-spectrum",
+      "legacySlugs": [
+        "spectrum",
+        "oando-soft-seating--spectrum"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-tectara",
+      "legacySlugs": [
+        "oando-soft-seating--tectara",
+        "tectara"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-trion",
+      "legacySlugs": [
+        "trion",
+        "oando-soft-seating--trion"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-twig",
+      "legacySlugs": [
+        "oando-soft-seating--twig",
+        "twig"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-velto",
+      "legacySlugs": [
+        "oando-soft-seating--velto",
+        "velto"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-verka",
+      "legacySlugs": [
+        "verka",
+        "oando-soft-seating--verka"
+      ]
+    },
+    {
+      "aliasSlug": "soft-seating-lounge-virello",
+      "legacySlugs": [
+        "oando-soft-seating--virello",
+        "virello"
+      ]
+    },
+    {
+      "aliasSlug": "storages-compactor-compactor",
+      "legacySlugs": [
+        "compactor",
+        "oando-storage--compactor"
+      ]
+    },
+    {
+      "aliasSlug": "storages-locker-metal-locker",
+      "legacySlugs": [
+        "metal-locker",
+        "oando-storage--metal-locker"
+      ]
+    },
+    {
+      "aliasSlug": "storages-locker-wooden",
+      "legacySlugs": [
+        "oando-storage--prelam-locker",
+        "prelam-locker"
+      ]
+    },
+    {
+      "aliasSlug": "storages-metal-metal",
+      "legacySlugs": [
+        "metal-storages",
+        "oando-storage--metal-storages"
+      ]
+    },
+    {
+      "aliasSlug": "storages-metal-metal-pedestal",
+      "legacySlugs": [
+        "oando-storage--metal-pedestal",
+        "metal-pedestal"
+      ]
+    },
+    {
+      "aliasSlug": "storages-prelam-heavy-dut",
+      "legacySlugs": [
+        "oando-storage--heavy-duty-racks",
+        "heavy-duty-racks"
+      ]
+    },
+    {
+      "aliasSlug": "storages-prelam-prelam",
+      "legacySlugs": [
+        "prelam-storage",
+        "oando-storage--pedestal",
+        "pedestal",
+        "oando-storage--prelam-storage"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-apex",
+      "legacySlugs": [
+        "oando-tables--apex",
+        "apex"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-consulate",
+      "legacySlugs": [
+        "oando-tables--consulate",
+        "consulate"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-crest",
+      "legacySlugs": [
+        "crest",
+        "oando-tables--crest"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-exquisite",
+      "legacySlugs": [
+        "oando-tables--exquisite",
+        "exquisite"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-impulse",
+      "legacySlugs": [
+        "impulse",
+        "oando-tables--impulse"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-inox",
+      "legacySlugs": [
+        "inox",
+        "oando-tables--inox"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-modulus",
+      "legacySlugs": [
+        "modulus",
+        "oando-tables--modulus"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-nextable",
+      "legacySlugs": [
+        "nextable",
+        "oando-tables--nextable"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-opus",
+      "legacySlugs": [
+        "opus-2",
+        "oando-tables--opus-2"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-presidency",
+      "legacySlugs": [
+        "presidency",
+        "oando-tables--presidency"
+      ]
+    },
+    {
+      "aliasSlug": "tables-cabin-stake",
+      "legacySlugs": [
+        "oando-tables--stake",
+        "stake"
+      ]
+    },
+    {
+      "aliasSlug": "tables-meeting-convene",
+      "legacySlugs": [
+        "convene",
+        "oando-tables--convene"
+      ]
+    },
+    {
+      "aliasSlug": "tables-meeting-convesso",
+      "legacySlugs": [
+        "convesso",
+        "oando-tables--convesso"
+      ]
+    },
+    {
+      "aliasSlug": "tables-meeting-desk-meet",
+      "legacySlugs": [
+        "oando-tables--desk-meet",
+        "desk-meet"
+      ]
+    },
+    {
+      "aliasSlug": "tables-meeting-sleek",
+      "legacySlugs": [
+        "sleek-tab",
+        "oando-tables--sleek-tab"
+      ]
+    },
+    {
+      "aliasSlug": "tables-meeting-sleek-meet",
+      "legacySlugs": [
+        "sleek-meet",
+        "oando-tables--sleek-meet"
+      ]
+    },
+    {
+      "aliasSlug": "tables-meeting-x-meet",
+      "legacySlugs": [
+        "x-meet",
+        "oando-tables--x-meet"
+      ]
+    },
+    {
+      "aliasSlug": "tables-training-curvivo",
+      "legacySlugs": [
+        "oando-tables--curvivo-meet",
+        "curvivo-meet"
+      ]
+    },
+    {
+      "aliasSlug": "tables-training-letz",
+      "legacySlugs": [
+        "oando-tables--letz-think",
+        "letz-think"
+      ]
+    },
+    {
+      "aliasSlug": "tables-training-uniflip",
+      "legacySlugs": [
+        "oando-tables--uniflip",
+        "uniflip"
+      ]
+    },
+    {
+      "aliasSlug": "workstations-desking-adaptable",
+      "legacySlugs": [
+        "oando-workstations--adaptable",
+        "adaptable"
+      ]
+    },
+    {
+      "aliasSlug": "workstations-desking-deskpro",
+      "legacySlugs": [
+        "oando-workstations--deskpro",
+        "deskpro"
+      ]
+    },
+    {
+      "aliasSlug": "workstations-desking-fenix",
+      "legacySlugs": [
+        "oando-workstations--fenix",
+        "fenix"
+      ]
+    },
+    {
+      "aliasSlug": "workstations-desking-sleek",
+      "legacySlugs": [
+        "sleek",
+        "oando-workstations--sleek"
+      ]
+    },
+    {
+      "aliasSlug": "workstations-desking-trio",
+      "legacySlugs": [
+        "trio-2",
+        "oando-workstations--trio-2"
+      ]
+    },
+    {
+      "aliasSlug": "workstations-desking-x-bench",
+      "legacySlugs": [
+        "x-bench",
+        "oando-workstations--x-bench"
+      ]
+    },
+    {
+      "aliasSlug": "workstations-panel-panel-pro",
+      "legacySlugs": [
+        "oando-workstations--panel-pro",
+        "panel-pro"
+      ]
+    }
+  ]
+}

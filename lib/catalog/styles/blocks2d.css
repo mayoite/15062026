@@ -1,0 +1,57 @@
+/**
+ * blocks2d.ts vocabulary bridge
+ *
+ * Procedural blocks in lib/catalog/blocks2d.ts reference short token names
+ * (--block-surface, --block-seat, …). Component styles in this folder use
+ * longer names (--block-ws-surface-base, --block-chair-seat, …).
+ *
+ * Import this file LAST in index.css so aliases resolve against the component
+ * token files above.
+ */
+
+.buddy-editor-surface,
+.buddy-editor-surface .tl-container,
+.buddy-guest-editor,
+.buddy-guest-editor .tl-container,
+.planner-workspace .pw-tldraw-container,
+.planner-workspace .pw-tldraw-container .tl-container,
+:root {
+  --block-surface: var(--block-ws-surface-base, #e6d3ba);
+  --block-surface-grad-end: var(--block-table-grad-end, #d4b895);
+  --block-surface-stroke: var(--block-table-stroke, #c6a67d);
+
+  --block-seat: var(--block-chair-seat, #475569);
+  --block-seat-stroke: var(--block-chair-stroke, #1e293b);
+  --block-seat-contour: var(--block-chair-contour, #64748b);
+  --block-seat-backrest: var(--block-chair-backrest, #334155);
+  --block-seat-backrest-stroke: var(--block-chair-backrest-stroke, #0f172a);
+  --block-armrest: var(--block-chair-arm, #1e293b);
+  --block-armrest-soft: var(--block-chair-arm-soft, #334155);
+  --block-caster-base: var(--block-chair-caster-base, #e2e8f0);
+  --block-caster-spoke: var(--block-chair-caster-spoke, #94a3b8);
+  --block-caster-wheel: var(--block-chair-caster-wheel, #475569);
+
+  --block-sofa: var(--block-sofa-cushion-base, #78716c);
+  --block-sofa-stroke: var(--block-theme-sofa-stroke, #44403c);
+  --block-sofa-arm: var(--block-theme-sofa-arm, #57534e);
+  --block-sofa-seam: var(--block-sofa-seam-thread, #a8a29e);
+
+  --block-panel: var(--block-theme-panel, #94a3b8);
+  --block-panel-grad-start: var(--block-theme-panel-grad, #cbd5e1);
+
+  --block-screen-grad-start: var(--block-theme-accent-dark, #334155);
+  --block-screen-grad-end: var(--block-theme-accent-darker, #0f172a);
+
+  --block-shadow-color: var(--block-theme-drop-shadow, rgba(15, 23, 42, 0.15));
+
+  --block-storage: var(--block-theme-body, #e2e8f0);
+  --block-storage-grad-start: var(--block-theme-body-light, #f1f5f9);
+  --block-storage-stroke: var(--block-theme-body-dark, #94a3b8);
+
+  --block-glyph: var(--block-theme-body, #cbd5e1);
+  --block-glyph-dark: var(--block-theme-seat-contour, #475569);
+
+  --block-equip-white: var(--block-theme-surface-primary, #ffffff);
+  --block-equip-gray: var(--block-theme-body-light, #e2e8f0);
+  --block-equip-dark: var(--block-theme-body-dark, #64748b);
+}

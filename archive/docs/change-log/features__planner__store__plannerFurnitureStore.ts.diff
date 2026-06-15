@@ -1,0 +1,16 @@
+diff --git a/features/planner/store/plannerFurnitureStore.ts b/features/planner/store/plannerFurnitureStore.ts
+index 49a1031..f8b8803 100644
+--- a/features/planner/store/plannerFurnitureStore.ts
++++ b/features/planner/store/plannerFurnitureStore.ts
+@@ -49,7 +49,10 @@ export const usePlannerFurnitureStore = create<FurnitureState>((set, get) => ({
+ 
+   updateFurnitureBatch: (updates) => {
+     set((s) => ({
+-      furniture: applyFurnitureBatchUpdates(s.furniture, updates),
++      furniture: applyFurnitureBatchUpdates(
++        s.furniture,
++        updates.map((u) => ({ id: u.id, changes: u.updates }))
++      ),
+     }));
+   },
+ 

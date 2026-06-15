@@ -1,0 +1,56 @@
+/* ── Scheme: page & section backgrounds ── */
+@utility scheme-page {
+  background: var(--surface-page);
+  color: var(--text-body);
+}
+@utility scheme-section-soft { background: var(--surface-soft); }
+@utility scheme-section-muted { background: var(--surface-muted); }
+@utility scheme-section-inverse {
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+}
+@utility scheme-section-primary {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+/* ── Scheme: panels ── */
+@utility scheme-panel {
+  background: var(--surface-panel-strong);
+  border-color: var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+@utility scheme-panel-soft {
+  background: var(--surface-soft);
+  border-color: var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+@utility scheme-panel-dark {
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  border-color: var(--border-inverse);
+  box-shadow: var(--shadow-inverse);
+}
+
+/* ── Scheme: borders ── */
+@utility scheme-border { border-color: var(--border-soft); }
+@utility scheme-border-soft { border-color: var(--border-muted); }
+@utility scheme-border-brand-soft { border-color: var(--border-accent); }
+@utility scheme-border-inverse { border-color: var(--border-inverse); }
+@utility scheme-accent-wash { background-color: var(--surface-accent-wash); }
+
+/* ── Footer scheme ── */
+@utility site-footer__link {
+  color: var(--text-inverse-muted);
+  &:hover { color: var(--text-inverse-body); }
+}
+@utility site-footer__social {
+  color: var(--text-inverse-muted);
+  &:hover { color: var(--text-inverse); }
+}
+@utility site-footer__divider { border-color: var(--border-inverse); }
+@utility site-footer__legal {
+  color: var(--text-inverse-muted);
+  &:hover { color: var(--text-inverse-body); }
+}
+

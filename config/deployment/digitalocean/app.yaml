@@ -1,0 +1,139 @@
+# DigitalOcean App Platform spec for claude0206 (Next.js 16, standalone output).
+#
+# IMPORTANT — secret VALUES are intentionally empty here. Never commit secrets.
+# Enter each SECRET value in the DO dashboard (App → Settings → App-Level
+# Environment Variables) or via `doctl`. See DO-DEPLOY.md for the value mapping.
+#
+# NEXT_PUBLIC_* keys are inlined into the JS bundle at BUILD time, so they are
+# declared with scope BUILD_TIME (DO exposes them to both build and run). Plain
+# server secrets are scope RUN_TIME, type SECRET (encrypted at rest).
+#
+# Run command is `node .next/standalone/server.js` (NOT `next start`) because
+# next.config.js sets output: "standalone". The `build` script's postbuild step
+# copies .next/static and public/ into the standalone dir.
+
+name: claude0206
+region: blr   # Bangalore — closest to ap-south Supabase; change if needed.
+
+services:
+  - name: web
+    # --- Source: point this at your GitHub repo + branch in the DO dashboard,
+    #     or uncomment and fill the github block below.
+    # github:
+    #   repo: <your-org>/<your-repo>
+    #   branch: dev
+    #   deploy_on_push: true
+
+    build_command: npm run build
+    run_command: node .next/standalone/server.js
+
+    environment_slug: node-js
+    instance_size_slug: apps-s-1vcpu-1gb
+    instance_count: 1
+
+    http_port: 3000
+
+    health_check:
+      http_path: /
+      initial_delay_seconds: 20
+      period_seconds: 15
+      timeout_seconds: 5
+      failure_threshold: 3
+
+    envs:
+      # ===== BUILD-TIME (inlined into the bundle) =====
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        scope: BUILD_TIME
+        value: ""
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        scope: BUILD_TIME
+        value: ""
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        scope: BUILD_TIME
+        value: ""
+      - key: NEXT_PUBLIC_SITE_URL
+        scope: BUILD_TIME
+        value: ""          # e.g. https://claude0206-xxxxx.ondigitalocean.app
+      - key: NEXT_PUBLIC_ASSET_BASE_URL
+        scope: BUILD_TIME
+        value: ""          # CDN base for product images; leave blank if unused
+
+      # ===== RUN-TIME SECRETS (encrypted; never inlined) =====
+      - key: SUPABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: NEXT_ADMIN_SUPABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: NEXT_ADMIN_SUPABASE_ANON_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: SUPABASE_ADMIN_SERVICE_ROLE_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: PRODUCTS_DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: SUPABASE_AUTH_DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: OPENROUTER_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: OPENROUTER_BASE_URL
+        scope: RUN_TIME
+        value: "https://openrouter.ai/api/v1"
+      - key: OPENROUTER_MODEL
+        scope: RUN_TIME
+        value: "openrouter/free"
+      - key: GOOGLE_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: NOVA_ACT_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: RESEND_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: CLOUDFLARE_API_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: CLOUDFLARE_ACCOUNT_ID
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: ADMIN_EMAILS
+        scope: RUN_TIME
+        value: ""          # comma-separated admin emails
+      - key: ADMIN_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: ""          # ROTATE — current local value is weak
+      - key: CUSTOMER_QUERIES_ADMIN_TOKEN
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
+      - key: EMAIL_FROM
+        scope: RUN_TIME
+        value: ""
+      - key: STAFF_NOTIFY_EMAIL
+        scope: RUN_TIME
+        value: ""
+      - key: NODE_ENV
+        scope: RUN_TIME
+        value: "production"

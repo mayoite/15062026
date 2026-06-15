@@ -1,0 +1,17 @@
+# Enforce consistent line endings across OSes
+# Treat text files as text and let Git normalize line endings
+* text=auto
+
+# Explicitly mark common binary/media files so Git doesn't attempt to normalize them
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.gz binary
+*.pdf binary
+
+# Ensure npm lock files and generated artifacts are treated as binary where appropriate
+package-lock.json text

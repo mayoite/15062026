@@ -1,0 +1,433 @@
+/* ─── Catalog sidebar ─────────────────────────────────────────────────────── */
+
+.planner-workspace .pw-catalog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-catalog-header {
+  border-bottom: 1px solid var(--border-soft);
+  padding: 0.75rem;
+}
+
+.planner-workspace .pw-catalog-header--standalone {
+  padding: 1rem;
+  border-color: var(--border-soft);
+  background: var(--surface-soft);
+}
+
+.planner-workspace .pw-catalog-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-catalog-search-wrap {
+  position: relative;
+}
+
+.planner-workspace .pw-catalog-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-subtle);
+  pointer-events: none;
+}
+
+.planner-workspace .pw-catalog-search {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.25rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.5rem;
+  background: var(--surface-soft);
+  font-size: 0.75rem;
+  color: var(--text-strong);
+  transition: border-color 0.15s;
+}
+
+.planner-workspace .pw-catalog-search::placeholder {
+  color: var(--text-subtle);
+}
+
+.planner-workspace .pw-catalog-search:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.planner-workspace .pw-catalog-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.75rem;
+}
+
+.planner-workspace .pw-catalog-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Layer 0 — Recently used */
+.planner-workspace .pw-catalog-recent {
+  margin-bottom: 0.75rem;
+}
+
+.planner-workspace .pw-catalog-recent-row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: thin;
+}
+
+.planner-workspace .pw-catalog-recent-row .pw-catalog-card--compact {
+  flex: 0 0 7.5rem;
+  min-width: 7.5rem;
+}
+
+/* Layer 1 — Purpose tabs */
+.planner-workspace .pw-catalog-purpose-tabs {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  margin-bottom: 0.625rem;
+  padding-bottom: 0.125rem;
+  scrollbar-width: thin;
+}
+
+.planner-workspace .pw-catalog-purpose-tab {
+  flex: 0 0 auto;
+  padding: 0.4375rem 0.75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface-panel);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.planner-workspace .pw-catalog-purpose-tab:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft));
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-catalog-purpose-tab[data-active="true"] {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--surface-panel));
+  color: var(--color-primary);
+}
+
+/* Layer 2 — Sub-category chips */
+.planner-workspace .pw-catalog-subchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.planner-workspace .pw-catalog-subchip {
+  padding: 0.3125rem 0.625rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.4375rem;
+  background: var(--surface-soft);
+  font-size: 0.625rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.planner-workspace .pw-catalog-subchip:hover {
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-catalog-subchip[data-active="true"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+/* Layer 3 — Item cards */
+.planner-workspace .pw-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.planner-workspace .pw-catalog-grid--cards {
+  padding: 0;
+}
+
+.planner-workspace .pw-catalog-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.75rem;
+  background: var(--surface-panel);
+  cursor: grab;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+
+.planner-workspace .pw-catalog-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-primary) 5%, var(--surface-panel));
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  transform: translateY(-1px);
+  z-index: 2;
+}
+
+.planner-workspace .pw-catalog-card:active {
+  cursor: grabbing;
+}
+
+.planner-workspace .pw-catalog-card-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 5rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+}
+
+.planner-workspace .pw-catalog-card-thumb-img {
+  width: 120px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.planner-workspace .pw-catalog-card-thumb-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 80px;
+}
+
+.planner-workspace .pw-catalog-card-body {
+  min-width: 0;
+  padding: 0;
+  padding-right: 1.75rem;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.planner-workspace .pw-catalog-card-sku {
+  margin: 0;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+.planner-workspace .pw-catalog-card-name {
+  margin: 0.125rem 0 0;
+  font-size: 0.625rem;
+  font-weight: 650;
+  line-height: 1.3;
+  color: var(--text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planner-workspace .pw-catalog-card-footprint {
+  margin: 0.125rem 0 0;
+  font-size: 0.5625rem;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-catalog-card-add {
+  position: absolute;
+  right: 0.375rem;
+  bottom: 0.375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.4375rem;
+  background: var(--surface-panel);
+  color: var(--color-primary);
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.planner-workspace .pw-catalog-card-add:hover {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, var(--surface-panel));
+}
+
+.planner-workspace .pw-catalog-card-tooltip {
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.375rem);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: max-content;
+  max-width: 12rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.5rem;
+  background: var(--surface-panel);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+}
+
+.planner-workspace .pw-catalog-card:hover .pw-catalog-card-tooltip,
+.planner-workspace .pw-catalog-card:focus-within .pw-catalog-card-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.planner-workspace .pw-catalog-card-tooltip-dims,
+.planner-workspace .pw-catalog-card-tooltip-material {
+  margin: 0;
+  font-size: 0.625rem;
+  line-height: 1.35;
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-catalog-card-tooltip-material {
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-catalog-card-tooltip-link {
+  font-size: 0.625rem;
+  font-weight: 650;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.planner-workspace .pw-catalog-card-tooltip-link:hover {
+  text-decoration: underline;
+}
+
+.planner-workspace .pw-catalog-card--compact .pw-catalog-card-body {
+  padding-right: 0;
+}
+
+.planner-workspace .pw-catalog-card--compact .pw-catalog-card-add {
+  display: none;
+}
+
+.planner-workspace .pw-catalog-card--compact .pw-catalog-card-tooltip {
+  display: none;
+}
+
+.planner-workspace .pw-catalog-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--text-subtle);
+}
+
+.planner-workspace .pw-catalog-empty p {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+}
+
+.planner-workspace .pw-catalog-footer {
+  padding: 0.75rem;
+  border-top: 1px solid var(--border-soft);
+  text-align: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+.planner-workspace .pw-drop-ghost {
+  pointer-events: none;
+  position: fixed;
+  z-index: 70;
+  transform: translate(-50%, -50%);
+  padding: 0.5rem;
+  border: 2px dashed var(--color-primary);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  box-shadow: var(--shadow-float);
+  backdrop-filter: blur(6px);
+}
+
+.planner-workspace .pw-drop-ghost-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  opacity: 0.92;
+}
+
+.planner-workspace .pw-drop-ghost-label {
+  margin: 0.25rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 0.5625rem;
+  font-weight: 650;
+  color: var(--text-strong);
+}
+
+/* ─── Layer list ──────────────────────────────────────────────────────────── */
+
+.planner-workspace .pw-layer-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.planner-workspace .pw-layer-row:hover {
+  background: var(--surface-soft);
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-layer-row input[type="checkbox"] {
+  accent-color: var(--color-primary);
+}

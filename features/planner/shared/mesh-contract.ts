@@ -1,0 +1,17 @@
+export type MeshFamily =
+  | "task-chair"
+  | "lounge-chair"
+  | "sofa"
+  | "desk-rect"
+  | "desk-l"
+  | "table-round"
+  | "table-rect"
+  | "storage-locker"
+  | "storage-cabinet"
+  | "screen"
+  | "column-round"
+  | "column-square"
+  | "plant"
+  | "door"
+  | "window"
+  | "utility-box";

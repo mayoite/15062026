@@ -1,0 +1,404 @@
+"use client";
+
+import { useCallback, useSyncExternalStore, useState } from "react";
+import { ChevronDown, Loader2, MessageSquare, Sparkles, Wand2 } from "lucide-react";
+import type { Editor } from "tldraw";
+
+import { CatalogBlockPreview } from "@/features/planner/catalog/CatalogBlockPreview";
+import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
+import { buildCatalogShape } from "@/features/planner/editor/plannerShapeFactories";
+import {
+  PLANNER_PRIMARY_PURPOSE_OPTIONS,
+  type PlannerPrimaryPurpose,
+} from "@/features/planner/onboarding/projectSetup";
+import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
+
+import { AiAdvisorChatPane } from "./AiAdvisorChatPane";
+import { applySuggestedLayout } from "./applySuggestedLayout";
+import {
+  CATALOG_TIER_LABELS,
+  resolveSpaceSuggestDefaults,
+} from "./aiAdvisorConfig";
+import { matchCatalogForPlacements } from "./catalogMatch";
+import { extractCanvasPlacements } from "./extractCanvasPlacements";
+import { LayoutPreviewSvg } from "./LayoutPreviewSvg";
+import { suggestLayout, suggestLayoutGridPack } from "./spaceSuggest";
+import type { PlannerProjectMetadata } from "@/features/planner/onboarding/projectSetup";
+
+import type { CatalogMatchResult, SuggestedLayoutJson } from "./types";
+
+function useCanvasPlacementCount(editor: Editor | null): number {
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      if (!editor) return () => {};
+      return editor.store.listen(onStoreChange, { scope: "document" });
+    },
+    () => (editor ? extractCanvasPlacements(editor).length : 0),
+    () => 0,
+  );
+}
+
+type AiAssistTab = "suggest-layout" | "match-catalog" | "chat";
+
+export type AIAssistDrawerProps = {
+  editor: Editor | null;
+  /** When false, only the header row is shown until expanded. */
+  defaultExpanded?: boolean;
+  embedded?: boolean;
+};
+
+export function AIAssistDrawer({
+  editor,
+  defaultExpanded = true,
+  embedded = true,
+}: AIAssistDrawerProps) {
+  const projectMetadata = usePlannerWorkspaceStore((s) => s.projectMetadata);
+
+  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [tab, setTab] = useState<AiAssistTab>("suggest-layout");
+  const placementCount = useCanvasPlacementCount(editor);
+
+  const [matchBusy, setMatchBusy] = useState(false);
+  const [matchResults, setMatchResults] = useState<CatalogMatchResult[]>([]);
+  const [matchScanned, setMatchScanned] = useState(false);
+
+  const handleScanCanvas = useCallback(() => {
+    setMatchBusy(true);
+    const placements = extractCanvasPlacements(editor);
+    setMatchResults(matchCatalogForPlacements(placements));
+    setMatchScanned(true);
+    setMatchBusy(false);
+  }, [editor]);
+
+  const handleApplyCatalogMatch = useCallback(
+    (shapeId: string, catalogItemId: string) => {
+      if (!editor) return;
+      const shape = editor.getShape(shapeId as Parameters<Editor["getShape"]>[0]);
+      if (!shape) return;
+
+      const item = PLANNER_CATALOG_ITEMS.find((entry) => entry.id === catalogItemId);
+      if (!item) return;
+
+      const replacement = buildCatalogShape(item, shape.x, shape.y);
+      replacement.rotation = shape.rotation;
+      editor.deleteShapes([shape.id]);
+      editor.createShape(
+        replacement as unknown as Parameters<Editor["createShape"]>[0],
+      );
+    },
+    [editor],
+  );
+
+  const emptyCanvasHint = !editor || placementCount === 0;
+
+  const showBody = embedded || expanded;
+
+  return (
+    <section
+      className={`pw-ai-drawer${embedded ? " pw-ai-drawer--embedded" : ""}`}
+      data-expanded={showBody}
+      aria-label="AI Assist"
+    >
+      {!embedded ? (
+        <header className="pw-ai-drawer-header">
+          <button
+            type="button"
+            className="pw-ai-drawer-toggle"
+            aria-expanded={expanded}
+            onClick={() => setExpanded((value) => !value)}
+          >
+            <Sparkles size={14} strokeWidth={2} aria-hidden />
+            <span>AI Assist</span>
+            <ChevronDown
+              size={14}
+              strokeWidth={2}
+              aria-hidden
+              className="pw-ai-drawer-chevron"
+            />
+          </button>
+        </header>
+      ) : null}
+
+      {showBody ? (
+        <div className="pw-ai-drawer-body">
+          <div className="pw-segment pw-ai-drawer-tabs" role="tablist" aria-label="AI Assist modes">
+            <button
+              type="button"
+              role="tab"
+              className="pw-segment-btn"
+              data-active={tab === "suggest-layout"}
+              aria-selected={tab === "suggest-layout"}
+              onClick={() => setTab("suggest-layout")}
+            >
+              Suggest
+            </button>
+            <button
+              type="button"
+              role="tab"
+              className="pw-segment-btn"
+              data-active={tab === "match-catalog"}
+              aria-selected={tab === "match-catalog"}
+              onClick={() => setTab("match-catalog")}
+            >
+              Match
+            </button>
+            <button
+              type="button"
+              role="tab"
+              className="pw-segment-btn"
+              data-active={tab === "chat"}
+              aria-selected={tab === "chat"}
+              onClick={() => setTab("chat")}
+            >
+              <MessageSquare size={12} aria-hidden />
+              Chat
+            </button>
+          </div>
+
+          {tab === "suggest-layout" ? (
+            <SuggestLayoutPane
+              key={[
+                projectMetadata?.completedAt ?? "pending-setup",
+                projectMetadata?.seatTarget,
+                projectMetadata?.primaryPurpose,
+                projectMetadata?.floorAreaSqFt,
+              ].join(":")}
+              editor={editor}
+              projectMetadata={projectMetadata}
+            />
+          ) : tab === "match-catalog" ? (
+            <div className="pw-ai-drawer-pane" role="tabpanel">
+              <p className="pw-ai-drawer-lead">
+                Scan furniture on the canvas and get the closest catalog SKU in each price tier.
+              </p>
+
+              <button
+                type="button"
+                className="pw-ai-drawer-primary"
+                disabled={matchBusy || !editor}
+                onClick={handleScanCanvas}
+              >
+                {matchBusy ? (
+                  <Loader2 size={14} className="pw-ai-spin" aria-hidden />
+                ) : (
+                  <Sparkles size={14} aria-hidden />
+                )}
+                {matchBusy ? "Scanning…" : "Match catalog"}
+              </button>
+
+              {matchScanned && emptyCanvasHint ? (
+                <p className="pw-ai-drawer-note">
+                  No workstations, chairs, or storage on the canvas yet. Place items from the
+                  library first.
+                </p>
+              ) : null}
+
+              {matchResults.length > 0 ? (
+                <ul className="pw-ai-match-list">
+                  {matchResults.map((result) => (
+                    <li key={result.placement.shapeId} className="pw-ai-match-card">
+                      <div className="pw-ai-match-card-head">
+                        <strong>{result.placement.label}</strong>
+                        <span className="pw-ai-match-kind">{result.placement.kind}</span>
+                      </div>
+                      <ul className="pw-ai-match-tiers">
+                        {result.matches.map((match) => {
+                          const catalogItem = PLANNER_CATALOG_ITEMS.find(
+                            (item) => item.id === match.catalogItemId,
+                          );
+                          return (
+                            <li key={`${result.placement.shapeId}-${match.catalogItemId}`}>
+                              <div className="pw-ai-match-tier">
+                                <span className="pw-ai-match-tier-label">
+                                  {CATALOG_TIER_LABELS[match.tier]}
+                                </span>
+                                <div className="pw-ai-match-tier-body">
+                                  {catalogItem ? (
+                                    <span className="pw-ai-match-thumb" aria-hidden>
+                                      <CatalogBlockPreview item={catalogItem} />
+                                    </span>
+                                  ) : null}
+                                  <span className="pw-ai-match-name">{match.name}</span>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                className="pw-ai-drawer-link"
+                                onClick={() =>
+                                  handleApplyCatalogMatch(
+                                    result.placement.shapeId,
+                                    match.catalogItemId,
+                                  )
+                                }
+                              >
+                                Use this SKU
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              ) : matchScanned && !emptyCanvasHint ? (
+                <p className="pw-ai-drawer-note">No matching catalog entries found.</p>
+              ) : null}
+            </div>
+          ) : (
+            <AiAdvisorChatPane
+              key={projectMetadata?.completedAt ?? "pending-setup"}
+              editor={editor}
+              projectMetadata={projectMetadata}
+            />
+          )}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function SuggestLayoutPane({
+  editor,
+  projectMetadata,
+}: {
+  editor: Editor | null;
+  projectMetadata: PlannerProjectMetadata | null;
+}) {
+  const defaults = resolveSpaceSuggestDefaults(projectMetadata);
+  const [seatCount, setSeatCount] = useState(defaults.seatCount);
+  const [purpose, setPurpose] = useState<PlannerPrimaryPurpose>(defaults.purpose);
+  const [floorAreaSqFt, setFloorAreaSqFt] = useState(defaults.floorAreaSqFt);
+  const [layoutBusy, setLayoutBusy] = useState(false);
+  const [layoutError, setLayoutError] = useState<string | null>(null);
+  const [previewLayout, setPreviewLayout] = useState<SuggestedLayoutJson | null>(null);
+
+  const handleSuggestLayout = useCallback(async () => {
+    if (!Number.isFinite(seatCount) || seatCount < 1) {
+      setLayoutError("Enter how many people you need to seat.");
+      return;
+    }
+
+    setLayoutBusy(true);
+    setLayoutError(null);
+
+    try {
+      const { layout, usedFallback } = await suggestLayout({
+        seatCount: Math.round(seatCount),
+        purpose,
+        floorAreaSqFt: floorAreaSqFt > 0 ? Math.round(floorAreaSqFt) : undefined,
+      });
+      setPreviewLayout(layout);
+      if (usedFallback) {
+        setLayoutError("AI was unavailable — showing a grid-packed starter layout instead.");
+      }
+    } catch {
+      setPreviewLayout(
+        suggestLayoutGridPack({
+          seatCount: Math.round(seatCount),
+          purpose,
+          floorAreaSqFt: floorAreaSqFt > 0 ? Math.round(floorAreaSqFt) : undefined,
+        }),
+      );
+      setLayoutError("AI was unavailable — showing a grid-packed starter layout instead.");
+    } finally {
+      setLayoutBusy(false);
+    }
+  }, [floorAreaSqFt, purpose, seatCount]);
+
+  const handleApplyLayout = useCallback(() => {
+    if (!editor || !previewLayout) return;
+    applySuggestedLayout(editor, previewLayout);
+    setLayoutError(null);
+  }, [editor, previewLayout]);
+
+  return (
+    <div className="pw-ai-drawer-pane" role="tabpanel">
+      <p className="pw-ai-drawer-lead">
+        Describe your support office and we will place walls, zones, and furniture on the canvas.
+        Values start from your project setup.
+      </p>
+
+      <div className="pwx-field">
+        <label className="pwx-field-label" htmlFor="ai-seat-count">
+          Seat count
+        </label>
+        <input
+          id="ai-seat-count"
+          className="pwx-field-input"
+          type="number"
+          min={1}
+          max={500}
+          value={seatCount}
+          onChange={(event) => setSeatCount(Number(event.target.value))}
+        />
+      </div>
+
+      <div className="pwx-field">
+        <label className="pwx-field-label" htmlFor="ai-room-purpose">
+          Room purpose
+        </label>
+        <select
+          id="ai-room-purpose"
+          className="pwx-field-input"
+          value={purpose}
+          onChange={(event) => setPurpose(event.target.value as PlannerPrimaryPurpose)}
+        >
+          {PLANNER_PRIMARY_PURPOSE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="pwx-field">
+        <label className="pwx-field-label" htmlFor="ai-floor-area">
+          Floor area (sq ft)
+        </label>
+        <input
+          id="ai-floor-area"
+          className="pwx-field-input"
+          type="number"
+          min={100}
+          value={floorAreaSqFt}
+          onChange={(event) => setFloorAreaSqFt(Number(event.target.value))}
+        />
+      </div>
+
+      {layoutError ? <p className="pw-ai-drawer-note pw-ai-drawer-note--warn">{layoutError}</p> : null}
+
+      <button
+        type="button"
+        className="pw-ai-drawer-primary"
+        disabled={layoutBusy}
+        onClick={() => void handleSuggestLayout()}
+      >
+        {layoutBusy ? (
+          <Loader2 size={14} className="pw-ai-spin" aria-hidden />
+        ) : (
+          <Wand2 size={14} aria-hidden />
+        )}
+        {layoutBusy ? "Planning…" : "Suggest layout"}
+      </button>
+
+      {previewLayout ? (
+        <div className="pw-ai-drawer-result">
+          <LayoutPreviewSvg layout={previewLayout} />
+          <p className="pw-ai-drawer-summary">{previewLayout.summary}</p>
+          <p className="pw-ai-drawer-meta">
+            {previewLayout.furniture.length} furniture · {previewLayout.zones.length} zones ·{" "}
+            {previewLayout.source === "llm" ? "AI" : "grid pack"}
+          </p>
+          <button
+            type="button"
+            className="pw-ai-drawer-secondary"
+            disabled={!editor}
+            onClick={handleApplyLayout}
+          >
+            Apply to canvas
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}

@@ -1,0 +1,39 @@
+diff --git a/Handover.md b/Handover.md
+index 33d4c44..a37ed15 100644
+--- a/Handover.md
++++ b/Handover.md
+@@ -1,14 +1,16 @@
+ # Handover
+ 
+-*Last updated: 2026-06-11*
++*Last updated: 2026-06-11 (15:05)*
+ 
+-## Verification Correction
++## Verification (re-baselined 2026-06-11 15:04)
+ 
+-- The previous clean-verification claim is stale.
+-- `npm.cmd run typecheck` fails across active planner, legacy planner, admin, and shared-auth code.
+-- `npm.cmd run lint` fails in `features/planner/editor/PlannerHistoryControls.tsx`.
+-- `npm.cmd run test:planner` is blocked by stale Jest paths and missing setup files.
++- `npm.cmd run typecheck` → **16 errors** (was 22), all in deferred buckets: buddy-catalog admin API (6), buddy-planner (8), oando-planner `usePlannerPageState` missing modules (2). Evidence: `results/typecheck-after.txt`.
++- `npm.cmd run lint` → **1 error** (was 6): legacy `features/oando-planner/hooks/usePlannerSession.ts` set-state-in-effect. Canonical `features/planner/` is lint-clean. Evidence: `results/lint-after.txt`.
++- **Correction:** the earlier claim that lint fails in `features/planner/editor/PlannerHistoryControls.tsx` was stale — that file is not in the failure set.
++- **AI path unified:** the two `aiService.ts` files are merged — canonical implementation in `features/planner/lib/aiService.ts`, legacy path is a re-export shim. Provider-chain only (no ChatGPT). Details in `Failures.md`.
++- `npm.cmd run test:planner` not re-run this batch.
+ - Exact evidence is recorded in `Failures.md`.
++
+ - Planner research and priorities are recorded in `docs/plans/04-PLANNER-CAPABILITY-MATRIX.md`.
+ - Repository target structure and migration gates are recorded in `docs/plans/05-REPOSITORY-REMEDIATION.md`.
+ 
+@@ -37,8 +39,9 @@
+ 
+ ## Verified
+ 
+-- No current clean repository verification.
+-- The 2026-06-10 build result was not rerun in the 2026-06-11 research batch.
++- typecheck + lint re-baselined 2026-06-11 15:04 (see Verification section above); canonical `features/planner/` is lint-clean and has zero typecheck errors. Remaining errors are in deferred legacy/admin buckets.
++- `npm.cmd run build` and `test:planner` were not rerun in this batch.
++
+ 
+ ## Env
+ 

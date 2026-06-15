@@ -1,0 +1,40 @@
+diff --git a/features/planner/store/plannerGeometryStore.ts b/features/planner/store/plannerGeometryStore.ts
+index 431c90a..043dcb5 100644
+--- a/features/planner/store/plannerGeometryStore.ts
++++ b/features/planner/store/plannerGeometryStore.ts
+@@ -143,7 +143,7 @@ export const usePlannerGeometryStore = create<GeometryState>((set, get) => ({
+     });
+ 
+     const updatedDoors = s.doors.map((d) => {
+-      if (d.wallId === wallId) {
++      if (d.wallId === wallId && d.position !== undefined) {
+         const wallLen = dist(wall.start, wall.end);
+         if (wallLen === 0) return d;
+         const newWallLen = dist(
+@@ -157,7 +157,7 @@ export const usePlannerGeometryStore = create<GeometryState>((set, get) => ({
+     });
+ 
+     const updatedWindows = s.windows.map((w) => {
+-      if (w.wallId === wallId) {
++      if (w.wallId === wallId && w.position !== undefined) {
+         const wallLen = dist(wall.start, wall.end);
+         if (wallLen === 0) return w;
+         const newWallLen = dist(
+@@ -214,7 +214,7 @@ export const usePlannerGeometryStore = create<GeometryState>((set, get) => ({
+   },
+ 
+   addDoor: (wallId, position, width) => {
+-    const door: DoorItem = { id: uuid(), wallId, position, width, swing: 90, style: "single" };
++    const door: DoorItem = { id: uuid(), x: 0, y: 0, rotation: 0, wallId, position, width, swing: 90, style: "single" };
+     set((s) => ({ doors: [...s.doors, door] }));
+   },
+ 
+@@ -229,7 +229,7 @@ export const usePlannerGeometryStore = create<GeometryState>((set, get) => ({
+   },
+ 
+   addWindow: (wallId, position, width) => {
+-    const window: WindowItem = { id: uuid(), wallId, position, width, style: "casement" };
++    const window: WindowItem = { id: uuid(), x: 0, y: 0, rotation: 0, wallId, position, width, style: "casement" };
+     set((s) => ({ windows: [...s.windows, window] }));
+   },
+ 

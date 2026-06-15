@@ -1,0 +1,157 @@
+/* ==========================================================================
+   O&O App-Shell — one frame for planner, configurator, CRM, portal.
+   Token-driven, hex-free. Stage (canvas/content) is always visible.
+   See docs/plans/02-ROUTES-AUTH-ENTRY-AND-GUEST.md.
+   ========================================================================== */
+
+@utility app-shell {
+  display: grid;
+  grid-template-rows: var(--shell-topbar-h) 1fr auto;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "topbar    topbar topbar"
+    "rail      stage  inspector"
+    "status    status status";
+  block-size: 100dvh;
+  inline-size: 100%;
+  background-color: var(--surface-page);
+  color: var(--text-body);
+  overflow: hidden;
+}
+
+@utility app-shell-topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-inline: var(--space-4);
+  block-size: var(--shell-topbar-h);
+  background-color: var(--surface-panel);
+  border-block-end: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  z-index: 20;
+}
+
+@utility app-shell-rail {
+  grid-area: rail;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: var(--shell-rail-w);
+  padding-block: var(--space-3);
+  background-color: var(--surface-panel-soft);
+  border-inline-end: 1px solid var(--border-soft);
+  overflow-y: auto;
+}
+
+@utility app-shell-stage {
+  grid-area: stage;
+  position: relative;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: hidden;
+  background-color: var(--surface-muted);
+}
+
+@utility app-shell-inspector {
+  grid-area: inspector;
+  inline-size: var(--shell-inspector-w);
+  block-size: 100%;
+  padding: var(--space-4);
+  background-color: var(--surface-panel);
+  border-inline-start: 1px solid var(--border-soft);
+  overflow-y: auto;
+}
+
+@utility app-shell-status {
+  grid-area: status;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--space-6);
+  padding-inline: var(--space-4);
+  background-color: var(--surface-panel-soft);
+  border-block-start: 1px solid var(--border-soft);
+  color: var(--text-subtle);
+}
+
+/* Generic dockable side panel (catalog / layers / inspector content) */
+@utility app-shell-panel {
+  display: flex;
+  flex-direction: column;
+  inline-size: var(--shell-panel-w);
+  block-size: 100%;
+  background-color: var(--surface-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+}
+
+@utility app-shell-panel-wide {
+  inline-size: var(--shell-panel-w-wide);
+}
+
+/* ── Tablet: rails/inspector become overlays; stage goes full-width ── */
+@media (max-width: 1280px) {
+  .app-shell {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "topbar topbar"
+      "rail   stage"
+      "status status";
+  }
+
+  .app-shell-inspector {
+    position: fixed;
+    inset-block: var(--shell-topbar-h) auto;
+    inset-inline-end: 0;
+    block-size: calc(100dvh - var(--shell-topbar-h));
+    box-shadow: var(--shadow-float);
+    z-index: 30;
+    transform: translateX(100%);
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .app-shell-inspector[data-open="true"] {
+    transform: translateX(0);
+  }
+}
+
+/* ── Mobile: rail → bottom toolbar; inspector → bottom sheet ── */
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "stage"
+      "rail";
+  }
+
+  .app-shell-rail {
+    flex-direction: row;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: auto;
+    padding: var(--space-2);
+    border-inline-end: none;
+    border-block-start: 1px solid var(--border-soft);
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .app-shell-inspector {
+    inset-block: auto 0;
+    inset-inline: 0;
+    inline-size: 100%;
+    block-size: var(--shell-bottomsheet-h);
+    border-start-start-radius: var(--radius-lg);
+    border-start-end-radius: var(--radius-lg);
+    transform: translateY(100%);
+  }
+
+  .app-shell-inspector[data-open="true"] {
+    transform: translateY(0);
+  }
+}

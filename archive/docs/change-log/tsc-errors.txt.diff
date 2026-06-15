@@ -1,0 +1,285 @@
+diff --git a/tsc-errors.txt b/tsc-errors.txt
+deleted file mode 100644
+index f8c4c9c..0000000
+--- a/tsc-errors.txt
++++ /dev/null
+@@ -1,279 +0,0 @@
+-.next/dev/types/validator.ts(440,39): error TS2307: Cannot find module '../../../app/admin/configurator-catalog/page.js' or its corresponding type declarations.
+-.next/dev/types/validator.ts(773,39): error TS2307: Cannot find module '../../../app/api/admin/configurator-catalog/route.js' or its corresponding type declarations.
+-.next/types/validator.ts(440,39): error TS2307: Cannot find module '../../app/admin/configurator-catalog/page.js' or its corresponding type declarations.
+-.next/types/validator.ts(773,39): error TS2307: Cannot find module '../../app/api/admin/configurator-catalog/route.js' or its corresponding type declarations.
+-app/admin/themes/ThemeEditor.tsx(75,26): error TS18046: 't' is of type 'unknown'.
+-app/admin/themes/ThemeEditor.tsx(76,64): error TS18046: 't' is of type 'unknown'.
+-app/admin/themes/ThemeEditor.tsx(77,19): error TS18046: 't' is of type 'unknown'.
+-app/admin/themes/ThemeEditor.tsx(109,48): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'SetStateAction<"lighting" | "woods" | "metals" | "fabrics">'.
+-app/api/admin/buddy-catalog/[id]/route.ts(32,35): error TS2571: Object is of type 'unknown'.
+-app/api/admin/buddy-catalog/[id]/route.ts(50,33): error TS2571: Object is of type 'unknown'.
+-app/api/admin/buddy-catalog/[id]/route.ts(83,33): error TS2571: Object is of type 'unknown'.
+-app/api/admin/buddy-catalog/route.ts(30,15): error TS2571: Object is of type 'unknown'.
+-app/api/admin/buddy-catalog/route.ts(66,33): error TS2571: Object is of type 'unknown'.
+-app/api/admin/themes/publish/route.ts(99,55): error TS18046: 'err' is of type 'unknown'.
+-features/buddy-planner/components/editor/LeftSidebar/LayerVisibilityPanel.tsx(10,7): error TS2739: Type '{ walls: string; seating: string; rooms: string; furniture: string; underlay: string; }' is missing the following properties from type 'Record<LayerCategory, string>': annotations, "it-device"
+-features/buddy-planner/components/editor/LeftSidebar/LayerVisibilityPanel.tsx(42,11): error TS2739: Type '{ walls: number; seating: number; rooms: number; furniture: number; underlay: number; }' is missing the following properties from type 'Record<LayerCategory, number>': annotations, "it-device"
+-features/buddy-planner/components/editor/LeftSidebar/ToolSelector.tsx(136,5): error TS2322: Type '"neighborhood"' is not assignable to type 'ToolType'.
+-features/buddy-planner/lib/auditRepository.ts(52,3): error TS2322: Type '{ id: string; team_id: string; actor_id: string; action: string; target_type: string | null; target_id: string | null; metadata: Record<string, unknown>; created_at: string; }[]' is not assignable to type 'AuditEventRow[]'.
+-  Type '{ id: string; team_id: string; actor_id: string; action: string; target_type: string | null; target_id: string | null; metadata: Record<string, unknown>; created_at: string; }' is not assignable to type 'AuditEventRow'.
+-    Types of property 'target_type' are incompatible.
+-      Type 'string | null' is not assignable to type 'string'.
+-        Type 'null' is not assignable to type 'string'.
+-features/buddy-planner/lib/canvasFocus.ts(1,24): error TS2307: Cannot find module 'konva' or its corresponding type declarations.
+-features/buddy-planner/lib/engineAdapter/capabilityMatrix.ts(21,3): error TS2353: Object literal may only specify known properties, and 'neighborhood' does not exist in type 'Record<ToolType, Set<EngineId>>'.
+-features/buddy-planner/lib/stageRegistry.ts(1,24): error TS2307: Cannot find module 'konva' or its corresponding type declarations.
+-features/buddy-planner/stores/layerVisibilityStore.ts(65,7): error TS2739: Type '{ walls: true; seating: true; rooms: true; furniture: true; underlay: true; }' is missing the following properties from type 'Record<LayerCategory, boolean>': annotations, "it-device"
+-features/oando-planner/ui/hooks/usePlannerPageState.ts(15,8): error TS2307: Cannot find module '../../lib/plannerKonvaRefine' or its corresponding type declarations.
+-features/oando-planner/ui/hooks/usePlannerPageState.ts(17,52): error TS2307: Cannot find module '../../model/plannerHandoff' or its corresponding type declarations.
+-features/oando-planner/ui/hooks/usePlannerPageState.ts(121,22): error TS2339: Property 'label' does not exist on type 'MeasurementItem'.
+-features/planner/editor/exportActions.ts(28,19): error TS2352: Conversion of type 'PlannerFurnitureShapePropsTL' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+-  Index signature for type 'string' is missing in type 'PlannerFurnitureShapePropsTL'.
+-features/planner/editor/plannerCamera.ts(14,29): error TS2353: Object literal may only specify known properties, and 'zoomToFitPadding' does not exist in type 'Partial<TLCameraOptions>'.
+-features/planner/model/plannerIdentity.ts(76,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<PlannerIdentityId, PlannerIdentityConfig>'.
+-  No index signature with a parameter of type 'string' was found on type 'Record<PlannerIdentityId, PlannerIdentityConfig>'.
+-features/planner/shared/components/editor/Toolbar.tsx(95,29): error TS2322: Type '"dark"' is not assignable to type '"orange" | "white" | undefined'.
+-features/planner/store/aiStore.ts(2,72): error TS2307: Cannot find module '@/features/planner/lib/aiService' or its corresponding type declarations.
+-features/planner/store/plannerFurnitureStore.ts(52,58): error TS2345: Argument of type '{ id: string; updates: Partial<FurnitureItem>; }[]' is not assignable to parameter of type '{ id: string; changes: Partial<FurnitureItem>; }[]'.
+-  Property 'changes' is missing in type '{ id: string; updates: Partial<FurnitureItem>; }' but required in type '{ id: string; changes: Partial<FurnitureItem>; }'.
+-features/planner/store/plannerGeometryStore.ts(117,38): error TS2339: Property 'wallId' does not exist on type 'DoorItem'.
+-features/planner/store/plannerGeometryStore.ts(118,42): error TS2339: Property 'wallId' does not exist on type 'WindowItem'.
+-features/planner/store/plannerGeometryStore.ts(146,13): error TS2339: Property 'wallId' does not exist on type 'DoorItem'.
+-features/planner/store/plannerGeometryStore.ts(153,32): error TS2339: Property 'position' does not exist on type 'DoorItem'.
+-features/planner/store/plannerGeometryStore.ts(160,13): error TS2339: Property 'wallId' does not exist on type 'WindowItem'.
+-features/planner/store/plannerGeometryStore.ts(167,32): error TS2339: Property 'position' does not exist on type 'WindowItem'.
+-features/planner/store/plannerGeometryStore.ts(201,7): error TS2353: Object literal may only specify known properties, and 'area' does not exist in type 'Room'.
+-features/planner/store/plannerGeometryStore.ts(217,67): error TS2322: Type 'number' is not assignable to type '"left" | "right" | "double"'.
+-features/planner/store/plannerGeometryStore.ts(232,71): error TS2322: Type '"casement"' is not assignable to type '"single" | "double" | "sliding"'.
+-features/planner/store/plannerHistoryStore.ts(34,3): error TS2322: Type '(currentSnapshot: Snapshot) => Partial<PlannerState> | null' is not assignable to type '(currentSnapshot: Snapshot) => Snapshot | null'.
+-  Type 'Partial<PlannerState> | null' is not assignable to type 'Snapshot | null'.
+-    Type 'Partial<PlannerState>' is not assignable to type 'Snapshot'.
+-      Types of property 'walls' are incompatible.
+-        Type 'Wall[] | undefined' is not assignable to type 'Wall[]'.
+-          Type 'undefined' is not assignable to type 'Wall[]'.
+-features/planner/store/plannerHistoryStore.ts(36,38): error TS2345: Argument of type 'HistoryState' is not assignable to parameter of type 'PlannerState'.
+-  Type 'HistoryState' is missing the following properties from type 'PlannerState': tool, walls, rooms, furniture, and 110 more.
+-features/planner/store/plannerHistoryStore.ts(44,3): error TS2322: Type '(currentSnapshot: Snapshot) => Partial<PlannerState> | null' is not assignable to type '(currentSnapshot: Snapshot) => Snapshot | null'.
+-  Type 'Partial<PlannerState> | null' is not assignable to type 'Snapshot | null'.
+-    Type 'Partial<PlannerState>' is not assignable to type 'Snapshot'.
+-      Types of property 'walls' are incompatible.
+-        Type 'Wall[] | undefined' is not assignable to type 'Wall[]'.
+-          Type 'undefined' is not assignable to type 'Wall[]'.
+-features/planner/store/plannerHistoryStore.ts(46,38): error TS2345: Argument of type 'HistoryState' is not assignable to parameter of type 'PlannerState'.
+-  Type 'HistoryState' is missing the following properties from type 'PlannerState': tool, walls, rooms, furniture, and 110 more.
+-features/planner/store/plannerProjectStore.ts(11,15): error TS2305: Module '"./plannerTypes"' has no exported member 'PlannerDocument'.
+-features/planner/store/plannerProjectStore.ts(71,24): error TS2554: Expected 2-3 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(100,18): error TS2339: Property 'updatedAt' does not exist on type 'ProjectIndexEntry'.
+-features/planner/store/plannerProjectStore.ts(101,18): error TS2339: Property 'thumbnail' does not exist on type 'ProjectIndexEntry'.
+-features/planner/store/plannerProjectStore.ts(102,9): error TS2554: Expected 2 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(107,11): error TS2353: Object literal may only specify known properties, and 'updatedAt' does not exist in type 'ProjectIndexEntry'.
+-features/planner/store/plannerProjectStore.ts(110,9): error TS2554: Expected 2 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(126,24): error TS2554: Expected 2 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(133,7): error TS2322: Type 'MeasurementItem[]' is not assignable to type 'MeasurementDraft[]'.
+-  Property 'label' is missing in type 'MeasurementItem' but required in type 'MeasurementDraft'.
+-features/planner/store/plannerProjectStore.ts(135,7): error TS2322: Type 'StructuralElement[]' is not assignable to type 'StructuralElementDraft[]'.
+-  Property 'points' is missing in type 'StructuralElement' but required in type 'StructuralElementDraft'.
+-features/planner/store/plannerProjectStore.ts(144,31): error TS2551: Property 'selectedIds' does not exist on type 'LoadedProjectData'. Did you mean 'selectedId'?
+-features/planner/store/plannerProjectStore.ts(148,24): error TS2339: Property 'zoom' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(149,29): error TS2339: Property 'panOffset' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(150,7): error TS2353: Object literal may only specify known properties, and 'gridSize' does not exist in type 'UIState | Partial<UIState> | ((state: UIState) => UIState | Partial<UIState>)'.
+-features/planner/store/plannerProjectStore.ts(150,28): error TS2339: Property 'gridSize' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(151,28): error TS2339: Property 'showGrid' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(152,28): error TS2339: Property 'viewMode' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(174,46): error TS2339: Property 'geometry' does not exist on type 'Partial<PlannerState>'.
+-features/planner/store/plannerProjectStore.ts(175,39): error TS2345: Argument of type 'FurnitureItem[] | undefined' is not assignable to parameter of type 'FurnitureState | Partial<FurnitureState> | ((state: FurnitureState) => FurnitureState | Partial<FurnitureState>)'.
+-  Type 'undefined' is not assignable to type 'FurnitureState | Partial<FurnitureState> | ((state: FurnitureState) => FurnitureState | Partial<FurnitureState>)'.
+-features/planner/store/plannerProjectStore.ts(176,40): error TS2339: Property 'ui' does not exist on type 'Partial<PlannerState>'.
+-features/planner/store/plannerProjectStore.ts(177,45): error TS2339: Property 'history' does not exist on type 'Partial<PlannerState>'.
+-features/planner/store/plannerProjectStore.ts(197,7): error TS2353: Object literal may only specify known properties, and 'updatedAt' does not exist in type 'ProjectIndexEntry'.
+-features/planner/store/plannerProjectStore.ts(200,5): error TS2554: Expected 2 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(208,5): error TS2554: Expected 2 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(216,69): error TS2339: Property 'updatedAt' does not exist on type 'ProjectIndexEntry'.
+-features/planner/store/plannerProjectStore.ts(220,24): error TS2554: Expected 2 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(226,7): error TS2322: Type 'MeasurementItem[]' is not assignable to type 'MeasurementDraft[]'.
+-  Property 'label' is missing in type 'MeasurementItem' but required in type 'MeasurementDraft'.
+-features/planner/store/plannerProjectStore.ts(228,7): error TS2322: Type 'StructuralElement[]' is not assignable to type 'StructuralElementDraft[]'.
+-  Property 'points' is missing in type 'StructuralElement' but required in type 'StructuralElementDraft'.
+-features/planner/store/plannerProjectStore.ts(236,31): error TS2551: Property 'selectedIds' does not exist on type 'LoadedProjectData'. Did you mean 'selectedId'?
+-features/planner/store/plannerProjectStore.ts(239,24): error TS2339: Property 'zoom' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(240,29): error TS2339: Property 'panOffset' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(241,7): error TS2353: Object literal may only specify known properties, and 'gridSize' does not exist in type 'UIState | Partial<UIState> | ((state: UIState) => UIState | Partial<UIState>)'.
+-features/planner/store/plannerProjectStore.ts(241,28): error TS2339: Property 'gridSize' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(242,28): error TS2339: Property 'showGrid' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(243,28): error TS2339: Property 'viewMode' does not exist on type 'LoadedProjectData'.
+-features/planner/store/plannerProjectStore.ts(265,12): error TS2554: Expected 2-3 arguments, but got 1.
+-features/planner/store/plannerProjectStore.ts(291,46): error TS2339: Property 'geometry' does not exist on type 'Partial<PlannerState>'.
+-features/planner/store/plannerProjectStore.ts(292,39): error TS2345: Argument of type 'FurnitureItem[] | undefined' is not assignable to parameter of type 'FurnitureState | Partial<FurnitureState> | ((state: FurnitureState) => FurnitureState | Partial<FurnitureState>)'.
+-  Type 'undefined' is not assignable to type 'FurnitureState | Partial<FurnitureState> | ((state: FurnitureState) => FurnitureState | Partial<FurnitureState>)'.
+-features/planner/store/plannerProjectStore.ts(293,40): error TS2339: Property 'ui' does not exist on type 'Partial<PlannerState>'.
+-features/planner/store/plannerProjectStore.ts(294,45): error TS2339: Property 'history' does not exist on type 'Partial<PlannerState>'.
+-features/planner/store/plannerProjectStore.ts(312,7): error TS2353: Object literal may only specify known properties, and 'measurements' does not exist in type 'Pick<PlannerState, "zones" | "furniture" | "rooms" | "walls" | "doors" | "windows" | "textLabels" | "structuralElements">'.
+-features/planner/store/plannerStore.ts(261,3): error TS2322: Type '(thumb: string | null) => Promise<void>' is not assignable to type '(thumbnail?: string | undefined) => void'.
+-  Types of parameters 'thumb' and 'thumbnail' are incompatible.
+-    Type 'string | undefined' is not assignable to type 'string | null'.
+-      Type 'undefined' is not assignable to type 'string | null'.
+-features/planner/store/plannerStore.ts(261,93): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string | undefined'.
+-  Type 'null' is not assignable to type 'string | undefined'.
+-features/planner/store/plannerStore.ts(278,3): error TS2322: Type '(_t: string) => void' is not assignable to type '(template: FloorTemplate) => void'.
+-  Types of parameters '_t' and 'template' are incompatible.
+-    Type 'FloorTemplate' is not assignable to type 'string'.
+-features/planner/store/plannerUIStore.ts(2,25): error TS2459: Module '"./plannerTypes"' declares 'LightingPreset' locally, but it is not exported.
+-features/planner/tldraw/shapes/shapeUtils/PlannerFurnitureShapeUtil.tsx(18,14): error TS2515: Non-abstract class 'PlannerFurnitureShapeUtil' does not implement inherited abstract member getIndicatorPath from class 'ShapeUtil<PlannerFurnitureTLShape>'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(189,40): error TS2339: Property 'rotation' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(190,45): error TS2339: Property 'snappedWallId' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(202,25): error TS2339: Property 'position' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(203,25): error TS2339: Property 'rotation' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(204,25): error TS2339: Property 'snappedWallId' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(221,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(273,13): error TS2339: Property 'config' does not exist on type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(273,21): error TS2339: Property 'position' does not exist on type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(273,31): error TS2339: Property 'rotation' does not exist on type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(273,41): error TS2339: Property 'snappedWallId' does not exist on type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(279,13): error TS18046: 'placement' is of type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(304,13): error TS18046: 'placement' is of type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(330,47): error TS18046: 'placement' is of type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(332,7): error TS2698: Spread types may only be created from object types.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(337,20): error TS2339: Property 'opacity' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(338,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(344,47): error TS18046: 'placement' is of type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(346,7): error TS2698: Spread types may only be created from object types.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(351,20): error TS2339: Property 'opacity' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(352,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(359,69): error TS2339: Property 'id' does not exist on type '{}'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(371,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(375,26): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(376,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(388,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(390,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(399,29): error TS2769: No overload matches this call.
+-  Overload 1 of 2, '(id: TLShapeId): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShapeId'.
+-      Type 'unknown' is not assignable to type 'string'.
+-  Overload 2 of 2, '(shape: TLShape): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShape'.
+-features/planner/tldraw/tools/DoorWindowPlacementTool.ts(416,14): error TS18046: 's' is of type 'unknown'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(148,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(289,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(303,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(322,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(324,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(333,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(336,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(340,33): error TS18046: 'furnitureShape' is of type 'unknown'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(341,34): error TS18046: 'furnitureShape' is of type 'unknown'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(342,33): error TS18046: 'furnitureShape' is of type 'unknown'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(350,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(358,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(364,29): error TS2769: No overload matches this call.
+-  Overload 1 of 2, '(id: TLShapeId): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShapeId'.
+-      Type 'unknown' is not assignable to type 'string'.
+-  Overload 2 of 2, '(shape: TLShape): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShape'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(378,14): error TS18046: 'furnitureShape' is of type 'unknown'.
+-features/planner/tldraw/tools/FurniturePlacementTool.ts(389,20): error TS18046: 'furnitureShape' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(117,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/MeasurementTool.ts(170,31): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/MeasurementTool.ts(267,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/MeasurementTool.ts(299,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/MeasurementTool.ts(300,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/MeasurementTool.ts(372,39): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/MeasurementTool.ts(385,29): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(385,39): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(386,29): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(386,39): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(387,29): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(387,39): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(388,29): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(388,39): error TS18046: 'w' is of type 'unknown'.
+-features/planner/tldraw/tools/MeasurementTool.ts(418,33): error TS2769: No overload matches this call.
+-  Overload 1 of 2, '(id: TLShapeId): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShapeId'.
+-      Type 'unknown' is not assignable to type 'string'.
+-  Overload 2 of 2, '(shape: TLShape): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShape'.
+-features/planner/tldraw/tools/MeasurementTool.ts(424,26): error TS2339: Property 'props' does not exist on type '{}'.
+-features/planner/tldraw/tools/MeasurementTool.ts(426,35): error TS2769: No overload matches this call.
+-  Overload 1 of 2, '(id: TLShapeId): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShapeId'.
+-      Type 'unknown' is not assignable to type 'string'.
+-  Overload 2 of 2, '(shape: TLShape): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShape'.
+-features/planner/tldraw/tools/MeasurementTool.ts(434,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/MeasurementTool.ts(435,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/PlannerMeasurementTool.ts(174,20): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/PlannerMeasurementTool.ts(175,20): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(73,7): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(73,17): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(74,7): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(74,17): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(77,7): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(77,17): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(78,7): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(78,17): error TS18046: 'wall' is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(283,39): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(283,79): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(290,9): error TS2322: Type 'unknown' is not assignable to type 'TLShapeId | undefined'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(391,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/RoomDetectionTool.ts(394,9): error TS2322: Type 'unknown' is not assignable to type 'TLShapeId'.
+-  Type 'unknown' is not assignable to type 'string'.
+-features/planner/tldraw/tools/ShapeRegistrationSystem.ts(446,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/ShapeRegistrationSystem.ts(470,31): error TS2769: No overload matches this call.
+-  Overload 1 of 2, '(id: TLShapeId): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShapeId'.
+-      Type 'unknown' is not assignable to type 'string'.
+-  Overload 2 of 2, '(shape: TLShape): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShape'.
+-features/planner/tldraw/tools/ShapeRegistrationSystem.ts(504,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/WallTool.ts(277,18): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/WallTool.ts(278,18): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/WallTool.ts(332,41): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/WallTool.ts(332,84): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/WallTool.ts(333,39): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/WallTool.ts(333,80): error TS2571: Object is of type 'unknown'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(221,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<Omit<TLArrowShape, "type" | ... 1 more ... | "props">>) | ... 18 more ... | ({ ...; } & Partial<...>)'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(322,14): error TS18046: 's' is of type 'unknown'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(328,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(332,26): error TS18046: 's' is of type 'unknown'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(333,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(344,35): error TS18046: 's' is of type 'unknown'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(350,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(354,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(358,13): error TS18046: 's' is of type 'unknown'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(367,29): error TS2769: No overload matches this call.
+-  Overload 1 of 2, '(id: TLShapeId): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShapeId'.
+-      Type 'unknown' is not assignable to type 'string'.
+-  Overload 2 of 2, '(shape: TLShape): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShape'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(374,31): error TS2769: No overload matches this call.
+-  Overload 1 of 2, '(id: TLShapeId): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShapeId'.
+-      Type 'unknown' is not assignable to type 'string'.
+-  Overload 2 of 2, '(shape: TLShape): Editor', gave the following error.
+-    Argument of type 'unknown' is not assignable to parameter of type 'TLShape'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(385,25): error TS18046: 'z' is of type 'unknown'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(396,22): error TS18046: 'z' is of type 'unknown'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(423,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(448,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(451,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(459,40): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'TLShape | TLParentId'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(463,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '({ id: TLShapeId; meta?: Partial<JsonObject> | undefined; props?: Partial<TLArrowShapeProps> | undefined; type: "arrow"; } & Partial<...>) | ... 20 more ... | undefined'.
+-features/planner/tldraw/tools/ZoneOverlayTool.ts(467,13): error TS18046: 's' is of type 'unknown'.
+-features/shared/auth/components/AuthResetPage.tsx(4,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+-features/shared/auth/components/AuthResetPage.tsx(5,35): error TS2307: Cannot find module '@/lib/auth/humanizeAuthError' or its corresponding type declarations.
+-features/shared/auth/components/AuthResetPage.tsx(6,31): error TS2307: Cannot find module '@/stores/toastStore' or its corresponding type declarations.
+-features/shared/auth/components/AuthResetPage.tsx(7,31): error TS2307: Cannot find module '@/features/shared/ui' or its corresponding type declarations.
+-features/shared/auth/components/AuthResetPage.tsx(29,36): error TS7006: Parameter 's' implicitly has an 'any' type.
+-features/shared/auth/components/AuthResetPage.tsx(85,24): error TS7006: Parameter 'e' implicitly has an 'any' type.
+-features/shared/auth/components/AuthResetPage.tsx(107,24): error TS7006: Parameter 'e' implicitly has an 'any' type.
+-features/shared/auth/components/AuthVerifyPage.tsx(5,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+-features/shared/auth/components/AuthVerifyPage.tsx(6,24): error TS2307: Cannot find module '@/features/shared/ui' or its corresponding type declarations.
+-features/shared/auth/components/ForgotPasswordPage.tsx(4,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+-features/shared/auth/components/ForgotPasswordPage.tsx(5,35): error TS2307: Cannot find module '@/lib/auth/humanizeAuthError' or its corresponding type declarations.
+-features/shared/auth/components/ForgotPasswordPage.tsx(6,31): error TS2307: Cannot find module '@/features/shared/ui' or its corresponding type declarations.
+-features/shared/auth/components/ForgotPasswordPage.tsx(111,24): error TS7006: Parameter 'e' implicitly has an 'any' type.
+-features/shared/auth/components/RequireAuth.tsx(2,10): error TS2305: Module '"@/lib/auth/session"' has no exported member 'useSession'.
+-features/shared/auth/components/RequireAuth.tsx(3,38): error TS2307: Cannot find module '@/features/shared/ui/RouteLoadingFallback' or its corresponding type declarations.
+-features/shared/auth/components/RequireTeam.tsx(2,28): error TS2307: Cannot find module '@/lib/teams/useMyTeams' or its corresponding type declarations.
+-features/shared/auth/components/RequireTeam.tsx(3,38): error TS2307: Cannot find module '@/features/shared/ui/RouteLoadingFallback' or its corresponding type declarations.
