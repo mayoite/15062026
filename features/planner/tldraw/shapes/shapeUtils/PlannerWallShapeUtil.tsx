@@ -10,7 +10,7 @@
  * architectural plans (and planners like RoomSketcher) draw them.
  */
 
-import { Polygon2d, ShapeUtil, SVGContainer, Vec, type Editor } from "@tldraw/editor";
+import { Polygon2d, ShapeUtil, SVGContainer, Vec, type Editor, type SvgExportContext } from "@tldraw/editor";
 import { useEditor, useValue } from "tldraw";
 import { canvasUnitsToMillimeters, millimetersToCanvasUnits } from "@/features/planner/lib/calibrationScale";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
@@ -120,6 +120,24 @@ function pointsToSVGPath(pts: { x: number; y: number }[]): string {
   return pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ") + " Z";
 }
 
+const WALL_EXPORT_COLORS: Record<string, string> = {
+  "--surface-page": "#ffffff",
+  "--surface-soft": "#f7f3ed",
+  "--surface-panel": "#ffffff",
+  "--text-body": "#1B2940",
+  "--text-muted": "#3F5168",
+  "--color-accent": "#8A6B49",
+  "--color-bronze-600": "#66533F",
+};
+
+function resolveWallExportColor(value: string | undefined, fallback: string): string {
+  if (!value) return fallback;
+  if (value === "none" || value.startsWith("#") || /^rgba?\(/i.test(value)) return value;
+  return value.replace(/var\(--([a-z0-9-]+)(?:,\s*([^)]+))?\)/gi, (_, name: string, cssFallback?: string) => {
+    return WALL_EXPORT_COLORS[`--${name}`] ?? cssFallback?.trim() ?? fallback;
+  });
+}
+
 /** Doors/windows on the current page, reduced to page-space opening candidates. */
 function collectOpeningCandidates(editor: Editor): OpeningCandidate[] {
   const candidates: OpeningCandidate[] = [];
@@ -182,7 +200,33 @@ function useWallSolidSpans(shape: PlannerWallTLShape): Span[] {
   );
 }
 
-function WallBody({ shape }: { shape: PlannerWallTLShape }) {
+function computeWallSolidSpansForExport(shape: PlannerWallTLShape, editor?: Editor): Span[] {
+  const { startX, startY, endX, endY, thickness } = shape.props;
+  const length = Math.hypot(endX - startX, endY - startY);
+  const fullSpan: Span[] = [{ start: 0, end: length }];
+  if (!editor || shape.rotation !== 0 || length === 0) return fullSpan;
+
+  const openings = computeWallOpenings(
+    {
+      id: String(shape.id),
+      start: { x: shape.x + startX, y: shape.y + startY },
+      end: { x: shape.x + endX, y: shape.y + endY },
+      thickness: Math.max(1, thickness),
+    },
+    collectOpeningCandidates(editor),
+  );
+  return openings.length ? computeSolidSpans(length, openings) : fullSpan;
+}
+
+function WallSvg({
+  shape,
+  spans,
+  exportColors = false,
+}: {
+  shape: PlannerWallTLShape;
+  spans: Span[];
+  exportColors?: boolean;
+}) {
   const {
     startX, startY, endX, endY, thickness,
     isLoadBearing, isExterior,
@@ -190,7 +234,6 @@ function WallBody({ shape }: { shape: PlannerWallTLShape }) {
     showDimensions,
   } = shape.props;
   const t = Math.max(1, thickness);
-  const spans = useWallSolidSpans(shape);
 
   const dx = endX - startX;
   const dy = endY - startY;
@@ -209,6 +252,14 @@ function WallBody({ shape }: { shape: PlannerWallTLShape }) {
     : isLoadBearing
       ? "var(--color-accent)"
       : (strokeColor || "var(--text-body)");
+  const fill = exportColors ? resolveWallExportColor(fillCol, "#ffffff") : fillCol;
+  const stroke = exportColors ? resolveWallExportColor(strokeCol, "#1B2940") : strokeCol;
+  const hatchStroke = exportColors
+    ? resolveWallExportColor("var(--color-bronze-600)", "#66533F")
+    : "var(--color-bronze-600)";
+  const labelFill = exportColors
+    ? resolveWallExportColor("var(--text-muted)", "#3F5168")
+    : "var(--text-muted)";
 
   // Dimension label parameters
   const midX = (startX + endX) / 2;
@@ -218,7 +269,7 @@ function WallBody({ shape }: { shape: PlannerWallTLShape }) {
   const labelOffsetY = -(t / 2 + 4);
 
   return (
-    <SVGContainer>
+    <>
       {/* Solid wall body, split around door/window openings */}
       {spans.map((span) => {
         const pts = wallRectPoints(
@@ -232,8 +283,8 @@ function WallBody({ shape }: { shape: PlannerWallTLShape }) {
           <path
             key={`${span.start}-${span.end}`}
             d={pointsToSVGPath(pts)}
-            fill={fillCol}
-            stroke={strokeCol}
+            fill={fill}
+            stroke={stroke}
             strokeWidth={1.35}
             strokeLinejoin="miter"
           />
@@ -245,7 +296,7 @@ function WallBody({ shape }: { shape: PlannerWallTLShape }) {
         <line
           x1={startX} y1={startY}
           x2={endX}   y2={endY}
-          stroke="var(--color-bronze-600)"
+          stroke={hatchStroke}
           strokeWidth={1}
           strokeDasharray="4 4"
           opacity={0.45}
@@ -254,14 +305,39 @@ function WallBody({ shape }: { shape: PlannerWallTLShape }) {
 
       {/* Dimension label */}
       {showDimensions && (
-        <EditableWallDimensionLabel
-          shape={shape}
-          x={midX}
-          y={midY}
-          angleDeg={angleDeg}
-          labelOffsetY={labelOffsetY}
-        />
+        exportColors ? (
+          <text
+            x={midX}
+            y={midY}
+            textAnchor="middle"
+            dominantBaseline="auto"
+            fontSize={8}
+            fontFamily="Arial, Helvetica, sans-serif"
+            fill={labelFill}
+            transform={`rotate(${angleDeg}, ${midX}, ${midY}) translate(0, ${labelOffsetY})`}
+          >
+            {shape.props.lengthMm >= 1000
+              ? `${(shape.props.lengthMm / 1000).toFixed(2)} m`
+              : `${shape.props.lengthMm} mm`}
+          </text>
+        ) : (
+          <EditableWallDimensionLabel
+            shape={shape}
+            x={midX}
+            y={midY}
+            angleDeg={angleDeg}
+            labelOffsetY={labelOffsetY}
+          />
+        )
       )}
+    </>
+  );
+}
+
+function WallBody({ shape }: { shape: PlannerWallTLShape }) {
+  return (
+    <SVGContainer>
+      <WallSvg shape={shape} spans={useWallSolidSpans(shape)} />
     </SVGContainer>
   );
 }
@@ -301,6 +377,14 @@ export class PlannerWallShapeUtil extends ShapeUtil<PlannerWallTLShape> {
 
   component(shape: PlannerWallTLShape) {
     return <WallBody shape={shape} />;
+  }
+
+  toSvg(shape: PlannerWallTLShape, _ctx: SvgExportContext) {
+    return (
+      <g>
+        <WallSvg shape={shape} spans={computeWallSolidSpansForExport(shape, this.editor)} exportColors />
+      </g>
+    );
   }
 
   getIndicatorPath(shape: PlannerWallTLShape) {

@@ -31,15 +31,17 @@ import {
   filterCatalogItemsByPurpose,
   type PlannerPrimaryPurpose,
 } from "@/features/planner/onboarding/projectSetup";
+import { hideNativeDragPreview } from "@/features/planner/catalog/catalogDrop";
 import { writeCatalogDragPayload } from "@/features/planner/catalog/shapeTypeRegistry";
 
 export interface CatalogPanelProps {
   onDragStart?: (item: CatalogItem) => void;
+  onDragEnd?: () => void;
   onItemClick?: (item: CatalogItem) => void;
   embedded?: boolean;
 }
 
-export function CatalogPanel({ onDragStart, onItemClick, embedded = false }: CatalogPanelProps) {
+export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = false }: CatalogPanelProps) {
   const searchQuery = usePlannerCatalogStore((s) => s.query);
   const setSearchQuery = usePlannerCatalogStore((s) => s.setQuery);
   const catalogItems = usePlannerCatalogStore((s) => s.items);
@@ -137,10 +139,15 @@ export function CatalogPanel({ onDragStart, onItemClick, embedded = false }: Cat
     (event: React.DragEvent, item: CatalogItem) => {
       writeCatalogDragPayload(event.dataTransfer, JSON.stringify(item));
       event.dataTransfer.effectAllowed = "copy";
+      hideNativeDragPreview(event);
       onDragStart?.(item);
     },
     [onDragStart],
   );
+
+  const handleDragEnd = useCallback(() => {
+    onDragEnd?.();
+  }, [onDragEnd]);
 
   const handleItemClick = useCallback(
     (item: CatalogItem) => {
@@ -183,6 +190,7 @@ export function CatalogPanel({ onDragStart, onItemClick, embedded = false }: Cat
                   item={item}
                   compact
                   onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
                   onItemClick={handleItemClick}
                 />
               ))}
@@ -243,6 +251,7 @@ export function CatalogPanel({ onDragStart, onItemClick, embedded = false }: Cat
                 key={item.id}
                 item={item}
                 onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
                 onItemClick={handleItemClick}
               />
             ))}
@@ -292,11 +301,13 @@ function CatalogItemCard({
   item,
   compact = false,
   onDragStart,
+  onDragEnd,
   onItemClick,
 }: {
   item: CatalogItem;
   compact?: boolean;
   onDragStart: (event: React.DragEvent, item: CatalogItem) => void;
+  onDragEnd: () => void;
   onItemClick: (item: CatalogItem) => void;
 }) {
   const enriched = enrichCatalogItem(item);
@@ -305,7 +316,14 @@ function CatalogItemCard({
     <article
       className={`pw-catalog-card${compact ? " pw-catalog-card--compact" : ""}`}
       draggable
-      onDragStart={(event) => onDragStart(event, enriched)}
+      onDragStart={(event) => {
+        event.currentTarget.setAttribute("data-dragging", "true");
+        onDragStart(event, enriched);
+      }}
+      onDragEnd={(event) => {
+        event.currentTarget.removeAttribute("data-dragging");
+        onDragEnd();
+      }}
     >
       <div className="pw-catalog-card-thumb">
         <CatalogThumb item={enriched} />

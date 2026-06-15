@@ -7,7 +7,14 @@
 
 import type { Editor, TLShape, TLShapeId } from "@tldraw/editor";
 import { Vec, createShapeId } from "@tldraw/editor";
-import { doorPlanSize, windowPlanSize } from "@/features/planner/lib/geometry/wallOpenings";
+import {
+  checkOpeningPlacementOnWall,
+  clampOpeningAlong,
+  collectOpeningCandidates,
+  pointAlongWall,
+  wallSegmentFromEditorShape,
+} from "@/features/planner/lib/geometry/openingCollision";
+import { doorPlanSize, wallLength, windowPlanSize } from "@/features/planner/lib/geometry/wallOpenings";
 import type { PlannerDoorTLShape, PlannerWindowTLShape } from "../shapes/tldrawShapeTypes";
 import { DEFAULT_DOOR_PROPS } from "../shapes/DoorShape";
 import { DEFAULT_WINDOW_PROPS } from "../shapes/WindowShape";
@@ -47,6 +54,8 @@ export interface PlacementState {
   previewId: TLShapeId | null;
   opacity: number;
   id: TLShapeId;
+  placementBlocked: boolean;
+  blockReason?: "overlap" | "wall-end" | "off-wall";
 }
 
 export class DoorWindowPlacementUtils {
@@ -164,72 +173,37 @@ export class DoorWindowPlacementUtils {
     const config = this.getConfig(configKey);
     if (!config) return null;
 
-    let snappedPosition = position;
-    let rotation = 0;
-    let snappedWallId: string | null = null;
-    let wallT = 0.5;
-
-    // Apply wall snapping if enabled
-    if (this.options.snapToWalls) {
-      const snapResult = this.snapToWall(position);
-      if (snapResult) {
-        snappedPosition = snapResult.position;
-        rotation = snapResult.angleRad;
-        snappedWallId = snapResult.wallId;
-        wallT = snapResult.t;
-      }
-    }
-
     const placement: PlacementState = {
       id: createShapeId(),
       config,
-      position: snappedPosition,
-      rotation,
-      snappedWallId,
-      wallT,
+      position,
+      rotation: 0,
+      snappedWallId: null,
+      wallT: 0.5,
       previewId: null,
       opacity: 1,
+      placementBlocked: false,
     };
 
-    this.currentPreview = placement;
+    const snappedPlacement = this.applySnapState(placement, position);
+
+    this.currentPreview = snappedPlacement;
     this.isDragging = true;
 
     // Show preview if enabled
     if (this.options.showPreview) {
-      this.showPreview(placement);
+      this.showPreview(snappedPlacement);
     }
 
-    return placement;
+    return snappedPlacement;
   }
 
   // Update placement during drag
   updatePlacement(position: Vec): unknown | null {
     if (!this.currentPreview || !this.isDragging) return null;
 
-    let snappedPosition = position;
-    let rotation = this.currentPreview.rotation;
-    let snappedWallId = this.currentPreview.snappedWallId;
-    let wallT = this.currentPreview.wallT;
-
-    // Apply wall snapping if enabled
-    if (this.options.snapToWalls) {
-      const snapResult = this.snapToWall(position);
-      if (snapResult) {
-        snappedPosition = snapResult.position;
-        rotation = snapResult.angleRad;
-        snappedWallId = snapResult.wallId;
-        wallT = snapResult.t;
-      } else {
-        rotation = 0;
-        snappedWallId = null;
-        wallT = 0.5;
-      }
-    }
-
-    this.currentPreview.position = snappedPosition;
-    this.currentPreview.rotation = rotation;
-    this.currentPreview.snappedWallId = snappedWallId;
-    this.currentPreview.wallT = wallT;
+    const previewId = this.currentPreview.previewId ?? this.toPreviewId(String(this.currentPreview.id));
+    this.currentPreview = this.applySnapState(this.currentPreview, position, previewId);
 
     // Update preview
     if (this.options.showPreview) {
@@ -242,6 +216,7 @@ export class DoorWindowPlacementUtils {
   // Complete placement
   finishPlacement(): unknown | null {
     if (!this.currentPreview || !this.isDragging) return null;
+    if (this.currentPreview.placementBlocked) return null;
 
     const shape = this.createShape(this.currentPreview);
 
@@ -269,6 +244,97 @@ export class DoorWindowPlacementUtils {
     }
     this.currentPreview = null;
     this.isDragging = false;
+  }
+
+  private openingWidthCanvas(config: DoorWindowConfig): number {
+    if (config.type === "door") {
+      return doorPlanSize({
+        widthMm: config.widthMm,
+        thicknessMm: DEFAULT_DOOR_PROPS.thicknessMm ?? 40,
+      }).width;
+    }
+    return windowPlanSize({
+      widthMm: config.widthMm,
+      frameThicknessMm: DEFAULT_WINDOW_PROPS.frameThicknessMm,
+    }).width;
+  }
+
+  private evaluatePlacement(
+    config: DoorWindowConfig,
+    snap: OpeningSnapResult | null,
+    excludePreviewId?: TLShapeId,
+  ): Pick<PlacementState, "position" | "rotation" | "snappedWallId" | "wallT" | "placementBlocked" | "blockReason"> {
+    if (!snap) {
+      return {
+        position: new Vec(0, 0),
+        rotation: 0,
+        snappedWallId: null,
+        wallT: 0.5,
+        placementBlocked: true,
+        blockReason: "off-wall",
+      };
+    }
+
+    const wallShape = this.editor.getShape(snap.wallId as TLShapeId);
+    const wall = wallShape ? wallSegmentFromEditorShape(wallShape) : null;
+    if (!wall) {
+      return {
+        position: snap.position,
+        rotation: snap.angleRad,
+        snappedWallId: snap.wallId,
+        wallT: snap.t,
+        placementBlocked: true,
+        blockReason: "off-wall",
+      };
+    }
+
+    const openingWidth = this.openingWidthCanvas(config);
+    const length = wallLength(wall);
+    const along = clampOpeningAlong(length, snap.t * length, openingWidth);
+    const clampedT = length > 0 ? along / length : snap.t;
+    const center = pointAlongWall(wall, along);
+    const existing = collectOpeningCandidates(this.editor, wall, excludePreviewId);
+    const check = checkOpeningPlacementOnWall(
+      wall,
+      center,
+      openingWidth,
+      existing,
+      excludePreviewId ? String(excludePreviewId) : null,
+    );
+
+    return {
+      position: new Vec(center.x, center.y),
+      rotation: snap.angleRad,
+      snappedWallId: snap.wallId,
+      wallT: clampedT,
+      placementBlocked: check.blocked,
+      blockReason: check.reason,
+    };
+  }
+
+  private applySnapState(
+    placement: PlacementState,
+    position: Vec,
+    excludePreviewId?: TLShapeId,
+  ): PlacementState {
+    const rawSnap = this.options.snapToWalls ? snapOpeningToWall(this.editor, position) : null;
+    if (!rawSnap) {
+      return {
+        ...placement,
+        position,
+        rotation: 0,
+        snappedWallId: null,
+        wallT: 0.5,
+        placementBlocked: this.options.snapToWalls,
+        blockReason: this.options.snapToWalls ? "off-wall" : undefined,
+      };
+    }
+
+    const evaluated = this.evaluatePlacement(placement.config, rawSnap, excludePreviewId);
+    return {
+      ...placement,
+      ...evaluated,
+    };
   }
 
   // Snap position to nearest wall
@@ -382,7 +448,11 @@ export class DoorWindowPlacementUtils {
     }) as { opacity?: number } | null;
 
     if (previewShape) {
-      previewShape.opacity = 0.5;
+      previewShape.opacity = placement.placementBlocked ? 0.38 : 0.55;
+      if (placement.placementBlocked && typeof previewShape === "object" && previewShape && "props" in previewShape) {
+        (previewShape as { props: { strokeColor?: string } }).props.strokeColor = "var(--color-danger)";
+      }
+      placement.previewId = (previewShape as { id?: TLShapeId }).id ?? previewId;
       this.editor.createShape(previewShape as Parameters<Editor["createShape"]>[0]);
     }
   }
@@ -396,7 +466,12 @@ export class DoorWindowPlacementUtils {
     }) as { opacity?: number; id?: TLShapeId } | null;
 
     if (previewShape) {
-      previewShape.opacity = 0.5;
+      previewShape.opacity = placement.placementBlocked ? 0.38 : 0.55;
+      if (typeof previewShape === "object" && previewShape && "props" in previewShape) {
+        (previewShape as { props: { strokeColor?: string } }).props.strokeColor = placement.placementBlocked
+          ? "var(--color-danger)"
+          : "var(--color-primary)";
+      }
       this.editor.updateShape(previewShape as Parameters<Editor["updateShape"]>[0]);
     }
   }
@@ -489,5 +564,9 @@ export class DoorWindowPlacementUtils {
   // Get current preview
   getCurrentPreview(): unknown | null {
     return this.currentPreview;
+  }
+
+  isPlacementBlocked(): boolean {
+    return Boolean(this.currentPreview?.placementBlocked);
   }
 }

@@ -78,11 +78,14 @@ describe("FurniturePlacementUtils", () => {
     expect(editor.deleteShape).toHaveBeenCalled();
   });
 
-  it("snaps to wall when near wall axis", () => {
+  it("snaps flush to wall when near wall axis", () => {
     const utils = new FurniturePlacementUtils(editor);
     utils.setOptions({ snapToWalls: true, snapToGrid: false, snapDistance: 30 });
     const placed = utils.startPlacement("ws-linear-120", new Vec(100, 5));
-    expect(placed!.position.y).toBe(0);
+    expect(placed!.isAgainstWall).toBe(true);
+    expect(placed!.snappedWallId).toBe("w1");
+    expect(placed!.position.y).toBeLessThan(5);
+    expect(placed!.rotation).toBeCloseTo(0, 2);
   });
 
   it("rotateFurniture updates rotation", () => {
@@ -199,7 +202,10 @@ describe("FurniturePlacementUtils", () => {
     const utils = new FurniturePlacementUtils(editor);
     utils.setOptions({ snapToWalls: true, snapToGrid: false, snapDistance: 20 });
     const placed = utils.startPlacement("ws-linear-120", new Vec(104, 120));
-    expect(placed!.position.x).toBe(100);
+    expect(placed!.isAgainstWall).toBe(true);
+    expect(placed!.snappedWallId).toBe("vertical");
+    expect(placed!.position.x).toBeGreaterThan(100);
+    expect(placed!.rotation).toBeCloseTo(Math.PI / 2, 2);
   });
 
   it("updatePlacement returns null when not placing", () => {

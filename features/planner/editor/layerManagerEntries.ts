@@ -1,5 +1,9 @@
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
 import { canvasUnitsToMillimeters } from "@/features/planner/lib/calibrationScale";
+import {
+  normalizeCatalogMm,
+  plannerCanvasUnits,
+} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 
 type LayerManagerShape = {
   id: string;
@@ -133,12 +137,12 @@ function formatShapeDetail(shape: LayerManagerShape, unitSystem: "metric" | "imp
   if (widthMm !== null && heightMm !== null) {
     const displayWidthMm =
       shape.type === "planner-room" || shape.type === "planner-zone"
-        ? canvasUnitsToMillimeters(widthMm)
-        : widthMm;
+        ? canvasUnitsToMillimeters(plannerCanvasUnits(widthMm, heightMm))
+        : normalizeCatalogMm(widthMm, heightMm);
     const displayHeightMm =
       shape.type === "planner-room" || shape.type === "planner-zone"
-        ? canvasUnitsToMillimeters(heightMm)
-        : heightMm;
+        ? canvasUnitsToMillimeters(plannerCanvasUnits(heightMm, widthMm))
+        : normalizeCatalogMm(heightMm, widthMm);
     const unitLabel = unitSystem === "imperial" ? "mm source" : "mm";
     return `${displayWidthMm} x ${displayHeightMm} ${unitLabel}`;
   }

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import {
+  catalogMmToCanvasCm,
   normalizeCatalogMm,
   plannerCanvasUnits,
   resolveCatalogItemBlock2D,
@@ -38,6 +39,13 @@ describe("planner canvas units", () => {
   it("repairs mistaken ×10 placement values from autosave", () => {
     expect(plannerCanvasUnits(1200)).toBe(120);
     expect(plannerCanvasUnits(2500)).toBe(250);
+    expect(plannerCanvasUnits(600, 1200)).toBe(60);
+  });
+
+  it("round-trips canvas cm through normalizeCatalogMm and catalogMmToCanvasCm", () => {
+    expect(catalogMmToCanvasCm(1200, 600)).toBe(120);
+    expect(catalogMmToCanvasCm(6000, 3500)).toBe(600);
+    expect(catalogMmToCanvasCm(normalizeCatalogMm(120), normalizeCatalogMm(60))).toBe(120);
   });
 });
 

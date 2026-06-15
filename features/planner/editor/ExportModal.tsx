@@ -9,11 +9,31 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { X, FileText, Ruler, Presentation, Check, Loader2, Link2, Download } from "lucide-react";
+import {
+  X,
+  FileText,
+  Ruler,
+  Presentation,
+  Check,
+  Loader2,
+  Link2,
+  Download,
+  Image,
+  FileCode,
+  AlertCircle,
+} from "lucide-react";
 import type { Editor } from "tldraw";
 
 import type { ExportPresetId } from "@/features/planner/lib/exportPresets";
-import { downloadPlannerBoqPdf, downloadPlannerJson } from "./exportActions";
+import {
+  PlannerExportError,
+  describeExportScope,
+  downloadPlannerBoqPdf,
+  downloadPlannerJson,
+  downloadPlannerPng,
+  downloadPlannerSvg,
+  getExportShapeIds,
+} from "./exportActions";
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -23,7 +43,7 @@ interface ExportModalProps {
 
 type ExportFormat = "pdf" | "svg" | "png" | "json";
 
-type DownloadState = "idle" | "loading" | "success";
+type DownloadState = "idle" | "loading" | "success" | "error";
 
 const PRESET_CARDS: {
   id: ExportPresetId;
@@ -51,19 +71,27 @@ const PRESET_CARDS: {
   },
 ];
 
-const FORMAT_OPTIONS: { id: ExportFormat; label: string }[] = [
-  { id: "pdf", label: "PDF" },
-  { id: "svg", label: "SVG" },
-  { id: "png", label: "PNG" },
-  { id: "json", label: "JSON" },
+const FORMAT_OPTIONS: {
+  id: ExportFormat;
+  label: string;
+  hint: string;
+  icon: typeof FileText;
+}[] = [
+  { id: "pdf", label: "PDF", hint: "BOQ + plan preview", icon: FileText },
+  { id: "svg", label: "SVG", hint: "Vector floor plan", icon: FileCode },
+  { id: "png", label: "PNG", hint: "Raster snapshot", icon: Image },
+  { id: "json", label: "JSON", hint: "Full session data", icon: Download },
 ];
 
 export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
   const [selectedPreset, setSelectedPreset] = useState<ExportPresetId>("proposal");
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("pdf");
   const [downloadState, setDownloadState] = useState<DownloadState>("idle");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const scopeLabel = describeExportScope(editor);
+  const canExportVectors = getExportShapeIds(editor).length > 0;
 
   // Focus trap + Escape
   useEffect(() => {
@@ -97,50 +125,39 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  const clearStatus = useCallback(() => {
+    setStatusMessage(null);
+    if (downloadState === "error") setDownloadState("idle");
+  }, [downloadState]);
+
   const handleDownload = useCallback(async () => {
     if (downloadState === "loading") return;
     setDownloadState("loading");
+    setStatusMessage(null);
 
     try {
       if (selectedFormat === "json") {
         downloadPlannerJson(editor);
       } else if (selectedFormat === "pdf") {
         await downloadPlannerBoqPdf(editor, "Workspace Plan", selectedPreset);
+      } else if (selectedFormat === "svg") {
+        await downloadPlannerSvg(editor);
       } else {
-        // SVG/PNG: use tldraw built-in export
-        const ids = editor.getCurrentPageShapeIds();
-        if (ids.size > 0) {
-          const svgEl = await (editor as unknown as { getSvg(ids: unknown[]): Promise<SVGElement | null> }).getSvg([...ids]);
-          if (svgEl) {
-            const svgString = new XMLSerializer().serializeToString(svgEl);
-            if (selectedFormat === "svg") {
-              const blob = new Blob([svgString], { type: "image/svg+xml" });
-              triggerDownload(blob, "workspace-plan.svg");
-            } else {
-              // PNG via canvas
-              const canvas = document.createElement("canvas");
-              const ctx = canvas.getContext("2d");
-              const img = new Image();
-              await new Promise<void>((resolve, reject) => {
-                img.onload = () => {
-                  canvas.width = img.naturalWidth;
-                  canvas.height = img.naturalHeight;
-                  ctx?.drawImage(img, 0, 0);
-                  resolve();
-                };
-                img.onerror = reject;
-                img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`;
-              });
-              const pngBlob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/png"));
-              if (pngBlob) triggerDownload(pngBlob, "workspace-plan.png");
-            }
-          }
-        }
+        await downloadPlannerPng(editor);
       }
       setDownloadState("success");
-      setTimeout(() => setDownloadState("idle"), 2000);
-    } catch {
-      setDownloadState("idle");
+      setStatusMessage(`Your ${selectedFormat.toUpperCase()} file is ready.`);
+      setTimeout(() => {
+        setDownloadState("idle");
+        setStatusMessage(null);
+      }, 2500);
+    } catch (error) {
+      const message =
+        error instanceof PlannerExportError
+          ? error.message
+          : "Export failed. Please try again.";
+      setDownloadState("error");
+      setStatusMessage(message);
     }
   }, [editor, selectedFormat, selectedPreset, downloadState]);
 
@@ -153,6 +170,16 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
   }, [selectedPreset, selectedFormat]);
 
   if (!isOpen) return null;
+
+  const downloadLabel =
+    downloadState === "loading"
+      ? "Exporting…"
+      : downloadState === "success"
+        ? "Downloaded!"
+        : `Download ${selectedFormat.toUpperCase()}`;
+
+  const vectorExportBlocked =
+    (selectedFormat === "svg" || selectedFormat === "png") && !canExportVectors;
 
   return (
     <div
@@ -177,7 +204,7 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
               <Download size={16} aria-hidden />
               Export your plan
             </h2>
-            <p className="pwx-modal-sub">Pick a style preset and file format.</p>
+            <p className="pwx-modal-sub">Choose a format, then download or share a link.</p>
           </div>
           <button type="button" onClick={onClose} className="pw-icon-btn" aria-label="Close">
             <X size={15} aria-hidden />
@@ -185,58 +212,88 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
         </div>
 
         <div className="pwx-modal-body custom-scrollbar">
-          <div className="pwx-preset-row" role="group" aria-label="Export preset">
-            {PRESET_CARDS.map(({ id, label, description, icon: Icon }) => (
-              <button
-                key={id}
-                type="button"
-                className="pwx-preset-card"
-                data-preset={id}
-                data-active={selectedPreset === id}
-                aria-pressed={selectedPreset === id}
-                onClick={() => setSelectedPreset(id)}
-              >
-                <span className="pwx-preset-bar" aria-hidden />
-                <span className="pwx-preset-name">
-                  <Icon size={13} aria-hidden />
-                  {label}
-                </span>
-                <p className="pwx-preset-desc">{description}</p>
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            <span className="typ-label text-muted">Format</span>
-            <div className="pw-segment" role="group" aria-label="File format">
-              {FORMAT_OPTIONS.map(({ id, label }) => (
+          <section className="pwx-export-section" aria-labelledby="export-format-label">
+            <div className="pwx-export-section-head">
+              <span id="export-format-label" className="typ-label text-muted">Format</span>
+              <span className="pwx-export-scope">{scopeLabel}</span>
+            </div>
+            <div className="pwx-format-row" role="group" aria-label="File format">
+              {FORMAT_OPTIONS.map(({ id, label, hint, icon: Icon }) => (
                 <button
                   key={id}
                   type="button"
-                  className="pw-segment-btn"
+                  className="pwx-format-card"
                   data-active={selectedFormat === id}
                   aria-pressed={selectedFormat === id}
-                  onClick={() => setSelectedFormat(id)}
+                  onClick={() => {
+                    setSelectedFormat(id);
+                    clearStatus();
+                  }}
                 >
-                  {label}
+                  <span className="pwx-format-icon" aria-hidden>
+                    <Icon size={14} />
+                  </span>
+                  <span className="pwx-format-label">{label}</span>
+                  <span className="pwx-format-hint">{hint}</span>
                 </button>
               ))}
             </div>
-          </div>
+          </section>
+
+          {selectedFormat === "pdf" && (
+            <section className="pwx-export-section" aria-labelledby="export-preset-label">
+              <span id="export-preset-label" className="typ-label text-muted">PDF style</span>
+              <div className="pwx-preset-row" role="group" aria-label="Export preset">
+                {PRESET_CARDS.map(({ id, label, description, icon: Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className="pwx-preset-card"
+                    data-preset={id}
+                    data-active={selectedPreset === id}
+                    aria-pressed={selectedPreset === id}
+                    onClick={() => {
+                      setSelectedPreset(id);
+                      clearStatus();
+                    }}
+                  >
+                    <span className="pwx-preset-bar" aria-hidden />
+                    <span className="pwx-preset-name">
+                      <Icon size={13} aria-hidden />
+                      {label}
+                    </span>
+                    <p className="pwx-preset-desc">{description}</p>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {statusMessage && (
+            <p
+              className="pwx-export-status"
+              data-tone={downloadState === "error" ? "error" : downloadState === "success" ? "success" : "info"}
+              role="status"
+              aria-live="polite"
+            >
+              {downloadState === "error" && <AlertCircle size={13} aria-hidden />}
+              {downloadState === "success" && <Check size={13} aria-hidden />}
+              {statusMessage}
+            </p>
+          )}
         </div>
 
         <div className="pwx-modal-footer">
           <button
             type="button"
             onClick={() => void handleDownload()}
-            disabled={downloadState === "loading"}
+            disabled={downloadState === "loading" || vectorExportBlocked}
             className="btn-primary flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm disabled:opacity-70"
           >
             {downloadState === "loading" && <Loader2 size={14} className="animate-spin" aria-hidden />}
             {downloadState === "success" && <Check size={14} aria-hidden />}
-            {downloadState === "idle" && "Download"}
-            {downloadState === "loading" && "Exporting…"}
-            {downloadState === "success" && "Downloaded!"}
+            {downloadState === "error" && <AlertCircle size={14} aria-hidden />}
+            {downloadLabel}
           </button>
           <button
             type="button"
@@ -252,11 +309,4 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
   );
 }
 
-function triggerDownload(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+export { getExportShapeIds, getSafePngPixelRatio } from "./exportActions";

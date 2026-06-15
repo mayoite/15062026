@@ -149,4 +149,21 @@ describe("plannerUIStore", () => {
       expect(usePlannerUIStore.getState().showGrid).toBe(true);
     });
   });
+
+  describe("facade getters via direct reads", () => {
+    it("exposes zoom, pan, sidebar, and lighting through state", () => {
+      const store = usePlannerUIStore.getState();
+      store.setZoom(2.25);
+      store.setPanOffset({ x: 12, y: -8 });
+      store.setSidebarCollapsed(true);
+      store.setLightingPreset("night");
+
+      const state = usePlannerUIStore.getState();
+      expect(state.zoom).toBe(2.25);
+      expect(state.panOffset).toEqual({ x: 12, y: -8 });
+      expect(state.sidebarCollapsed).toBe(true);
+      expect(state.lightingPreset).toBe("night");
+      expect(state.show3D).toBe(false);
+    });
+  });
 });

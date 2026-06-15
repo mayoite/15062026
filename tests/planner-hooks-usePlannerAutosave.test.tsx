@@ -93,7 +93,7 @@ function resetWorkspaceStore() {
     },
     unitSystem: "metric",
     projectMetadata: null,
-    plannerStep: "catalog",
+    plannerStep: "draw",
   });
 }
 

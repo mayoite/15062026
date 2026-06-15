@@ -28,15 +28,15 @@ describe("PlannerWorkflowPanel", () => {
       <PlannerWorkflowPanel
         editor={editor}
         metrics={metrics}
-        step="catalog"
+        step="place"
         onStepChange={onStepChange}
         onOpenExport={onOpenExport}
       />,
     );
 
     expect(screen.getByText(/overlap/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Continue to Measure" }));
-    expect(onStepChange).toHaveBeenCalledWith("measure");
+    fireEvent.click(screen.getByRole("button", { name: "Go to Review" }));
+    expect(onStepChange).toHaveBeenCalledWith("review");
   });
 
   it("opens export on review step when allowed", async () => {

@@ -143,6 +143,27 @@ describe("shape util branch coverage", () => {
     expect(util.getGeometry(shape).points.length).toBe(4);
   });
 
+  it("PlannerRoomShapeUtil normalizes restored true-mm room points", () => {
+    const util = new PlannerRoomShapeUtil(editor as never);
+    const props = {
+      ...util.getDefaultProps(),
+      widthMm: 6000,
+      heightMm: 4000,
+      points: [
+        { x: 0, y: 0 },
+        { x: 6000, y: 0 },
+        { x: 6000, y: 4000 },
+        { x: 0, y: 4000 },
+      ],
+    };
+    const shape = { id: "r-mm", type: "planner-room", x: 0, y: 0, rotation: 0, props } as never;
+    const geometry = util.getGeometry(shape);
+    expect(geometry.points[0].x).toBe(0);
+    expect(geometry.points[0].y).toBe(0);
+    expect(geometry.points[1].x).toBe(600);
+    expect(geometry.points[2].y).toBe(400);
+  });
+
   it("PlannerRoomShapeUtil hides label when showLabel is false", () => {
     const util = new PlannerRoomShapeUtil(editor as never);
     const props = { ...util.getDefaultProps(), showLabel: false, showArea: false };
@@ -224,6 +245,43 @@ describe("shape util branch coverage", () => {
     const degenerate = { ...props, points: [{ x: 0, y: 0 }] };
     const degenerateShape = { id: "z2", type: "planner-zone", x: 0, y: 0, rotation: 0, props: degenerate } as never;
     expect(util.getGeometry(degenerateShape).points.length).toBe(4);
+  });
+
+  it("PlannerZoneShapeUtil normalizes restored true-mm zone points", () => {
+    const util = new PlannerZoneShapeUtil(editor as never);
+    const props = {
+      ...util.getDefaultProps(),
+      points: [
+        { x: 0, y: 0 },
+        { x: 5000, y: 0 },
+        { x: 5000, y: 3000 },
+        { x: 0, y: 3000 },
+      ],
+    };
+    const shape = { id: "z-mm", type: "planner-zone", x: 0, y: 0, rotation: 0, props } as never;
+    const geometry = util.getGeometry(shape);
+    expect(geometry.points[1].x).toBe(500);
+    expect(geometry.points[2].y).toBe(300);
+  });
+
+  it("PlannerWallShapeUtil toSvg splits openings and uses export colors", () => {
+    mockPageShapes = [
+      {
+        id: "door:1",
+        type: "planner-door",
+        x: 60,
+        y: 0,
+        rotation: 0,
+        props: { widthMm: 900, thicknessMm: 40, swingDirection: "right" },
+      },
+    ];
+    const util = new PlannerWallShapeUtil(editor as never);
+    const props = { ...util.getDefaultProps(), endX: 300, showDimensions: true, lengthMm: 3000 };
+    const shape = { id: "w-export", type: "planner-wall", x: 0, y: 0, rotation: 0, props } as never;
+    const { container } = render(<svg>{util.toSvg?.(shape, {} as never)}</svg>);
+    expect(container.querySelectorAll("path").length).toBeGreaterThanOrEqual(1);
+    expect(container.querySelector("text")?.textContent).toContain("m");
+    expect(container.innerHTML).not.toContain("var(--");
   });
 
   it("PlannerFurnitureShapeUtil renders fallback rect without catalog block", () => {

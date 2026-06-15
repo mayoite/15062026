@@ -35,6 +35,20 @@
 
 /* ─── Shell chrome ─────────────────────────────────────────────────────────── */
 
+.planner-workspace .pw-topbar-title {
+  font-family: var(--font-display);
+  font-size: var(--pw-text-md);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: var(--pw-letter-tight);
+  color: var(--text-heading);
+}
+
+.planner-workspace .pw-topbar-sub {
+  font-size: var(--pw-text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
 .planner-workspace .pw-history-reset-label,
 .planner-workspace .pw-menu-item {
   font-size: var(--pw-text-sm);
@@ -60,11 +74,14 @@
 
 .planner-workspace .pw-panel-tab {
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: var(--pw-letter-ui);
 }
 
 .planner-workspace .pw-status-bar {
+  font-size: var(--pw-text-xs);
   font-weight: 600;
+  letter-spacing: var(--pw-letter-ui);
+  text-transform: none;
   color: var(--text-muted);
 }
 
@@ -248,10 +265,29 @@
 /* ─── Right panel workflow chrome ─────────────────────────────────────────── */
 
 .planner-workspace .pw-step-bar__label {
-  font-size: var(--pw-text-2xs);
+  font-size: var(--pw-text-xs);
   font-weight: 600;
   letter-spacing: var(--pw-letter-ui);
   text-transform: none;
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-step-bar__btn[data-active="true"] .pw-step-bar__label {
+  color: var(--color-primary);
+}
+
+.planner-workspace .pw-step-bar__eyebrow {
+  font-size: var(--pw-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+}
+
+.planner-workspace .pw-step-bar__summary,
+.planner-workspace .pw-step-bar__detail,
+.planner-workspace .pw-panel-step-note {
+  font-size: var(--pw-text-sm);
+  line-height: var(--pw-leading-copy);
 }
 
 .planner-workspace .pw-workflow-kicker {
@@ -268,9 +304,30 @@
 
 .planner-workspace .pw-workflow-hint,
 .planner-workspace .pw-workflow-ok,
-.planner-workspace .pw-workflow-finding {
+.planner-workspace .pw-workflow-finding,
+.planner-workspace .pw-workflow-finding__text {
   font-size: var(--pw-text-sm);
   line-height: var(--pw-leading-copy);
+}
+
+.planner-workspace .pw-workflow-compliance-title {
+  font-size: var(--pw-text-xs);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: var(--pw-letter-label);
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-workflow-compliance-badge {
+  font-size: var(--pw-text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--pw-letter-ui);
+  text-transform: none;
+}
+
+.planner-workspace .pw-workflow-blocker {
+  font-size: var(--pw-text-xs);
+  font-weight: 500;
 }
 
 .planner-workspace .pwx-layers > .typ-label {

@@ -8,8 +8,9 @@
  * double glazing line.
  */
 
-import { Rectangle2d, ShapeUtil, SVGContainer } from "@tldraw/editor";
+import { Rectangle2d, ShapeUtil, SVGContainer, type TLShapePartial } from "@tldraw/editor";
 import { windowPlanSize } from "@/features/planner/lib/geometry/wallOpenings";
+import { applyWindowWallSnap, resolveOpeningWallSnap } from "@/features/planner/tldraw/tools/openingWallSnap";
 import { TldrawWindowShapeProps } from "../tldrawShapeRegistry";
 import type { PlannerWindowTLShape } from "../tldrawShapeTypes";
 
@@ -45,6 +46,35 @@ export class PlannerWindowShapeUtil extends ShapeUtil<PlannerWindowTLShape> {
     };
   }
 
+  override onTranslate(
+    _initial: PlannerWindowTLShape,
+    current: PlannerWindowTLShape,
+  ): TLShapePartial<PlannerWindowTLShape> | void {
+    return applyWindowWallSnap(this.editor, current) ?? undefined;
+  }
+
+  override onTranslateEnd(
+    initial: PlannerWindowTLShape,
+    current: PlannerWindowTLShape,
+  ): TLShapePartial<PlannerWindowTLShape> | void {
+    const snap = resolveOpeningWallSnap(this.editor, current);
+    if (snap?.blocked) {
+      return {
+        id: initial.id,
+        type: "planner-window",
+        x: initial.x,
+        y: initial.y,
+        rotation: initial.rotation,
+        props: {
+          ...initial.props,
+          strokeColor: "var(--color-primary)",
+        },
+      };
+    }
+    const patch = applyWindowWallSnap(this.editor, current);
+    return patch ?? undefined;
+  }
+
   getGeometry(shape: PlannerWindowTLShape) {
     const { width: w, depth: h } = windowPlanSize(shape.props);
     return new Rectangle2d({ x: 0, y: 0, width: w, height: h, isFilled: true });
@@ -52,12 +82,13 @@ export class PlannerWindowShapeUtil extends ShapeUtil<PlannerWindowTLShape> {
 
   component(shape: PlannerWindowTLShape) {
     const { width: w, depth: h } = windowPlanSize(shape.props);
-    const { glassColor, frameColor } = shape.props;
+    const { glassColor, frameColor, strokeColor } = shape.props;
+    const conflict = strokeColor === "var(--color-danger)";
     const jambWidth = Math.max(1.5, h / 5);
 
     return (
-      <SVGContainer>
-        <g stroke={frameColor || "var(--color-primary)"} strokeWidth={1} fill="none">
+      <SVGContainer style={{ opacity: conflict ? 0.55 : 1 }}>
+        <g stroke={conflict ? "var(--color-danger)" : (frameColor || "var(--color-primary)")} strokeWidth={1} fill="none">
           {/* Glass background fill */}
           <rect
             x={0}

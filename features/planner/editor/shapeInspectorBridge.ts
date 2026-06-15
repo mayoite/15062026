@@ -3,6 +3,11 @@ import {
   canvasUnitsToMillimeters,
   millimetersToCanvasUnits,
 } from "@/features/planner/lib/calibrationScale";
+import {
+  catalogMmToCanvasCm,
+  normalizeCatalogMm,
+  plannerCanvasUnits,
+} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 import { PLANNER_CATALOG_ITEMS as CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
 import type { InspectorData } from "@/features/planner/editor/inspector/inspectorTypes";
 
@@ -38,16 +43,16 @@ export function shapeToInspectorData(shape: TLShape): InspectorData | null {
   const teamName = typeof props.teamName === "string" ? props.teamName : undefined;
 
   if (shape.type === "planner-furniture") {
-    const widthMm = typeof props.widthMm === "number" ? props.widthMm : 1200;
-    const heightMm = typeof props.heightMm === "number" ? props.heightMm : 600;
+    const widthCm = typeof props.widthMm === "number" ? props.widthMm : 120;
+    const heightCm = typeof props.heightMm === "number" ? props.heightMm : 60;
     const seatCount =
       typeof props.seatCount === "number" ? props.seatCount : catalogSeatCount(catalogId);
     return {
       id: shape.id,
       type: String(props.furnitureType ?? props.furnitureCategory ?? "furniture"),
       label: String(props.productName ?? "Furniture"),
-      widthMm,
-      heightMm,
+      widthMm: normalizeCatalogMm(widthCm, heightCm),
+      heightMm: normalizeCatalogMm(heightCm, widthCm),
       rotation: shape.rotation,
       isLocked: shape.isLocked,
       teamName,
@@ -56,12 +61,16 @@ export function shapeToInspectorData(shape: TLShape): InspectorData | null {
   }
 
   if (shape.type === "planner-zone") {
-    const widthMm = canvasUnitsToMillimeters(
+    const widthCm = plannerCanvasUnits(
       typeof props.widthMm === "number" ? props.widthMm : 120,
-    );
-    const heightMm = canvasUnitsToMillimeters(
       typeof props.heightMm === "number" ? props.heightMm : 80,
     );
+    const heightCm = plannerCanvasUnits(
+      typeof props.heightMm === "number" ? props.heightMm : 80,
+      typeof props.widthMm === "number" ? props.widthMm : 120,
+    );
+    const widthMm = canvasUnitsToMillimeters(widthCm);
+    const heightMm = canvasUnitsToMillimeters(heightCm);
     return {
       id: shape.id,
       type: "zone",
@@ -76,12 +85,16 @@ export function shapeToInspectorData(shape: TLShape): InspectorData | null {
   }
 
   if (shape.type === "planner-room") {
-    const widthMm = canvasUnitsToMillimeters(
+    const widthCm = plannerCanvasUnits(
       typeof props.widthMm === "number" ? props.widthMm : 120,
-    );
-    const heightMm = canvasUnitsToMillimeters(
       typeof props.heightMm === "number" ? props.heightMm : 80,
     );
+    const heightCm = plannerCanvasUnits(
+      typeof props.heightMm === "number" ? props.heightMm : 80,
+      typeof props.widthMm === "number" ? props.widthMm : 120,
+    );
+    const widthMm = canvasUnitsToMillimeters(widthCm);
+    const heightMm = canvasUnitsToMillimeters(heightCm);
     return {
       id: shape.id,
       type: String(props.roomType ?? "room"),
@@ -211,7 +224,28 @@ export function applyInspectorChanges(
     }
   }
 
-  if (
+  if (shape.type === "planner-furniture") {
+    if (changes.widthMm !== undefined) {
+      props.widthMm = catalogMmToCanvasCm(
+        changes.widthMm,
+        changes.heightMm ??
+          normalizeCatalogMm(
+            typeof props.heightMm === "number" ? props.heightMm : 60,
+            typeof props.widthMm === "number" ? props.widthMm : 120,
+          ),
+      );
+    }
+    if (changes.heightMm !== undefined) {
+      props.heightMm = catalogMmToCanvasCm(
+        changes.heightMm,
+        changes.widthMm ??
+          normalizeCatalogMm(
+            typeof props.widthMm === "number" ? props.widthMm : 120,
+            typeof props.heightMm === "number" ? props.heightMm : 60,
+          ),
+      );
+    }
+  } else if (
     shape.type !== "planner-room" &&
     shape.type !== "planner-zone" &&
     shape.type !== "planner-wall"

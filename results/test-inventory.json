@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-06-15T09:33:02.024Z",
+  "generatedAt": "2026-06-15T15:30:56.822Z",
   "source": "tests/",
   "counts": {
-    "total": 228,
-    "vitest": 218,
+    "total": 233,
+    "vitest": 223,
     "vitestExcluded": 0,
     "playwright": 8,
     "helpers": 2
@@ -223,6 +223,12 @@
     {
       "name": "planner-catalog-components.test.tsx",
       "path": "tests/planner-catalog-components.test.tsx",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-catalog-drop.test.ts",
+      "path": "tests/planner-catalog-drop.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -451,6 +457,12 @@
     {
       "name": "planner-fitCanvasLabel.test.ts",
       "path": "tests/planner-fitCanvasLabel.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-furnitureWallSnap.test.ts",
+      "path": "tests/planner-furnitureWallSnap.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -713,6 +725,18 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-openingCollision.test.ts",
+      "path": "tests/planner-openingCollision.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-openingWallSnap.test.ts",
+      "path": "tests/planner-openingWallSnap.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-persistence-plannerDraft.test.ts",
       "path": "tests/planner-persistence-plannerDraft.test.ts",
       "kind": "planner",
@@ -823,6 +847,12 @@
     {
       "name": "planner-store-plannerProjectStorage.test.ts",
       "path": "tests/planner-store-plannerProjectStorage.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-store-plannerProjectStore-migration.test.ts",
+      "path": "tests/planner-store-plannerProjectStore-migration.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -1447,6 +1477,7 @@
       "planner-catalog-catalogStore-init.test.ts",
       "planner-catalog-catalogStore.test.ts",
       "planner-catalog-components.test.tsx",
+      "planner-catalog-drop.test.ts",
       "planner-catalog-exports.test.ts",
       "planner-catalog-ingest-csvCatalogIngest.test.ts",
       "planner-catalog-managedProducts.test.ts",
@@ -1484,6 +1515,7 @@
       "planner-editor-usePlannerPanels.test.ts",
       "planner-editorSelectionStatus.test.ts",
       "planner-fitCanvasLabel.test.ts",
+      "planner-furnitureWallSnap.test.ts",
       "planner-geometry.test.ts",
       "planner-guestToAuthMigration.test.ts",
       "planner-hooks-useAssetLoader.test.tsx",
@@ -1524,6 +1556,8 @@
       "planner-model-plannerIdentity.test.ts",
       "planner-model-plannerPermissions.test.ts",
       "planner-model-plannerPlacement.test.ts",
+      "planner-openingCollision.test.ts",
+      "planner-openingWallSnap.test.ts",
       "planner-persistence-plannerDraft.test.ts",
       "planner-shapeTypeRegistry.test.ts",
       "planner-shared-boq-quoteCartBridge.test.ts",
@@ -1543,6 +1577,7 @@
       "planner-store-plannerPersistence.test.ts",
       "planner-store-plannerProjectData.test.ts",
       "planner-store-plannerProjectStorage.test.ts",
+      "planner-store-plannerProjectStore-migration.test.ts",
       "planner-store-plannerProjectStore.test.ts",
       "planner-store-plannerSaves.test.ts",
       "planner-store-plannerStore.test.ts",

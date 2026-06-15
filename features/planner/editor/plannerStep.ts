@@ -3,15 +3,19 @@ import type { Editor } from "tldraw";
 import { isShapeLayerHidden } from "@/features/planner/editor/layerVisibility";
 import type { PlanMetrics } from "@/features/planner/editor/planMetrics";
 
-export type PlannerStep = "room" | "catalog" | "measure" | "review";
-
-export const PLANNER_STEPS: PlannerStep[] = ["room", "catalog", "measure", "review"];
+export type PlannerStep = "draw" | "place" | "review";
+export const PLANNER_STEPS: PlannerStep[] = ["draw", "place", "review"];
 
 export const PLANNER_STEP_LABELS: Record<PlannerStep, string> = {
-  room: "Space",
-  catalog: "Catalog",
-  measure: "Measure",
+  draw: "Draw",
+  place: "Place",
   review: "Review",
+};
+
+export const PLANNER_STEP_DETAILS: Record<PlannerStep, string> = {
+  draw: "Walls, rooms, blueprint",
+  place: "Furniture, doors, windows",
+  review: "Measurements, properties, export",
 };
 
 export interface PlannerStepGates {
@@ -19,9 +23,6 @@ export interface PlannerStepGates {
   hasFurniture: boolean;
   hasMeasurement: boolean;
   measurementCount: number;
-  canAdvanceFromRoom: boolean;
-  canAdvanceFromCatalog: boolean;
-  canAdvanceFromMeasure: boolean;
   canOpenExport: boolean;
 }
 
@@ -49,39 +50,29 @@ export function evaluatePlannerStepGates(
     hasFurniture,
     hasMeasurement,
     measurementCount,
-    canAdvanceFromRoom: hasSpaceShell,
-    canAdvanceFromCatalog: hasFurniture,
-    canAdvanceFromMeasure: hasMeasurement,
     canOpenExport: hasFurniture && hasSpaceShell,
   };
 }
 
 export function getDisabledPlannerSteps(gates: PlannerStepGates): Partial<Record<PlannerStep, boolean>> {
-  return {
-    catalog: !gates.hasSpaceShell,
-    measure: !gates.hasFurniture,
-    review: !gates.hasMeasurement,
-  };
+  void gates;
+  return {};
 }
 
 export function getPlannerStepHint(step: PlannerStep, gates: PlannerStepGates): string {
   switch (step) {
-    case "room":
+    case "draw":
       return gates.hasSpaceShell
-        ? "Space shell is set. Continue to place Oando catalog items."
-        : "Draw walls or add a room zone to define the space.";
-    case "catalog":
+        ? "Space shell is ready. Keep refining walls and rooms, or jump to Place to add products."
+        : "Start by tracing a blueprint or drawing walls and rooms to define the space.";
+    case "place":
       return gates.hasFurniture
-        ? "Catalog items placed. Measure spans or continue to review."
-        : "Drag workstations and storage from the library onto the canvas.";
-    case "measure":
-      return gates.hasMeasurement
-        ? "Measurements captured. Review the layout and export BOQ."
-        : "Use the measure tool or typed wall lengths to confirm dimensions.";
+        ? "Furniture and openings are in place. Keep arranging, or jump to Review for dimensions and export."
+        : "Use the library for furniture, then place doors and windows directly on the canvas.";
     case "review":
       return gates.canOpenExport
-        ? "Plan is ready for branded PDF export and quote handoff."
-        : "Add space shell and at least one catalog item before export.";
+        ? "Measurements, properties, and export are ready whenever you are."
+        : "Review measurements and properties here. Export unlocks once the space shell and furniture are in place.";
     default:
       return "";
   }
@@ -89,12 +80,10 @@ export function getPlannerStepHint(step: PlannerStep, gates: PlannerStepGates): 
 
 export function getPlannerStepActionLabel(step: PlannerStep): string {
   switch (step) {
-    case "room":
-      return "Continue to Catalog";
-    case "catalog":
-      return "Continue to Measure";
-    case "measure":
-      return "Continue to Review";
+    case "draw":
+      return "Go to Place";
+    case "place":
+      return "Go to Review";
     case "review":
       return "Open Export";
     default:
@@ -104,17 +93,20 @@ export function getPlannerStepActionLabel(step: PlannerStep): string {
 
 export function canAdvancePlannerStep(step: PlannerStep, gates: PlannerStepGates): boolean {
   switch (step) {
-    case "room":
-      return gates.canAdvanceFromRoom;
-    case "catalog":
-      return gates.canAdvanceFromCatalog;
-    case "measure":
-      return gates.canAdvanceFromMeasure;
+    case "draw":
+    case "place":
+      return true;
     case "review":
       return gates.canOpenExport;
     default:
       return false;
   }
+}
+
+export function previousPlannerStep(step: PlannerStep): PlannerStep | null {
+  const index = PLANNER_STEPS.indexOf(step);
+  if (index <= 0) return null;
+  return PLANNER_STEPS[index - 1] ?? null;
 }
 
 export function nextPlannerStep(step: PlannerStep): PlannerStep | null {

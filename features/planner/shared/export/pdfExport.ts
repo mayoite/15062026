@@ -1,5 +1,6 @@
 import type { ExportLayout } from "./types";
 import type { ExportPreset } from "@/features/planner/lib/exportPresets";
+import { catalogMmToCanvasCm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 
 export type PdfBoqRow = {
   sku?: string;
@@ -95,9 +96,9 @@ export async function exportBoqToPdf(options: PdfExportOptions): Promise<void> {
   if (layout.clientName) metaItems.push(`Client: ${layout.clientName}`);
   if (layout.preparedBy) metaItems.push(`Prepared by: ${layout.preparedBy}`);
   if (layout.roomWidthMm > 0 && layout.roomDepthMm > 0) {
-    metaItems.push(
-      `Room: ${Math.round(layout.roomWidthMm / 10)} cm × ${Math.round(layout.roomDepthMm / 10)} cm`,
-    );
+    const roomW = Math.round(catalogMmToCanvasCm(layout.roomWidthMm, layout.roomDepthMm));
+    const roomD = Math.round(catalogMmToCanvasCm(layout.roomDepthMm, layout.roomWidthMm));
+    metaItems.push(`Room: ${roomW} cm × ${roomD} cm`);
   }
 
   if (metaItems.length > 0) {

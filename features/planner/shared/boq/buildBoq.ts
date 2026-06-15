@@ -1,5 +1,6 @@
 import type { BoqLineItem, BoqSummary } from "./types"; 
 import type { CatalogItem, CatalogItemDimensions } from "../catalog/types"; 
+import { normalizeCatalogMm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
  
 export type PlacedItemLike = { 
   catalogId: string; 
@@ -20,9 +21,9 @@ function resolveItemDimensions(
 ): CatalogItemDimensions { 
   if (catalogEntry) return catalogEntry.dimensions; 
   return { 
-    widthMm: (item.widthCm ?? 60) * 10, 
-    depthMm: (item.depthCm ?? 60) * 10, 
-    heightMm: (item.heightCm ?? 75) * 10, 
+    widthMm: normalizeCatalogMm(item.widthCm ?? 60, item.depthCm),
+    depthMm: normalizeCatalogMm(item.depthCm ?? 60, item.widthCm),
+    heightMm: normalizeCatalogMm(item.heightCm ?? 75),
   }; 
 } 
  

@@ -1,54 +1,137 @@
 /* ─── Workflow step bar (right panel top) ─────────────────────────────────── */
 
 .planner-workspace .pw-step-bar {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.3125rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   flex-shrink: 0;
-  padding: 0.625rem 0.75rem;
+  padding: var(--pw-panel-pad-lg);
   border-bottom: 1px solid var(--border-soft);
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--surface-soft) 94%, var(--surface-panel));
+}
+
+.planner-workspace .pw-step-bar__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.planner-workspace .pw-step-bar__eyebrow,
+.planner-workspace .pw-step-bar__summary {
+  margin: 0;
+}
+
+.planner-workspace .pw-step-bar__eyebrow {
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-step-bar__summary {
+  color: var(--text-body);
+}
+
+.planner-workspace .pw-step-bar__steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.planner-workspace .pw-step-bar[data-compact="true"] .pw-step-bar__steps {
+  grid-template-columns: repeat(var(--pw-step-count, 3), minmax(0, 1fr));
 }
 
 .planner-workspace .pw-step-bar__btn {
+  position: relative;
   display: flex;
   min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  padding: 0.4375rem 0.3125rem;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: var(--control-height-xs);
+  padding: var(--space-3);
   border: 1px solid var(--border-soft);
-  border-radius: 0.5625rem;
+  border-radius: var(--radius-sm);
   background: var(--surface-panel);
   color: var(--text-muted);
-  text-align: center;
+  text-align: left;
   transition:
     border-color var(--motion-fast) var(--ease-standard),
     background-color var(--motion-fast) var(--ease-standard),
     color var(--motion-fast) var(--ease-standard),
-    box-shadow var(--motion-fast) var(--ease-standard);
+    box-shadow var(--motion-fast) var(--ease-standard),
+    opacity var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .pw-step-bar[data-compact="true"] .pw-step-bar__btn {
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: var(--space-2);
+}
+
+.planner-workspace .pw-step-bar__btn::before {
+  content: "";
+  position: absolute;
+  top: var(--space-2);
+  bottom: var(--space-2);
+  left: 0;
+  width: 0.1875rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-standard);
 }
 
 .planner-workspace .pw-step-bar__btn:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft));
   color: var(--text-strong);
+  box-shadow: 0 1px 2px var(--overlay-inverse-06);
+}
+
+.planner-workspace .pw-step-bar__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.planner-workspace .pw-step-bar__btn[data-active="true"]:focus-visible {
+  box-shadow:
+    var(--focus-ring),
+    0 1px 0 color-mix(in srgb, var(--color-primary) 18%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .planner-workspace .pw-step-bar__btn[data-active="true"] {
-  border-color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--border-soft));
   background: color-mix(in srgb, var(--color-primary) 10%, var(--surface-panel));
   color: var(--color-primary);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-primary) 18%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-primary) 18%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+.planner-workspace .pw-step-bar__btn[data-active="true"]::before {
+  opacity: 1;
 }
 
 .planner-workspace .pw-step-bar__btn[data-done="true"]:not([data-active="true"]) {
+  border-color: color-mix(in srgb, var(--color-success) 22%, var(--border-soft));
   color: var(--text-body);
 }
 
-.planner-workspace .pw-step-bar__btn:disabled {
+.planner-workspace .pw-step-bar__btn:disabled,
+.planner-workspace .pw-step-bar__btn[data-disabled="true"] {
   cursor: not-allowed;
-  opacity: 0.45;
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--border-soft) 85%, transparent);
+  background: color-mix(in srgb, var(--surface-soft) 72%, var(--surface-panel));
+  color: var(--text-subtle);
+  opacity: 0.72;
+  box-shadow: none;
+}
+
+.planner-workspace .pw-step-bar__btn:disabled:hover,
+.planner-workspace .pw-step-bar__btn[data-disabled="true"]:hover {
+  border-color: color-mix(in srgb, var(--border-soft) 85%, transparent);
+  color: var(--text-subtle);
+  box-shadow: none;
 }
 
 .planner-workspace .pw-step-bar__icon {
@@ -56,18 +139,74 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: calc(var(--radius-sm) - 0.25rem);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+  color: inherit;
+}
+
+.planner-workspace .pw-step-bar__btn[data-active="true"] .pw-step-bar__icon {
+  border-color: color-mix(in srgb, var(--color-primary) 30%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-primary) 14%, var(--surface-panel));
+  color: var(--color-primary);
+}
+
+.planner-workspace .pw-step-bar__btn[data-done="true"]:not([data-active="true"]) .pw-step-bar__icon {
+  border-color: color-mix(in srgb, var(--color-success) 28%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-success) 10%, var(--surface-panel));
+  color: var(--color-success);
+}
+
+.planner-workspace .pw-step-bar__copy {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-1);
 }
 
 .planner-workspace .pw-step-bar__label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-size: var(--pw-text-2xs);
   font-weight: 600;
   letter-spacing: var(--pw-letter-ui);
   line-height: 1.2;
+}
+
+.planner-workspace .pw-step-bar__index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--text-muted) 12%, var(--surface-soft));
+  font-size: 0.5625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-step-bar__btn[data-active="true"] .pw-step-bar__index {
+  background: color-mix(in srgb, var(--color-primary) 18%, var(--surface-panel));
+  color: var(--color-primary);
+}
+
+.planner-workspace .pw-step-bar__detail {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--text-body);
+  line-height: var(--pw-leading-copy);
 }
 
 /* ─── Workflow guidance panel ─────────────────────────────────────────────── */
@@ -75,11 +214,17 @@
 .planner-workspace .pw-workflow-panel {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: var(--space-4);
   flex-shrink: 0;
-  padding: 0.75rem;
+  padding: var(--pw-panel-pad-lg);
   border-bottom: 1px solid var(--border-soft);
   background: var(--surface-panel);
+}
+
+.planner-workspace .pw-workflow-guidance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 .planner-workspace .pw-workflow-head {
@@ -90,7 +235,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.25rem 0.4375rem;
+  gap: var(--space-1) var(--space-2);
   margin: 0;
   font-size: var(--pw-text-xs);
   font-weight: 600;
@@ -119,10 +264,67 @@
   color: var(--text-body);
 }
 
+.planner-workspace .pw-workflow-compliance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-soft) 88%, var(--surface-panel));
+}
+
+.planner-workspace .pw-workflow-compliance-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.planner-workspace .pw-workflow-compliance-title {
+  margin: 0;
+  font-size: var(--pw-text-xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-label);
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-workflow-compliance-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-panel);
+  font-size: var(--pw-text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--pw-letter-ui);
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-workflow-compliance-badge[data-severity="ok"] {
+  border-color: color-mix(in srgb, var(--color-success) 28%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-success) 10%, var(--surface-panel));
+  color: var(--color-success);
+}
+
+.planner-workspace .pw-workflow-compliance-badge[data-severity="warning"] {
+  border-color: color-mix(in srgb, var(--color-warning) 30%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--surface-panel));
+  color: var(--text-body);
+}
+
+.planner-workspace .pw-workflow-compliance-badge[data-severity="critical"] {
+  border-color: color-mix(in srgb, var(--color-danger) 30%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--surface-panel));
+  color: var(--color-danger);
+}
+
 .planner-workspace .pw-workflow-findings {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -131,11 +333,24 @@
 .planner-workspace .pw-workflow-finding {
   display: flex;
   align-items: flex-start;
-  gap: 0.4375rem;
-  padding: 0.4375rem 0.5rem;
-  border-radius: 0.4375rem;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: calc(var(--radius-sm) - 0.25rem);
   font-size: var(--pw-text-xs);
   line-height: var(--pw-leading-copy);
+}
+
+.planner-workspace .pw-workflow-finding__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.125rem;
+}
+
+.planner-workspace .pw-workflow-finding__text {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .planner-workspace .pw-workflow-finding--critical {
@@ -152,8 +367,8 @@
 
 .planner-workspace .pw-workflow-ok {
   margin: 0;
-  padding: 0.4375rem 0.5rem;
-  border-radius: 0.4375rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: calc(var(--radius-sm) - 0.25rem);
   border: 1px solid color-mix(in srgb, var(--color-success) 24%, var(--border-soft));
   background: color-mix(in srgb, var(--color-success) 8%, var(--surface-soft));
   font-size: var(--pw-text-xs);
@@ -161,15 +376,22 @@
   color: var(--text-body);
 }
 
+.planner-workspace .pw-workflow-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+}
+
 .planner-workspace .pw-workflow-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 2.375rem;
-  padding: 0.5rem 0.75rem;
+  min-height: var(--control-height-xs);
+  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-primary);
-  border-radius: 0.5625rem;
+  border-radius: var(--radius-sm);
   background: var(--color-primary);
   font-size: var(--pw-text-sm);
   font-weight: 600;
@@ -178,21 +400,52 @@
   transition:
     background-color var(--motion-fast) var(--ease-standard),
     border-color var(--motion-fast) var(--ease-standard),
-    opacity var(--motion-fast) var(--ease-standard);
+    color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .planner-workspace .pw-workflow-cta:hover:not(:disabled) {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-primary) 24%, transparent);
 }
 
 .planner-workspace .pw-workflow-cta:disabled {
   cursor: not-allowed;
-  opacity: 0.42;
+  border-color: var(--border-soft);
+  background: var(--surface-soft);
+  color: var(--text-subtle);
+  box-shadow: none;
+  opacity: 1;
+}
+
+.planner-workspace .pw-workflow-panel[data-export-blocked="true"] .pw-workflow-cta:disabled {
+  border-color: color-mix(in srgb, var(--color-danger) 22%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-danger) 6%, var(--surface-soft));
+  color: color-mix(in srgb, var(--color-danger) 72%, var(--text-subtle));
+}
+
+.planner-workspace .pw-workflow-cta--secondary {
+  border-color: var(--border-soft);
+  background: var(--surface-panel);
+  color: var(--text-body);
+  box-shadow: none;
+}
+
+.planner-workspace .pw-workflow-cta--secondary:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
 }
 
 .planner-workspace .pw-workflow-blocker {
-  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: calc(var(--space-1) * -1) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: calc(var(--radius-sm) - 0.25rem);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 24%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-danger) 6%, var(--surface-soft));
   font-size: var(--pw-text-xs);
   line-height: var(--pw-leading-copy);
   color: var(--color-danger);

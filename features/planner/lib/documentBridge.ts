@@ -2,6 +2,7 @@ import type { Editor } from "tldraw";
 
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
 import { canvasUnitsToMillimeters, readMmPerCanvasUnit } from "@/features/planner/lib/calibrationScale";
+import { normalizeCatalogMm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 import {
   createPlannerDocument,
   normalizePlannerDocument,
@@ -129,7 +130,7 @@ function toMillimeters(value: number, rawDimensions?: string) {
   const hint = String(rawDimensions ?? "").toLowerCase();
 
   if (hint.includes("cm") && !hint.includes("mm")) {
-    return Math.round(value * 10);
+    return normalizeCatalogMm(value);
   }
 
   if (hint.includes("m") && !hint.includes("mm") && !hint.includes("cm")) {
@@ -138,7 +139,7 @@ function toMillimeters(value: number, rawDimensions?: string) {
 
   // Heuristic: small numbers (<300) with no explicit mm are likely cm
   if (!hint.includes("mm") && value < 300) {
-    return Math.round(value * 10);
+    return normalizeCatalogMm(value);
   }
 
   return Math.round(value);

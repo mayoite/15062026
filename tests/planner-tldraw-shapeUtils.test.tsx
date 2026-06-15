@@ -82,6 +82,22 @@ describe("PlannerWallShapeUtil", () => {
     } as never;
     expect(util.getIndicatorPath(shape)).toBeTruthy();
   });
+
+  it("toSvg exports a solid wall body with concrete colors", () => {
+    const shape = {
+      id: "w-svg",
+      type: "planner-wall",
+      x: 0,
+      y: 0,
+      rotation: 0,
+      props: { ...util.getDefaultProps(), endX: 180, thickness: 12, showDimensions: false },
+    } as never;
+    const { container } = render(<svg>{util.toSvg?.(shape, {} as never)}</svg>);
+    const path = container.querySelector("path");
+    expect(path).toBeTruthy();
+    expect(path?.getAttribute("fill")).toBe("#ffffff");
+    expect(path?.getAttribute("d")).toContain("6.00");
+  });
 });
 
 describe("other planner shape utils", () => {
@@ -103,6 +119,18 @@ describe("other planner shape utils", () => {
     const geometry = util.getGeometry(shape);
     expect(geometry.width).toBeGreaterThan(0);
     expect(geometry.height).toBeGreaterThan(0);
+  });
+
+  it("PlannerFurnitureShapeUtil toSvg exports a group with concrete colors", () => {
+    const util = new PlannerFurnitureShapeUtil(editor as never);
+    const props = { ...util.getDefaultProps(), productName: "Desk", showLabel: true };
+    const shape = { id: "f-svg", type: "planner-furniture", x: 0, y: 0, rotation: 0, props } as never;
+    const { container } = render(<svg>{util.toSvg?.(shape, {} as never)}</svg>);
+    expect(container.querySelector("g")).toBeTruthy();
+    expect(container.querySelectorAll("svg").length).toBe(1);
+    expect(container.querySelector("rect")).toBeTruthy();
+    expect(container.querySelector("text")?.textContent).toContain("Desk");
+    expect(container.innerHTML).not.toContain("var(--");
   });
 
   it("PlannerDoorShapeUtil getDefaultProps and geometry", () => {

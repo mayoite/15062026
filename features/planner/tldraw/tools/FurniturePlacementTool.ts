@@ -12,6 +12,7 @@ import type { CatalogItem} from "@/features/planner/store/catalogData";
 import { furnitureCatalog } from "@/features/planner/store/catalogData";
 import { getUnifiedCatalog } from "@/features/planner/store/unifiedCatalog";
 import { DEFAULT_FURNITURE_PROPS } from "../shapes/FurnitureShape";
+import { snapFurnitureAtPoint } from "./furnitureWallSnap";
 
 export interface FurniturePlacementOptions {
   snapToWalls: boolean;
@@ -29,6 +30,8 @@ export interface PlacedFurniture {
   rotation: number;
   scale: number;
   catalogItem: CatalogItem;
+  isAgainstWall: boolean;
+  snappedWallId: string | null;
 }
 
 export class FurniturePlacementUtils {
@@ -37,25 +40,6 @@ export class FurniturePlacementUtils {
     return createShapeId(`preview-${baseId}`);
   }
 
-  private getWallEndpoints(shape: TLShape): { start: Vec; end: Vec } | null {
-    if (shape.type !== "planner-wall") return null;
-    const wall = shape as TLShape & {
-      x: number;
-      y: number;
-      props?: { startX?: number; startY?: number; endX?: number; endY?: number };
-    };
-
-    const start = new Vec(
-      wall.x + (wall.props?.startX ?? 0),
-      wall.y + (wall.props?.startY ?? 0)
-    );
-    const end = new Vec(
-      wall.x + (wall.props?.endX ?? 0),
-      wall.y + (wall.props?.endY ?? 0)
-    );
-
-    return { start, end };
-  }
   private options: FurniturePlacementOptions = {
     snapToWalls: true,
     snapToGrid: true,
@@ -105,7 +89,10 @@ export class FurniturePlacementUtils {
       rotation: 0,
       scale: 1,
       catalogItem,
+      isAgainstWall: false,
+      snappedWallId: null,
     };
+    this.applyWallSnapState(placedFurniture, snappedPosition);
 
     this.currentPreview = placedFurniture;
     this.isDragging = true;
@@ -129,7 +116,7 @@ export class FurniturePlacementUtils {
       snappedPosition = this.applySnapping(position, this.currentPreview.catalogItem);
     }
 
-    this.currentPreview.position = snappedPosition;
+    this.applyWallSnapState(this.currentPreview, snappedPosition);
 
     // Update preview
     if (this.options.showPreview) {
@@ -183,61 +170,35 @@ export class FurniturePlacementUtils {
       );
     }
 
-    // Snap to walls if enabled
-    if (this.options.snapToWalls) {
-      const wallSnap = this.snapToWall(snappedPosition, catalogItem);
-      if (wallSnap) {
-        snappedPosition = wallSnap;
-      }
-    }
-
     return snappedPosition;
   }
 
-  // Snap position to nearest wall
-  private snapToWall(position: Vec, _catalogItem: CatalogItem): Vec | null {
-    const walls = this.getWallShapes();
-    if (walls.length === 0) return null;
-
-    let closestSnap: Vec | null = null;
-    let closestDistance = this.options.snapDistance;
-
-    for (const wall of walls) {
-      const endpoints = this.getWallEndpoints(wall);
-      if (!endpoints) continue;
-
-      const snapPoint = this.getClosestPointOnLine(position, endpoints.start, endpoints.end);
-
-      const distance = position.dist(snapPoint);
-
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestSnap = snapPoint;
-      }
-    }
-
-    return closestSnap;
+  private furnitureFootprintMm(catalogItem: CatalogItem): { widthMm: number; heightMm: number } {
+    return {
+      widthMm: catalogItem.widthMm / 10,
+      heightMm: catalogItem.depthMm / 10,
+    };
   }
 
-  // Get closest point on a line segment
-  private getClosestPointOnLine(point: Vec, lineStart: Vec, lineEnd: Vec): Vec {
-    const lineVec = lineEnd.clone().sub(lineStart);
-    const pointVec = point.clone().sub(lineStart);
+  private applyWallSnapState(placement: PlacedFurniture, position: Vec) {
+    placement.position = position;
+    placement.isAgainstWall = false;
+    placement.snappedWallId = null;
 
-    const lineLength = lineVec.len();
-    if (lineLength === 0) return lineStart;
+    if (!this.options.snapToWalls) return;
 
-    // Manual dot product calculation
-    const dotProduct = pointVec.x * lineVec.x + pointVec.y * lineVec.y;
-    const t = Math.max(0, Math.min(1, dotProduct / (lineLength * lineLength)));
+    const snap = snapFurnitureAtPoint(
+      this.editor,
+      { x: position.x, y: position.y },
+      this.furnitureFootprintMm(placement.catalogItem),
+      placement.rotation,
+    );
+    if (!snap) return;
 
-    return lineStart.clone().add(lineVec.mul(t));
-  }
-
-  // Get wall shapes from canvas
-  private getWallShapes(): TLShape[] {
-    const allShapes = this.editor.getCurrentPageShapes();
-    return allShapes.filter(shape => (shape.type as string) === "planner-wall");
+    placement.position = new Vec(snap.x, snap.y);
+    placement.rotation = snap.rotation;
+    placement.isAgainstWall = snap.snapped;
+    placement.snappedWallId = snap.wallId ?? null;
   }
 
   // Create furniture shape from placement data
@@ -268,9 +229,10 @@ export class FurniturePlacementUtils {
         imageUrl: catalogItem.iconPath ?? "",
         color,
         fillColor: "var(--surface-glass)",
-        strokeColor: "var(--color-primary)",
-        strokeWidth: 2,
+        strokeColor: placement.isAgainstWall ? "var(--color-accent)" : "var(--color-primary)",
+        strokeWidth: placement.isAgainstWall ? 2.5 : 2,
         snapDistance: this.options.snapToWalls ? 12 : 0,
+        isAgainstWall: placement.isAgainstWall,
       },
     };
 
@@ -286,8 +248,7 @@ export class FurniturePlacementUtils {
     });
 
     if (previewShape) {
-      // Add opacity to indicate preview
-      previewShape.opacity = 0.5;
+      previewShape.opacity = placement.isAgainstWall ? 0.62 : 0.5;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.editor.createShape(previewShape as any);
     }
@@ -302,7 +263,7 @@ export class FurniturePlacementUtils {
     });
 
     if (previewShape) {
-      previewShape.opacity = 0.5;
+      previewShape.opacity = placement.isAgainstWall ? 0.62 : 0.5;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.editor.updateShape(previewShape as any);
     }

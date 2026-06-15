@@ -8,6 +8,7 @@ import { canvasUnitsToMillimeters, millimetersToCanvasUnits } from "@/features/p
 import { TldrawRoomShapeProps } from "../tldrawShapeRegistry";
 import type { PlannerRoomTLShape } from "../tldrawShapeTypes";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
+import { plannerCanvasUnits } from "./catalogBlockBridge";
 
 /** Convert square metres to square feet. */
 const SQM_TO_SQFT = 10.7639;
@@ -27,8 +28,8 @@ function EditableRoomDimensionLabel({
   const unitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
   const mmPerUnit = usePlannerWorkspaceStore((s) => s.blueprint.mmPerUnit);
   const { widthMm, heightMm } = shape.props;
-  const widthUnits = Math.max(1, widthMm);
-  const heightUnits = Math.max(1, heightMm);
+  const widthUnits = Math.max(1, plannerCanvasUnits(widthMm));
+  const heightUnits = Math.max(1, plannerCanvasUnits(heightMm));
   const widthMetricMm = canvasUnitsToMillimeters(widthUnits, mmPerUnit);
   const heightMetricMm = canvasUnitsToMillimeters(heightUnits, mmPerUnit);
 
@@ -131,7 +132,12 @@ export class PlannerRoomShapeUtil extends ShapeUtil<PlannerRoomTLShape> {
 
   private getPoints(shape: PlannerRoomTLShape): Vec[] {
     const points = shape.props.points ?? [];
-    if (points.length >= 3) return points.map((p) => new Vec(p.x, p.y));
+    if (points.length >= 3) {
+      return points.map((p) => new Vec(
+        p.x === 0 ? 0 : plannerCanvasUnits(p.x, p.y),
+        p.y === 0 ? 0 : plannerCanvasUnits(p.y, p.x),
+      ));
+    }
     return [new Vec(0, 0), new Vec(120, 0), new Vec(120, 80), new Vec(0, 80)];
   }
 

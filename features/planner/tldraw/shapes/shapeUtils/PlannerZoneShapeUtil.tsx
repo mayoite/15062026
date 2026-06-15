@@ -5,6 +5,7 @@
 import { Polygon2d, ShapeUtil, SVGContainer, Vec } from "@tldraw/editor";
 import { TldrawZoneShapeProps } from "../tldrawShapeRegistry";
 import type { PlannerZoneTLShape } from "../tldrawShapeTypes";
+import { plannerCanvasUnits } from "./catalogBlockBridge";
 
 export class PlannerZoneShapeUtil extends ShapeUtil<PlannerZoneTLShape> {
   static override type = "planner-zone" as const;
@@ -44,7 +45,12 @@ export class PlannerZoneShapeUtil extends ShapeUtil<PlannerZoneTLShape> {
 
   private getPoints(shape: PlannerZoneTLShape): Vec[] {
     const points = shape.props.points ?? [];
-    if (points.length >= 3) return points.map((p) => new Vec(p.x, p.y));
+    if (points.length >= 3) {
+      return points.map((p) => new Vec(
+        p.x === 0 ? 0 : plannerCanvasUnits(p.x, p.y),
+        p.y === 0 ? 0 : plannerCanvasUnits(p.y, p.x),
+      ));
+    }
     return [new Vec(0, 0), new Vec(140, 0), new Vec(140, 90), new Vec(0, 90)];
   }
 

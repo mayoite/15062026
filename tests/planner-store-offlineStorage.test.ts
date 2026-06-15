@@ -349,6 +349,24 @@ describe("OfflineStorageManager", () => {
       }),
     ).rejects.toMatchObject({ code: "TRANSACTION_FAILED" });
   });
+
+  it("throws when the database handle is missing after init", async () => {
+    await manager.init();
+    (manager as unknown as { db: IDBDatabase | null }).db = null;
+    await expect(manager.getPlan("missing")).rejects.toMatchObject({
+      code: "DB_NOT_INITIALIZED",
+    });
+  });
+
+  it("throws when listing sync queue operations fail", async () => {
+    mockIndexedDB.__failTransactions();
+    await expect(manager.listSyncQueue()).rejects.toMatchObject({
+      code: "LIST_QUEUE_FAILED",
+    });
+    await expect(manager.listSyncQueueForPlan("plan-1")).rejects.toMatchObject({
+      code: "LIST_QUEUE_FOR_PLAN_FAILED",
+    });
+  });
 });
 
 describe("offlineStorage singleton workflows", () => {

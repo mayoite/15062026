@@ -26,7 +26,7 @@ export function getEditorSnapThreshold(): number {
   return Math.max(12, getSnapDistance());
 }
 
-function wallSegmentFromShape(shape: TLShape): WallSegment | null {
+export function wallSegmentFromShape(shape: TLShape): WallSegment | null {
   if (shape.type !== "planner-wall") return null;
   const props = shape.props as {
     startX?: number;

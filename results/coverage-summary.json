@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T09:36:05.068Z",
+  "generatedAt": "2026-06-15T15:36:03.878Z",
   "vitestExitCode": 0,
   "vitestSiteExitCode": 0,
   "coverageRunExclude": [],
@@ -8,46 +8,46 @@
   "scopes": {
     "all": {
       "statements": {
-        "covered": 9436,
-        "total": 12034,
-        "pct": 78.4
+        "covered": 9707,
+        "total": 12356,
+        "pct": 78.6
       },
       "functions": {
-        "covered": 2216,
-        "total": 2982,
-        "pct": 74.3
+        "covered": 2301,
+        "total": 3054,
+        "pct": 75.3
       },
       "branches": {
-        "covered": 5715,
-        "total": 8158,
-        "pct": 70.1
+        "covered": 5972,
+        "total": 8556,
+        "pct": 69.8
       },
       "lines": {
-        "covered": 8544,
-        "total": 10627,
-        "pct": 80.4
+        "covered": 8797,
+        "total": 10927,
+        "pct": 80.5
       }
     },
     "features/planner": {
       "statements": {
-        "covered": 9436,
-        "total": 12034,
-        "pct": 78.4
+        "covered": 9707,
+        "total": 12356,
+        "pct": 78.6
       },
       "functions": {
-        "covered": 2216,
-        "total": 2982,
-        "pct": 74.3
+        "covered": 2301,
+        "total": 3054,
+        "pct": 75.3
       },
       "branches": {
-        "covered": 5715,
-        "total": 8158,
-        "pct": 70.1
+        "covered": 5972,
+        "total": 8556,
+        "pct": 69.8
       },
       "lines": {
-        "covered": 8544,
-        "total": 10627,
-        "pct": 80.4
+        "covered": 8797,
+        "total": 10927,
+        "pct": 80.5
       }
     },
     "features/other": {

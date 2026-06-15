@@ -277,37 +277,31 @@ describe("planner step workflow", () => {
       furnitureCount: 0,
     });
     expect(getDisabledPlannerSteps(emptyGates)).toEqual({
-      catalog: true,
-      measure: true,
-      review: true,
     });
-    expect(getPlannerStepHint("room", emptyGates)).toContain("Draw walls");
+    expect(getPlannerStepHint("draw", emptyGates)).toContain("drawing walls and rooms");
     const fullGates = evaluatePlannerStepGates(null, metrics);
-    expect(getPlannerStepHint("room", fullGates)).toContain("Space shell is set");
-    expect(getPlannerStepHint("catalog", fullGates)).toContain("Catalog items placed");
-    expect(getPlannerStepHint("measure", fullGates)).toContain("Measurements captured");
-    expect(getPlannerStepHint("review", fullGates)).toContain("Plan is ready");
-    expect(getPlannerStepHint("catalog", emptyGates)).toContain("Drag workstations");
-    expect(getPlannerStepHint("measure", emptyGates)).toContain("Use the measure tool");
-    expect(getPlannerStepHint("review", emptyGates)).toContain("Add space shell");
-    expect(getPlannerStepHint("catalog", evaluatePlannerStepGates(null, metrics))).toContain(
-      "Catalog items placed",
+    expect(getPlannerStepHint("draw", fullGates)).toContain("Space shell is ready");
+    expect(getPlannerStepHint("place", fullGates)).toContain("Furniture and openings are in place");
+    expect(getPlannerStepHint("review", fullGates)).toContain("ready whenever you are");
+    expect(getPlannerStepHint("place", emptyGates)).toContain("Use the library for furniture");
+    expect(getPlannerStepHint("review", emptyGates)).toContain("Export unlocks once");
+    expect(getPlannerStepHint("place", evaluatePlannerStepGates(null, metrics))).toContain(
+      "Furniture and openings are in place",
     );
     expect(getPlannerStepActionLabel("review")).toBe("Open Export");
-    expect(canAdvancePlannerStep("room", emptyGates)).toBe(false);
+    expect(canAdvancePlannerStep("draw", emptyGates)).toBe(true);
     expect(canAdvancePlannerStep("review", evaluatePlannerStepGates(null, metrics))).toBe(true);
     expect(nextPlannerStep("review")).toBeNull();
-    expect(nextPlannerStep("room")).toBe("catalog");
-    expect(PLANNER_STEPS).toHaveLength(4);
+    expect(nextPlannerStep("draw")).toBe("place");
+    expect(PLANNER_STEPS).toHaveLength(3);
   });
 
   it("maps steps to tool bindings and left tabs", () => {
-    expect(getStepToolBinding("room").plannerTool).toBe("wall");
-    expect(getStepToolBinding("catalog").toolId).toBe("planner-furniture");
-    expect(getStepToolBinding("measure").plannerTool).toBe("measure");
+    expect(getStepToolBinding("draw").plannerTool).toBe("wall");
+    expect(getStepToolBinding("place").toolId).toBe("select");
     expect(getStepToolBinding("review").toolId).toBe("select");
-    expect(getStepLeftTab("room")).toBe("blueprint");
-    expect(getStepLeftTab("catalog")).toBe("library");
+    expect(getStepLeftTab("draw")).toBe("blueprint");
+    expect(getStepLeftTab("place")).toBe("library");
   });
 });
 

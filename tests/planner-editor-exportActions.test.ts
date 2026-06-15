@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  buildExportMeta,
   downloadPlannerBoqPdf,
   downloadPlannerJson,
+  PlannerExportError,
 } from "@/features/planner/editor/exportActions";
 import { createPlannerEditorMock, makeShape } from "./planner-editor-mockEditor";
 
@@ -28,7 +30,32 @@ describe("exportActions", () => {
     document.body.innerHTML = '<div class="pw-canvas-surface"></div>';
   });
 
-  it("downloads planner json envelope", () => {
+  it("buildExportMeta normalizes furniture dimensions to mm", () => {
+    const editor = createPlannerEditorMock({
+      shapes: [
+        makeShape("shape:1", "planner-furniture", {
+          catalogId: "desk",
+          productName: "Desk",
+          widthMm: 1200,
+          heightMm: 600,
+        }),
+        makeShape("shape:room", "planner-room", { widthMm: 600, heightMm: 400 }),
+      ],
+    });
+    editor.store = { listen: vi.fn() } as never;
+
+    const meta = buildExportMeta(editor);
+    expect(meta.canonicalUnit).toBe("mm");
+    expect(meta.furniture[0]).toMatchObject({
+      name: "Desk",
+      widthMm: 1200,
+      depthMm: 600,
+      spec: "1200×600×750 mm",
+    });
+    expect(meta.room).toMatchObject({ widthMm: 6000, depthMm: 4000 });
+  });
+
+  it("downloads planner json envelope with exportMeta", () => {
     const click = vi.fn();
     const createObjectURL = vi.fn(() => "blob:test");
     const revokeObjectURL = vi.fn();
@@ -51,6 +78,19 @@ describe("exportActions", () => {
     expect(createElement).toHaveBeenCalledWith("a");
     expect(click).toHaveBeenCalled();
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:test");
+
+    const blob = createObjectURL.mock.calls[0][0] as Blob;
+    expect(blob.type).toContain("json");
+  });
+
+  it("throws PlannerExportError when svg export has no shapes", async () => {
+    const editor = createPlannerEditorMock();
+    editor.getSelectedShapeIds = vi.fn(() => []);
+    editor.getCurrentPageShapeIds = vi.fn(() => new Set());
+    editor.getSvgString = vi.fn() as never;
+
+    const { downloadPlannerSvg } = await import("@/features/planner/editor/exportActions");
+    await expect(downloadPlannerSvg(editor)).rejects.toBeInstanceOf(PlannerExportError);
   });
 
   it("exports BOQ pdf without preset or canvas element", async () => {
@@ -103,8 +143,40 @@ describe("exportActions", () => {
       expect.objectContaining({
         layout: expect.objectContaining({ projectName: "Workspace Plan" }),
         rows: expect.arrayContaining([
-          expect.objectContaining({ name: "Desk", quantity: expect.any(Number) }),
+          expect.objectContaining({
+            name: "Desk",
+            quantity: expect.any(Number),
+            widthCm: 120,
+            depthCm: 60,
+            spec: "1200×600×750 mm",
+          }),
         ]),
+      }),
+    );
+  });
+
+  it("passes room dimensions into pdf layout", async () => {
+    const { exportBoqToPdf } = await import("@/features/planner/shared/export/pdfExport");
+    const editor = createPlannerEditorMock({
+      shapes: [
+        makeShape("shape:room", "planner-room", { widthMm: 600, heightMm: 400 }),
+        makeShape("shape:1", "planner-furniture", {
+          productName: "Desk",
+          widthMm: 120,
+          heightMm: 60,
+        }),
+      ],
+    });
+    editor.store = { listen: vi.fn() } as never;
+
+    await downloadPlannerBoqPdf(editor, "HQ Plan");
+    expect(exportBoqToPdf).toHaveBeenCalledWith(
+      expect.objectContaining({
+        layout: expect.objectContaining({
+          projectName: "HQ Plan",
+          roomWidthMm: 6000,
+          roomDepthMm: 4000,
+        }),
       }),
     );
   });

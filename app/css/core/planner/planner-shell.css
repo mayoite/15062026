@@ -8,11 +8,13 @@
   --finish-black: var(--color-dark-midnight-blue-900);
   --finish-natural: var(--color-ecru-300);
   color-scheme: light dark;
-  --pw-rail-w: 3rem;
-  --pw-left-w: 16.5rem;
-  --pw-right-w: 17rem;
-  --pw-topbar-h: 3.25rem;
+  --pw-rail-w: 3.25rem;
+  --pw-left-w: 17rem;
+  --pw-right-w: 17.5rem;
+  --pw-topbar-h: 3.5rem;
   --pw-dock-h: 3.25rem;
+  --pw-panel-pad: var(--space-3);
+  --pw-panel-pad-lg: var(--space-4);
   --pw-text-2xs: 0.6875rem;
   --pw-text-xs: 0.75rem;
   --pw-text-sm: 0.8125rem;
@@ -65,12 +67,16 @@
 .planner-workspace .pw-topbar {
   display: grid;
   align-items: center;
-  gap: 0.5rem 0.75rem;
+  gap: var(--space-2) var(--space-3);
   flex-shrink: 0;
+  z-index: 50;
   min-height: var(--pw-topbar-h);
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--border-soft);
-  background: var(--surface-panel);
+  background: color-mix(in srgb, var(--surface-panel) 94%, var(--surface-soft));
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--border-soft) 70%, transparent),
+    0 8px 24px -20px color-mix(in srgb, var(--text-strong) 12%, transparent);
   grid-template-columns: minmax(0, 1fr) auto auto auto;
   grid-template-areas: "brand history center actions";
 }
@@ -83,11 +89,12 @@
   grid-area: history;
   display: flex;
   align-items: center;
-  gap: 0.125rem;
-  padding: 0.1875rem;
+  gap: var(--space-1);
+  padding: var(--space-1);
   border: 1px solid var(--border-soft);
-  border-radius: 0.625rem;
+  border-radius: var(--radius-sm);
   background: var(--surface-soft);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface-panel) 80%, transparent);
 }
 
 .planner-workspace .pw-history-btn {
@@ -129,7 +136,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.375rem;
+  gap: var(--space-2);
 }
 
 .planner-workspace .pw-topbar-actions-primary,
@@ -161,15 +168,15 @@
 .planner-workspace .pw-menu-item {
   display: block;
   width: 100%;
-  padding: 0.5rem 0.625rem;
+  padding: var(--space-2) var(--space-3);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: transparent;
   font-size: 0.8125rem;
   font-weight: 500;
   text-align: left;
   color: var(--text-body);
-  transition: background-color 0.15s;
+  transition: background-color var(--motion-fast) var(--ease-standard);
 }
 
 .planner-workspace .pw-menu-item:hover {
@@ -179,8 +186,31 @@
 .planner-workspace .pw-topbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-3);
   min-width: 0;
+}
+
+.planner-workspace .pw-topbar-title {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--pw-text-md);
+  font-weight: var(--font-weight-display-regular);
+  letter-spacing: var(--pw-letter-tight);
+  line-height: 1.2;
+  color: var(--text-heading);
+}
+
+.planner-workspace .pw-topbar-sub {
+  margin: 0.125rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--pw-text-xs);
+  line-height: 1.35;
+  color: var(--text-muted);
 }
 
 .planner-workspace .pw-topbar-logo-link {
@@ -210,10 +240,11 @@
 .planner-workspace .pw-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.125rem 0.5rem;
-  border-radius: 999px;
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border-soft);
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--surface-soft) 90%, var(--surface-panel));
   font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -234,12 +265,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3125rem;
+  gap: var(--space-2);
   flex-shrink: 0;
   width: var(--pw-rail-w);
-  padding: 0.5rem 0.375rem;
+  padding: var(--space-3) var(--space-2);
   border-right: 1px solid var(--border-soft);
-  background: linear-gradient(180deg, var(--surface-panel) 0%, var(--surface-soft) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--surface-panel) 0%,
+    color-mix(in srgb, var(--surface-soft) 88%, var(--surface-panel)) 100%
+  );
 }
 
 .planner-workspace .pw-tool-rail-item {
@@ -249,9 +284,9 @@
 }
 
 .planner-workspace .pw-tool-rail-divider {
-  width: 1.5rem;
+  width: var(--space-6);
   height: 1px;
-  margin: 0.25rem 0;
+  margin: var(--space-1) 0;
   background: var(--border-soft);
 }
 
@@ -259,24 +294,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.6875rem;
+  width: var(--control-height-xs);
+  height: var(--control-height-xs);
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
   transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    color 0.15s,
-    transform 0.12s ease,
-    box-shadow 0.15s ease;
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
 }
 
 .planner-workspace .pw-tool-rail-btn:hover {
   background: var(--surface-soft);
   color: var(--text-strong);
-  transform: translateY(-1px);
+  transform: translateY(calc(var(--space-1) * -0.25));
+}
+
+.planner-workspace .pw-tool-rail-btn:active {
+  transform: scale(0.94);
 }
 
 .planner-workspace .pw-tool-rail-btn[data-active="true"] {
@@ -287,8 +326,8 @@
 }
 
 .planner-workspace .pw-tool-rail-btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 /* ─── Side panels ─────────────────────────────────────────────────────────── */
@@ -301,6 +340,7 @@
   overflow: hidden;
   border-right: 1px solid var(--border-soft);
   background: var(--surface-panel);
+  box-shadow: inset -1px 0 0 color-mix(in srgb, var(--border-soft) 55%, transparent);
 }
 
 .planner-workspace .pw-left-panel {
@@ -314,6 +354,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-gutter: stable;
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--border-soft) 55%, transparent);
 }
 
 .planner-workspace .pw-right-panel .pwx-inspector {
@@ -324,24 +365,30 @@
 
 .planner-workspace .pw-panel-tabs {
   display: flex;
-  gap: 0.25rem;
-  padding: 0.5rem 0.75rem;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--pw-panel-pad-lg);
   border-bottom: 1px solid var(--border-soft);
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--surface-soft) 92%, var(--surface-panel));
 }
 
 .planner-workspace .pw-panel-tab {
   flex: 1;
-  padding: 0.375rem 0.5rem;
-  border-radius: 0.5rem;
-  border: none;
+  min-height: var(--control-height-xs);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   background: transparent;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-muted);
-  transition: background-color 0.15s, color 0.15s;
+  transition:
+    background-color var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    opacity var(--motion-fast) var(--ease-standard);
 }
 
 .planner-workspace .pw-panel-tab:hover {
@@ -349,15 +396,46 @@
   background: var(--surface-hover, color-mix(in srgb, var(--text-strong) 4%, transparent));
 }
 
+.planner-workspace .pw-panel-tab[data-relevant="false"] {
+  opacity: 0.72;
+}
+
 .planner-workspace .pw-panel-tab[data-active="true"] {
+  border-color: color-mix(in srgb, var(--color-primary) 28%, var(--border-soft));
   background: var(--surface-panel);
   color: var(--color-primary);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  box-shadow:
+    0 1px 2px var(--overlay-inverse-06),
+    inset 0 1px 0 color-mix(in srgb, var(--surface-panel) 90%, transparent);
+  opacity: 1;
+}
+
+.planner-workspace .pw-panel-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.planner-workspace .pw-panel-tab[data-active="true"]:focus-visible {
+  box-shadow:
+    var(--focus-ring),
+    0 1px 2px var(--overlay-inverse-06),
+    inset 0 1px 0 color-mix(in srgb, var(--surface-panel) 90%, transparent);
+}
+
+.planner-workspace .pw-left-panel[data-step="review"] .pw-panel-tab[data-relevant="true"] {
+  opacity: 0.84;
 }
 
 .planner-workspace .pw-panel-body {
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+.planner-workspace .pw-panel-step-note {
+  margin: 0;
+  padding: var(--pw-panel-pad-lg) var(--pw-panel-pad-lg) var(--space-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 65%, transparent);
+  color: var(--text-body);
 }
 

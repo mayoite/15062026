@@ -2,8 +2,17 @@
 
 @media (min-width: 1400px) {
   .planner-workspace {
-    --pw-left-w: 18rem;
-    --pw-right-w: 19rem;
+    --pw-left-w: 18.5rem;
+    --pw-right-w: 19.5rem;
+    --pw-topbar-h: 3.625rem;
+  }
+
+  .planner-workspace .pw-topbar {
+    padding-inline: var(--space-5);
+  }
+
+  .planner-workspace .pw-canvas-surface {
+    margin: var(--space-4);
   }
 }
 

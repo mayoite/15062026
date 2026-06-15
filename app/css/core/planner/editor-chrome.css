@@ -13,8 +13,8 @@
 .planner-workspace .pwx-choice-row {
   display: flex;
   align-items: center;
-  gap: 0.1875rem;
-  padding: 0.1875rem;
+  gap: var(--space-1);
+  padding: var(--space-1);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-sm);
   background: var(--surface-soft);
@@ -26,8 +26,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.75rem;
+  gap: var(--space-2);
+  padding: var(--space-3);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
   background: var(--surface-panel);
@@ -58,8 +58,8 @@
 .planner-workspace .pwx-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.1875rem 0.5rem;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-pill);
   background: var(--surface-soft);
@@ -74,13 +74,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3125rem;
+  gap: var(--space-1);
   width: 100%;
 }
 
 .planner-workspace .pwx-rail-group + .pwx-rail-group {
-  margin-top: 0.25rem;
-  padding-top: 0.4375rem;
+  margin-top: var(--space-1);
+  padding-top: var(--space-2);
   border-top: 1px solid var(--border-soft);
 }
 
@@ -163,15 +163,15 @@
 
 .planner-workspace .pwx-inspector-header {
   flex-shrink: 0;
-  padding: 0.75rem 1rem;
+  padding: var(--pw-panel-pad-lg);
   border-bottom: 1px solid var(--border-soft);
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--surface-soft) 90%, var(--surface-panel));
 }
 
 .planner-workspace .pwx-inspector-id {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: var(--space-3);
   min-width: 0;
 }
 
@@ -220,8 +220,8 @@
 }
 
 .planner-workspace .pwx-inspector-section {
-  padding: 0.875rem 1rem;
-  border-bottom: 1px solid var(--border-soft);
+  padding: var(--space-4) var(--pw-panel-pad-lg);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 75%, transparent);
 }
 
 .planner-workspace .pwx-inspector-section--actions {
@@ -232,14 +232,14 @@
 .planner-workspace .pwx-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .planner-workspace .pwx-field {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.3125rem 0.5rem;
+  gap: var(--space-2);
+  padding: var(--space-2);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-sm);
   background: var(--surface-soft);
@@ -850,6 +850,113 @@
   font-size: 0.625rem;
   line-height: 1.45;
   color: var(--text-muted);
+}
+
+/* ─── Export modal layout ───────────────────────────────────────────────── */
+
+.planner-workspace .pwx-export-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.planner-workspace .pwx-export-section + .pwx-export-section {
+  margin-top: 1.125rem;
+}
+
+.planner-workspace .pwx-export-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.375rem 0.75rem;
+}
+
+.planner-workspace .pwx-export-scope {
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pwx-format-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.planner-workspace .pwx-format-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.625rem 0.5rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface-panel);
+  text-align: left;
+  transition:
+    border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    transform var(--motion-base) var(--ease-standard);
+}
+
+.planner-workspace .pwx-format-card:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--color-primary) 30%, var(--border-soft));
+  box-shadow: var(--shadow-soft);
+}
+
+.planner-workspace .pwx-format-card[data-active="true"] {
+  border-color: var(--color-primary);
+  box-shadow:
+    0 0 0 1px var(--color-primary),
+    var(--shadow-soft);
+}
+
+.planner-workspace .pwx-format-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--surface-soft));
+  color: var(--color-primary);
+}
+
+.planner-workspace .pwx-format-label {
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: var(--text-strong);
+}
+
+.planner-workspace .pwx-format-hint {
+  font-size: 0.625rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pwx-export-status {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.planner-workspace .pwx-export-status[data-tone="error"] {
+  border: 1px solid color-mix(in srgb, var(--color-danger, #b42318) 25%, transparent);
+  background: color-mix(in srgb, var(--color-danger, #b42318) 8%, var(--surface-panel));
+  color: var(--color-danger, #b42318);
+}
+
+.planner-workspace .pwx-export-status[data-tone="success"] {
+  border: 1px solid color-mix(in srgb, var(--color-success, #067647) 25%, transparent);
+  background: color-mix(in srgb, var(--color-success, #067647) 8%, var(--surface-panel));
+  color: var(--color-success, #067647);
 }
 
 /* ─── AI advisor chat ─────────────────────────────────────────────────────── */

@@ -291,6 +291,8 @@ describe("plannerProjectStore", () => {
         walls: [{ id: "w-1", start: { x: 0, y: 0 }, end: { x: 20, y: 0 }, thickness: 8 }],
         rooms: [],
         furniture: [],
+        measurements: [{ id: "m-1", start: { x: 0, y: 0 }, end: { x: 10, y: 0 }, label: "10 cm" }],
+        structuralElements: [{ id: "s-1", type: "column", x: 3, y: 4 }],
         tags: ["imported"],
         zoom: 1.25,
         viewMode: "split",
@@ -303,6 +305,8 @@ describe("plannerProjectStore", () => {
         lastSavedAt: null,
       });
       expect(usePlannerGeometryStore.getState().walls).toHaveLength(1);
+      expect(usePlannerGeometryStore.getState().measurements[0].label).toBe("10 cm");
+      expect(usePlannerGeometryStore.getState().structuralElements[0].points[0]).toEqual({ x: 3, y: 4 });
       expect(usePlannerUIStore.getState().viewMode).toBe("split");
     });
 
@@ -453,5 +457,6 @@ describe("plannerProjectStore", () => {
       await expect(usePlannerProjectStore.getState().saveProject()).rejects.toBe("disk full");
       expect(usePlannerProjectStore.getState().saveError).toBe("Save failed");
     });
+
   });
 });

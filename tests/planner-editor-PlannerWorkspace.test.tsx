@@ -127,7 +127,7 @@ describe("PlannerWorkspace", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     usePlannerWorkspaceStore.setState({
-      plannerStep: "catalog",
+      plannerStep: "draw",
       layerVisible: {
         underlay: true,
         walls: true,
@@ -187,6 +187,7 @@ describe("PlannerWorkspace", () => {
 
   it("opens blueprint panel from left tab and toggles view with ctrl-tab", async () => {
     render(<PlannerWorkspace guestMode />);
+    expect(screen.getByRole("tab", { name: /Blueprint/i })).toHaveAttribute("aria-selected", "true");
     fireEvent.click(screen.getByRole("tab", { name: /Blueprint/i }));
     expect(screen.getByText(/Sign in to import a floor plan image/i)).toBeInTheDocument();
 
@@ -199,8 +200,8 @@ describe("PlannerWorkspace", () => {
     render(<PlannerWorkspace guestMode />);
     await waitFor(() => expect(mockEditor.store.listen).toHaveBeenCalled());
 
-    fireEvent.click(screen.getByRole("button", { name: "Review" }));
-    fireEvent.click(screen.getByRole("button", { name: "Space" }));
+    fireEvent.click(screen.getByRole("button", { name: /Review/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Draw/i }));
 
     fireEvent.click(screen.getByRole("button", { name: "Wall" }));
     expect(setPlannerTool).toHaveBeenCalledWith("wall");

@@ -1,7 +1,10 @@
 import type { Editor } from "tldraw";
 
 import { canvasUnitsToMillimeters } from "@/features/planner/lib/calibrationScale";
-import { plannerCanvasUnits } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import {
+  normalizeCatalogMm,
+  plannerCanvasUnits,
+} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
 
 function wallLengthMm(props: Record<string, unknown>): number | null {
   const startX = typeof props.startX === "number" ? props.startX : null;
@@ -44,12 +47,12 @@ export function getEditorSelectionStatus(editor: Editor | null): string | null {
   if (widthMm !== null && heightMm !== null) {
     const displayWidthMm =
       shape.type === "planner-room" || shape.type === "planner-zone"
-        ? canvasUnitsToMillimeters(widthMm)
-        : widthMm;
+        ? canvasUnitsToMillimeters(plannerCanvasUnits(widthMm, heightMm))
+        : normalizeCatalogMm(widthMm, heightMm);
     const displayHeightMm =
       shape.type === "planner-room" || shape.type === "planner-zone"
-        ? canvasUnitsToMillimeters(heightMm)
-        : heightMm;
+        ? canvasUnitsToMillimeters(plannerCanvasUnits(heightMm, widthMm))
+        : normalizeCatalogMm(heightMm, widthMm);
     const seatCount = typeof props.seatCount === "number" ? props.seatCount : null;
     const seats = seatCount && seatCount > 0 ? ` · ${seatCount} seats` : "";
     return `${label} · ${displayWidthMm}×${displayHeightMm} mm · ${rotation}°${seats}`;

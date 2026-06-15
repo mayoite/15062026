@@ -26,6 +26,11 @@ import { PlannerToolRail, type PlannerToolId } from "@/features/planner/editor/P
 import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import { type LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
+import {
+  catalogDropScreenFootprint,
+  centeredCatalogDropPagePoint,
+} from "@/features/planner/catalog/catalogDrop";
+import { CatalogDropFlash } from "@/features/planner/catalog/CatalogDropFlash";
 import { CatalogDropGhost } from "@/features/planner/catalog/CatalogDropGhost";
 import { BlueprintPanel } from "@/features/planner/editor/BlueprintPanel";
 import { PlannerEmptyCanvas } from "@/features/planner/ui/PlannerEmptyCanvas";
@@ -68,12 +73,10 @@ import {
   buildTemplateShapes,
   toPlannerViewerShapes,
 } from "@/features/planner/editor/plannerShapeFactories";
-import { applyRoomPreset } from "@/features/planner/lib/applyRoomPreset";
 import {
   acceptsCatalogDrag,
   readCatalogDragPayload,
 } from "@/features/planner/catalog/shapeTypeRegistry";
-import type { RoomPreset } from "@/features/planner/catalog/roomPresets";
 import {
   plannerUnitSystemToMeasurementUnit,
   type MeasurementUnit,
@@ -124,6 +127,9 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const [shapeCount, setShapeCount] = useState(0);
   const [dragItem, setDragItem] = useState<CatalogItem | null>(null);
   const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(null);
+  const [isCatalogOverCanvas, setIsCatalogOverCanvas] = useState(false);
+  const [dropFlash, setDropFlash] = useState<{ x: number; y: number } | null>(null);
+  const canvasSurfaceRef = useRef<HTMLDivElement | null>(null);
   const [planMetrics, setPlanMetrics] = useState<PlanMetrics>(getPageMetrics(null));
   const [selectionStatus, setSelectionStatus] = useState<string | null>(null);
   const [camera, setCamera] = useState<{ x: number; y: number; z: number } | null>(null);
@@ -205,10 +211,10 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     applyToolBinding(getStepToolBinding(step));
 
     if (panels.isCompact) {
-      if (step === "catalog" || step === "room") {
+      if (step === "draw" || step === "place") {
         panels.setLeftOpen(true);
         panels.setRightOpen(false);
-      } else if (step === "review") {
+      } else {
         panels.setRightOpen(true);
         panels.setLeftOpen(false);
       }
@@ -251,16 +257,6 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     setShapeCount(editor.getCurrentPageShapes().length);
   }, [editor, syncViewerShapes]);
 
-  const handleApplyRoomPreset = useCallback((preset: RoomPreset) => {
-    if (!editor) return;
-    applyRoomPreset(editor, preset);
-    syncPlannerStep("room");
-    syncViewerShapes(editor);
-    setShapeCount(editor.getCurrentPageShapes().length);
-    setPlanMetrics(getPageMetrics(editor));
-    setSelectionStatus(getEditorSelectionStatus(editor));
-  }, [editor, syncPlannerStep, syncViewerShapes]);
-
   const buildCurrentPlannerDocument = useCallback(() => {
     if (!editor) {
       return normalizePlannerDocument({
@@ -293,14 +289,20 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     setSessionErrorMessage(null);
     setSessionStatusMessage(`Loaded ${normalized.title ?? normalized.name}`);
     setLocalDraftVersion((value) => value + 1);
+    editor.selectNone();
+    syncPlannerStep("draw");
+    requestAnimationFrame(() => fitPlannerContent(editor));
     return true;
-  }, [editor, setPlanNameOverride]);
+  }, [editor, setPlanNameOverride, syncPlannerStep]);
 
   const handleEditorMount = useCallback((instance: Editor) => {
     setEditor(instance);
-    setActiveTool("select");
-    setActivePlannerTool("select");
-    setPlannerTool("select");
+    const initialBinding = getStepToolBinding(usePlannerWorkspaceStore.getState().plannerStep);
+    const initialToolId = initialBinding.toolId === "planner-furniture" ? "select" : initialBinding.toolId;
+    setActiveTool(initialToolId);
+    setActivePlannerTool(initialBinding.plannerTool);
+    setPlannerTool(initialBinding.plannerTool);
+    instance.setCurrentTool(initialToolId);
 
     configurePlannerCamera(instance);
 
@@ -315,8 +317,16 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
       requestAnimationFrame(() => {
         if (count === 0) {
+          syncPlannerStep("draw");
+          instance.selectNone();
           setDefaultPlannerCamera(instance);
         } else {
+          syncPlannerStep("draw");
+          instance.selectNone();
+          const restoredBinding = getStepToolBinding("draw");
+          instance.setCurrentTool(
+            restoredBinding.toolId === "planner-furniture" ? "select" : restoredBinding.toolId,
+          );
           fitPlannerContent(instance);
         }
         syncCamera();
@@ -355,45 +365,93 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       cleanupSession();
       cleanupCamera();
     };
-  }, [guestMode, planId, setPlannerTool, syncViewerShapes, restoreSnapshot]);
+  }, [guestMode, planId, setPlannerTool, syncPlannerStep, syncViewerShapes, restoreSnapshot]);
 
   useEffect(() => {
     if (!editor) return;
     applyLayerVisibility(editor, layerVisible);
   }, [editor, layerVisible]);
 
+  const clearCatalogDrag = useCallback(() => {
+    setDragItem(null);
+    setGhostPos(null);
+    setIsCatalogOverCanvas(false);
+  }, []);
+
   const handleCatalogDragStart = useCallback((item: CatalogItem) => {
     setDragItem(item);
+    setIsCatalogOverCanvas(false);
   }, []);
+
+  const handleCatalogDragEnd = useCallback(() => {
+    clearCatalogDrag();
+  }, [clearCatalogDrag]);
+
+  useEffect(() => {
+    if (!dragItem) return;
+
+    const onDragOver = (event: globalThis.DragEvent) => {
+      if (!event.dataTransfer || !acceptsCatalogDrag(event.dataTransfer)) return;
+      event.preventDefault();
+      setGhostPos({ x: event.clientX, y: event.clientY });
+      const overCanvas = canvasSurfaceRef.current?.contains(event.target as Node) ?? false;
+      setIsCatalogOverCanvas(overCanvas);
+      event.dataTransfer.dropEffect = overCanvas && editor ? "copy" : "none";
+    };
+
+    const onDragEnd = () => {
+      clearCatalogDrag();
+    };
+
+    window.addEventListener("dragover", onDragOver);
+    window.addEventListener("dragend", onDragEnd);
+    return () => {
+      window.removeEventListener("dragover", onDragOver);
+      window.removeEventListener("dragend", onDragEnd);
+    };
+  }, [clearCatalogDrag, dragItem, editor]);
+
+  useEffect(() => {
+    if (!dropFlash) return;
+    const timer = window.setTimeout(() => setDropFlash(null), 520);
+    return () => window.clearTimeout(timer);
+  }, [dropFlash]);
 
   const handleCanvasDragOver = useCallback((e: DragEvent) => {
     if (!acceptsCatalogDrag(e.dataTransfer)) return;
     e.preventDefault();
-    e.dataTransfer.dropEffect = "copy";
+    e.dataTransfer.dropEffect = editor ? "copy" : "none";
     setGhostPos({ x: e.clientX, y: e.clientY });
-  }, []);
+    setIsCatalogOverCanvas(true);
+  }, [editor]);
 
   const handleCanvasDrop = useCallback((e: DragEvent) => {
     e.preventDefault();
-    setGhostPos(null);
-    setDragItem(null);
-    if (!editor) return;
+    if (!editor) {
+      clearCatalogDrag();
+      return;
+    }
     const raw = readCatalogDragPayload(e.dataTransfer);
-    if (!raw) return;
+    if (!raw) {
+      clearCatalogDrag();
+      return;
+    }
     try {
       const item = JSON.parse(raw) as CatalogItem;
-      const pagePoint = editor.screenToPage({ x: e.clientX, y: e.clientY });
+      const pagePoint = centeredCatalogDropPagePoint(editor, e.clientX, e.clientY, item);
       placeCatalogItem(item, pagePoint.x, pagePoint.y);
+      setDropFlash({ x: e.clientX, y: e.clientY });
     } catch {
       // Invalid drag payload — ignore.
+    } finally {
+      clearCatalogDrag();
     }
-  }, [editor, placeCatalogItem]);
+  }, [clearCatalogDrag, editor, placeCatalogItem]);
 
-  const handleCanvasDragLeave = useCallback((e: DragEvent) => {
-    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
-    setGhostPos(null);
-    setDragItem(null);
-  }, []);
+  const ghostFootprint = useMemo(() => {
+    if (!dragItem || !editor) return null;
+    return catalogDropScreenFootprint(editor, dragItem);
+  }, [camera, dragItem, editor]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -713,6 +771,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         <PlannerToolRail
           activeTool={activeTool}
           activePlannerTool={activePlannerTool}
+          step={plannerStep}
           tooltipSide={panels.isCompact ? "top" : "right"}
           onSelect={handleToolSelect}
         />
@@ -725,16 +784,17 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           onTabChange={setLeftTab}
           onItemClick={handleCatalogItemClick}
           onDragStart={handleCatalogDragStart}
-          onApplyRoomPreset={handleApplyRoomPreset}
+          onDragEnd={handleCatalogDragEnd}
           unitSystem={measurementUnit}
         />
 
         <main className="pw-canvas-area" aria-label="Workspace canvas">
           <div
+            ref={canvasSurfaceRef}
             className={`pw-canvas-surface pw-tldraw-container ${resolvedTheme === "dark" ? "tl-theme__dark" : "tl-theme__light"}`}
+            data-catalog-drop={dragItem && isCatalogOverCanvas ? "active" : undefined}
             onDragOver={handleCanvasDragOver}
             onDrop={handleCanvasDrop}
-            onDragLeave={handleCanvasDragLeave}
           >
             {shapeCount === 0 && (
               <PlannerEmptyCanvas
@@ -763,7 +823,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           <PlannerStatusBar metrics={planMetrics} selectionStatus={selectionStatus} />
         </main>
 
-        <aside className="pw-right-panel" data-open={panels.rightOpen}>
+        <aside className="pw-right-panel" data-open={panels.rightOpen} data-step={plannerStep}>
           <PlannerStepBar
             current={plannerStep}
             disabledSteps={disabledSteps}
@@ -777,9 +837,9 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
             onStepChange={syncPlannerStep}
             onOpenExport={() => setIsExportOpen(true)}
           />
-          <PropertiesInspector editor={editor} />
-          <LayerVisibilityPanel editor={editor} />
-          <LayerManagerPanel editor={editor} unitSystem={workspaceUnitSystem} />
+          {plannerStep === "review" ? <PropertiesInspector editor={editor} /> : null}
+          {plannerStep === "review" ? <LayerVisibilityPanel editor={editor} /> : null}
+          {plannerStep === "review" ? <LayerManagerPanel editor={editor} unitSystem={workspaceUnitSystem} /> : null}
         </aside>
 
         {panels.isCompact && (
@@ -821,7 +881,18 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         onDismissError={() => setSessionErrorMessage(null)}
       />
 
-      {dragItem && ghostPos && <CatalogDropGhost item={dragItem} x={ghostPos.x} y={ghostPos.y} />}
+      {dragItem && ghostPos && ghostFootprint ? (
+        <CatalogDropGhost
+          item={dragItem}
+          x={ghostPos.x}
+          y={ghostPos.y}
+          width={ghostFootprint.w}
+          height={ghostFootprint.h}
+          valid={isCatalogOverCanvas && Boolean(editor)}
+        />
+      ) : null}
+
+      {dropFlash ? <CatalogDropFlash x={dropFlash.x} y={dropFlash.y} /> : null}
 
       {editor && isExportOpen && (
         <ExportModal

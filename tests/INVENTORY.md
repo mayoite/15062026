@@ -8,17 +8,17 @@ Auto-generated file list and counts. Folder rules: `tests/CONTENTS.md`.
 
 | Kind | Count |
 |------|-------|
-| Vitest (active) | 218 |
+| Vitest (active) | 223 |
 | Vitest (excluded in config) | 0 |
 | Playwright | 8 |
 | Helpers | 2 |
-| **Total files** | **228** |
+| **Total files** | **233** |
 
 JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.json` · Coverage: `results/coverage-summary.json` (`npm run docs:sync:coverage`)
 
 ## Files by category
 
-### planner (154)
+### planner (159)
 
 - `planner-3d-types.test.ts`
 - `planner-blueprintCanvasFrame.test.ts`
@@ -32,6 +32,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-catalog-catalogStore-init.test.ts`
 - `planner-catalog-catalogStore.test.ts`
 - `planner-catalog-components.test.tsx`
+- `planner-catalog-drop.test.ts`
 - `planner-catalog-exports.test.ts`
 - `planner-catalog-ingest-csvCatalogIngest.test.ts`
 - `planner-catalog-managedProducts.test.ts`
@@ -69,6 +70,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-editor-usePlannerPanels.test.ts`
 - `planner-editorSelectionStatus.test.ts`
 - `planner-fitCanvasLabel.test.ts`
+- `planner-furnitureWallSnap.test.ts`
 - `planner-geometry.test.ts`
 - `planner-guestToAuthMigration.test.ts`
 - `planner-hooks-useAssetLoader.test.tsx`
@@ -109,6 +111,8 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-model-plannerIdentity.test.ts`
 - `planner-model-plannerPermissions.test.ts`
 - `planner-model-plannerPlacement.test.ts`
+- `planner-openingCollision.test.ts`
+- `planner-openingWallSnap.test.ts`
 - `planner-persistence-plannerDraft.test.ts`
 - `planner-shapeTypeRegistry.test.ts`
 - `planner-shared-boq-quoteCartBridge.test.ts`
@@ -128,6 +132,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-store-plannerPersistence.test.ts`
 - `planner-store-plannerProjectData.test.ts`
 - `planner-store-plannerProjectStorage.test.ts`
+- `planner-store-plannerProjectStore-migration.test.ts`
 - `planner-store-plannerProjectStore.test.ts`
 - `planner-store-plannerSaves.test.ts`
 - `planner-store-plannerStore.test.ts`

@@ -12,6 +12,7 @@ import {
   Ruler,
 } from "lucide-react";
 
+import type { PlannerStep } from "@/features/planner/editor/plannerStep";
 import type { PlannerTooltipSide } from "@/features/planner/ui/PlannerTooltip";
 import { PlannerTooltip } from "@/features/planner/ui/PlannerTooltip";
 
@@ -147,6 +148,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
 interface PlannerToolRailProps {
   activeTool: PlannerToolId;
   activePlannerTool?: PlannerStoreTool;
+  step: PlannerStep;
   tooltipSide?: PlannerTooltipSide;
   onSelect: (toolId: PlannerToolId, plannerTool: PlannerStoreTool) => void;
 }
@@ -163,20 +165,46 @@ function isToolActive(
   return activeTool === tool.toolId;
 }
 
+function isToolVisible(step: PlannerStep, tool: ToolDef): boolean {
+  switch (step) {
+    case "draw":
+      return tool.plannerTool === "select"
+        || tool.plannerTool === "pan"
+        || tool.plannerTool === "wall"
+        || tool.plannerTool === "room"
+        || tool.plannerTool === "zone";
+    case "place":
+      return tool.plannerTool === "select"
+        || tool.plannerTool === "pan"
+        || tool.plannerTool === "door"
+        || tool.plannerTool === "window";
+    case "review":
+      return tool.plannerTool === "select"
+        || tool.plannerTool === "pan"
+        || tool.plannerTool === "measure";
+    default:
+      return true;
+  }
+}
+
 export function PlannerToolRail({
   activeTool,
   activePlannerTool,
+  step,
   tooltipSide = "right",
   onSelect,
 }: PlannerToolRailProps) {
   return (
-    <nav className="pw-tool-rail" data-coach="toolbar" aria-label="Drawing tools">
-      {TOOL_GROUPS.map((group) => (
+    <nav className="pw-tool-rail" data-coach="toolbar" data-step={step} aria-label="Drawing tools">
+      {TOOL_GROUPS.map((group) => {
+        const visibleTools = group.tools.filter((tool) => isToolVisible(step, tool));
+        if (visibleTools.length === 0) return null;
+        return (
         <div key={group.id} className="pwx-rail-group" role="group" aria-label={group.label}>
           <span className="pwx-rail-group-label" aria-hidden>
             {group.label}
           </span>
-          {group.tools.map((tool) => {
+          {visibleTools.map((tool) => {
             const Icon = tool.icon;
             const isActive = isToolActive(tool, activeTool, activePlannerTool);
 
@@ -204,7 +232,7 @@ export function PlannerToolRail({
             );
           })}
         </div>
-      ))}
+      )})}
     </nav>
   );
 }

@@ -62,12 +62,15 @@ describe("planner/catalog components", () => {
   });
 
   it("renders drop ghost with scaled preview", () => {
-    const { container } = render(<CatalogDropGhost item={roomItem} x={120} y={80} />);
+    const { container } = render(
+      <CatalogDropGhost item={roomItem} x={120} y={80} width={72} height={48} valid />,
+    );
     const ghost = container.querySelector(".pw-drop-ghost") as HTMLElement;
     expect(ghost).toBeTruthy();
     expect(ghost.style.left).toBe("120px");
     expect(ghost.style.top).toBe("80px");
-    expect(within(container).getByText(roomItem.name)).toBeTruthy();
+    expect(ghost.dataset.valid).toBe("true");
+    expect(within(container).getByText(roomItem.shortName ?? roomItem.name)).toBeTruthy();
   });
 
   it("renders room presets and forwards apply callbacks", () => {
@@ -108,11 +111,13 @@ describe("planner/catalog components", () => {
     expect(draggable).toBeTruthy();
 
     const setData = vi.fn();
+    const setDragImage = vi.fn();
     fireEvent.dragStart(draggable, {
       dataTransfer: {
         effectAllowed: "",
         types: [],
         setData,
+        setDragImage,
         getData: () => "",
       },
     });

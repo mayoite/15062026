@@ -238,6 +238,31 @@ describe("DoorWindowPlacementUtils", () => {
     expect(utils.getShapesOnWall("w1")).toHaveLength(0);
   });
 
+  it("blocks placement when an opening overlaps an existing door on the wall", () => {
+    editor._shapes.push({
+      id: "d-existing",
+      type: "planner-door",
+      x: 102,
+      y: -2,
+      rotation: 0,
+      opacity: 1,
+      isLocked: false,
+      props: {
+        widthMm: 900,
+        thicknessMm: 40,
+        wallId: "w1",
+      },
+    } as never);
+
+    const utils = new DoorWindowPlacementUtils(editor);
+    const placement = utils.startPlacement("door-single-900", new Vec(120, 2)) as {
+      placementBlocked: boolean;
+    };
+    expect(placement.placementBlocked).toBe(true);
+    expect(utils.isPlacementBlocked()).toBe(true);
+    expect(utils.finishPlacement()).toBeNull();
+  });
+
   it("startPlacement tolerates degenerate zero-length wall", () => {
     editor = createMockEditor({
       shapes: [makePlannerWallShape("zero", 50, 50, 0, 0)],

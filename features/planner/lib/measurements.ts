@@ -3,6 +3,7 @@
 import { type Editor, type TLLineShape } from "tldraw";
 
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
+import { canvasUnitsToMillimeters } from "@/features/planner/lib/calibrationScale";
 import type { PlannerUnitSystem } from "../model";
 
 export interface CanvasMeasurement {
@@ -128,7 +129,7 @@ export function parseMeasurementInput(value: string, unitSystem: MeasurementUnit
 }
 
 export function formatMetricFromBounds(bounds: { w: number; h: number }, unitSystem: MeasurementUnit) {
-  return `W ${formatLength(bounds.w * 10, unitSystem)} x H ${formatLength(bounds.h * 10, unitSystem)}`;
+  return `W ${formatLength(canvasUnitsToMillimeters(bounds.w), unitSystem)} x H ${formatLength(canvasUnitsToMillimeters(bounds.h), unitSystem)}`;
 }
 
 export function formatDimensionPair(widthMm: number, depthMm: number, unitSystem: MeasurementUnit) {
@@ -204,7 +205,7 @@ export function getMetricLabelForShape(editor: Editor, shapeId: PlannerShapeId, 
         return total + Math.hypot(point.x - previous.x, point.y - previous.y);
       }, 0);
 
-      return `Length ${formatLength(length * 10, unitSystem)}`;
+      return `Length ${formatLength(canvasUnitsToMillimeters(length), unitSystem)}`;
     }
   }
 
@@ -247,7 +248,7 @@ export function deriveViewportState(
     canvasMeasurements.push({
       id: "room-width",
       caption: "Room width",
-      value: formatLength(mergedStructuralBounds.w * 10, unitSystem),
+      value: formatLength(canvasUnitsToMillimeters(mergedStructuralBounds.w), unitSystem),
       x: Math.round(roomWidthAnchor.x),
       y: Math.max(104, Math.round(roomWidthAnchor.y) - 34),
       tone: "room",
@@ -255,7 +256,7 @@ export function deriveViewportState(
     canvasMeasurements.push({
       id: "room-height",
       caption: "Room depth",
-      value: formatLength(mergedStructuralBounds.h * 10, unitSystem),
+      value: formatLength(canvasUnitsToMillimeters(mergedStructuralBounds.h), unitSystem),
       x: Math.round(roomHeightAnchor.x) + 34,
       y: Math.max(124, Math.round(roomHeightAnchor.y)),
       rotateDeg: 90,

@@ -24,16 +24,21 @@ import { isLShapedDesk, resolveFurnitureBlockKind, type FurnitureBlockKind } fro
  * Planner canvas coordinates are centimetres (see room editor prompts: m × 100).
  * Catalog seed data uses the same compact cm values in `widthMm` / `heightMm`.
  */
-export function plannerCanvasUnits(value: number): number {
+export function plannerCanvasUnits(value: number, pairedValue?: number): number {
   if (value <= 0) return 1;
   // Undo brief placement bug that stored catalog cm × 10 (120 cm desk → 1200).
-  if (value >= 1000) return value / 10;
+  if (value >= 1000 || (pairedValue ?? 0) >= 1000) return value / 10;
   return value;
 }
 
 /** Convert canvas/catalog cm to millimetres for lib/catalog/blocks2d primitives. */
-export function normalizeCatalogMm(value: number): number {
-  return plannerCanvasUnits(value) * 10;
+export function normalizeCatalogMm(value: number, pairedValue?: number): number {
+  return plannerCanvasUnits(value, pairedValue) * 10;
+}
+
+/** Inverse of `normalizeCatalogMm` — millimetres from BOQ/inspector back to canvas cm. */
+export function catalogMmToCanvasCm(mm: number, pairedMm?: number): number {
+  return plannerCanvasUnits(mm / 10, pairedMm !== undefined ? pairedMm / 10 : undefined);
 }
 
 function findBuddyCatalogItem(catalogId: string): BuddyCatalogItem | undefined {
@@ -390,8 +395,8 @@ export function resolveBuddyBlock2D(
   shape: PlannerFurnitureTLShape,
   oandoCatalogItem?: OandoCatalogItem,
 ): Block2D | null {
-  const footprintL = normalizeCatalogMm(shape.props.widthMm);
-  const footprintD = normalizeCatalogMm(shape.props.heightMm);
+  const footprintL = normalizeCatalogMm(shape.props.widthMm, shape.props.heightMm);
+  const footprintD = normalizeCatalogMm(shape.props.heightMm, shape.props.widthMm);
   const buddyItem = shape.props.catalogId ? findBuddyCatalogItem(shape.props.catalogId) : undefined;
   const kind = resolveFurnitureBlockKind(shape.props, oandoCatalogItem);
 

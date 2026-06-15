@@ -127,6 +127,27 @@ describe("plannerStore facade", () => {
       facade().setTool("wall");
       expect(usePlannerStore.getState().tool).toBe("wall");
     });
+
+    it("bridges setTool to the tldraw editor when available", () => {
+      const setCurrentTool = vi.fn();
+      vi.stubGlobal("__webpack_require__", function webpackRequire() {});
+      vi.stubGlobal("__non_webpack_require__", (id: string) => {
+        if (id.includes("usePlannerR3FSync")) {
+          return { getTldrawEditor: () => ({ setCurrentTool }) };
+        }
+        throw new Error(`unexpected require: ${id}`);
+      });
+
+      facade().setTool("furniture");
+      expect(usePlannerStore.getState().tool).toBe("furniture");
+      expect(setCurrentTool).toHaveBeenCalledWith("planner-furniture");
+
+      facade().setTool("pan");
+      expect(setCurrentTool).toHaveBeenCalledWith("hand");
+
+      vi.unstubAllGlobals();
+    });
+
   });
 
   describe("geometry mutations", () => {
@@ -169,6 +190,15 @@ describe("plannerStore facade", () => {
       const id = usePlannerFurnitureStore.getState().furniture[0].id;
       facade().updateFurnitureBatch([{ id, changes: { name: "Renamed" } }]);
       expect(usePlannerFurnitureStore.getState().furniture[0].name).toBe("Renamed");
+    });
+
+    it("delegates updateFurnitureDebounced and deleteFurniture", () => {
+      facade().addFurniture(baseFurniture);
+      const id = usePlannerFurnitureStore.getState().furniture[0].id;
+      facade().updateFurnitureDebounced(id, { name: "Debounced" });
+      expect(usePlannerFurnitureStore.getState().furniture[0].name).toBe("Debounced");
+      facade().deleteFurniture(id);
+      expect(usePlannerFurnitureStore.getState().furniture).toHaveLength(0);
     });
   });
 
@@ -239,6 +269,18 @@ describe("plannerStore facade", () => {
         success: false,
         error: "Not implemented",
       });
+    });
+
+    it("exercises noop history and selection helpers", () => {
+      facade().copySelected();
+      facade().paste();
+      facade().duplicateSelected();
+      facade().selectAll();
+      facade().flushDebouncedUndo();
+      facade().addTextLabel(0, 0, "label");
+      facade().updateTextLabel("id", { text: "x" });
+      facade().deleteTextLabel("id");
+      expect(usePlannerHistoryStore.getState().clipboard).toBeNull();
     });
   });
 
@@ -436,6 +478,65 @@ describe("plannerStore facade", () => {
       facade().clearAll();
       facade().loadTemplate({ id: "noop" } as never);
       expect(usePlannerProjectStore.getState().currentProjectKey).toBeNull();
+    });
+
+    it("delegates newProject and duplicateProject through the facade", () => {
+      usePlannerGeometryStore.getState().addWall({ x: 0, y: 0 }, { x: 20, y: 0 });
+      usePlannerProjectStore.setState({ currentProjectKey: "src-key", projectName: "Source" });
+      window.localStorage.setItem(
+        "planner-project-src-key",
+        JSON.stringify({ projectName: "Source", walls: [], rooms: [], furniture: [] }),
+      );
+      window.localStorage.setItem(
+        "planner_project_index",
+        JSON.stringify([{ id: "src-key", name: "Source", updatedAt: "2026-06-01T00:00:00.000Z" }]),
+      );
+
+      facade().newProject();
+      expect(usePlannerGeometryStore.getState().walls).toHaveLength(0);
+      expect(usePlannerProjectStore.getState().currentProjectKey).toBeNull();
+
+      usePlannerProjectStore.setState({ currentProjectKey: "src-key", projectName: "Source" });
+      facade().duplicateProject();
+      const duplicatedKey = usePlannerProjectStore.getState().currentProjectKey;
+      expect(duplicatedKey).not.toBe("src-key");
+      expect(window.localStorage.getItem(`planner-project-${duplicatedKey}`)).toBeTruthy();
+    });
+
+    it("delegates background image and remaining geometry updates", () => {
+      const bg = {
+        url: "/bg.png",
+        width: 100,
+        height: 100,
+        scale: 1,
+        opacity: 1,
+        x: 0,
+        y: 0,
+        isCalibrating: false,
+        isLocked: false,
+      };
+      facade().setBackgroundImage(bg);
+      facade().updateBackgroundImage({ opacity: 0.5 });
+      expect(usePlannerUIStore.getState().backgroundImage).toMatchObject({ opacity: 0.5 });
+
+      facade().addWall({ x: 0, y: 0 }, { x: 50, y: 0 });
+      const wallId = usePlannerGeometryStore.getState().walls[0].id;
+      facade().updateWall(wallId, { thickness: 12 });
+      facade().updateWallDebounced(wallId, { thickness: 14 });
+      facade().moveWallEndpoint(wallId, "end", { x: 60, y: 0 });
+      facade().moveConnectedWalls(wallId, "end", { x: 70, y: 0 });
+      facade().splitWallAtPoint(wallId, { x: 25, y: 0 });
+      facade().updateRoom(
+        usePlannerGeometryStore.getState().rooms[0]?.id ?? "missing",
+        { name: "Renamed" },
+      );
+      facade().updateDoor(usePlannerGeometryStore.getState().doors[0]?.id ?? "missing", { width: 90 });
+      facade().updateWindow(usePlannerGeometryStore.getState().windows[0]?.id ?? "missing", { width: 120 });
+      facade().addDrawingZonePoint({ x: 5, y: 5 });
+      facade().finishZone();
+      facade().setActiveZoneType("Meeting");
+      facade().setTags(["tag-a"]);
+      expect(usePlannerUIStore.getState().tags).toEqual(["tag-a"]);
     });
   });
 });

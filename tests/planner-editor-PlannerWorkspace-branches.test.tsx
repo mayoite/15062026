@@ -150,7 +150,7 @@ describe("PlannerWorkspace branches", () => {
       errors: ["Invalid planner JSON"],
     });
     usePlannerWorkspaceStore.setState({
-      plannerStep: "catalog",
+      plannerStep: "draw",
       layerVisible: {
         underlay: true,
         walls: true,
@@ -173,6 +173,8 @@ describe("PlannerWorkspace branches", () => {
     await waitFor(() =>
       expect(hydrateCloudPlanIntoIndexedDb).toHaveBeenCalledWith("cloud-plan-1", false),
     );
+    expect(screen.getByRole("button", { name: /Draw/i })).toHaveAttribute("aria-current", "step");
+    expect(mockEditor.selectNone).toHaveBeenCalled();
   });
 
   it("applies templates, catalog clicks, and invalid drops", async () => {
@@ -184,6 +186,7 @@ describe("PlannerWorkspace branches", () => {
     fireEvent.click(screen.getByRole("button", { name: /Apply template/i }));
     expect(mockEditor.run).toHaveBeenCalled();
 
+    fireEvent.click(screen.getByRole("tab", { name: /Library/i }));
     const catalogCard = document.querySelector(".pw-catalog-card") as HTMLElement;
     expect(catalogCard).toBeTruthy();
     fireEvent.click(catalogCard);
@@ -238,6 +241,7 @@ describe("PlannerWorkspace branches", () => {
     fireEvent.click(screen.getByRole("button", { name: /Save Local Draft/i }));
 
     fireEvent.click(screen.getByRole("button", { name: /Load HQ Copy/i }));
+    await waitFor(() => expect(mockEditor.selectNone).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole("button", { name: /Export Plan JSON/i }));
 
@@ -320,6 +324,7 @@ describe("PlannerWorkspace branches", () => {
     fireEvent.click(screen.getByRole("button", { name: "AI" }));
     expect(screen.getByRole("tab", { name: /AI Assist/i })).toHaveAttribute("aria-selected", "true");
 
+    fireEvent.click(screen.getByRole("button", { name: /Review/i }));
     fireEvent.click(screen.getByRole("button", { name: /Hide Walls & openings layer/i }));
     expect(usePlannerWorkspaceStore.getState().layerVisible.walls).toBe(false);
   });

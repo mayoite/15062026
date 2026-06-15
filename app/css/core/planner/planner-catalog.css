@@ -10,13 +10,14 @@
 
 .planner-workspace .pw-catalog-header {
   border-bottom: 1px solid var(--border-soft);
-  padding: 0.75rem;
+  padding: var(--pw-panel-pad-lg) var(--pw-panel-pad-lg) var(--space-3);
+  background: color-mix(in srgb, var(--surface-soft) 88%, var(--surface-panel));
 }
 
 .planner-workspace .pw-catalog-header--standalone {
-  padding: 1rem;
+  padding: var(--pw-panel-pad-lg);
   border-color: var(--border-soft);
-  background: var(--surface-soft);
+  background: color-mix(in srgb, var(--surface-soft) 92%, var(--surface-panel));
 }
 
 .planner-workspace .pw-catalog-title {
@@ -66,7 +67,7 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 0.75rem;
+  padding: var(--pw-panel-pad-lg);
 }
 
 .planner-workspace .pw-catalog-section-label {
@@ -376,37 +377,123 @@
   color: var(--text-subtle);
 }
 
+.planner-workspace .pw-catalog-card[data-dragging="true"] {
+  opacity: 0.55;
+  transform: scale(0.98);
+  transition:
+    opacity var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .pw-canvas-surface[data-catalog-drop="active"] {
+  border-color: color-mix(in srgb, var(--color-primary) 42%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-primary) 4%, var(--surface-panel));
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 0 0 2px color-mix(in srgb, var(--color-primary) 18%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
 .planner-workspace .pw-drop-ghost {
   pointer-events: none;
   position: fixed;
   z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
   transform: translate(-50%, -50%);
-  padding: 0.5rem;
-  border: 2px dashed var(--color-primary);
-  border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  padding: var(--space-2);
+  border: 2px dashed color-mix(in srgb, var(--color-primary) 55%, var(--border-soft));
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--surface-panel));
   box-shadow: var(--shadow-float);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  transition:
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
+  animation: pw-drop-ghost-pulse 1.4s ease-in-out infinite;
+}
+
+.planner-workspace .pw-drop-ghost[data-valid="false"] {
+  border-color: color-mix(in srgb, var(--text-subtle) 70%, var(--border-soft));
+  background: color-mix(in srgb, var(--surface-soft) 88%, var(--surface-panel));
+  box-shadow: var(--shadow-soft);
+  animation: none;
+  opacity: 0.78;
 }
 
 .planner-workspace .pw-drop-ghost-preview {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  width: 100%;
-  opacity: 0.92;
+  flex-shrink: 0;
+  opacity: 0.94;
 }
 
 .planner-workspace .pw-drop-ghost-label {
-  margin: 0.25rem 0 0;
+  margin: 0;
+  max-width: 9rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: center;
-  font-size: 0.5625rem;
+  font-size: var(--pw-text-2xs);
   font-weight: 650;
+  letter-spacing: var(--pw-letter-ui);
   color: var(--text-strong);
+}
+
+.planner-workspace .pw-drop-flash {
+  pointer-events: none;
+  position: fixed;
+  z-index: 69;
+  width: 3rem;
+  height: 3rem;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-pill);
+  border: 2px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 22%, transparent);
+  animation: pw-drop-flash 520ms var(--ease-standard) forwards;
+}
+
+@keyframes pw-drop-ghost-pulse {
+  0%,
+  100% {
+    box-shadow: var(--shadow-float);
+  }
+
+  50% {
+    box-shadow:
+      var(--shadow-float),
+      0 0 0 4px color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+}
+
+@keyframes pw-drop-flash {
+  0% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+
+  70% {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .planner-workspace .pw-drop-ghost,
+  .planner-workspace .pw-drop-flash {
+    animation: none;
+  }
 }
 
 /* ─── Layer list ──────────────────────────────────────────────────────────── */

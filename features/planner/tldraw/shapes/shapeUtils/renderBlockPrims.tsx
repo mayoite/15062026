@@ -230,9 +230,34 @@ export interface RenderBlockPrimsProps {
   padding?: number;
   /** Unique prefix for SVG gradient ids (avoids cross-tile collisions). */
   idPrefix?: string;
+  resolveColor?: (value: string | undefined) => string;
 }
 
-export function RenderBlockPrims({ prims, width, height, padding = 4, idPrefix = "block" }: RenderBlockPrimsProps) {
+function identityColor(value: string | undefined): string {
+  return value ?? "none";
+}
+
+function withResolvedColors(prim: Prim, resolveColor: (value: string | undefined) => string): Prim {
+  const resolvedStops = prim.fillLinearGradientColorStops?.map((stop) =>
+    typeof stop === "string" ? resolveColor(stop) : stop,
+  );
+  return {
+    ...prim,
+    fill: "fill" in prim ? resolveColor(prim.fill) : undefined,
+    stroke: "stroke" in prim ? resolveColor(prim.stroke) : undefined,
+    shadowColor: resolveColor(prim.shadowColor),
+    fillLinearGradientColorStops: resolvedStops,
+  } as Prim;
+}
+
+export function RenderBlockPrims({
+  prims,
+  width,
+  height,
+  padding = 4,
+  idPrefix = "block",
+  resolveColor = identityColor,
+}: RenderBlockPrimsProps) {
   const bounds = getPrimBounds(prims);
   if (!bounds) return null;
 
@@ -246,7 +271,7 @@ export function RenderBlockPrims({ prims, width, height, padding = 4, idPrefix =
 
   return (
     <g transform={`translate(${offsetX} ${offsetY}) scale(${scale})`}>
-      {prims.map((prim, index) => renderPrim(prim, index, idPrefix))}
+      {prims.map((prim, index) => renderPrim(withResolvedColors(prim, resolveColor), index, idPrefix))}
     </g>
   );
 }

@@ -1,18 +1,18 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Boxes, CheckCircle2, LayoutDashboard, Ruler } from "lucide-react";
+import { CheckCircle2, DoorOpen, PencilRuler } from "lucide-react";
 
 import {
+  PLANNER_STEP_DETAILS,
   PLANNER_STEPS,
   PLANNER_STEP_LABELS,
   type PlannerStep,
 } from "@/features/planner/editor/plannerStep";
 
 const STEP_ICONS: Record<PlannerStep, ReactNode> = {
-  room: <LayoutDashboard size={13} aria-hidden />,
-  catalog: <Boxes size={13} aria-hidden />,
-  measure: <Ruler size={13} aria-hidden />,
+  draw: <PencilRuler size={13} aria-hidden />,
+  place: <DoorOpen size={13} aria-hidden />,
   review: <CheckCircle2 size={13} aria-hidden />,
 };
 
@@ -32,34 +32,61 @@ export function PlannerStepBar({
   const currentIndex = PLANNER_STEPS.indexOf(current);
 
   return (
-    <nav className="pw-step-bar" aria-label="Planner workflow">
-      {PLANNER_STEPS.map((step, index) => {
-        const isActive = step === current;
-        const isDone = index < currentIndex;
-        const isDisabled = Boolean(disabledSteps[step]);
+    <nav
+      className="pw-step-bar"
+      data-compact={compact || undefined}
+      aria-label="Planner workflow"
+    >
+      <div className="pw-step-bar__intro">
+        <p className="pw-step-bar__eyebrow">Guided workflow</p>
+        {!compact ? (
+          <p className="pw-step-bar__summary">
+            Work through Draw, Place, and Review — or jump back anytime.
+          </p>
+        ) : null}
+      </div>
+      <div
+        className="pw-step-bar__steps"
+        style={{ ["--pw-step-count" as string]: String(PLANNER_STEPS.length) }}
+      >
+        {PLANNER_STEPS.map((step, index) => {
+          const isActive = step === current;
+          const isDone = index < currentIndex;
+          const isDisabled = Boolean(disabledSteps[step]);
+          const stepLabel = `${PLANNER_STEP_LABELS[step]}: ${PLANNER_STEP_DETAILS[step]}`;
 
-        return (
-          <button
-            key={step}
-            type="button"
-            className="pw-step-bar__btn"
-            data-active={isActive}
-            data-done={isDone}
-            aria-current={isActive ? "step" : undefined}
-            aria-disabled={isDisabled}
-            disabled={isDisabled}
-            title={PLANNER_STEP_LABELS[step]}
-            onClick={() => {
-              if (!isDisabled) onChange(step);
-            }}
-          >
-            <span className="pw-step-bar__icon" aria-hidden>
-              {isDone ? <CheckCircle2 size={13} /> : STEP_ICONS[step]}
-            </span>
-            {!compact && <span className="pw-step-bar__label">{PLANNER_STEP_LABELS[step]}</span>}
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={step}
+              type="button"
+              className="pw-step-bar__btn"
+              data-active={isActive}
+              data-done={isDone}
+              data-disabled={isDisabled || undefined}
+              aria-current={isActive ? "step" : undefined}
+              aria-disabled={isDisabled}
+              aria-label={isDisabled ? `${stepLabel} (unavailable)` : stepLabel}
+              disabled={isDisabled}
+              onClick={() => {
+                if (!isDisabled) onChange(step);
+              }}
+            >
+              <span className="pw-step-bar__icon" aria-hidden>
+                {isDone ? <CheckCircle2 size={14} /> : STEP_ICONS[step]}
+              </span>
+              {!compact ? (
+                <span className="pw-step-bar__copy">
+                  <span className="pw-step-bar__label">
+                    <span className="pw-step-bar__index">{index + 1}</span>
+                    {PLANNER_STEP_LABELS[step]}
+                  </span>
+                  <span className="pw-step-bar__detail">{PLANNER_STEP_DETAILS[step]}</span>
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
     </nav>
   );
 }

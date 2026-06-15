@@ -49,6 +49,7 @@ class PlannerDoorWindowToolPlacing extends StateNode {
   }
 
   override onPointerUp() {
+    if (this.utils.isPlacementBlocked()) return;
     this.utils.finishPlacement();
     this.parent.transition("idle", {});
   }

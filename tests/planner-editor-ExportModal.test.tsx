@@ -2,12 +2,23 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ExportModal } from "@/features/planner/editor/ExportModal";
-import { createPlannerEditorMock } from "./planner-editor-mockEditor";
+import {
+  getExportShapeIds,
+  getSafePngPixelRatio,
+  PlannerExportError,
+} from "@/features/planner/editor/exportActions";
+import { createPlannerEditorMock, makeShape } from "./planner-editor-mockEditor";
 
-vi.mock("@/features/planner/editor/exportActions", () => ({
-  downloadPlannerJson: vi.fn(),
-  downloadPlannerBoqPdf: vi.fn(async () => undefined),
-}));
+vi.mock("@/features/planner/editor/exportActions", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...(actual as Record<string, unknown>),
+    downloadPlannerJson: vi.fn(),
+    downloadPlannerBoqPdf: vi.fn(async () => undefined),
+    downloadPlannerSvg: vi.fn(async () => undefined),
+    downloadPlannerPng: vi.fn(async () => undefined),
+  };
+});
 
 describe("ExportModal", () => {
   beforeEach(() => {
@@ -31,8 +42,8 @@ describe("ExportModal", () => {
     const editor = createPlannerEditorMock();
     render(<ExportModal isOpen onClose={onClose} editor={editor} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "JSON" }));
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
+    fireEvent.click(screen.getByRole("button", { name: /JSON Full session data/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Download JSON" }));
     await waitFor(() => expect(downloadPlannerJson).toHaveBeenCalledWith(editor));
 
     fireEvent.click(screen.getByRole("button", { name: "Copy link" }));
@@ -51,66 +62,61 @@ describe("ExportModal", () => {
     fireEvent.click(
       screen.getByRole("button", { name: /Technical Monochrome with dimensions and labels/i }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
+    fireEvent.click(screen.getByRole("button", { name: "Download PDF" }));
     await waitFor(() =>
       expect(downloadPlannerBoqPdf).toHaveBeenCalledWith(editor, "Workspace Plan", "technical"),
     );
   });
 
-  it("exports svg via tldraw getSvg", async () => {
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "100");
-    svgEl.setAttribute("height", "80");
-    const editor = createPlannerEditorMock();
-    editor.getCurrentPageShapeIds = vi.fn(() => new Set(["shape:1" as never]));
-    (editor as unknown as { getSvg: ReturnType<typeof vi.fn> }).getSvg = vi.fn(async () => svgEl);
-
-    const createObjectURL = vi.fn(() => "blob:test");
-    vi.stubGlobal("URL", { createObjectURL, revokeObjectURL: vi.fn() });
-    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-
-    render(<ExportModal isOpen onClose={vi.fn()} editor={editor} />);
-    fireEvent.click(screen.getByRole("button", { name: "SVG" }));
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() => expect(createObjectURL).toHaveBeenCalled());
-
-    clickSpy.mockRestore();
-    vi.unstubAllGlobals();
+  it("getExportShapeIds prefers selection over full page", () => {
+    const editor = createPlannerEditorMock({
+      shapes: [makeShape("shape:1", "planner-wall"), makeShape("shape:2", "planner-furniture")],
+      selectedIds: ["shape:2" as never],
+    });
+    expect(getExportShapeIds(editor)).toEqual(["shape:2"]);
+    editor.getSelectedShapeIds = vi.fn(() => []);
+    expect(getExportShapeIds(editor)).toEqual(["shape:1", "shape:2"]);
   });
 
-  it("exports png via tldraw getSvg", async () => {
-    class MockImage {
-      naturalWidth = 100;
-      naturalHeight = 80;
-      onload: (() => void) | null = null;
-      onerror: (() => void) | null = null;
-      set src(_value: string) {
-        queueMicrotask(() => this.onload?.());
-      }
-    }
-    vi.stubGlobal("Image", MockImage);
+  it("getSafePngPixelRatio caps oversized exports", () => {
+    expect(getSafePngPixelRatio(100, 80)).toBe(2);
+    expect(getSafePngPixelRatio(10000, 10000)).toBeCloseTo(0.4, 5);
+    expect(getSafePngPixelRatio(0, 0)).toBe(2);
+  });
 
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "100");
-    svgEl.setAttribute("height", "80");
-    const editor = createPlannerEditorMock();
-    editor.getCurrentPageShapeIds = vi.fn(() => new Set(["shape:1" as never]));
-    (editor as unknown as { getSvg: ReturnType<typeof vi.fn> }).getSvg = vi.fn(async () => svgEl);
-
-    const toBlob = vi.fn((cb: (blob: Blob | null) => void) => cb(new Blob(["png"])));
-    HTMLCanvasElement.prototype.getContext = vi.fn(() => ({ drawImage: vi.fn() })) as never;
-    HTMLCanvasElement.prototype.toBlob = toBlob as never;
-
-    vi.stubGlobal("URL", { createObjectURL: vi.fn(() => "blob:test"), revokeObjectURL: vi.fn() });
-    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+  it("exports svg via downloadPlannerSvg", async () => {
+    const { downloadPlannerSvg } = await import("@/features/planner/editor/exportActions");
+    const editor = createPlannerEditorMock({
+      shapes: [makeShape("shape:1", "planner-wall")],
+    });
 
     render(<ExportModal isOpen onClose={vi.fn()} editor={editor} />);
-    fireEvent.click(screen.getByRole("button", { name: "PNG" }));
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() => expect(clickSpy).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: /SVG Vector floor plan/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Download SVG" }));
+    await waitFor(() => expect(downloadPlannerSvg).toHaveBeenCalledWith(editor));
+  });
 
-    clickSpy.mockRestore();
-    vi.unstubAllGlobals();
+  it("exports png via downloadPlannerPng", async () => {
+    const { downloadPlannerPng } = await import("@/features/planner/editor/exportActions");
+    const editor = createPlannerEditorMock({
+      shapes: [makeShape("shape:1", "planner-wall")],
+    });
+
+    render(<ExportModal isOpen onClose={vi.fn()} editor={editor} />);
+    fireEvent.click(screen.getByRole("button", { name: /PNG Raster snapshot/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Download PNG" }));
+    await waitFor(() => expect(downloadPlannerPng).toHaveBeenCalledWith(editor));
+  });
+
+  it("disables vector export when there are no shapes", () => {
+    const editor = createPlannerEditorMock({ shapes: [] });
+    editor.getSelectedShapeIds = vi.fn(() => []);
+    editor.getCurrentPageShapeIds = vi.fn(() => new Set());
+
+    render(<ExportModal isOpen onClose={vi.fn()} editor={editor} />);
+    fireEvent.click(screen.getByRole("button", { name: /SVG Vector floor plan/i }));
+    expect(screen.getByRole("button", { name: "Download SVG" })).toBeDisabled();
+    expect(screen.getByText("No shapes on the canvas yet.")).toBeInTheDocument();
   });
 
   it("closes from backdrop and traps tab focus", () => {
@@ -132,23 +138,28 @@ describe("ExportModal", () => {
     fireEvent.click(
       screen.getByRole("button", { name: /Proposal Branded layout with logo for pitches/i }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
+    fireEvent.click(screen.getByRole("button", { name: "Download PDF" }));
     await waitFor(() =>
       expect(downloadPlannerBoqPdf).toHaveBeenCalledWith(editor, "Workspace Plan", "proposal"),
     );
   });
 
-  it("recovers when vector export fails", async () => {
-    const editor = createPlannerEditorMock();
-    editor.getCurrentPageShapeIds = vi.fn(() => new Set(["shape:1" as never]));
-    (editor as unknown as { getSvg: ReturnType<typeof vi.fn> }).getSvg = vi.fn(async () => {
-      throw new Error("svg fail");
+  it("shows an error when vector export fails", async () => {
+    const { downloadPlannerSvg } = await import("@/features/planner/editor/exportActions");
+    vi.mocked(downloadPlannerSvg).mockRejectedValueOnce(
+      new PlannerExportError("SVG export failed. Try again or reload the canvas."),
+    );
+    const editor = createPlannerEditorMock({
+      shapes: [makeShape("shape:1", "planner-wall")],
     });
 
     render(<ExportModal isOpen onClose={vi.fn()} editor={editor} />);
-    fireEvent.click(screen.getByRole("button", { name: "SVG" }));
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Download" })).toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: /SVG Vector floor plan/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Download SVG" }));
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("SVG export failed"),
+    );
+    expect(screen.getByRole("button", { name: "Download SVG" })).toBeInTheDocument();
   });
 
   it("exports client preset pdf", async () => {
@@ -159,7 +170,7 @@ describe("ExportModal", () => {
     fireEvent.click(
       screen.getByRole("button", { name: /Client Clean visual for client presentations/i }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Download" }));
+    fireEvent.click(screen.getByRole("button", { name: "Download PDF" }));
     await waitFor(() =>
       expect(downloadPlannerBoqPdf).toHaveBeenCalledWith(
         editor,

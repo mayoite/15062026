@@ -2,18 +2,20 @@
  * PlannerFurnitureShapeUtil — catalog block primitives on the tldraw canvas.
  */
 
-import { Rectangle2d, ShapeUtil, SVGContainer } from "@tldraw/editor";
+import { Rectangle2d, ShapeUtil, SVGContainer, type SvgExportContext, type TLShapePartial } from "@tldraw/editor";
 import { BLOCK_STYLE } from "@/lib/catalog/blocks2d";
+import { createBlockColorResolver } from "@/lib/catalog/resolveBlockColors";
 import { TldrawFurnitureShapeProps } from "../tldrawShapeRegistry";
 import type { PlannerFurnitureTLShape } from "../tldrawShapeTypes";
+import { applyFurnitureWallSnap } from "@/features/planner/tldraw/tools/furnitureWallSnap";
 import { plannerCanvasUnits, resolveBuddyBlock2D } from "./catalogBlockBridge";
 import { RenderBlockPrims } from "./renderBlockPrims";
 
 /** Canvas footprint in planner cm units (matches wall/room geometry). */
 function footprintCanvas(shape: PlannerFurnitureTLShape) {
   return {
-    w: Math.max(1, plannerCanvasUnits(shape.props.widthMm)),
-    h: Math.max(1, plannerCanvasUnits(shape.props.heightMm)),
+    w: Math.max(1, plannerCanvasUnits(shape.props.widthMm, shape.props.heightMm)),
+    h: Math.max(1, plannerCanvasUnits(shape.props.heightMm, shape.props.widthMm)),
   };
 }
 
@@ -33,6 +35,90 @@ export function fitCanvasLabel(label: string, footprintWidth: number, fontSize: 
   return `${text.slice(0, Math.max(1, maxChars - 1)).trimEnd()}…`;
 }
 
+const resolveExportColor = createBlockColorResolver();
+
+function FurnitureGraphic({
+  shape,
+  exportColors = false,
+}: {
+  shape: PlannerFurnitureTLShape;
+  exportColors?: boolean;
+}) {
+  const { w, h } = footprintCanvas(shape);
+  const { productName, showLabel } = shape.props;
+  const block = resolveBuddyBlock2D(shape);
+  const idPrefix = `furn-${String(shape.id).replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const resolveColor = exportColors ? resolveExportColor : ((value: string | undefined) => value ?? "none");
+  const surface = resolveColor(BLOCK_STYLE.surface);
+  const againstWall = shape.props.isAgainstWall;
+  const surfaceStroke = resolveColor(
+    againstWall ? "var(--color-accent)" : BLOCK_STYLE.surfaceStroke,
+  );
+  const glyphDark = resolveColor(BLOCK_STYLE.glyphDark);
+
+  return (
+    <>
+      {block?.prims.length ? (
+        <RenderBlockPrims
+          prims={block.prims}
+          width={w}
+          height={h}
+          padding={Math.max(2, Math.min(w, h) * 0.06)}
+          idPrefix={idPrefix}
+          resolveColor={resolveColor}
+        />
+      ) : (
+        <rect
+          x={0}
+          y={0}
+          width={w}
+          height={h}
+          rx={6}
+          fill={surface}
+          stroke={surfaceStroke}
+          strokeWidth={BLOCK_STYLE.surfaceStrokeWidth}
+        />
+      )}
+      {showLabel && w >= 48 && h >= 24 && (() => {
+        const labelFontSize = Math.max(9, Math.min(13, w * 0.085));
+        const label = fitCanvasLabel(productName || "Furniture", w, labelFontSize);
+        const clipId = `${idPrefix}-label-clip`;
+        return (
+          <>
+            <defs>
+              <clipPath id={clipId}>
+                <rect x={0} y={0} width={w} height={h} rx={4} />
+              </clipPath>
+            </defs>
+            <rect
+              x={2}
+              y={h - labelFontSize - 4}
+              width={Math.max(0, w - 4)}
+              height={labelFontSize + 2}
+              rx={2}
+              fill={surface}
+              opacity={0.82}
+            />
+            <text
+              x={w / 2}
+              y={h - 4}
+              fill={glyphDark}
+              fontSize={labelFontSize}
+              fontFamily={exportColors ? "Arial, Helvetica, sans-serif" : "var(--font-sans)"}
+              fontWeight="500"
+              textAnchor="middle"
+              clipPath={`url(#${clipId})`}
+              opacity={0.9}
+            >
+              {label}
+            </text>
+          </>
+        );
+      })()}
+    </>
+  );
+}
+
 export class PlannerFurnitureShapeUtil extends ShapeUtil<PlannerFurnitureTLShape> {
   static override type = "planner-furniture" as const;
   static override props = TldrawFurnitureShapeProps;
@@ -41,9 +127,9 @@ export class PlannerFurnitureShapeUtil extends ShapeUtil<PlannerFurnitureTLShape
     return {
       furnitureCategory: "workstation",
       furnitureType: "desk",
-      widthMm: 1200,
-      heightMm: 600,
-      depthMm: 600,
+      widthMm: 120,
+      heightMm: 60,
+      depthMm: 60,
       height3dMm: 750,
       catalogId: "",
       productSlug: "",
@@ -74,73 +160,35 @@ export class PlannerFurnitureShapeUtil extends ShapeUtil<PlannerFurnitureTLShape
     });
   }
 
+  override onTranslate(
+    _initial: PlannerFurnitureTLShape,
+    current: PlannerFurnitureTLShape,
+  ): TLShapePartial<PlannerFurnitureTLShape> | void {
+    return applyFurnitureWallSnap(this.editor, current) ?? undefined;
+  }
+
+  override onTranslateEnd(
+    _initial: PlannerFurnitureTLShape,
+    current: PlannerFurnitureTLShape,
+  ): TLShapePartial<PlannerFurnitureTLShape> | void {
+    const patch = applyFurnitureWallSnap(this.editor, current);
+    return patch ?? undefined;
+  }
+
   component(shape: PlannerFurnitureTLShape) {
     const { w, h } = footprintCanvas(shape);
-    const { productName, showLabel } = shape.props;
-    const block = resolveBuddyBlock2D(shape);
-    const idPrefix = `furn-${String(shape.id).replace(/[^a-zA-Z0-9_-]/g, "")}`;
-
     return (
-      <SVGContainer>
-        <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow: "visible" }}>
-          {block?.prims.length ? (
-            <RenderBlockPrims
-              prims={block.prims}
-              width={w}
-              height={h}
-              padding={Math.max(2, Math.min(w, h) * 0.06)}
-              idPrefix={idPrefix}
-            />
-          ) : (
-            <rect
-              x={0}
-              y={0}
-              width={w}
-              height={h}
-              rx={6}
-              fill={BLOCK_STYLE.surface}
-              stroke={BLOCK_STYLE.surfaceStroke}
-              strokeWidth={BLOCK_STYLE.surfaceStrokeWidth}
-            />
-          )}
-          {showLabel && w >= 48 && h >= 24 && (() => {
-            const labelFontSize = Math.max(9, Math.min(13, w * 0.085));
-            const label = fitCanvasLabel(productName || "Furniture", w, labelFontSize);
-            const clipId = `${idPrefix}-label-clip`;
-            return (
-              <>
-                <defs>
-                  <clipPath id={clipId}>
-                    <rect x={0} y={0} width={w} height={h} rx={4} />
-                  </clipPath>
-                </defs>
-                <rect
-                  x={2}
-                  y={h - labelFontSize - 4}
-                  width={Math.max(0, w - 4)}
-                  height={labelFontSize + 2}
-                  rx={2}
-                  fill={BLOCK_STYLE.surface}
-                  opacity={0.82}
-                />
-                <text
-                  x={w / 2}
-                  y={h - 4}
-                  fill={BLOCK_STYLE.glyphDark}
-                  fontSize={labelFontSize}
-                  fontFamily="var(--font-sans)"
-                  fontWeight="500"
-                  textAnchor="middle"
-                  clipPath={`url(#${clipId})`}
-                  opacity={0.9}
-                >
-                  {label}
-                </text>
-              </>
-            );
-          })()}
-        </svg>
+      <SVGContainer width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow: "visible" }}>
+        <FurnitureGraphic shape={shape} />
       </SVGContainer>
+    );
+  }
+
+  toSvg(shape: PlannerFurnitureTLShape, _ctx: SvgExportContext) {
+    return (
+      <g>
+        <FurnitureGraphic shape={shape} exportColors />
+      </g>
     );
   }
 

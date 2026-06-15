@@ -115,7 +115,7 @@ describe("planner small stores", () => {
         },
         unitSystem: "metric",
         projectMetadata: null,
-        plannerStep: "catalog",
+        plannerStep: "draw",
       });
     });
 

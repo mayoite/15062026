@@ -1,14 +1,52 @@
-import type { Editor } from "tldraw";
+import type { Editor, TLShapeId } from "tldraw";
 import { getSnapshot } from "tldraw";
 
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
-import { buildSessionEnvelope } from "@/features/planner/persistence/plannerSession";
 import { isShapeLayerHidden } from "@/features/planner/editor/layerVisibility";
-import { plannerCanvasUnits } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
-import { buildBoq, type PlacedItemLike } from "@/features/planner/shared/boq/buildBoq";
-import type { CatalogItem } from "@/features/planner/shared/catalog/types";
+import { buildSessionEnvelope } from "@/features/planner/persistence/plannerSession";
 import { getExportPreset, type ExportPresetId } from "@/features/planner/lib/exportPresets";
+import {
+  catalogMmToCanvasCm,
+  normalizeCatalogMm,
+  plannerCanvasUnits,
+} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { buildBoq, type PlacedItemLike } from "@/features/planner/shared/boq/buildBoq";
+import type { PdfBoqRow } from "@/features/planner/shared/export/pdfExport";
+import type { CatalogItem } from "@/features/planner/shared/catalog/types";
+import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
+
+const MAX_PNG_EXPORT_PIXELS = 16_000_000;
+
+export const VECTOR_EXPORT_OPTIONS = {
+  background: false,
+  padding: 32,
+  scale: 1,
+  darkMode: false,
+} as const;
+
+export class PlannerExportError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PlannerExportError";
+  }
+}
+
+export type PlannerExportMeta = {
+  canonicalUnit: "mm";
+  exportedAt: string;
+  scope: "selection" | "page";
+  shapeCount: number;
+  room: { widthMm: number; depthMm: number } | null;
+  furniture: Array<{
+    catalogId: string;
+    name: string;
+    widthMm: number;
+    depthMm: number;
+    heightMm: number;
+    spec: string;
+  }>;
+};
 
 function catalogMap(): Map<string, CatalogItem> {
   const map = new Map<string, CatalogItem>();
@@ -18,8 +56,8 @@ function catalogMap(): Map<string, CatalogItem> {
       name: item.name,
       category: item.category,
       dimensions: {
-        widthMm: plannerCanvasUnits(item.widthMm) * 10,
-        depthMm: plannerCanvasUnits(item.heightMm) * 10,
+        widthMm: normalizeCatalogMm(item.widthMm, item.heightMm),
+        depthMm: normalizeCatalogMm(item.heightMm, item.widthMm),
         heightMm: 750,
       },
     });
@@ -38,8 +76,8 @@ function shapesToPlacedItems(editor: Editor): PlacedItemLike[] {
       "Furniture";
     const widthMm = typeof props.widthMm === "number" ? props.widthMm : 120;
     const heightMm = typeof props.heightMm === "number" ? props.heightMm : 80;
-    const wCm = plannerCanvasUnits(widthMm);
-    const dCm = plannerCanvasUnits(heightMm);
+    const wCm = plannerCanvasUnits(widthMm, heightMm);
+    const dCm = plannerCanvasUnits(heightMm, widthMm);
     return [{
       catalogId,
       name,
@@ -51,19 +89,112 @@ function shapesToPlacedItems(editor: Editor): PlacedItemLike[] {
   });
 }
 
+function resolveExportRoomMm(editor: Editor): { widthMm: number; depthMm: number } {
+  const rooms = editor
+    .getCurrentPageShapes()
+    .filter((shape) => shape.type === "planner-room" && !isShapeLayerHidden(shape));
+
+  if (rooms.length === 0) return { widthMm: 0, depthMm: 0 };
+
+  const props = rooms[0].props as Record<string, unknown>;
+  const widthCm = plannerCanvasUnits(
+    typeof props.widthMm === "number" ? props.widthMm : 0,
+    typeof props.heightMm === "number" ? props.heightMm : 0,
+  );
+  const depthCm = plannerCanvasUnits(
+    typeof props.heightMm === "number" ? props.heightMm : 0,
+    typeof props.widthMm === "number" ? props.widthMm : 0,
+  );
+
+  return {
+    widthMm: normalizeCatalogMm(widthCm, depthCm),
+    depthMm: normalizeCatalogMm(depthCm, widthCm),
+  };
+}
+
+function buildPdfRows(editor: Editor): PdfBoqRow[] {
+  const boq = buildBoq(shapesToPlacedItems(editor), catalogMap());
+  return boq.lineItems.map((item) => ({
+    sku: item.sku,
+    name: item.name,
+    category: item.category,
+    quantity: item.quantity,
+    widthCm: catalogMmToCanvasCm(item.dimensions.widthMm, item.dimensions.depthMm),
+    depthCm: catalogMmToCanvasCm(item.dimensions.depthMm, item.dimensions.widthMm),
+    heightCm: catalogMmToCanvasCm(item.dimensions.heightMm),
+    unitPriceInr: item.unitPriceInr,
+    spec: `${item.dimensions.widthMm}×${item.dimensions.depthMm}×${item.dimensions.heightMm} mm`,
+  }));
+}
+
+/** Selected shapes when any are selected; otherwise the full current page. */
+export function getExportShapeIds(editor: Editor): TLShapeId[] {
+  const selectedIds = editor.getSelectedShapeIds();
+  if (selectedIds.length > 0) return selectedIds;
+  return [...editor.getCurrentPageShapeIds()];
+}
+
+export function getExportScope(editor: Editor): PlannerExportMeta["scope"] {
+  return editor.getSelectedShapeIds().length > 0 ? "selection" : "page";
+}
+
+export function describeExportScope(editor: Editor): string {
+  const ids = getExportShapeIds(editor);
+  const scope = getExportScope(editor);
+  if (ids.length === 0) return "No shapes on the canvas yet.";
+  if (scope === "selection") {
+    return `Exporting ${ids.length} selected shape${ids.length === 1 ? "" : "s"}.`;
+  }
+  return `Exporting the full plan (${ids.length} shape${ids.length === 1 ? "" : "s"}).`;
+}
+
+/** Cap PNG rasterization so very large plans stay within browser canvas limits. */
+export function getSafePngPixelRatio(width: number, height: number): number {
+  const area = Math.max(1, width) * Math.max(1, height);
+  const maxRatio = Math.sqrt(MAX_PNG_EXPORT_PIXELS / area);
+  return Math.max(0.25, Math.min(2, maxRatio));
+}
+
+export function buildExportMeta(editor: Editor): PlannerExportMeta {
+  const rows = buildPdfRows(editor);
+  const room = resolveExportRoomMm(editor);
+  const ids = getExportShapeIds(editor);
+
+  return {
+    canonicalUnit: "mm",
+    exportedAt: new Date().toISOString(),
+    scope: getExportScope(editor),
+    shapeCount: ids.length,
+    room: room.widthMm > 0 && room.depthMm > 0 ? room : null,
+    furniture: rows.map((row) => ({
+      catalogId: row.sku ?? row.name,
+      name: row.name,
+      widthMm: normalizeCatalogMm(row.widthCm, row.depthCm),
+      depthMm: normalizeCatalogMm(row.depthCm, row.widthCm),
+      heightMm: normalizeCatalogMm(row.heightCm),
+      spec: row.spec ?? "",
+    })),
+  };
+}
+
+function triggerDownload(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = window.document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function downloadPlannerJson(editor: Editor, fileName = "workspace-plan.json") {
   const plannerDoc = buildPlannerDocumentFromEditor(editor);
   const envelope = {
     ...buildSessionEnvelope(getSnapshot(editor.store)),
     document: plannerDoc,
+    exportMeta: buildExportMeta(editor),
   };
   const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = window.document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  a.click();
-  URL.revokeObjectURL(url);
+  triggerDownload(blob, fileName);
 }
 
 export async function downloadPlannerBoqPdf(
@@ -71,19 +202,9 @@ export async function downloadPlannerBoqPdf(
   projectName = "Workspace Plan",
   preset?: ExportPresetId,
 ) {
-  const boq = buildBoq(shapesToPlacedItems(editor), catalogMap());
-  const rows = boq.lineItems.map((item) => ({
-    sku: item.sku,
-    name: item.name,
-    category: item.category,
-    quantity: item.quantity,
-    widthCm: item.dimensions.widthMm / 10,
-    depthCm: item.dimensions.depthMm / 10,
-    heightCm: item.dimensions.heightMm / 10,
-    unitPriceInr: item.unitPriceInr,
-    spec: `${item.dimensions.widthMm}×${item.dimensions.depthMm}×${item.dimensions.heightMm} mm`,
-  }));
-
+  const rows = buildPdfRows(editor);
+  const room = resolveExportRoomMm(editor);
+  const unitSystem = usePlannerWorkspaceStore.getState().unitSystem;
   const canvasEl = document.querySelector(".pw-canvas-surface") as HTMLElement | null;
 
   const { exportBoqToPdf } = await import("@/features/planner/shared/export/pdfExport");
@@ -91,9 +212,9 @@ export async function downloadPlannerBoqPdf(
     layout: {
       projectName,
       clientName: "",
-      roomWidthMm: 0,
-      roomDepthMm: 0,
-      unitSystem: "metric",
+      roomWidthMm: room.widthMm,
+      roomDepthMm: room.depthMm,
+      unitSystem: unitSystem === "imperial" ? "imperial" : "metric",
       generatedAt: new Date().toISOString(),
     },
     rows,
@@ -101,4 +222,48 @@ export async function downloadPlannerBoqPdf(
     preset: preset ? getExportPreset(preset) : undefined,
     fileName: `workspace-${projectName.toLowerCase().replace(/\s+/g, "-")}-boq.pdf`,
   });
+}
+
+export async function downloadPlannerSvg(
+  editor: Editor,
+  shapeIds: TLShapeId[] = getExportShapeIds(editor),
+) {
+  if (shapeIds.length === 0) {
+    throw new PlannerExportError("Add shapes to the canvas before exporting.");
+  }
+
+  const svgExport = await editor.getSvgString(shapeIds, VECTOR_EXPORT_OPTIONS);
+  if (!svgExport?.svg) {
+    throw new PlannerExportError("SVG export failed. Try again or reload the canvas.");
+  }
+
+  const blob = new Blob([svgExport.svg], { type: "image/svg+xml;charset=utf-8" });
+  triggerDownload(blob, "workspace-plan.svg");
+}
+
+export async function downloadPlannerPng(
+  editor: Editor,
+  shapeIds: TLShapeId[] = getExportShapeIds(editor),
+) {
+  if (shapeIds.length === 0) {
+    throw new PlannerExportError("Add shapes to the canvas before exporting.");
+  }
+
+  const svgExport = await editor.getSvgString(shapeIds, VECTOR_EXPORT_OPTIONS);
+  if (!svgExport) {
+    throw new PlannerExportError("PNG export failed. Try again or reload the canvas.");
+  }
+
+  const pixelRatio = getSafePngPixelRatio(svgExport.width, svgExport.height);
+  const imageExport = await editor.toImage(shapeIds, {
+    format: "png",
+    ...VECTOR_EXPORT_OPTIONS,
+    pixelRatio,
+  });
+
+  if (!imageExport?.blob) {
+    throw new PlannerExportError("PNG export failed. The plan may be too large to rasterize.");
+  }
+
+  triggerDownload(imageExport.blob, "workspace-plan.png");
 }

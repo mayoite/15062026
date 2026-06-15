@@ -110,7 +110,7 @@ export const usePlannerWorkspaceStore = create<WorkspaceState>((set) => ({
   layerVisible: { ...DEFAULT_LAYERS },
   unitSystem: "metric",
   projectMetadata: null,
-  plannerStep: "catalog",
+  plannerStep: "draw",
   setPlannerStep: (step) => set({ plannerStep: step }),
   setBlueprint: (patch) =>
     set((s) => ({ blueprint: { ...s.blueprint, ...patch } })),

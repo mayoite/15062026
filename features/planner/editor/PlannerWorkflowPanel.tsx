@@ -11,6 +11,7 @@ import {
   getPlannerStepActionLabel,
   getPlannerStepHint,
   nextPlannerStep,
+  previousPlannerStep,
   PLANNER_STEP_LABELS,
   type PlannerStep,
 } from "@/features/planner/editor/plannerStep";
@@ -30,10 +31,13 @@ interface PlannerWorkflowPanelProps {
 }
 
 function toWorkflowFinding(message: string): WorkflowFinding {
-  return {
-    severity: message.startsWith("CRITICAL:") ? "critical" : "warning",
-    message,
-  };
+  const severity = message.startsWith("CRITICAL:") ? "critical" : "warning";
+  const text = message
+    .replace(/^CRITICAL:\s*/i, "")
+    .replace(/^COMPLIANCE WARNING:\s*/i, "")
+    .trim();
+
+  return { severity, message: text };
 }
 
 function FindingRow({ finding }: { finding: WorkflowFinding }) {
@@ -43,8 +47,10 @@ function FindingRow({ finding }: { finding: WorkflowFinding }) {
       className={`pw-workflow-finding pw-workflow-finding--${finding.severity}`}
       role="listitem"
     >
-      <Icon size={14} aria-hidden />
-      <span>{finding.message}</span>
+      <span className="pw-workflow-finding__icon" aria-hidden>
+        <Icon size={14} />
+      </span>
+      <span className="pw-workflow-finding__text">{finding.message}</span>
     </li>
   );
 }
@@ -77,6 +83,10 @@ export function PlannerWorkflowPanel({
   const actionLabel = getPlannerStepActionLabel(step);
   const canAdvance = canAdvancePlannerStep(step, gates);
   const criticalCount = findings.filter((finding) => finding.severity === "critical").length;
+  const warningCount = findings.length - criticalCount;
+  const previous = previousPlannerStep(step);
+  const exportBlocked = step === "review" && criticalCount > 0;
+  const primaryDisabled = !canAdvance || exportBlocked;
 
   const handlePrimary = () => {
     if (step === "review") {
@@ -90,36 +100,77 @@ export function PlannerWorkflowPanel({
   };
 
   return (
-    <section className="pw-workflow-panel" aria-label="Workflow and compliance">
-      <p className="pw-workflow-head">
-        <span className="pw-workflow-kicker">
-          <span>Current step</span>
-          <strong className="pw-workflow-step">{PLANNER_STEP_LABELS[step]}</strong>
-        </span>
-      </p>
-      <p className="pw-workflow-hint">{hint}</p>
+    <section
+      className="pw-workflow-panel"
+      aria-label="Workflow and compliance"
+      data-step={step}
+      data-export-blocked={exportBlocked || undefined}
+    >
+      <div className="pw-workflow-guidance">
+        <p className="pw-workflow-head">
+          <span className="pw-workflow-kicker">
+            <span>Current step</span>
+            <strong className="pw-workflow-step">{PLANNER_STEP_LABELS[step]}</strong>
+          </span>
+        </p>
+        <p className="pw-workflow-hint">{hint}</p>
+      </div>
 
-      {findings.length > 0 ? (
-        <ul className="pw-workflow-findings" role="list" aria-live="polite">
-          {findings.map((finding) => (
-            <FindingRow key={finding.message} finding={finding} />
-          ))}
-        </ul>
-      ) : (
-        <p className="pw-workflow-ok">No overlap or clearance issues detected.</p>
-      )}
+      <div className="pw-workflow-compliance">
+        <div className="pw-workflow-compliance-head">
+          <p className="pw-workflow-compliance-title">Compliance check</p>
+          {findings.length > 0 ? (
+            <span
+              className="pw-workflow-compliance-badge"
+              data-severity={criticalCount > 0 ? "critical" : "warning"}
+            >
+              {criticalCount > 0
+                ? `${criticalCount} critical`
+                : `${warningCount} warning${warningCount === 1 ? "" : "s"}`}
+            </span>
+          ) : (
+            <span className="pw-workflow-compliance-badge" data-severity="ok">
+              Clear
+            </span>
+          )}
+        </div>
 
-      <button
-        type="button"
-        className="pw-workflow-cta"
-        disabled={!canAdvance || (step === "review" && criticalCount > 0)}
-        onClick={handlePrimary}
-      >
-        {actionLabel}
-      </button>
+        {findings.length > 0 ? (
+          <ul className="pw-workflow-findings" role="list" aria-live="polite">
+            {findings.map((finding) => (
+              <FindingRow key={finding.message} finding={finding} />
+            ))}
+          </ul>
+        ) : (
+          <p className="pw-workflow-ok">No overlap or clearance issues detected.</p>
+        )}
+      </div>
 
-      {step === "review" && criticalCount > 0 ? (
-        <p className="pw-workflow-blocker">Resolve overlapping furniture before export.</p>
+      <div className="pw-workflow-actions">
+        {previous ? (
+          <button
+            type="button"
+            className="pw-workflow-cta pw-workflow-cta--secondary"
+            onClick={() => onStepChange(previous)}
+          >
+            Back to {PLANNER_STEP_LABELS[previous]}
+          </button>
+        ) : null}
+        <button
+          type="button"
+          className="pw-workflow-cta"
+          disabled={primaryDisabled}
+          aria-describedby={exportBlocked ? "pw-workflow-blocker" : undefined}
+          onClick={handlePrimary}
+        >
+          {actionLabel}
+        </button>
+      </div>
+
+      {exportBlocked ? (
+        <p id="pw-workflow-blocker" className="pw-workflow-blocker" role="status">
+          Resolve overlapping furniture before export.
+        </p>
       ) : null}
     </section>
   );

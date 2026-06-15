@@ -112,6 +112,14 @@
   border-color: var(--color-warning);
 }
 
+.pw-snap-indicator[data-kind="blocked"] .pw-snap-indicator__ring {
+  border-color: color-mix(in srgb, var(--color-danger) 55%, transparent);
+}
+
+.pw-snap-indicator[data-kind="blocked"] .pw-snap-indicator__dot {
+  background: var(--color-danger);
+}
+
 .pw-snap-indicator[data-kind="angle-constraint"] .pw-snap-indicator__dot {
   background: var(--color-warning);
 }

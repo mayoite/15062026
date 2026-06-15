@@ -6,8 +6,9 @@
  * matching wall scale and the openings cut by PlannerWallShapeUtil.
  */
 
-import { Rectangle2d, ShapeUtil, SVGContainer } from "@tldraw/editor";
+import { Rectangle2d, ShapeUtil, SVGContainer, type TLShapePartial } from "@tldraw/editor";
 import { doorPlanSize } from "@/features/planner/lib/geometry/wallOpenings";
+import { applyDoorWallSnap, resolveOpeningWallSnap } from "@/features/planner/tldraw/tools/openingWallSnap";
 import { TldrawDoorShapeProps } from "../tldrawShapeRegistry";
 import type { PlannerDoorTLShape } from "../tldrawShapeTypes";
 
@@ -38,6 +39,35 @@ export class PlannerDoorShapeUtil extends ShapeUtil<PlannerDoorTLShape> {
     };
   }
 
+  override onTranslate(
+    _initial: PlannerDoorTLShape,
+    current: PlannerDoorTLShape,
+  ): TLShapePartial<PlannerDoorTLShape> | void {
+    return applyDoorWallSnap(this.editor, current) ?? undefined;
+  }
+
+  override onTranslateEnd(
+    initial: PlannerDoorTLShape,
+    current: PlannerDoorTLShape,
+  ): TLShapePartial<PlannerDoorTLShape> | void {
+    const snap = resolveOpeningWallSnap(this.editor, current);
+    if (snap?.blocked) {
+      return {
+        id: initial.id,
+        type: "planner-door",
+        x: initial.x,
+        y: initial.y,
+        rotation: initial.rotation,
+        props: {
+          ...initial.props,
+          strokeColor: "var(--color-primary)",
+        },
+      };
+    }
+    const patch = applyDoorWallSnap(this.editor, current);
+    return patch ?? undefined;
+  }
+
   getGeometry(shape: PlannerDoorTLShape) {
     const { width: w, depth: h } = doorPlanSize(shape.props);
     const isLeft = shape.props.swingDirection === "left";
@@ -52,7 +82,8 @@ export class PlannerDoorShapeUtil extends ShapeUtil<PlannerDoorTLShape> {
 
   component(shape: PlannerDoorTLShape) {
     const { width: w, depth: h } = doorPlanSize(shape.props);
-    const { swingDirection, swingAngle, showSwingArc, showDoorPanel, frameColor, panelColor } = shape.props;
+    const { swingDirection, swingAngle, showSwingArc, showDoorPanel, frameColor, panelColor, strokeColor } = shape.props;
+    const conflict = strokeColor === "var(--color-danger)";
 
     const angleRad = (swingAngle * Math.PI) / 180;
     const dir = swingDirection === "left" ? -1 : 1;
@@ -65,8 +96,8 @@ export class PlannerDoorShapeUtil extends ShapeUtil<PlannerDoorTLShape> {
     const jambWidth = Math.max(1.5, h / 2);
 
     return (
-      <SVGContainer>
-        <g stroke={frameColor || "var(--color-primary)"} strokeWidth={1} fill="none">
+      <SVGContainer style={{ opacity: conflict ? 0.55 : 1 }}>
+        <g stroke={conflict ? "var(--color-danger)" : (frameColor || "var(--color-primary)")} strokeWidth={1} fill="none">
           {/* Threshold line across the wall opening */}
           <line x1={0} y1={h / 2} x2={w} y2={h / 2} strokeDasharray="3 3" opacity={0.5} />
 

@@ -8,22 +8,21 @@ describe("PlannerStepBar", () => {
     const onChange = vi.fn();
     render(
       <PlannerStepBar
-        current="catalog"
-        disabledSteps={{ measure: true }}
+        current="place"
         onChange={onChange}
       />,
     );
 
     expect(screen.getByRole("navigation", { name: "Planner workflow" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Space" }));
-    expect(onChange).toHaveBeenCalledWith("room");
+    fireEvent.click(screen.getByRole("button", { name: /Draw/i }));
+    expect(onChange).toHaveBeenCalledWith("draw");
 
-    fireEvent.click(screen.getByRole("button", { name: "Measure" }));
-    expect(onChange).not.toHaveBeenCalledWith("measure");
+    fireEvent.click(screen.getByRole("button", { name: /Review/i }));
+    expect(onChange).toHaveBeenCalledWith("review");
   });
 
   it("hides labels in compact mode", () => {
-    render(<PlannerStepBar current="room" onChange={vi.fn()} compact />);
-    expect(screen.queryByText("Space")).not.toBeInTheDocument();
+    render(<PlannerStepBar current="draw" onChange={vi.fn()} compact />);
+    expect(screen.queryByText("Draw")).not.toBeInTheDocument();
   });
 });

@@ -7,14 +7,6 @@ vi.mock("@/features/planner/catalog/CatalogSidebar", () => ({
   CatalogSidebar: () => <div>Catalog sidebar</div>,
 }));
 
-vi.mock("@/features/planner/catalog/RoomPresetsPanel", () => ({
-  RoomPresetsPanel: ({ onApply }: { onApply: () => void }) => (
-    <button type="button" onClick={onApply}>
-      Apply preset
-    </button>
-  ),
-}));
-
 vi.mock("@/features/planner/editor/BlueprintPanel", () => ({
   BlueprintPanel: () => <div>Blueprint panel</div>,
 }));
@@ -24,25 +16,22 @@ vi.mock("@/features/planner/ai/AIAssistDrawer", () => ({
 }));
 
 describe("PlannerLeftPanel", () => {
-  it("switches tabs and shows room presets on room step", () => {
-    const onApplyRoomPreset = vi.fn();
+  it("switches tabs across the guided planner views", () => {
     render(
       <PlannerLeftPanel
         guestMode={false}
-        plannerStep="room"
+        plannerStep="draw"
         onItemClick={vi.fn()}
         onDragStart={vi.fn()}
-        onApplyRoomPreset={onApplyRoomPreset}
       />,
     );
 
-    expect(screen.getByText("Apply preset")).toBeInTheDocument();
+    expect(screen.getByText("Start by tracing a blueprint or defining the space shell.")).toBeInTheDocument();
+    expect(screen.getAllByRole("tab")[0]).toHaveTextContent("Blueprint");
     fireEvent.click(screen.getByRole("tab", { name: /Blueprint/i }));
     expect(screen.getByText("Blueprint panel")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("tab", { name: /AI Assist/i }));
     expect(screen.getByText("AI assist drawer")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Apply preset" }));
-    expect(onApplyRoomPreset).toHaveBeenCalled();
   });
 
   it("uses controlled tab state when provided", () => {
