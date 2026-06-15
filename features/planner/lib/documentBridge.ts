@@ -1,5 +1,6 @@
 import type { Editor } from "tldraw";
 
+import { repairPlannerShapeUnits } from "@/features/planner/editor/repairPlannerShapeUnits";
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
 import { canvasUnitsToMillimeters, readMmPerCanvasUnit } from "@/features/planner/lib/calibrationScale";
 import { normalizeCatalogMm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
@@ -312,6 +313,7 @@ export function loadPlannerDocumentIntoEditor(editor: Editor, document: PlannerD
   if (!snapshot || typeof snapshot !== "object") return false;
 
   editor.loadSnapshot(snapshot as Parameters<Editor["loadSnapshot"]>[0]);
+  repairPlannerShapeUnits(editor);
   editor.setCurrentTool("select");
   editor.zoomToFit({ animation: { duration: 200 } });
   return true;

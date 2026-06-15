@@ -12,9 +12,13 @@ export function getStepLeftOpenDefault(step: PlannerStep, isCompact: boolean): b
   return !isCompact;
 }
 
+export function getStepLeftEmphasis(step: PlannerStep): "muted" | "prominent" {
+  return step === "place" ? "prominent" : "muted";
+}
+
 export function usePlannerPanels() {
   const [isCompact, setIsCompact] = useState(false);
-  const [leftOpen, setLeftOpenState] = useState(true);
+  const [leftOpen, setLeftOpenState] = useState(false);
   const [rightOpen, setRightOpen] = useState(true);
   const [leftManualOverride, setLeftManualOverride] = useState(false);
 
@@ -35,7 +39,6 @@ export function usePlannerPanels() {
         setLeftOpenState(false);
         setRightOpen(false);
       } else {
-        setLeftOpenState(true);
         setRightOpen(true);
       }
     };
@@ -72,32 +75,30 @@ export function usePlannerPanels() {
   }, []);
 
   const applyStepLayout = useCallback((step: PlannerStep) => {
-    setLeftManualOverride(false);
-    setLeftOpenState(getStepLeftOpenDefault(step, isCompact));
+    if (!leftManualOverride) {
+      setLeftOpenState(getStepLeftOpenDefault(step, isCompact));
+    }
 
     if (isCompact) {
       if (step === "review") {
         setRightOpen(true);
-        setLeftOpenState(false);
+        if (!leftManualOverride) setLeftOpenState(false);
         return;
       }
 
       if (step === "place") {
-        setLeftOpenState(true);
+        if (!leftManualOverride) setLeftOpenState(true);
         setRightOpen(false);
         return;
       }
 
-      setLeftOpenState(false);
+      if (!leftManualOverride) setLeftOpenState(false);
       setRightOpen(false);
       return;
     }
 
     setRightOpen(true);
-    if (step === "review") {
-      setLeftOpenState(false);
-    }
-  }, [isCompact]);
+  }, [isCompact, leftManualOverride]);
 
   const showRight = !isCompact || rightOpen;
 

@@ -40,7 +40,7 @@ describe("usePlannerPanels", () => {
 
   it("opens both panels on desktop and toggles exclusively on compact", () => {
     const { result } = renderHook(() => usePlannerPanels());
-    expect(result.current.leftOpen).toBe(true);
+    expect(result.current.leftOpen).toBe(false);
     expect(result.current.rightOpen).toBe(true);
 
     act(() => {
@@ -70,6 +70,33 @@ describe("usePlannerPanels", () => {
     expect(result.current.rightOpenRaw).toBe(false);
   });
 
+  it("keeps manual left panel overrides across step changes", () => {
+    const { result } = renderHook(() => usePlannerPanels());
+
+    act(() => {
+      result.current.applyStepLayout("place");
+    });
+    expect(result.current.leftOpen).toBe(true);
+
+    act(() => {
+      result.current.toggleLeft();
+    });
+    expect(result.current.leftOpen).toBe(false);
+    expect(result.current.leftManualOverride).toBe(true);
+
+    act(() => {
+      result.current.applyStepLayout("draw");
+    });
+    expect(result.current.leftOpen).toBe(false);
+    expect(result.current.leftManualOverride).toBe(true);
+
+    act(() => {
+      result.current.applyStepLayout("place");
+    });
+    expect(result.current.leftOpen).toBe(false);
+    expect(result.current.leftManualOverride).toBe(true);
+  });
+
   it("applies step-based left panel defaults until the user overrides", () => {
     const { result } = renderHook(() => usePlannerPanels());
 
@@ -90,10 +117,16 @@ describe("usePlannerPanels", () => {
     expect(result.current.leftManualOverride).toBe(true);
 
     act(() => {
+      result.current.setLeftOpen(true);
+    });
+    expect(result.current.leftOpen).toBe(true);
+    expect(result.current.leftManualOverride).toBe(true);
+
+    act(() => {
       result.current.applyStepLayout("draw");
     });
-    expect(result.current.leftOpen).toBe(false);
-    expect(result.current.leftManualOverride).toBe(false);
+    expect(result.current.leftOpen).toBe(true);
+    expect(result.current.leftManualOverride).toBe(true);
 
     matchMedia.matches = true;
     act(() => {

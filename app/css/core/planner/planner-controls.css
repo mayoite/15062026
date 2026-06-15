@@ -48,6 +48,101 @@
   font-weight: 600;
 }
 
+.planner-workspace .pw-status-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: calc(var(--control-height-xs) - var(--space-2));
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel);
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  color: var(--text-muted);
+  transition:
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .pw-status-action:hover {
+  border-color: var(--border-hover, var(--border-muted));
+  color: var(--text-strong);
+  background: var(--surface-soft);
+}
+
+.planner-workspace .pw-status-action[data-active="true"] {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--surface-panel));
+  color: var(--color-primary);
+}
+
+.planner-workspace .pw-status-dev {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.planner-workspace .pw-status-dev-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-status-dev-select {
+  min-height: calc(var(--control-height-xs) - var(--space-2));
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel);
+  font-size: inherit;
+  font-weight: inherit;
+  color: var(--text-strong);
+}
+
+.planner-workspace .pw-canvas-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-canvas-grid) 28%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-canvas-grid) 28%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-canvas-grid) 52%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-canvas-grid) 52%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    var(--pw-grid-minor) var(--pw-grid-minor),
+    var(--pw-grid-minor) var(--pw-grid-minor),
+    var(--pw-grid-major) var(--pw-grid-major),
+    var(--pw-grid-major) var(--pw-grid-major);
+  background-position:
+    var(--pw-grid-origin-x) var(--pw-grid-origin-y),
+    var(--pw-grid-origin-x) var(--pw-grid-origin-y),
+    var(--pw-grid-origin-x) var(--pw-grid-origin-y),
+    var(--pw-grid-origin-x) var(--pw-grid-origin-y);
+}
+
 /* ─── Shared controls ─────────────────────────────────────────────────────── */
 
 .planner-workspace .pw-panel {

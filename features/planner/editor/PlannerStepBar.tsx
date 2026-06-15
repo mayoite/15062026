@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CheckCircle2, DoorOpen, PencilRuler } from "lucide-react";
 
 import {
@@ -33,6 +33,16 @@ export function PlannerStepBar({
 }: PlannerStepBarProps) {
   const currentIndex = PLANNER_STEPS.indexOf(current);
   const introHintId = "pw-step-bar-intro-hint";
+  const [switchingStep, setSwitchingStep] = useState<PlannerStep | null>(null);
+  const previousStep = useRef(current);
+
+  useEffect(() => {
+    if (previousStep.current === current) return;
+    previousStep.current = current;
+    setSwitchingStep(current);
+    const timeoutId = window.setTimeout(() => setSwitchingStep(null), 300);
+    return () => window.clearTimeout(timeoutId);
+  }, [current]);
 
   return (
     <nav
@@ -40,6 +50,7 @@ export function PlannerStepBar({
       data-compact={compact || undefined}
       data-intro={showIntro || undefined}
       data-current={current}
+      data-switching={switchingStep ?? undefined}
       aria-label="Planner workflow"
       aria-describedby={showIntro ? introHintId : undefined}
     >
@@ -47,14 +58,36 @@ export function PlannerStepBar({
         <div className="pw-step-bar__intro-card">
           <p className="pw-step-bar__eyebrow">Welcome to your planner</p>
           {!compact ? (
+            <>
+              <p className="pw-step-bar__summary">
+                Three quick stages: map your space, place furniture and openings, then review
+                measurements and export.
+              </p>
+              <ol className="pw-step-bar__flow" aria-label="Draw, Place, Review workflow">
+                {PLANNER_STEPS.map((step, index) => (
+                  <li key={step} className="pw-step-bar__flow-item">
+                    <span className="pw-step-bar__flow-chip">
+                      <span className="pw-step-bar__flow-index">{index + 1}</span>
+                      {PLANNER_STEP_LABELS[step]}
+                    </span>
+                    {index < PLANNER_STEPS.length - 1 ? (
+                      <span className="pw-step-bar__flow-arrow" aria-hidden>
+                        →
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            </>
+          ) : (
             <p className="pw-step-bar__summary">
-              Start with Draw to map walls and rooms, then place products and review your layout.
+              Draw → Place → Review — tap any step to jump; order is up to you.
             </p>
-          ) : null}
+          )}
           <p id={introHintId} className="pw-step-bar__hint">
             {compact
-              ? "Tap any step to jump ahead or go back."
-              : "Click any step below to jump ahead or revisit an earlier stage."}
+              ? "Steps are not locked. Tap Draw, Place, or Review anytime."
+              : "You are not locked into order. Click any step below to jump ahead or revisit an earlier stage."}
           </p>
         </div>
       ) : (
@@ -67,7 +100,9 @@ export function PlannerStepBar({
           ) : null}
         </div>
       )}
-      <p className="pw-step-bar__steps-label">Steps</p>
+      <p className="pw-step-bar__steps-label">
+        {showIntro ? (compact ? "Jump to a step" : "Jump to any step") : "Steps"}
+      </p>
       <div
         className="pw-step-bar__steps"
         style={{ ["--pw-step-count" as string]: String(PLANNER_STEPS.length) }}

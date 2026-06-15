@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import {
+  Armchair,
   BrickWall,
   DoorOpen,
   Hand,
@@ -13,6 +14,10 @@ import {
 } from "lucide-react";
 
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
+import {
+  isPlannerToolVisible,
+  type PlannerToolVisibilityMode,
+} from "@/features/planner/editor/plannerToolVisibility";
 import type { PlannerTooltipSide } from "@/features/planner/ui/PlannerTooltip";
 import { PlannerTooltip } from "@/features/planner/ui/PlannerTooltip";
 
@@ -22,6 +27,7 @@ export type PlannerToolId =
   | "planner-wall"
   | "planner-room"
   | "planner-door-window"
+  | "planner-furniture"
   | "planner-zone"
   | "planner-measurement";
 
@@ -117,6 +123,15 @@ export const TOOL_GROUPS: ToolGroup[] = [
         hint: "Place a window on a wall segment",
         icon: PanelTop,
       },
+      {
+        id: "furniture",
+        toolId: "planner-furniture",
+        plannerTool: "furniture",
+        label: "Furniture",
+        hint: "Place catalog furniture on the canvas",
+        shortcut: "F",
+        icon: Armchair,
+      },
     ],
   },
   {
@@ -149,6 +164,7 @@ interface PlannerToolRailProps {
   activeTool: PlannerToolId;
   activePlannerTool?: PlannerStoreTool;
   step: PlannerStep;
+  visibilityMode?: PlannerToolVisibilityMode;
   tooltipSide?: PlannerTooltipSide;
   onSelect: (toolId: PlannerToolId, plannerTool: PlannerStoreTool) => void;
 }
@@ -158,46 +174,32 @@ function isToolActive(
   activeTool: PlannerToolId,
   activePlannerTool?: PlannerStoreTool,
 ): boolean {
-  // Door and window share one tldraw tool id — disambiguate via planner tool.
-  if (tool.plannerTool === "door" || tool.plannerTool === "window") {
+  if (tool.plannerTool === "door" || tool.plannerTool === "window" || tool.plannerTool === "furniture") {
     return activePlannerTool === tool.plannerTool;
   }
   return activeTool === tool.toolId;
 }
 
-function isToolVisible(step: PlannerStep, tool: ToolDef): boolean {
-  switch (step) {
-    case "draw":
-      return tool.plannerTool === "select"
-        || tool.plannerTool === "pan"
-        || tool.plannerTool === "wall"
-        || tool.plannerTool === "room"
-        || tool.plannerTool === "zone";
-    case "place":
-      return tool.plannerTool === "select"
-        || tool.plannerTool === "pan"
-        || tool.plannerTool === "door"
-        || tool.plannerTool === "window";
-    case "review":
-      return tool.plannerTool === "select"
-        || tool.plannerTool === "pan"
-        || tool.plannerTool === "measure";
-    default:
-      return true;
-  }
-}
-
 export function PlannerToolRail({
   activeTool,
   activePlannerTool,
-  step,
+  step = "draw",
+  visibilityMode = "balanced",
   tooltipSide = "right",
   onSelect,
 }: PlannerToolRailProps) {
   return (
-    <nav className="pw-tool-rail" data-coach="toolbar" data-step={step} aria-label="Drawing tools">
+    <nav
+      className="pw-tool-rail"
+      data-coach="toolbar"
+      data-step={step}
+      data-tool-visibility={visibilityMode}
+      aria-label="Drawing tools"
+    >
       {TOOL_GROUPS.map((group) => {
-        const visibleTools = group.tools.filter((tool) => isToolVisible(step, tool));
+        const visibleTools = group.tools.filter((tool) =>
+          isPlannerToolVisible(step, tool, visibilityMode),
+        );
         if (visibleTools.length === 0) return null;
         return (
         <div key={group.id} className="pwx-rail-group" role="group" aria-label={group.label}>

@@ -297,6 +297,17 @@
   letter-spacing: var(--pw-letter-ui);
 }
 
+.planner-workspace .pw-step-bar__flow-chip {
+  font-size: var(--pw-text-2xs);
+  font-weight: 600;
+  letter-spacing: var(--pw-letter-ui);
+}
+
+.planner-workspace .pw-step-bar[data-intro="true"] .pw-step-bar__steps-label {
+  font-weight: var(--font-weight-copy-semibold);
+  color: var(--text-muted);
+}
+
 .planner-workspace .pw-step-bar__summary,
 .planner-workspace .pw-step-bar__detail,
 .planner-workspace .pw-panel-step-note {

@@ -11,6 +11,7 @@ import type { MeasurementUnit } from "@/features/planner/lib/measurements";
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
 import { BlueprintPanel } from "./BlueprintPanel";
 
+import { getStepLeftEmphasis } from "@/features/planner/editor/usePlannerPanels";
 import { getStepLeftTab, type PlannerLeftTab } from "./plannerStepBindings";
 
 const TAB_META: Record<PlannerLeftTab, { label: string; Icon: LucideIcon }> = {
@@ -93,6 +94,7 @@ export function PlannerLeftPanel({
   const stepNote = getStepNote(plannerStep, tab);
   const tabs = getTabsForStep(plannerStep);
   const primaryTab = tabs[0];
+  const emphasis = getStepLeftEmphasis(plannerStep);
 
   const selectTab = (next: PlannerLeftTab) => {
     if (onTabChange) onTabChange(next);
@@ -104,6 +106,7 @@ export function PlannerLeftPanel({
       data-coach="catalog"
       data-step={plannerStep}
       data-open={panelOpen ? true : undefined}
+      data-emphasis={emphasis}
       className="pw-left-panel"
     >
       <div className="pw-panel-tabs" role="tablist" aria-label="Left panel">

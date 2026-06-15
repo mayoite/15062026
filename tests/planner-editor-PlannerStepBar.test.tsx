@@ -31,7 +31,14 @@ describe("PlannerStepBar", () => {
 
     expect(screen.getByText("Welcome to your planner")).toBeInTheDocument();
     expect(
-      screen.getByText("Click any step below to jump ahead or revisit an earlier stage."),
+      screen.getByText(/Three quick stages: map your space/i),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Draw, Place, Review workflow")).toBeInTheDocument();
+    expect(screen.getByText("Jump to any step")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "You are not locked into order. Click any step below to jump ahead or revisit an earlier stage.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Jump to Place/i })).toBeInTheDocument();
   });

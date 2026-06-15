@@ -18,12 +18,28 @@ describe("PlannerToolRail", () => {
     expect(onSelect).toHaveBeenCalledWith("planner-wall", "wall");
   });
 
+  it("shows furniture in place step with balanced visibility", () => {
+    render(
+      <PlannerToolRail
+        activeTool="select"
+        activePlannerTool="select"
+        step="place"
+        visibilityMode="balanced"
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Furniture" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Measure" })).not.toBeInTheDocument();
+  });
+
   it("disambiguates door and window shared tool id", () => {
     const onSelect = vi.fn();
     const { rerender } = render(
       <PlannerToolRail
         activeTool="planner-door-window"
         activePlannerTool="door"
+        step="place"
         onSelect={onSelect}
       />,
     );
@@ -35,6 +51,7 @@ describe("PlannerToolRail", () => {
       <PlannerToolRail
         activeTool="planner-door-window"
         activePlannerTool="window"
+        step="place"
         onSelect={onSelect}
       />,
     );
