@@ -1,8 +1,10 @@
 # asset-cdn
 
-Local mirror of catalog media for upload to Cloudflare R2. **Not deployed with Next.**
+Local mirror of **catalog** media (`images/`, `models/`) for upload to Cloudflare R2. **Not deployed with Next.**
 
-**Workflow docs:** [`docs/workflow/README.md`](../docs/workflow/README.md)
+App SDKs (model-viewer, tldraw, HDR) live under **`public/cdn/`** and **`public/tldraw-assets/`** — not here.
+
+**Workflow docs:** [`docs/workflow/folders.md`](../docs/workflow/folders.md)
 
 ## Upload
 

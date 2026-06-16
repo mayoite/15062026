@@ -185,7 +185,7 @@ async function main() {
     canonicalConflicts,
   };
 
-  const auditsDir = path.join(process.cwd(), "docs", "ops", "audits");
+  const auditsDir = path.join(process.cwd(), "results", "audits");
   fs.mkdirSync(auditsDir, { recursive: true });
 
   fs.writeFileSync(

@@ -1,24 +1,25 @@
 # CDN asset failure report
 
-Generated: 2026-06-16T04:16:43.710Z
+Generated: 2026-06-16T06:56:44.713Z
 
 ## Totals
 
-- referenced: 1195
-- alreadyLocal: 1112
-- missing: 83
+- referenced: 1197
+- alreadyLocal: 1110
+- missing: 87
 - copied: 0
 - seatingJsonUpdates: 0
-- unresolved: 83
+- unresolved: 85
 - appliedFixes: false
 
 ## Failures by category
 
 - chairs: 64
 - workstations: 6
+- catalog: 6
 - storage: 6
-- catalog: 4
 - tables: 3
+- product_others: 2
 
 ## Unresolved paths
 
@@ -105,3 +106,5 @@ Generated: 2026-06-16T04:16:43.710Z
 - /images/chairs/lisbo/image-08.jpg
 - /images/chairs/lisbo/image-09.png
 - /images/chairs/lisbo/image-10.jpg
+- /images/catalog/686d3b55385e7b905b01d3a5_68a33d88ac691a23437da4a9_locker_2.jpg
+- /images/catalog/686d3b55385e7b905b01d3a5_68a33bd6c74b7831216a4bd2_pedestal_2.jpg

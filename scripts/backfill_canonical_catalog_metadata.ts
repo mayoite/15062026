@@ -169,7 +169,7 @@ async function main() {
     .filter((item) => item.legacySlugs.length > 1)
     .sort((left, right) => left.aliasSlug.localeCompare(right.aliasSlug));
 
-  const reportDir = resolve(process.cwd(), "docs", "ops", "audits");
+  const reportDir = resolve(process.cwd(), "results", "audits");
   mkdirSync(reportDir, { recursive: true });
   writeFileSync(
     resolve(reportDir, "canonical-metadata-backfill-report.json"),

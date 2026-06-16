@@ -1,12 +1,12 @@
-# Ops evidence
+# Ops reference
 
 ## Why this folder exists
 
-Point-in-time audits and static context tables — not live Handover/Failures logs.
+Static context tables and local-ops how-to — not live Handover/Failures logs.
 
 ## What is here
 
-- audits/ — supabase-schema-audit.md, runtime-query-audit.md (+ json)
+- backup-mirror.md — E:\16062026 → E:\Goodsites\15062026 sync
 - context/ — route-classification.md (npm run docs:routes)
 
 ## Rules

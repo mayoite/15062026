@@ -1,7 +1,7 @@
 /**
  * Apply pending local migrations from a per-target folder.
- * - supabase/migrations/         -> products (oando)   PRODUCTS_DATABASE_URL
- * - supabase/migrations.admin/   -> admin              SUPABASE_AUTH_DATABASE_URL
+ * - platform/supabase/migrations/         -> products (oando)   PRODUCTS_DATABASE_URL
+ * - platform/supabase/migrations.admin/   -> admin              SUPABASE_AUTH_DATABASE_URL
  *
  * State tracked in `_local_migration_history` in the public schema of each
  * target DB. Existing entries from before this change continue to work.
@@ -32,12 +32,12 @@ async function main() {
     target === "admin"
       ? {
           url: process.env.SUPABASE_AUTH_DATABASE_URL?.trim(),
-          dir: resolve(process.cwd(), "supabase", "migrations.admin"),
+          dir: resolve(process.cwd(), "platform", "supabase", "migrations.admin"),
           batchPrefix: "20260524",
         }
       : {
           url: process.env.PRODUCTS_DATABASE_URL?.trim(),
-          dir: resolve(process.cwd(), "supabase", "migrations"),
+          dir: resolve(process.cwd(), "platform", "supabase", "migrations"),
           batchPrefix: "20260524",
         };
 

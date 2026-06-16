@@ -47,11 +47,7 @@
 
 ## Commands
 
-```bash
-npm.cmd run assets:cdn:sync
-npm.cmd run assets:cdn:upload
-npm.cmd run assets:cdn:catalog
-```
+Upload and CDN sync: [`operations.md`](operations.md).
 
 ---
 

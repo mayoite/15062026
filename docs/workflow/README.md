@@ -2,6 +2,8 @@
 
 *One folder for catalog media: local layout, cloud upload, site, planner, backend.*
 
+**Start:** [`START-HERE.md`](START-HERE.md) — reading order + what not to duplicate.
+
 ---
 
 ## One sentence
@@ -14,9 +16,11 @@
 
 | File | Who | Covers |
 |------|-----|--------|
+| [`START-HERE.md`](START-HERE.md) | Everyone | Reading order, daily commands, dedup rules |
 | [`site.md`](site.md) | Site / marketing | PDP images, model-viewer |
 | [`planner.md`](planner.md) | Planner | tldraw, R3F/HDR, furniture GLBs |
-| [`backend.md`](backend.md) | Backend | Supabase, R2, Drizzle, env |
+| [`backend.md`](backend.md) | Backend | Supabase, R2, Drizzle, stack tables, env |
+| [`database.md`](database.md) | Backend / ops | Three DBs, env vars, verify commands, audits |
 | [`folders.md`](folders.md) | Everyone | `public/cdn/` vs `asset-cdn/` |
 | [`operations.md`](operations.md) | Ops | Upload scripts, buckets, deploy |
 
@@ -33,10 +37,12 @@
 
 ```bash
 npm.cmd run assets:cdn:upload
+npm.cmd run db:test
+npm.cmd run audit:supabase:catalog
 node scripts/count-r2-objects.mjs oando-asset-cdn
 ```
 
-Also: `Readme.md` · `docs/SCRIPTS.md` · `asset-cdn/README.md`
+Also: `Readme.md` · [`database.md`](database.md) · `docs/SCRIPTS.md` · `asset-cdn/README.md`
 
 ---
 *Start here. Edit the topic files above when something changes.*

@@ -5,8 +5,8 @@
   "duplicateSlugs": [],
   "missingCategoryIds": 0,
   "missingSubcategorySlug": 85,
-  "missingAltText": 85,
-  "missingPrimaryImage": 43,
+  "missingAltText": 0,
+  "missingPrimaryImage": 0,
   "duplicateNameKeysByCategory": [
     {
       "category_id": "oando-storage",

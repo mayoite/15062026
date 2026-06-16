@@ -63,14 +63,10 @@ Product `3d_model` path still goes through `normalizeAssetPath()` → cloud GLB 
 
 ## Commands
 
-```bash
-npm.cmd run assets:cdn:sync
-npm.cmd run assets:cdn:upload
-npm.cmd run assets:cdn:audit
-```
+Upload and audit commands: [`operations.md`](operations.md).
 
 ---
 
 ## Related
 
-[`planner.md`](planner.md) · [`backend.md`](backend.md) · [`operations.md`](operations.md) · [`README.md`](README.md)
+[`planner.md`](planner.md) · [`backend.md`](backend.md) · [`database.md`](database.md) · [`operations.md`](operations.md) · [`README.md`](README.md)

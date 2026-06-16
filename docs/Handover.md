@@ -6,8 +6,8 @@
 
 | Question | Answer |
 |----------|--------|
-| Where is the real repo? | **`E:\Goodsites\15062026`** — on **`main`**, should match `origin/main` |
-| What is the Cursor folder? | Git **worktree** (same repo, detached or non-`main` branch) — run `git worktree list` before checkout |
+| Where is the real repo? | **`E:\16062026`** — on **`main`**, should match `origin/main` |
+| What is the Cursor folder? | Should be **`E:\16062026`** — if you are under `.grok\worktrees\`, reopen this path |
 | Past failures / old handover text? | **Git:** `git log -- docs/Failures.md` · snapshot: `archive/docs/recovered-2026-06-15/` |
 | What do I read first? | `Readme.md` → `AGENTS.md` → this file → `docs/Failures.md` → `docs/DOC-MAP.md` |
 
@@ -56,6 +56,17 @@ Per-folder: `data/site` **100%** · `lib/catalog` **95%** · `features/catalog` 
 | **Remaining** | `ui/`, `viewer/`, `3d/`, `admin/`, `persistence/`, `onboarding/` — ratchet planner CI thresholds |
 
 Reports: `results/COVERAGE-REPORT.md` · `results/coverage-summary.json` · regen `npm run docs:sync:coverage`.
+
+## Verified (2026-06-16) — databases & catalog data
+
+- `npm.cmd run db:test` — DigitalOcean Postgres OK; Drizzle tables: `profiles`, `plans`, `teams`, `team_members`, `invites`, `audit_events` (0 plan rows)
+- `npm.cmd run db:sync-drizzle` — schema complete (no-op)
+- `npm.cmd run db:apply` / `db:apply:admin` — migrations up to date (`platform/supabase/migrations*`)
+- `npm.cmd run audit:supabase:catalog` — 85 products; **missing alt text 0**, **missing primary image 0**
+- `npm.cmd run audit:supabase:admin` — `customer_queries` OK on admin project (1 row)
+- `npm.cmd run alt:sync:apply` — 85 alt rows written
+- `npm.cmd run supabase:backfill:images` — 83 image sets written; 2 unresolved (`oando-storage/Metal`, `Wooden`)
+- Docs: `docs/workflow/START-HERE.md` + `database.md`; deduped `backend.md` / audit runtime stub
 
 ## Verified (2026-06-15)
 

@@ -10,7 +10,6 @@ type TableName =
   | "product_images"
   | "product_slug_aliases"
   | "business_stats_current"
-  | "customer_queries"
   | "catalog_categories"
   | "catalog_products"
   | "catalog_product_specs"
@@ -87,7 +86,6 @@ const TABLES: TableName[] = [
   "product_images",
   "product_slug_aliases",
   "business_stats_current",
-  "customer_queries",
   "catalog_categories",
   "catalog_products",
   "catalog_product_specs",
@@ -230,7 +228,6 @@ async function runRuntimeQueryAudit(client: SupabaseClient) {
     { label: "Product images", table: "product_images", columns: "product_id,image_url,image_kind" },
     { label: "Alias table", table: "product_slug_aliases", columns: "alias_slug,canonical_slug,is_active" },
     { label: "Business stats", table: "business_stats_current", columns: "id,is_active,as_of_date" },
-    { label: "Customer queries", table: "customer_queries", columns: "id,created_at" },
   ];
 
   for (const probe of probes) {
@@ -371,7 +368,7 @@ async function main() {
     },
   };
 
-  const auditsDir = path.join(process.cwd(), "docs", "ops", "audits");
+  const auditsDir = path.join(process.cwd(), "results", "audits");
   fs.mkdirSync(auditsDir, { recursive: true });
 
   const schemaJsonPath = path.join(auditsDir, "supabase-schema-audit.json");
@@ -387,11 +384,11 @@ async function main() {
     [
       "# Supabase Runtime Query Audit",
       "",
+      "*Redirect — runtime checks are included in [`supabase-schema-audit.md`](supabase-schema-audit.md) § Runtime Query Checks.*",
+      "",
       `- Generated at: ${summary.generatedAt}`,
       "",
-      ...summary.runtimeQueries.map(
-        (check) => `- ${check.label}: ${check.ok ? "ok" : "fail"}${check.detail ? ` (${check.detail})` : ""}`,
-      ),
+      "Do not extend this file; edit `scripts/audit_supabase_catalog.ts` if probes change.",
       "",
     ].join("\n"),
     "utf8",

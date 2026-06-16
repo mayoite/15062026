@@ -406,7 +406,8 @@ const folders = {
       "DOC-MAP.md — index + live vs reference vs archive rules",
       "Handover.md, Failures.md — live ops (open issues only in Failures)",
       "TESTING.md, SCRIPTS.md, CSS-ARCHITECTURE.md — reference how-to",
-      "ops/audits/, ops/context/ — audit snapshots + reference tables",
+      "workflow/ — asset, CDN, database how-to (START-HERE.md)",
+      "ops/context/ — reference tables (audits → results/audits/)",
     ],
     see: ["Readme.md", "docs/DOC-MAP.md", "plans/CONTENTS.md"],
     rules: ["No phased plans here — use plans/", "Retired docs: archive/docs/"],
@@ -428,11 +429,22 @@ const folders = {
       "Do not duplicate docs/TESTING.md or docs/SCRIPTS.md content",
     ],
   },
-  "docs/ops": {
-    title: "Ops evidence",
-    why: "Point-in-time audits and static context tables — not live Handover/Failures logs.",
+  "docs/workflow": {
+    title: "Asset & CDN workflow",
+    why: "How catalog bytes, paths, and databases fit together — start at START-HERE.md.",
     contains: [
-      "audits/ — supabase-schema-audit.md, runtime-query-audit.md (+ json)",
+      "START-HERE.md — reading order + dedup rules",
+      "database.md — three DBs, verify commands",
+      "backend.md, operations.md, site.md, planner.md, folders.md",
+    ],
+    see: ["docs/DOC-MAP.md", "docs/SCRIPTS.md"],
+    rules: ["DB topology only in database.md", "Upload commands only in operations.md"],
+  },
+  "docs/ops": {
+    title: "Ops reference",
+    why: "Static context tables and local-ops how-to — not live Handover/Failures logs.",
+    contains: [
+      "backup-mirror.md — E:\\16062026 → E:\\Goodsites\\15062026 sync",
       "context/ — route-classification.md (npm run docs:routes)",
     ],
     see: ["docs/DOC-MAP.md", "archive/docs/recovered-2026-06-15/"],
@@ -504,8 +516,13 @@ const folders = {
   },
   "results/audits": {
     title: "Audit reports",
-    why: "Human-readable audit outputs from quality and security scripts.",
-    contains: ["security-audit.md, lighthouse-audit.md, repo-merge-checklist.txt"],
+    why: "Human-readable audit outputs from quality, security, and database scripts.",
+    contains: [
+      "security-audit.md, lighthouse-audit.md, repo-merge-checklist.txt",
+      "supabase-schema-audit.md, supabase-admin-schema-audit.md (+ json)",
+      "missing-product-images-backfill-report.json, canonical-metadata-backfill-report.json",
+      "slug-id-integrity-audit.json (npm run audit:slug-id)",
+    ],
   },
   "results/screenshots": {
     title: "Screenshot evidence",

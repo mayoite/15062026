@@ -6,6 +6,7 @@ import QueryProvider from "@/app/(site)/providers/QueryProvider";
 import { ciscoSans, helveticaNeue } from "@/lib/fonts";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { PlannerBodyTheme } from "@/features/planner/components/PlannerBodyTheme";
+import { TldrawNetworkGuard } from "@/features/planner/ui/TldrawNetworkGuard";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -30,7 +31,9 @@ export default function PlannerRootLayout({
         <QueryProvider>
           <ThemeProvider>
             <PlannerBodyTheme />
-            <main id="main-content">{children}</main>
+            <TldrawNetworkGuard>
+              <main id="main-content">{children}</main>
+            </TldrawNetworkGuard>
           </ThemeProvider>
         </QueryProvider>
       </body>

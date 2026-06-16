@@ -1,6 +1,6 @@
 # Master program plan
 
-*Last verified: 2026-06-15 · Canonical repo: `E:\Goodsites\15062026` · How-to: `docs/` · Execution detail: sibling plans below.*
+*Last verified: 2026-06-16 · Canonical repo: `E:\16062026` · How-to: `docs/` · Execution detail: sibling plans below.*
 
 ## Charter
 

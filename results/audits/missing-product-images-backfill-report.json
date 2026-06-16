@@ -1,0 +1,511 @@
+{
+  "generatedAt": "2026-06-16T06:20:38.884Z",
+  "totalProductsScanned": 85,
+  "candidatesScanned": 85,
+  "updatedCount": 83,
+  "unresolvedCount": 2,
+  "updated": [
+    {
+      "id": "6617f3e0-2462-4c31-86b4-7b4d2c0fc521",
+      "slug": "accent",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "d53030c0-b654-414b-a1e2-fad518ba35c0",
+      "slug": "adam",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "068e6418-8a16-49c4-8ce5-d5a57ffa8100",
+      "slug": "alonzo",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "bde860ac-0185-4337-a111-a906e8d68117",
+      "slug": "apex",
+      "source": "catalog-index-slug",
+      "imageCount": 2
+    },
+    {
+      "id": "ea16e640-ffd7-4a9d-8b3e-1e44c6d78533",
+      "slug": "arcana",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "0a10dff6-d1b6-4d1a-afa3-b4d83e8f7b46",
+      "slug": "arco",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "3cb9666e-eb50-4474-b088-8b9e639530bf",
+      "slug": "armora",
+      "source": "catalog-index-slug",
+      "imageCount": 7
+    },
+    {
+      "id": "fb488cfa-1ca9-4beb-b294-a5f6d3119205",
+      "slug": "arvo",
+      "source": "catalog-index-slug",
+      "imageCount": 15
+    },
+    {
+      "id": "c4e99b13-6a6f-4059-972e-0e3ad362058d",
+      "slug": "brim",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "fde80b99-a2b8-4249-9ec0-dcb043d7eb2b",
+      "slug": "canaret",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "e77bd4be-9049-4d28-8508-5863f6fc300f",
+      "slug": "casca",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "a9dd26ca-b2bb-4474-8c9f-f19bda6ae322",
+      "slug": "ceda",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "75bc935a-7828-4bc5-ad18-8d9fa45e6800",
+      "slug": "cirq",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "32e08a2f-4336-4033-adb3-635e174925ab",
+      "slug": "cocoon",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "5c7d2c63-45e3-420d-9ea8-ffa824bb8cc0",
+      "slug": "como",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "1a82c32e-7b57-431e-bd7c-577da956ba5f",
+      "slug": "compactor",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "9b2dc8c2-b8de-4c1c-bda2-fff737e7a778",
+      "slug": "cone",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "6c3b50a2-8696-4e33-bd87-4fe1c2d7236a",
+      "slug": "consulate",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "9d2d7b99-8507-433a-8cca-aa7832bfd15c",
+      "slug": "convene",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "d0578c83-5ce9-4fb0-b975-4fa1a87fa022",
+      "slug": "convesso",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "d0456468-1464-4c4c-a551-7f260d807955",
+      "slug": "cove",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "38345027-2d41-49cc-935b-87938bd7c6f4",
+      "slug": "covea",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "bfc2ef39-d6e7-4090-805c-0e3174631897",
+      "slug": "cozy",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "00d961b2-63d2-4985-8bca-f4debfba07a2",
+      "slug": "crest",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "1c2583b3-4248-4a4a-a94d-9b9b88a43c2c",
+      "slug": "crossa",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "547fea06-0caa-4ba4-aaf1-095b7cc8009c",
+      "slug": "crox",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "3c1b0ff9-23f0-40c3-91db-c4ca871d55eb",
+      "slug": "curvivo-meet",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "d1d62c05-c1bd-48e6-8e6c-0afee8b638fe",
+      "slug": "desk-meet",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "3fb03281-c741-4ffe-b503-c871ff792ac7",
+      "slug": "eclips",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "87782aa3-27c8-4cc9-9e49-4c557998e046",
+      "slug": "embrace",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "aa0752be-5a77-4cbd-8faf-6e6537129e53",
+      "slug": "esmor",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "e968485d-2207-4f21-b313-820800cc0674",
+      "slug": "exquisite",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "9843595b-397a-4a5c-b024-05a36570df3e",
+      "slug": "flex",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "bbac578f-b000-4d3b-ace6-1eb788587c55",
+      "slug": "flip",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "87510c42-d367-42ec-bbd6-70d98b608a2b",
+      "slug": "fluid-x",
+      "source": "catalog-index-slug",
+      "imageCount": 1
+    },
+    {
+      "id": "b990ff69-bd9b-4b1f-b488-2306f5a80ac8",
+      "slug": "fynn",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "9105ce24-72e7-400e-af6f-f7842a792bdd",
+      "slug": "grace",
+      "source": "catalog-index-slug",
+      "imageCount": 7
+    },
+    {
+      "id": "ab23be22-19be-4d9c-91b7-2f3de00820e5",
+      "slug": "halo",
+      "source": "catalog-index-slug",
+      "imageCount": 1
+    },
+    {
+      "id": "68fb028f-5ebb-4b7a-a9c4-596a4e245750",
+      "slug": "heavy-duty-racks",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "9a20c8e1-a726-44f7-8fb2-01aad4b88221",
+      "slug": "high-cafe",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "997050d9-0e6d-44d3-95c4-1add7eef699f",
+      "slug": "hush",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "0b1dc23f-fab1-4ad5-9806-c533e591e2cf",
+      "slug": "impulse",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "2ba22359-648d-48d1-9584-7ce916c3fb96",
+      "slug": "inox",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "dec09f0d-4427-46b9-ae73-6f728e0397a0",
+      "slug": "letz-think",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "49dd11b9-6496-41d7-bd86-e34c59ca6d36",
+      "slug": "logica",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "6e8a2791-1e80-4221-9fa6-6ac3b9b36761",
+      "slug": "luna",
+      "source": "catalog-index-slug",
+      "imageCount": 13
+    },
+    {
+      "id": "79811b9b-b817-47f9-a103-f79f9028d401",
+      "slug": "lura",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "4ad1cd7c-f462-468c-8603-0ca47b814fc0",
+      "slug": "luxar",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "49d6dc80-cfeb-46b7-a7ee-cd590e40f0b3",
+      "slug": "margas",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "2bce0132-b73a-4d62-899d-7c77553df6fe",
+      "slug": "metal-locker",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "b32ac4f6-2ee7-498b-b569-1ec7cc964caf",
+      "slug": "metal-pedestal",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "e16344ee-78bc-4d91-abe7-65b40dfb716f",
+      "slug": "modulus",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "0cb4176f-f01a-4e50-ba08-256ebf2d6023",
+      "slug": "moon",
+      "source": "catalog-index-slug",
+      "imageCount": 7
+    },
+    {
+      "id": "9f954ee4-fe71-4ccc-9db6-7a7af3913f16",
+      "slug": "myel",
+      "source": "catalog-index-slug",
+      "imageCount": 1
+    },
+    {
+      "id": "5c686bce-6efb-4077-adeb-56953d167133",
+      "slug": "nextable",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "7ab1afc5-d03f-4f91-9302-3a2051901dfe",
+      "slug": "nook",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "d918f5b1-3ae8-4b8c-bc39-11897c82c5bc",
+      "slug": "nordic",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "37670f57-ddc4-4c96-8c02-7b707f84692e",
+      "slug": "nuvora",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "6e7e019c-270b-47f4-b4cc-1f264f831198",
+      "slug": "opera",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "22cf1769-68aa-4878-8434-c3622338f91d",
+      "slug": "opus-2",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "5af13b0f-ea06-4fea-aec5-a31091719549",
+      "slug": "orb",
+      "source": "catalog-index-slug",
+      "imageCount": 7
+    },
+    {
+      "id": "c517f3f7-6206-4b2d-afdf-603782944d81",
+      "slug": "padora",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "00ef6c24-c711-4a6f-92f1-25523f50ca62",
+      "slug": "plumb",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "1887692e-adc2-4841-8a1b-1cfee63d3801",
+      "slug": "pedestal",
+      "source": "catalog-index-slug",
+      "imageCount": 8
+    },
+    {
+      "id": "994c5fd8-3205-4af9-9c18-4bc2292f6000",
+      "slug": "prelam-storage",
+      "source": "catalog-index-slug",
+      "imageCount": 8
+    },
+    {
+      "id": "8bde2692-cb3b-4bfb-869f-93bbde719786",
+      "slug": "presidency",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "7c511779-4b21-4b1b-84b0-f58b27cca882",
+      "slug": "rattique",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "4c680160-70df-4219-949d-a31362f4a90b",
+      "slug": "relax",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "0e0c7001-110f-48a8-9d41-56316cc80c20",
+      "slug": "sleek-tab",
+      "source": "catalog-index-slug",
+      "imageCount": 2
+    },
+    {
+      "id": "80b1d76a-4c92-4152-a2d4-651b45a181ba",
+      "slug": "cafe-sleek",
+      "source": "catalog-index-slug",
+      "imageCount": 1
+    },
+    {
+      "id": "9e24bcdd-8928-4e30-862d-0ada967a61ba",
+      "slug": "sleek-meet",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "288dbbbb-3879-494c-aa7b-eda72309f022",
+      "slug": "spectrum",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "d0bb8e7a-d0d8-458d-9eea-82ad671feb3e",
+      "slug": "stake",
+      "source": "catalog-index-slug",
+      "imageCount": 5
+    },
+    {
+      "id": "035bc7b3-e333-4fa3-8c54-e6268082495c",
+      "slug": "sullion",
+      "source": "catalog-index-slug",
+      "imageCount": 3
+    },
+    {
+      "id": "183bf01e-ea98-4289-8a29-be8310453af7",
+      "slug": "sway",
+      "source": "catalog-index-slug",
+      "imageCount": 1
+    },
+    {
+      "id": "f710b22b-d80e-400b-a663-0788b366b7c2",
+      "slug": "tectara",
+      "source": "catalog-index-slug",
+      "imageCount": 8
+    },
+    {
+      "id": "f2d2bea5-4631-492f-a1c9-bdae5de785c1",
+      "slug": "trion",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "198c111b-d5bd-4001-8214-17971c6122df",
+      "slug": "twig",
+      "source": "catalog-index-slug",
+      "imageCount": 22
+    },
+    {
+      "id": "f607b137-767f-443d-b213-b1b329a64e65",
+      "slug": "uniflip",
+      "source": "catalog-index-slug",
+      "imageCount": 25
+    },
+    {
+      "id": "18aef10b-e66f-4913-bb41-62d36b57d53d",
+      "slug": "velto",
+      "source": "catalog-index-slug",
+      "imageCount": 6
+    },
+    {
+      "id": "bcc9f21f-6730-46ea-b697-a598419fbcaf",
+      "slug": "verka",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "a2f24888-fe6a-44d7-b6c1-b4957ca197df",
+      "slug": "virello",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    },
+    {
+      "id": "9f4a6f1b-caf5-4722-9330-e3456675653f",
+      "slug": "x-meet",
+      "source": "catalog-index-slug",
+      "imageCount": 4
+    }
+  ],
+  "unresolved": [
+    "oando-storage/Metal",
+    "oando-storage/Wooden"
+  ]
+}

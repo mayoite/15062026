@@ -2,6 +2,13 @@ node_modules/
 
 # Local AI/editor tooling
 .claude/
+agent-tools/
+mcps/
+terminals/
+.codex-next-*.log
+.git_status.txt
+BACKUP-*.log
+BACKUP-README.txt
 
 # Local environment files
 .env.local

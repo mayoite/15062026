@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T12:44:20.314Z",
+  "generatedAt": "2026-06-16T07:05:51.456Z",
   "supabaseHost": "erpweaiypimorcunaimz.supabase.co",
   "tables": [
     {
@@ -36,12 +36,6 @@
       "table": "business_stats_current",
       "exists": true,
       "rowCount": 1,
-      "error": null
-    },
-    {
-      "table": "customer_queries",
-      "exists": true,
-      "rowCount": 0,
       "error": null
     },
     {
@@ -105,11 +99,6 @@
       "label": "Business stats",
       "ok": true,
       "detail": "ok"
-    },
-    {
-      "label": "Customer queries",
-      "ok": false,
-      "detail": "Could not find the table 'public.customer_queries' in the schema cache"
     }
   ],
   "dataQuality": {
@@ -119,8 +108,8 @@
     "duplicateSlugs": [],
     "missingCategoryIds": 0,
     "missingSubcategorySlug": 85,
-    "missingAltText": 85,
-    "missingPrimaryImage": 43,
+    "missingAltText": 0,
+    "missingPrimaryImage": 0,
     "duplicateNameKeysByCategory": [
       {
         "category_id": "oando-storage",

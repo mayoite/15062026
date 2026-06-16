@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import { resolveProductImages } from "../../lib/catalogImageMetadata";
+import { resolveProductImages } from "@/features/catalog/imageMetadata";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 
@@ -91,7 +91,7 @@ async function main() {
     });
   }
 
-  const reportDir = resolve(process.cwd(), "docs", "ops", "audits");
+  const reportDir = resolve(process.cwd(), "results", "audits");
   mkdirSync(reportDir, { recursive: true });
   writeFileSync(
     resolve(reportDir, "missing-product-images-backfill-report.json"),

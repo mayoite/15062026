@@ -23,18 +23,29 @@ async function checkDatabaseConnection() {
     }
     console.log("✅ SUCCESS: Database connection established.");
 
+    const expected = [
+      "profiles",
+      "plans",
+      "teams",
+      "team_members",
+      "invites",
+      "audit_events",
+    ] as const;
     const tables = await sql`
       SELECT table_name
       FROM information_schema.tables
       WHERE table_schema = 'public'
-        AND table_name IN ('plans', 'profiles')
+        AND table_name = ANY(${[...expected]})
       ORDER BY table_name
     `;
     const names = tables.map((row) => row.table_name as string);
-    console.log(`Tables present: ${names.join(", ") || "(none)"}`);
+    console.log(`Drizzle tables present: ${names.join(", ") || "(none)"}`);
 
-    if (!names.includes("plans")) {
-      console.error("❌ ERROR: Drizzle plans table not found — apply drizzle migrations.");
+    const missing = expected.filter((name) => !names.includes(name));
+    if (missing.length > 0) {
+      console.error(
+        `❌ ERROR: Missing Drizzle tables: ${missing.join(", ")} — run npm run db:sync-drizzle`,
+      );
       process.exit(1);
     }
 

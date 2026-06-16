@@ -10,7 +10,7 @@ Three layers — do not mix them:
 |-------|------|-------|-----------|
 | **Live ops** | Current milestones + open breakages | `Handover.md`, `Failures.md` | Something changes today |
 | **Reference** | How the repo works (stable how-to) | `TESTING.md`, `SCRIPTS.md`, `CSS-ARCHITECTURE.md`, `workflow/` | Tooling or layout changes |
-| **Ops evidence** | Point-in-time audits + context tables | `ops/audits/`, `ops/context/` | After an audit run |
+| **Ops reference** | Static context tables | `ops/context/` | After `docs:routes` |
 
 **Not in `docs/`:** phased roadmaps → `plans/`. Retired plans and recovered session logs → `archive/docs/`.
 
@@ -23,16 +23,18 @@ docs/
 ├── SCRIPTS.md              ← reference: npm scripts
 ├── CSS-ARCHITECTURE.md     ← reference: CSS import map
 ├── CDN-ARCHITECTURE.md     ← redirect → workflow/
-├── workflow/               ← asset & CDN workflow (start: README.md)
+├── workflow/               ← asset & CDN workflow (start: START-HERE.md)
+│   ├── START-HERE.md
 │   ├── README.md
 │   ├── site.md
 │   ├── planner.md
 │   ├── backend.md
+│   ├── database.md
 │   ├── folders.md
 │   └── operations.md
 ├── CONTENTS.md             ← generated folder blurb
 └── ops/
-    ├── audits/             ← Supabase audit snapshots (md + json)
+    ├── backup-mirror.md    ← local mirror sync how-to
     └── context/            ← reference tables (e.g. route classification)
 ```
 
@@ -65,7 +67,7 @@ Git is the **canonical history** for docs and code:
 
 - Every commit stores the full file at that moment (`git show <sha>:path`)
 - `git log --oneline -- docs/` shows when ops docs changed
-- **`main`** on `origin` — planner feat + docs/plans sync merged 2026-06-15. Primary clone: `E:\Goodsites\15062026`; this folder is a worktree on the same repo.
+- **`main`** on `origin` — planner feat + docs/plans sync merged 2026-06-15. Primary clone: **`E:\16062026`**.
 
 Markdown under `archive/` is a **frozen snapshot** for things worth keeping readable without digging git — not a live log.
 
@@ -78,7 +80,8 @@ Markdown under `archive/` is a **frozen snapshot** for things worth keeping read
 | Open breakages | `docs/Failures.md` |
 | How tests work | `docs/TESTING.md` |
 | npm scripts | `docs/SCRIPTS.md` |
-| CDN / R2 / catalog assets | `docs/workflow/README.md` |
+| CDN / R2 / catalog assets | `docs/workflow/START-HERE.md` |
+| Databases (Supabase + Drizzle) | `docs/workflow/database.md` |
 | Program dashboard | `plans/MASTER-PLAN.md` |
 | Test/coverage roadmap | `plans/TESTING-PLAN.md` |
 | Folder cleanup roadmap | `plans/REPO-STRUCTURE-PLAN.md` |
@@ -86,6 +89,7 @@ Markdown under `archive/` is a **frozen snapshot** for things worth keeping read
 | Hardcoding remediation plan | `plans/HARDCODING-PLAN.md` |
 | Homepage layout + typography | `plans/HOMEPAGE-LAYOUT-TYPOGRAPHY.md` |
 | Archived plans crosswalk | `plans/ARCHIVE-MAP.md` |
+| Audit snapshots (Supabase, lighthouse, security) | `results/audits/` |
 | Test file list | `tests/INVENTORY.md` or `results/test-inventory.json` |
 | Coverage baseline | `results/coverage-summary.json` |
 | Coverage report (per-metric remarks) | `results/COVERAGE-REPORT.md` — `npm run docs:sync:coverage` |

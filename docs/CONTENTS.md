@@ -9,7 +9,8 @@ How the repo works today — not phased roadmaps (those live in plans/).
 - DOC-MAP.md — index + live vs reference vs archive rules
 - Handover.md, Failures.md — live ops (open issues only in Failures)
 - TESTING.md, SCRIPTS.md, CSS-ARCHITECTURE.md — reference how-to
-- ops/audits/, ops/context/ — audit snapshots + reference tables
+- workflow/ — asset, CDN, database how-to (START-HERE.md)
+- ops/context/ — reference tables (audits → results/audits/)
 
 ## Rules
 

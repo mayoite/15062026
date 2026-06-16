@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-06-15T15:30:56.822Z",
+  "generatedAt": "2026-06-16T06:21:16.744Z",
   "source": "tests/",
   "counts": {
-    "total": 233,
-    "vitest": 223,
+    "total": 240,
+    "vitest": 230,
     "vitestExcluded": 0,
     "playwright": 8,
     "helpers": 2
@@ -133,6 +133,12 @@
     {
       "name": "layoutPreviewBounds.test.ts",
       "path": "tests/layoutPreviewBounds.test.ts",
+      "kind": "site-unit",
+      "runner": "vitest"
+    },
+    {
+      "name": "lib-ui-selfHostedAssetUrls.test.ts",
+      "path": "tests/lib-ui-selfHostedAssetUrls.test.ts",
       "kind": "site-unit",
       "runner": "vitest"
     },
@@ -431,8 +437,20 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-editor-plannerToolVisibility.test.ts",
+      "path": "tests/planner-editor-plannerToolVisibility.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-editor-pure.test.ts",
       "path": "tests/planner-editor-pure.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-editor-repairPlannerShapeUnits.test.ts",
+      "path": "tests/planner-editor-repairPlannerShapeUnits.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -569,6 +587,12 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-lib-blockTldrawLicensePing.test.ts",
+      "path": "tests/planner-lib-blockTldrawLicensePing.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-lib-blueprintPdf.test.ts",
       "path": "tests/planner-lib-blueprintPdf.test.ts",
       "kind": "planner",
@@ -701,6 +725,12 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-model-plannerDocumentLogging.test.ts",
+      "path": "tests/planner-model-plannerDocumentLogging.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-model-plannerEnvelope.test.ts",
       "path": "tests/planner-model-plannerEnvelope.test.ts",
       "kind": "planner",
@@ -709,6 +739,12 @@
     {
       "name": "planner-model-plannerIdentity.test.ts",
       "path": "tests/planner-model-plannerIdentity.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-model-plannerJsonSafe.test.ts",
+      "path": "tests/planner-model-plannerJsonSafe.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -907,6 +943,12 @@
     {
       "name": "planner-store-utils.test.ts",
       "path": "tests/planner-store-utils.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-svg-export-colors.test.ts",
+      "path": "tests/planner-svg-export-colors.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -1440,6 +1482,7 @@
       "catalogMatch.test.ts",
       "homepage-data.test.ts",
       "layoutPreviewBounds.test.ts",
+      "lib-ui-selfHostedAssetUrls.test.ts",
       "navigation-data.test.ts",
       "projectSetup.test.ts",
       "seo-helpers.test.ts",
@@ -1510,7 +1553,9 @@
       "planner-editor-layerManagerEntries.test.ts",
       "planner-editor-overlays.test.tsx",
       "planner-editor-plannerShapeFactories.test.ts",
+      "planner-editor-plannerToolVisibility.test.ts",
       "planner-editor-pure.test.ts",
+      "planner-editor-repairPlannerShapeUnits.test.ts",
       "planner-editor-shapeInspectorBridge.test.ts",
       "planner-editor-usePlannerPanels.test.ts",
       "planner-editorSelectionStatus.test.ts",
@@ -1531,6 +1576,7 @@
       "planner-lib-aiService.test.ts",
       "planner-lib-applyRoomPreset.test.ts",
       "planner-lib-assetPipeline.test.ts",
+      "planner-lib-blockTldrawLicensePing.test.ts",
       "planner-lib-blueprintPdf.test.ts",
       "planner-lib-branches.test.ts",
       "planner-lib-calibrationScale.test.ts",
@@ -1552,8 +1598,10 @@
       "planner-model-planner3dScene.test.ts",
       "planner-model-plannerDocument.extra.test.ts",
       "planner-model-plannerDocument.test.ts",
+      "planner-model-plannerDocumentLogging.test.ts",
       "planner-model-plannerEnvelope.test.ts",
       "planner-model-plannerIdentity.test.ts",
+      "planner-model-plannerJsonSafe.test.ts",
       "planner-model-plannerPermissions.test.ts",
       "planner-model-plannerPlacement.test.ts",
       "planner-openingCollision.test.ts",
@@ -1587,6 +1635,7 @@
       "planner-store-syncQueueProcessor.test.ts",
       "planner-store-unifiedCatalog.test.ts",
       "planner-store-utils.test.ts",
+      "planner-svg-export-colors.test.ts",
       "planner-svg-qa.test.ts",
       "planner-templatePreview.test.ts",
       "planner-tldraw-DoorWindowShape.test.ts",

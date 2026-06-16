@@ -1,0 +1,8 @@
+/* Interim only — while NEXT_PUBLIC_TLDRAW_LICENSE_KEY is unset (see TldrawNetworkGuard). */
+.planner-tldraw-unlicensed .tl-watermark_SEE-LICENSE,
+.planner-tldraw-unlicensed [data-testid="tl-watermark-unlicensed"],
+.planner-tldraw-unlicensed [data-testid="tl-watermark-licensed"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

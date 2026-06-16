@@ -1,19 +1,20 @@
 {
-  "generatedAt": "2026-06-16T04:16:43.709Z",
+  "generatedAt": "2026-06-16T06:56:44.712Z",
   "totals": {
-    "referenced": 1195,
-    "alreadyLocal": 1112,
-    "missing": 83,
+    "referenced": 1197,
+    "alreadyLocal": 1110,
+    "missing": 87,
     "copied": 0,
     "seatingJsonUpdates": 0,
-    "unresolved": 83,
+    "unresolved": 85,
     "appliedFixes": false
   },
   "byCategory": {
     "workstations": 6,
-    "catalog": 4,
+    "catalog": 6,
     "tables": 3,
     "storage": 6,
+    "product_others": 2,
     "chairs": 64
   },
   "failures": [
@@ -71,6 +72,18 @@
       "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d88ac691a23437da4a9_locker_2.jpg",
       "category": "storage",
       "resolution": "unresolved"
+    },
+    {
+      "path": "/_unused/product_others/imported/storage/image-14.webp",
+      "category": "product_others",
+      "resolution": "copy",
+      "fix": "/images/catalog/oando-seating--fluid/image-14.webp"
+    },
+    {
+      "path": "/_unused/product_others/imported/storage/image-73.webp",
+      "category": "product_others",
+      "resolution": "copy",
+      "fix": "/images/products/imported/cabin/image-73.webp"
     },
     {
       "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e438d2d6d279597506e0_consulate_2.jpg",
@@ -430,6 +443,16 @@
     {
       "path": "/images/chairs/lisbo/image-10.jpg",
       "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_68a33d88ac691a23437da4a9_locker_2.jpg",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_68a33bd6c74b7831216a4bd2_pedestal_2.jpg",
+      "category": "catalog",
       "resolution": "unresolved"
     }
   ],
@@ -847,6 +870,16 @@
     {
       "path": "/images/chairs/lisbo/image-10.jpg",
       "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_68a33d88ac691a23437da4a9_locker_2.jpg",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_68a33bd6c74b7831216a4bd2_pedestal_2.jpg",
+      "category": "catalog",
       "resolution": "unresolved"
     }
   ]

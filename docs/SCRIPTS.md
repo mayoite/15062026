@@ -20,8 +20,12 @@
 | `npm run docs:sync:coverage` | Sync + Vitest coverage → `results/coverage-summary.json` |
 | `npm run docs:check` | Sync + fail if inventory stale (one pass, CI) |
 | `npm run docs:check:coverage` | Sync coverage + fail if stale |
-| `npm run db:test` | Test Postgres connection |
-| `npm run db:apply` | Apply Supabase migrations |
+| `npm run db:test` | Test planner Postgres + Drizzle tables |
+| `npm run db:sync-drizzle` | Apply missing Drizzle tables on `DATABASE_URL` |
+| `npm run db:apply` | Apply products Supabase migrations |
+| `npm run db:apply:admin` | Apply admin Supabase migrations |
+| `npm run audit:supabase:catalog` | Audit products Supabase catalog |
+| `npm run audit:supabase:admin` | Audit admin Supabase (CRM, profiles, …) |
 | `npm run catalog:ingest` | Regenerate planner catalog from source data |
 | `npm run launch:env` | Validate env vars before deploy |
 | `npm run launch:smoke` | Post-deploy smoke checks |
@@ -55,9 +59,10 @@ Excludes: `node_modules`, `.git`, `.next`, `archive`, `results`, `test-results`,
 
 | File | npm script | Purpose |
 |---|---|---|
-| `db_test_connection.ts` | `db:test` | Direct Postgres connection test (bypasses `server-only`) |
-| `db_apply_migrations.ts` | `db:apply`, `db:apply:admin` | Apply migration files to linked Supabase |
-| `db_ensure_plans_table.ts` | `db:ensure-plans` | Ensure Drizzle `plans` table exists |
+| `db_test_connection.ts` | `db:test` | Planner Postgres ping + all six Drizzle tables |
+| `db_sync_drizzle_schema.ts` | `db:sync-drizzle` | Apply `0000_daffy_longshot.sql` for missing planner tables |
+| `db_apply_migrations.ts` | `db:apply`, `db:apply:admin` | Apply SQL from `platform/supabase/migrations*` |
+| `db_ensure_plans_table.ts` | `db:ensure-plans` | Ensure Drizzle `plans` table exists (partial — prefer `db:sync-drizzle`) |
 | `db_advisors.ts` | `db:advisors`, `db:advisors:security`, `db:advisors:performance` | Run Supabase security/performance advisors |
 | `db_advisors_admin.ts` | `db:advisors:admin` | Admin-schema advisor pass |
 | `db_gen_admin_types.ts` | `db:types:admin` | Generate admin DB TypeScript types |
@@ -85,7 +90,8 @@ Excludes: `node_modules`, `.git`, `.next`, `archive`, `results`, `test-results`,
 | `backfill_missing_product_images.ts` | `supabase:backfill:images` | Backfill missing product images |
 | `sync_catalog_images.ts` | — | Sync catalog images to storage |
 | `sync-missing-alt-text.ts` | `alt:sync:dry`, `alt:sync:apply` | Sync missing image alt text |
-| `audit_supabase_catalog.ts` | `audit:supabase:catalog` | Audit Supabase catalog consistency |
+| `audit_supabase_catalog.ts` | `audit:supabase:catalog` | Products Supabase catalog schema + quality |
+| `audit_supabase_admin.ts` | `audit:supabase:admin` | Admin Supabase CRM / profiles / teams probes |
 | `audit-product-quality.ts` | `audit:products:quality` | Product data quality audit |
 | `audit_slug_id_integrity.ts` | `audit:slug-id` | Slug ↔ ID integrity check |
 | `migrate-chairs-to-catalog.ts` | — | Migrate chair data into catalog |
@@ -150,6 +156,9 @@ Excludes: `node_modules`, `.git`, `.next`, `archive`, `results`, `test-results`,
 | `prepare-review-folders.js` | — | Prepare folder structure for code review |
 | `compare-trees.ps1` | — | Compare two directory tree outputs (Windows) |
 | `compare-meta.ps1` | — | Compare file metadata between trees |
+| `sync-backup-to-15062026.ps1` | `backup:sync` | Mirror `E:\16062026` → `E:\Goodsites\15062026` (robocopy `/MIR`) |
+| `watch-backup-sync.ps1` | `backup:sync:watch` | Live file watcher → debounced mirror sync |
+| `install-backup-sync.ps1` | `backup:sync:install` | Register Windows scheduled task (every 5 min) |
 | `clean-3105.mjs` | — | Clean build artifacts (`--dry-run` supported) |
 | `check-header.mjs` | — | Check site header consistency across routes |
 | `check-mega.mjs` | — | Check mega-menu behaviour |
@@ -164,7 +173,8 @@ Canonical R2 bucket: **`oando-asset-cdn`**. See `docs/workflow/operations.md`.
 |---|---|---|
 | `assets:cdn:sync` | `syncVendorCdnAssets.mjs` | Download vendor SDKs into `public/cdn/vendor/` |
 | `assets:cdn:catalog` | `downloadCdnAssets.ts` | Pull catalog paths from cloud → local (`asset-cdn/` or `public/`) |
-| `assets:cdn:upload` | `uploadCdnAssets.ts` | Push `asset-cdn/` / `public/images` / `public/models` → R2 |
+| `assets:cdn:upload` | `uploadCdnAssets.ts` | Full push → R2 (overwrites all local keys) |
+| `assets:cdn:upload:incremental` | `uploadCdnAssets.ts --skip-existing` | Gap-fill only — skip keys already in R2 |
 | `assets:cdn:audit` | `auditCdnAssetFailures.ts` | Report missing local/cloud catalog assets |
 | `assets:cdn:fix` | `auditCdnAssetFailures.ts --apply` | Apply catalog path fixes |
 | `assets:cdn:replacements` | `auditUnresolvedCdnPaths.ts` | Suggest replacements for unresolved paths |
@@ -176,7 +186,7 @@ Canonical R2 bucket: **`oando-asset-cdn`**. See `docs/workflow/operations.md`.
 | `count-r2-objects.mjs` | `node scripts/count-r2-objects.mjs [bucket]` |
 | `list-r2-buckets.mjs` | `node scripts/list-r2-buckets.mjs` |
 
-Upload flags: `--dry-run`, `--limit=N`, `--only=images|models`, `--force` (overwrite existing keys).
+Upload flags: `--dry-run`, `--limit=N`, `--only=images|models`, `--skip-existing` (incremental gap-fill; default is full overwrite).
 
 ---
 

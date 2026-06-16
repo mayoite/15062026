@@ -18,13 +18,16 @@ public/cdn/                 # IN GIT — deployed (~5–10 MB)
 ├── tldraw@x.y.z/           # target (today: public/tldraw-assets/)
 └── env/                    # target (today: public/cdn/*.hdr)
 
-asset-cdn/                  # GITIGNORE heavy trees
-├── images/
-├── models/
+asset-cdn/                  # GITIGNORE heavy trees (upload mirror → R2)
+├── images/                 # target for catalog photos
+├── models/                 # target for GLBs
 └── README.md
 
-public/images/              # LEGACY → asset-cdn/images
-public/models/              # LEGACY → asset-cdn/models
+public/cdn/                 # SDKs + HDR (in git, deployed)
+public/tldraw-assets/       # planner SDK assets (in git, deployed)
+
+public/images/              # LEGACY local copies (migrating → asset-cdn/images)
+public/models/              # LEGACY local copies (migrating → asset-cdn/models)
 ```
 
 ---

@@ -21,15 +21,15 @@ CLOUDFLARE_R2_BUCKET=oando-asset-cdn
 npm.cmd run assets:cdn:sync
 npm.cmd run assets:cdn:catalog
 npm.cmd run assets:cdn:upload
-npm.cmd run assets:cdn:upload -- --force
+npm.cmd run assets:cdn:upload:incremental
 npm.cmd run assets:cdn:audit
 npm.cmd run assets:r2:create-bucket
 node scripts/count-r2-objects.mjs oando-asset-cdn
 ```
 
-Flags: `--dry-run`, `--limit=N`, `--only=images|models`, `--force`
+Flags: `--dry-run`, `--limit=N`, `--only=images|models`, `--skip-existing`
 
-Default upload skips keys already in R2.
+**Policy:** `assets:cdn:upload` is a **full upload** — every local file overwrites its R2 key. Use `assets:cdn:upload:incremental` (or `--skip-existing`) only to gap-fill missing keys, not for catalog updates.
 
 ---
 

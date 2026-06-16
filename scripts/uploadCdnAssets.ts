@@ -15,9 +15,10 @@ const ROOT = process.cwd();
 const ASSET_CDN_DIR = path.join(ROOT, "asset-cdn");
 const PUBLIC_DIR = path.join(ROOT, "public");
 
-const CATALOG_ROOTS = ["images", "models"] as const;
+// Catalog bytes only — SDKs live in public/cdn + public/tldraw-assets (deployed with Next).
+const UPLOAD_ROOTS = ["images", "models"] as const;
 
-type CatalogRoot = (typeof CATALOG_ROOTS)[number];
+type UploadRoot = (typeof UPLOAD_ROOTS)[number];
 
 function hasFlag(flag: string): boolean {
   return process.argv.includes(flag);
@@ -30,14 +31,14 @@ function readLimit(): number | null {
   return Number.isFinite(value) && value > 0 ? value : null;
 }
 
-function readOnlyRoot(): CatalogRoot | null {
+function readOnlyRoot(): UploadRoot | null {
   const arg = process.argv.find((item) => item.startsWith("--only="));
   if (!arg) return null;
-  const value = arg.slice("--only=".length).trim() as CatalogRoot;
-  return CATALOG_ROOTS.includes(value) ? value : null;
+  const value = arg.slice("--only=".length).trim() as UploadRoot;
+  return UPLOAD_ROOTS.includes(value) ? value : null;
 }
 
-function resolveSourceDir(root: CatalogRoot): { absDir: string; label: string } | null {
+function resolveSourceDir(root: UploadRoot): { absDir: string; label: string } | null {
   const assetCdnAbs = path.join(ASSET_CDN_DIR, root);
   if (fs.existsSync(assetCdnAbs)) {
     return { absDir: assetCdnAbs, label: `asset-cdn/${root}` };
@@ -118,13 +119,14 @@ async function uploadFile(
 
 async function run() {
   const dryRun = hasFlag("--dry-run");
-  const skipExisting = !hasFlag("--force");
+  // Policy: catalog updates must full-upload (overwrite). Use --skip-existing only for gap-fill.
+  const skipExisting = hasFlag("--skip-existing");
   const limit = readLimit();
   const onlyRoot = readOnlyRoot();
   const bucket = resolveCatalogBucketName();
   const client = dryRun ? null : createR2CatalogClient();
 
-  const roots = onlyRoot ? [onlyRoot] : [...CATALOG_ROOTS];
+  const roots = onlyRoot ? [onlyRoot] : [...UPLOAD_ROOTS];
   const keysToUpload: Array<{ key: string; absPath: string; sourceLabel: string }> = [];
 
   for (const root of roots) {
@@ -147,7 +149,7 @@ async function run() {
   }
 
   if (keysToUpload.length === 0) {
-    console.error("No catalog files found under asset-cdn/ or public/.");
+    console.error("No upload files found under asset-cdn/ or public/.");
     process.exit(1);
   }
 
@@ -156,7 +158,9 @@ async function run() {
     `${dryRun ? "Dry run" : "Uploading"} ${selected.length}/${keysToUpload.length} objects → r2://${bucket}/`,
   );
   if (!dryRun && skipExisting) {
-    console.log("Skipping keys that already exist in R2 (pass --force to overwrite).");
+    console.log("Incremental mode: skipping keys that already exist in R2.");
+  } else if (!dryRun) {
+    console.log("Full upload: overwriting every local key in R2.");
   }
 
   let uploaded = 0;

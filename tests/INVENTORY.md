@@ -2,23 +2,23 @@
 
 Auto-generated file list and counts. Folder rules: `tests/CONTENTS.md`.
 
-*Updated: 2026-06-15 — run `npm run docs:sync` to refresh.*
+*Updated: 2026-06-16 — run `npm run docs:sync` to refresh.*
 
 ## Counts
 
 | Kind | Count |
 |------|-------|
-| Vitest (active) | 223 |
+| Vitest (active) | 230 |
 | Vitest (excluded in config) | 0 |
 | Playwright | 8 |
 | Helpers | 2 |
-| **Total files** | **233** |
+| **Total files** | **240** |
 
 JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.json` · Coverage: `results/coverage-summary.json` (`npm run docs:sync:coverage`)
 
 ## Files by category
 
-### planner (159)
+### planner (165)
 
 - `planner-3d-types.test.ts`
 - `planner-blueprintCanvasFrame.test.ts`
@@ -65,7 +65,9 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-editor-layerManagerEntries.test.ts`
 - `planner-editor-overlays.test.tsx`
 - `planner-editor-plannerShapeFactories.test.ts`
+- `planner-editor-plannerToolVisibility.test.ts`
 - `planner-editor-pure.test.ts`
+- `planner-editor-repairPlannerShapeUnits.test.ts`
 - `planner-editor-shapeInspectorBridge.test.ts`
 - `planner-editor-usePlannerPanels.test.ts`
 - `planner-editorSelectionStatus.test.ts`
@@ -86,6 +88,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-lib-aiService.test.ts`
 - `planner-lib-applyRoomPreset.test.ts`
 - `planner-lib-assetPipeline.test.ts`
+- `planner-lib-blockTldrawLicensePing.test.ts`
 - `planner-lib-blueprintPdf.test.ts`
 - `planner-lib-branches.test.ts`
 - `planner-lib-calibrationScale.test.ts`
@@ -107,8 +110,10 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-model-planner3dScene.test.ts`
 - `planner-model-plannerDocument.extra.test.ts`
 - `planner-model-plannerDocument.test.ts`
+- `planner-model-plannerDocumentLogging.test.ts`
 - `planner-model-plannerEnvelope.test.ts`
 - `planner-model-plannerIdentity.test.ts`
+- `planner-model-plannerJsonSafe.test.ts`
 - `planner-model-plannerPermissions.test.ts`
 - `planner-model-plannerPlacement.test.ts`
 - `planner-openingCollision.test.ts`
@@ -142,6 +147,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-store-syncQueueProcessor.test.ts`
 - `planner-store-unifiedCatalog.test.ts`
 - `planner-store-utils.test.ts`
+- `planner-svg-export-colors.test.ts`
 - `planner-svg-qa.test.ts`
 - `planner-templatePreview.test.ts`
 - `planner-tldraw-DoorWindowShape.test.ts`
@@ -214,7 +220,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 
 - `ops-CustomerQueriesOpsPageView.test.tsx`
 
-### site-unit (39)
+### site-unit (40)
 
 - `aiAdvisorConfig.test.ts`
 - `applySuggestedLayout.test.ts`
@@ -235,6 +241,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `catalogMatch.test.ts`
 - `homepage-data.test.ts`
 - `layoutPreviewBounds.test.ts`
+- `lib-ui-selfHostedAssetUrls.test.ts`
 - `navigation-data.test.ts`
 - `projectSetup.test.ts`
 - `seo-helpers.test.ts`
