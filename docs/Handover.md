@@ -6,7 +6,7 @@
 
 | Question | Answer |
 |----------|--------|
-| Where is the real repo? | **`E:\Goodsites\13062026`** — on **`main`**, should match `origin/main` |
+| Where is the real repo? | **`E:\Goodsites\15062026`** — on **`main`**, should match `origin/main` |
 | What is the Cursor folder? | Git **worktree** (same repo, detached or non-`main` branch) — run `git worktree list` before checkout |
 | Past failures / old handover text? | **Git:** `git log -- docs/Failures.md` · snapshot: `archive/docs/recovered-2026-06-15/` |
 | What do I read first? | `Readme.md` → `AGENTS.md` → this file → `docs/Failures.md` → `docs/DOC-MAP.md` |

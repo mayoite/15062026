@@ -65,7 +65,7 @@ Git is the **canonical history** for docs and code:
 
 - Every commit stores the full file at that moment (`git show <sha>:path`)
 - `git log --oneline -- docs/` shows when ops docs changed
-- **`main`** on `origin` — planner feat + docs/plans sync merged 2026-06-15. Primary clone: `E:\Goodsites\13062026`; this folder is a worktree on the same repo.
+- **`main`** on `origin` — planner feat + docs/plans sync merged 2026-06-15. Primary clone: `E:\Goodsites\15062026`; this folder is a worktree on the same repo.
 
 Markdown under `archive/` is a **frozen snapshot** for things worth keeping readable without digging git — not a live log.
 

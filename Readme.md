@@ -2,7 +2,7 @@
 
 Flat-root Next.js app. Furniture company site at `oando.co.in` with one workspace planner at `/planner`.
 
-**Canonical repo:** `E:\Goodsites\13062026` (commit/push here). Cursor worktree is the same git repo. If docs feel missing, read `docs/Handover.md` § *If you're lost*.
+**Canonical repo:** `E:\Goodsites\15062026` (commit/push here). Cursor worktree is the same git repo. If docs feel missing, read `docs/Handover.md` § *If you're lost*.
 
 ## Root markdown
 
