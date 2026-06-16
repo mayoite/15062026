@@ -1,7 +1,7 @@
 {
   "config": {
-    "configFile": "E:\\Goodsites\\13062026\\config\\build\\playwright.config.ts",
-    "rootDir": "E:/Goodsites/13062026/tests",
+    "configFile": "C:\\Users\\ayush\\.grok\\worktrees\\goodsites-15062026\\2026-06-15-c4535cf7\\config\\build\\playwright.config.ts",
+    "rootDir": "C:/Users/ayush/.grok/worktrees/goodsites-15062026/2026-06-15-c4535cf7/tests",
     "forbidOnly": false,
     "fullyParallel": true,
     "globalSetup": null,
@@ -11,20 +11,20 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 2
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "projects": [
       {
-        "outputDir": "E:/Goodsites/13062026/test-results",
+        "outputDir": "C:/Users/ayush/.grok/worktrees/goodsites-15062026/2026-06-15-c4535cf7/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
-        "testDir": "E:/Goodsites/13062026/tests",
+        "testDir": "C:/Users/ayush/.grok/worktrees/goodsites-15062026/2026-06-15-c4535cf7/tests",
         "testIgnore": [
           "**/*.test.ts",
           "**/*.test.tsx"
@@ -63,117 +63,40 @@
   },
   "suites": [
     {
-      "title": "capture-right-panel.spec.ts",
-      "file": "capture-right-panel.spec.ts",
+      "title": "planner-custom-tools.spec.ts",
+      "file": "planner-custom-tools.spec.ts",
       "column": 0,
       "line": 0,
-      "specs": [
-        {
-          "title": "capture planner right panel",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "passed",
-                  "duration": 2517,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-06-15T02:34:01.547Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "f0fc59b672ab1a1ed5f8-a0117259b45af631ac0b",
-          "file": "capture-right-panel.spec.ts",
-          "line": 7,
-          "column": 5
-        }
-      ]
-    },
-    {
-      "title": "planner-guest-workspace.spec.ts",
-      "file": "planner-guest-workspace.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "planner landing exceeds generic benchmark proof points",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "passed",
-                  "duration": 250,
-                  "errors": [],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-06-15T02:34:10.677Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "expected"
-            }
-          ],
-          "id": "a0931bee25e167e7c32a-90b1a83ce1a32f318e78",
-          "file": "planner-guest-workspace.spec.ts",
-          "line": 57,
-          "column": 5
-        }
-      ],
+      "specs": [],
       "suites": [
         {
-          "title": "Planner guest workspace — plan 06 UI bar",
-          "file": "planner-guest-workspace.spec.ts",
-          "line": 7,
+          "title": "Planner custom tools — Playwright",
+          "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+          "line": 31,
           "column": 6,
           "specs": [
             {
-              "title": "loads canvas chrome with history, view modes, and catalog",
+              "title": "tool rail exposes every custom tool",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2505,
+                      "duration": 1760,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-15T02:34:01.547Z",
+                      "startTime": "2026-06-16T09:32:29.321Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -181,135 +104,33 @@
                   "status": "expected"
                 }
               ],
-              "id": "a0931bee25e167e7c32a-feea4f1c33e5660c0194",
-              "file": "planner-guest-workspace.spec.ts",
-              "line": 12,
-              "column": 7
-            },
-            {
-              "title": "empty canvas shows RoomSketcher-style starter actions",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 1340,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T02:34:04.169Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a0931bee25e167e7c32a-73df25df6ea72eef15d0",
-              "file": "planner-guest-workspace.spec.ts",
-              "line": 22,
-              "column": 7
-            },
-            {
-              "title": "catalog search filters elements",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 1310,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T02:34:05.524Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a0931bee25e167e7c32a-7a3f5a53cc385f8bbf3d",
-              "file": "planner-guest-workspace.spec.ts",
-              "line": 29,
-              "column": 7
-            },
-            {
-              "title": "status bar shows plan metrics",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 1223,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T02:34:06.848Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "a0931bee25e167e7c32a-90d4a71391da23615f4f",
-              "file": "planner-guest-workspace.spec.ts",
+              "id": "eda0178565df46e9e8ca-ea01e1897293db6253a0",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
               "line": 37,
               "column": 7
             },
             {
-              "title": "view mode toggles without error",
+              "title": "Draw step defaults to Wall tool",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2583,
+                      "duration": 1456,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-15T02:34:08.083Z",
+                      "startTime": "2026-06-16T09:32:31.183Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -317,9 +138,519 @@
                   "status": "expected"
                 }
               ],
-              "id": "a0931bee25e167e7c32a-ddc214d46fa45270941b",
-              "file": "planner-guest-workspace.spec.ts",
-              "line": 43,
+              "id": "eda0178565df46e9e8ca-f014a211246bed5e3dcf",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "Wall tool creates a wall shape",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2284,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:32.654Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-f1845ca2449e57ac61a6",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 52,
+              "column": 7
+            },
+            {
+              "title": "Wall tool supports dragging up and left",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2308,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:34.951Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-10d6ca84a5c835aed342",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 59,
+              "column": 7
+            },
+            {
+              "title": "Room tool supports dragging up and left",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2298,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:37.272Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-78c78355ab5640ade913",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 66,
+              "column": 7
+            },
+            {
+              "title": "Room tool creates a room shape",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2122,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:39.584Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-6557c0cc6c4119370dcf",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 73,
+              "column": 7
+            },
+            {
+              "title": "Furniture tool places catalog item on canvas",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2991,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:41.721Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-f9ae620b6608939a5dbf",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 80,
+              "column": 7
+            },
+            {
+              "title": "Place step defaults to Furniture and placement works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2874,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:44.723Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-64e5a388a0dc1801a3c0",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 87,
+              "column": 7
+            },
+            {
+              "title": "catalog item click activates furniture placement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3009,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:47.605Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-c9f7dd51be1b0e0be555",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 99,
+              "column": 7
+            },
+            {
+              "title": "Door tool places on an existing wall",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2818,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:50.621Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-ff551c9074029f3cc96a",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 113,
+              "column": 7
+            },
+            {
+              "title": "Window tool places on an existing wall",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2909,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:53.447Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-863743c747b634c500cd",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 125,
+              "column": 7
+            },
+            {
+              "title": "Zone tool creates a zone shape",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2134,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:56.363Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-ef289c7718e8c5de2713",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 137,
+              "column": 7
+            },
+            {
+              "title": "Review step defaults to Measure and measurement works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2266,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:32:58.505Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-41be3f3dc2ad7021f7d4",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 144,
+              "column": 7
+            },
+            {
+              "title": "Select tool selects a placed shape",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3639,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:33:00.779Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-a099f5f8b43693fd40f6",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 156,
+              "column": 7
+            },
+            {
+              "title": "Pan tool activates without breaking the canvas",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2736,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:33:04.425Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-9434f9ed5c377c0df74d",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 168,
+              "column": 7
+            },
+            {
+              "title": "tool visibility dropdown filters the rail in step-focused mode",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1848,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:33:07.168Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-447c12274a6b04514c1e",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 179,
+              "column": 7
+            },
+            {
+              "title": "Erase tool removes a shape",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5969,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-16T09:33:09.023Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "eda0178565df46e9e8ca-e4e53ee78d29e7a700b6",
+              "file": "E:/16062026/tests/planner-custom-tools.spec.ts",
+              "line": 191,
               "column": 7
             }
           ]
@@ -329,9 +660,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-15T02:34:01.080Z",
-    "duration": 9926.337,
-    "expected": 7,
+    "startTime": "2026-06-16T09:32:28.916Z",
+    "duration": 46166.619,
+    "expected": 17,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

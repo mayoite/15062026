@@ -7,7 +7,7 @@ import { getBlueprintTraceGuide } from "@/features/planner/editor/blueprintTrace
 import { stepBlueprintOpacity } from "@/features/planner/editor/blueprintTransform";
 
 interface BlueprintTraceGuideOverlayProps {
-  activePlannerTool: "wall" | "room" | "select" | "pan" | "door" | "window" | "furniture" | "zone" | "measure";
+  activePlannerTool: "wall" | "room" | "select" | "pan" | "door" | "window" | "furniture" | "zone" | "measure" | "eraser";
   blueprintLoaded: boolean;
   underlayVisible: boolean;
   calibrated: boolean;

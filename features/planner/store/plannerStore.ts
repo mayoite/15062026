@@ -22,7 +22,7 @@ import type { FloorTemplate } from "./floorTemplates";
 
 // Resolved at call-time to avoid pulling tldraw (ESM) into the module graph
 // during Jest runs. Do NOT convert to a static import.
-let _tldrawEditorCache: { getTldrawEditor: () => unknown } | null = null;
+let _getPlannerTldrawEditor: (() => unknown) | null = null;
 
 // Declare globals for webpack environments
 declare const __webpack_require__: unknown;
@@ -30,18 +30,20 @@ declare const __non_webpack_require__: NodeRequire;
 
 function getTldrawEditorLazy(): unknown {
   try {
-    if (!_tldrawEditorCache) {
-      // Dynamic import workaround for Jest/Node environments
+    if (!_getPlannerTldrawEditor) {
       const requireFn = typeof __webpack_require__ === "function"
         ? __non_webpack_require__
         : typeof module !== "undefined" && typeof module.require === "function"
           ? module.require.bind(module)
           : null;
       if (requireFn) {
-        _tldrawEditorCache = requireFn("../r3f/usePlannerR3FSync") as { getTldrawEditor: () => unknown };
+        const bridge = requireFn("../tldraw/plannerTldrawEditorBridge") as {
+          getPlannerTldrawEditor: () => unknown;
+        };
+        _getPlannerTldrawEditor = bridge.getPlannerTldrawEditor;
       }
     }
-    return _tldrawEditorCache?.getTldrawEditor() ?? null;
+    return _getPlannerTldrawEditor?.() ?? null;
   } catch {
     return null;
   }

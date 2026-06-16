@@ -26,7 +26,7 @@
     "test:planner": "vitest run planner",
     "test:planner:watch": "vitest planner",
     "test:unit": "vitest run --exclude **/planner*",
-    "test:planner-catalog": "playwright test -c config/build/playwright.config.ts tests/planner-catalog.spec.ts tests/planner-guest-workspace.spec.ts",
+    "test:planner-catalog": "playwright test -c config/build/playwright.config.ts tests/planner-catalog.spec.ts tests/planner-guest-workspace.spec.ts tests/planner-custom-tools.spec.ts",
     "test:planner-catalog:watch": "playwright test -c config/build/playwright.config.ts tests/planner-catalog.spec.ts --ui",
     "catalog:ingest": "tsx scripts/ingest-planner-catalog.ts",
     "catalog:blocks:qa": "tsx scripts/generate_blocks.ts",

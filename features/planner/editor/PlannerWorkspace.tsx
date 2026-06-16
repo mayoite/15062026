@@ -7,13 +7,18 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { PanelLeftOpen, X } from "lucide-react";
+import { PanelLeftOpen, PanelRightOpen, X } from "lucide-react";
 import type { Editor } from "tldraw";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
 import { Planner3DViewer } from "@/features/planner/3d";
 import { SharedTldrawEngine } from "@/features/planner/shared/engine/SharedTldrawEngine";
+import {
+  registerPlannerTldrawEditor,
+  unregisterPlannerTldrawEditor,
+} from "@/features/planner/tldraw/plannerTldrawEditorBridge";
 import { PLANNER_TLDRAW_SHAPE_UTILS, PLANNER_TLDRAW_TOOLS } from "@/features/planner/tldraw/plannerTldrawRegistration";
+import { isPlannerCanvasDragToolId } from "@/features/planner/tldraw/tools/rectDrag";
 import { SplitViewLayout } from "@/features/planner/shared/components/SplitViewLayout";
 import type { PlannerViewerShape } from "@/features/planner/viewer/PlannerViewer";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
@@ -25,6 +30,8 @@ import { PlannerMobileDock } from "@/features/planner/editor/PlannerMobileDock";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
 import { PlannerCanvasGrid } from "@/features/planner/editor/PlannerCanvasGrid";
 import { repairPlannerShapeUnits } from "@/features/planner/editor/repairPlannerShapeUnits";
+import { PlannerDockableChrome } from "@/features/planner/editor/PlannerDockableChrome";
+import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import { PlannerToolRail, type PlannerToolId } from "@/features/planner/editor/PlannerToolRail";
 import {
   readPlannerToolVisibilityMode,
@@ -33,6 +40,15 @@ import {
 } from "@/features/planner/editor/plannerToolVisibility";
 import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
+import {
+  getDefaultPlacementCatalogItemId,
+  isFurniturePlacementCatalogItem,
+} from "@/features/planner/catalog/placementCatalogResolver";
+import {
+  isCatalogShapeType,
+  isRoomCatalogShapeType,
+  PlannerCatalogShapeType,
+} from "@/features/planner/catalog/shapeTypeRegistry";
 import { type LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
 import {
   catalogDropScreenFootprint,
@@ -60,7 +76,6 @@ import {
 } from "@/features/planner/editor/plannerCamera";
 import { getPageMetrics, type PlanMetrics } from "@/features/planner/editor/planMetrics";
 import { getEditorSelectionStatus } from "@/features/planner/editor/editorSelectionStatus";
-import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import { PlannerStatusBar } from "@/features/planner/editor/PlannerStatusBar";
 import { PlannerWorkflowPanel } from "@/features/planner/editor/PlannerWorkflowPanel";
 import { SnapIndicatorOverlay } from "@/features/planner/editor/SnapIndicatorOverlay";
@@ -132,7 +147,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const [, setViewerShapes] = useState<PlannerViewerShape[]>([]);
   const [activeTool, setActiveTool] = useState<PlannerToolId>("select");
   const [activePlannerTool, setActivePlannerTool] = useState<
-    "select" | "pan" | "wall" | "room" | "door" | "window" | "furniture" | "zone" | "measure"
+    "select" | "pan" | "wall" | "room" | "door" | "window" | "furniture" | "zone" | "measure" | "eraser"
   >("select");
   const [shapeCount, setShapeCount] = useState(0);
   const [dragItem, setDragItem] = useState<CatalogItem | null>(null);
@@ -140,12 +155,14 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const [isCatalogOverCanvas, setIsCatalogOverCanvas] = useState(false);
   const [dropFlash, setDropFlash] = useState<{ x: number; y: number } | null>(null);
   const canvasSurfaceRef = useRef<HTMLDivElement | null>(null);
+  const chromeLayerRef = useRef<HTMLDivElement | null>(null);
   const [planMetrics, setPlanMetrics] = useState<PlanMetrics>(getPageMetrics(null));
   const [documentRevision, setDocumentRevision] = useState(0);
   const pendingDocumentRevisionRef = useRef(0);
   const documentRevisionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectionStatus, setSelectionStatus] = useState<string | null>(null);
   const [camera, setCamera] = useState<{ x: number; y: number; z: number } | null>(null);
+  const [isCanvasDragging, setIsCanvasDragging] = useState(false);
   const [planNameOverride, setPlanNameOverride] = useState<string | null>(null);
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(planId ?? null);
   const [sessionStatusMessage, setSessionStatusMessage] = useState<string | null>(null);
@@ -159,10 +176,15 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const workspaceUnitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
   const [leftTab, setLeftTab] = useState<PlannerLeftTab>(getStepLeftTab(plannerStep));
   const [stepIntroVisible, setStepIntroVisible] = useState(false);
-  const [toolVisibilityMode, setToolVisibilityMode] = useState<PlannerToolVisibilityMode>("balanced");
+  const [toolVisibilityMode, setToolVisibilityMode] = useState<PlannerToolVisibilityMode>(() =>
+    readPlannerToolVisibilityMode(),
+  );
+  const editorRef = useRef<Editor | null>(null);
+  const editorToolSyncedRef = useRef(false);
   const showGrid = usePlannerUIStore((s) => s.showGrid);
   const toggleGrid = usePlannerUIStore((s) => s.toggleGrid);
   const setPlannerTool = usePlannerStore((s) => s.setTool);
+  const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
   const {
     status: saveStatus,
     lastSavedAt,
@@ -210,18 +232,28 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     setViewerShapes(toPlannerViewerShapes(instance.getCurrentPageShapes()));
   }, []);
 
-  const applyToolBinding = useCallback((binding: PlannerToolBinding) => {
+  const applyToolBinding = useCallback((binding: PlannerToolBinding, instance?: Editor | null) => {
     const railToolId: PlannerToolId =
       binding.plannerTool === "furniture" ? "planner-furniture" : binding.toolId;
     const editorToolId =
       binding.plannerTool === "furniture" ? "planner-furniture" : binding.toolId;
+
+    if (binding.plannerTool === "furniture" && !usePlannerStore.getState().activeCatalogId) {
+      const defaultCatalogId = getDefaultPlacementCatalogItemId();
+      if (defaultCatalogId) {
+        setActiveCatalogId(defaultCatalogId);
+      }
+    }
+
     setActiveTool(railToolId);
     setActivePlannerTool(binding.plannerTool);
     setPlannerTool(binding.plannerTool);
-    if (editor) {
-      editor.setCurrentTool(editorToolId);
+
+    const activeEditor = instance ?? editorRef.current;
+    if (activeEditor && activeEditor.getCurrentToolId() !== editorToolId) {
+      activeEditor.setCurrentTool(editorToolId);
     }
-  }, [editor, setPlannerTool]);
+  }, [setActiveCatalogId, setPlannerTool]);
 
   const syncPlannerStep = useCallback((step: PlannerStep) => {
     setPlannerStep(step);
@@ -241,7 +273,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
   const handleToolSelect = useCallback((
     tool: PlannerToolId,
-    plannerTool: "select" | "pan" | "wall" | "room" | "door" | "window" | "furniture" | "zone" | "measure",
+    plannerTool: "select" | "pan" | "wall" | "room" | "door" | "window" | "furniture" | "zone" | "measure" | "eraser",
   ) => {
     applyToolBinding({ toolId: tool, plannerTool });
     if (plannerTool === "furniture") {
@@ -267,11 +299,24 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
   const handleCatalogItemClick = useCallback((item: CatalogItem) => {
     if (!editor) return;
+
+    if (isFurniturePlacementCatalogItem(item)) {
+      setActiveCatalogId(item.id);
+      applyToolBinding({ toolId: "planner-furniture", plannerTool: "furniture" });
+      return;
+    }
+
     const existingCount = editor.getCurrentPageShapes().length;
     const x = 220 + (existingCount % 5) * 120;
     const y = 180 + Math.floor(existingCount / 5) * 100;
     placeCatalogItem(item, x, y);
-  }, [editor, placeCatalogItem]);
+
+    if (isRoomCatalogShapeType(item.shapeType)) {
+      applyToolBinding({ toolId: "planner-room", plannerTool: "room" });
+    } else if (isCatalogShapeType(item.shapeType, PlannerCatalogShapeType.zone)) {
+      applyToolBinding({ toolId: "planner-zone", plannerTool: "zone" });
+    }
+  }, [applyToolBinding, editor, placeCatalogItem, setActiveCatalogId]);
 
   const handleApplyTemplate = useCallback((template: LayoutTemplate) => {
     if (!editor) return;
@@ -358,6 +403,8 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   }, [editor, flushDocumentRevision, setPlanNameOverride, syncPlannerStep]);
 
   const handleEditorMount = useCallback((instance: Editor) => {
+    editorRef.current = instance;
+    registerPlannerTldrawEditor(instance);
     setEditor(instance);
     const initialBinding = getStepToolBinding(usePlannerWorkspaceStore.getState().plannerStep);
     const initialToolId =
@@ -382,14 +429,18 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       requestAnimationFrame(() => {
         setStepIntroVisible(count === 0);
         if (count === 0) {
-          syncPlannerStep("draw");
+          setPlannerStep("draw");
+          setLeftTab(getStepLeftTab("draw"));
+          applyToolBinding(getStepToolBinding("draw"), instance);
+          panels.applyStepLayout("draw");
           instance.selectNone();
           setDefaultPlannerCamera(instance);
         } else {
-          syncPlannerStep("draw");
+          setPlannerStep("draw");
+          setLeftTab(getStepLeftTab("draw"));
+          applyToolBinding(getStepToolBinding("draw"), instance);
+          panels.applyStepLayout("draw");
           instance.selectNone();
-          const restoredBinding = getStepToolBinding("draw");
-          instance.setCurrentTool(restoredBinding.toolId);
           fitPlannerContent(instance);
         }
         syncCamera();
@@ -414,14 +465,20 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       setCamera({ x: cam.x, y: cam.y, z: cam.z });
     };
 
+    const syncCanvasDrag = () => {
+      setIsCanvasDragging(isPlannerCanvasDragToolId(instance.getCurrentToolId()));
+    };
+
     syncDoc();
     syncCamera();
     syncSession();
+    syncCanvasDrag();
     flushDocumentRevision();
 
     const cleanupDoc = instance.store.listen(syncDoc, { scope: "document" });
     const cleanupSession = instance.store.listen(syncSession, { scope: "session" });
     const cleanupCamera = instance.store.listen(syncCamera, { scope: "session" });
+    const cleanupCanvasDrag = instance.store.listen(syncCanvasDrag, { scope: "session" });
 
     setShapeCount(instance.getCurrentPageShapes().length);
 
@@ -429,26 +486,42 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       cleanupDoc();
       cleanupSession();
       cleanupCamera();
+      cleanupCanvasDrag();
+      setIsCanvasDragging(false);
+      unregisterPlannerTldrawEditor(instance);
+      if (editorRef.current === instance) {
+        editorRef.current = null;
+      }
     };
   }, [
+    applyToolBinding,
     flushDocumentRevision,
     guestMode,
+    panels,
     planId,
     scheduleDocumentRevision,
+    setPlannerStep,
     setPlannerTool,
-    syncPlannerStep,
     syncViewerShapes,
     restoreSnapshot,
   ]);
-
-  useEffect(() => {
-    setToolVisibilityMode(readPlannerToolVisibilityMode());
-  }, []);
 
   const handleToolVisibilityModeChange = useCallback((mode: PlannerToolVisibilityMode) => {
     setToolVisibilityMode(mode);
     writePlannerToolVisibilityMode(mode);
   }, []);
+
+  useEffect(() => {
+    if (!editor) {
+      editorToolSyncedRef.current = false;
+      return;
+    }
+    if (editorToolSyncedRef.current) return;
+    editorToolSyncedRef.current = true;
+    const editorToolId =
+      activePlannerTool === "furniture" ? "planner-furniture" : activeTool;
+    editor.setCurrentTool(editorToolId);
+  }, [activePlannerTool, activeTool, editor]);
 
   useEffect(() => {
     if (!editor) return;
@@ -578,8 +651,8 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         <BlueprintUnderlay camera={camera} />
         <SharedTldrawEngine
           onMount={handleEditorMount}
-          shapeUtils={PLANNER_TLDRAW_SHAPE_UTILS as unknown as []}
-          tools={PLANNER_TLDRAW_TOOLS as unknown as []}
+          shapeUtils={PLANNER_TLDRAW_SHAPE_UTILS}
+          tools={PLANNER_TLDRAW_TOOLS}
         />
         <BlueprintMoveCapture editor={editor} />
         <CalibrationCapture editor={editor} />
@@ -859,42 +932,149 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       <div
         className={`pw-workspace${panels.isCompact ? " pw-workspace--compact" : ""}`}
         data-step={plannerStep}
+        data-canvas-dragging={isCanvasDragging || undefined}
       >
-        {panels.isCompact && (panels.leftOpenRaw || panels.rightOpenRaw) && (
+        {panels.isCompact && (panels.leftOpenRaw || panels.rightOpenRaw) ? (
           <button
             type="button"
             className="pw-panel-backdrop"
             aria-label="Close panel"
             onClick={panels.closeAll}
           />
-        )}
-
-        <PlannerToolRail
-          activeTool={activeTool}
-          activePlannerTool={activePlannerTool}
-          step={plannerStep}
-          visibilityMode={toolVisibilityMode}
-          tooltipSide={panels.isCompact ? "top" : "right"}
-          onSelect={handleToolSelect}
-        />
-
-        {!panels.isCompact && !panels.leftOpen ? (
-          <button
-            type="button"
-            className="pw-panel-reopen pw-icon-btn"
-            onClick={panels.toggleLeft}
-            aria-label="Open left panel"
-          >
-            <PanelLeftOpen size={16} strokeWidth={2} aria-hidden />
-          </button>
         ) : null}
+
+        <section className="pw-canvas-stage">
+          <main className="pw-canvas-area" aria-label="Workspace canvas">
+            <div className="pw-canvas-body">
+              <div ref={chromeLayerRef} className="pw-canvas-chrome-layer">
+                {!panels.isCompact ? (
+                  <PlannerDockableChrome
+                    dockId="steps"
+                    layerRef={chromeLayerRef}
+                    label="Workflow steps"
+                    className="pw-canvas-chrome--steps"
+                  >
+                    <PlannerStepBar
+                      current={plannerStep}
+                      disabledSteps={disabledSteps}
+                      onChange={handlePlannerStepChange}
+                      compact
+                      showIntro={false}
+                    />
+                  </PlannerDockableChrome>
+                ) : null}
+
+                <PlannerDockableChrome
+                  dockId="tools"
+                  layerRef={chromeLayerRef}
+                  label="Drawing tools"
+                  className="pw-canvas-chrome--tools"
+                  dockDisabled={panels.isCompact}
+                >
+                  <PlannerToolRail
+                    activeTool={activeTool}
+                    activePlannerTool={activePlannerTool}
+                    step={plannerStep}
+                    visibilityMode={toolVisibilityMode}
+                    tooltipSide={panels.isCompact ? "top" : "right"}
+                    onSelect={handleToolSelect}
+                  />
+                </PlannerDockableChrome>
+
+                {!panels.isCompact && !panels.leftOpen ? (
+                  <PlannerDockableChrome
+                    dockId="panel-left"
+                    layerRef={chromeLayerRef}
+                    label="Library panel opener"
+                    className="pw-canvas-chrome--panel-left"
+                    variant="compact"
+                  >
+                    <button
+                      type="button"
+                      className="pw-panel-reopen pw-panel-reopen--left pw-icon-btn"
+                      onClick={panels.toggleLeft}
+                      aria-label="Open library and blueprint panel"
+                    >
+                      <PanelLeftOpen size={16} strokeWidth={2} aria-hidden />
+                    </button>
+                  </PlannerDockableChrome>
+                ) : null}
+
+                {!panels.isCompact && !panels.rightOpen ? (
+                  <PlannerDockableChrome
+                    dockId="panel-right"
+                    layerRef={chromeLayerRef}
+                    label="Properties panel opener"
+                    className="pw-canvas-chrome--panel-right"
+                    variant="compact"
+                  >
+                    <button
+                      type="button"
+                      className="pw-panel-reopen pw-panel-reopen--right pw-icon-btn"
+                      onClick={panels.toggleRight}
+                      aria-label="Open properties panel"
+                    >
+                      <PanelRightOpen size={16} strokeWidth={2} aria-hidden />
+                    </button>
+                  </PlannerDockableChrome>
+                ) : null}
+              </div>
+
+              <div
+                ref={canvasSurfaceRef}
+                className="pw-canvas-surface"
+                data-catalog-drop={dragItem && isCatalogOverCanvas ? "active" : undefined}
+                onDragOver={handleCanvasDragOver}
+                onDrop={handleCanvasDrop}
+              >
+                <div
+                  className={`pw-canvas-engine pw-tldraw-container ${resolvedTheme === "dark" ? "tl-theme__dark" : "tl-theme__light"}`}
+                >
+                  <SplitViewLayout
+                    view={viewMode}
+                    children2D={canvas2D}
+                    children3D={canvas3D}
+                  />
+                </div>
+                <PlannerCanvasGrid editor={editor} visible={showGrid} />
+                <BlueprintTraceGuideOverlay
+                  activePlannerTool={activePlannerTool}
+                  blueprintLoaded={Boolean(blueprint.dataUrl)}
+                  underlayVisible={layerVisible.underlay}
+                  calibrated={Boolean(blueprint.mmPerUnit)}
+                  calibrating={blueprint.calibrating}
+                  interactionMode={blueprint.interactionMode}
+                />
+                <SnapIndicatorOverlay editor={editor} />
+                <CanvasMeasurementOverlay editor={editor} unitSystem={measurementUnit} />
+                {shapeCount === 0
+                  && (activePlannerTool === "select" || activePlannerTool === "pan") && (
+                  <PlannerEmptyCanvas
+                    guestMode={guestMode}
+                    onDrawWalls={() => handleToolSelect("planner-wall", "wall")}
+                    onOpenTemplates={() => setIsTemplateOpen(true)}
+                    onImportBlueprint={() => setIsBlueprintOpen(true)}
+                  />
+                )}
+              </div>
+            </div>
+            <PlannerStatusBar
+              metrics={planMetrics}
+              selectionStatus={selectionStatus}
+              showGrid={showGrid}
+              onToggleGrid={toggleGrid}
+              toolVisibilityMode={toolVisibilityMode}
+              onToolVisibilityModeChange={handleToolVisibilityModeChange}
+            />
+          </main>
+        </section>
 
         <PlannerLeftPanel
           guestMode={guestMode}
           editor={editor}
           plannerStep={plannerStep}
           panelOpen={panels.leftOpen}
-          showPanelToggle={!panels.isCompact && panels.leftOpen}
+          showPanelToggle={panels.leftOpen}
           onTogglePanel={panels.toggleLeft}
           activeTab={leftTab}
           onTabChange={setLeftTab}
@@ -904,57 +1084,16 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           unitSystem={measurementUnit}
         />
 
-        <main className="pw-canvas-area" aria-label="Workspace canvas">
-          <div
-            ref={canvasSurfaceRef}
-            className={`pw-canvas-surface pw-tldraw-container ${resolvedTheme === "dark" ? "tl-theme__dark" : "tl-theme__light"}`}
-            data-catalog-drop={dragItem && isCatalogOverCanvas ? "active" : undefined}
-            onDragOver={handleCanvasDragOver}
-            onDrop={handleCanvasDrop}
-          >
-            {shapeCount === 0 && (
-              <PlannerEmptyCanvas
-                guestMode={guestMode}
-                onDrawWalls={() => handleToolSelect("planner-wall", "wall")}
-                onOpenTemplates={() => setIsTemplateOpen(true)}
-                onImportBlueprint={() => setIsBlueprintOpen(true)}
-              />
-            )}
-            <PlannerCanvasGrid editor={editor} visible={showGrid} />
-            <BlueprintTraceGuideOverlay
-              activePlannerTool={activePlannerTool}
-              blueprintLoaded={Boolean(blueprint.dataUrl)}
-              underlayVisible={layerVisible.underlay}
-              calibrated={Boolean(blueprint.mmPerUnit)}
-              calibrating={blueprint.calibrating}
-              interactionMode={blueprint.interactionMode}
-            />
-            <SnapIndicatorOverlay editor={editor} />
-            <CanvasMeasurementOverlay editor={editor} unitSystem={measurementUnit} />
-            <SplitViewLayout
-              view={viewMode}
-              children2D={canvas2D}
-              children3D={canvas3D}
-            />
-          </div>
-          <PlannerStatusBar
-            metrics={planMetrics}
-            selectionStatus={selectionStatus}
-            showGrid={showGrid}
-            onToggleGrid={toggleGrid}
-            toolVisibilityMode={toolVisibilityMode}
-            onToolVisibilityModeChange={handleToolVisibilityModeChange}
-          />
-        </main>
-
         <aside className="pw-right-panel" data-open={panels.rightOpen} data-step={plannerStep}>
-          <PlannerStepBar
-            current={plannerStep}
-            disabledSteps={disabledSteps}
-            onChange={handlePlannerStepChange}
-            compact={panels.isCompact}
-            showIntro={stepIntroVisible}
-          />
+          {panels.isCompact ? (
+            <PlannerStepBar
+              current={plannerStep}
+              disabledSteps={disabledSteps}
+              onChange={handlePlannerStepChange}
+              compact={panels.isCompact}
+              showIntro={stepIntroVisible}
+            />
+          ) : null}
           <PlannerWorkflowPanel
             editor={editor}
             metrics={planMetrics}

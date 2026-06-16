@@ -298,8 +298,8 @@ describe("planner step workflow", () => {
 
   it("maps steps to tool bindings and left tabs", () => {
     expect(getStepToolBinding("draw").plannerTool).toBe("wall");
-    expect(getStepToolBinding("place").toolId).toBe("select");
-    expect(getStepToolBinding("review").toolId).toBe("select");
+    expect(getStepToolBinding("place").toolId).toBe("planner-furniture");
+    expect(getStepToolBinding("review").toolId).toBe("planner-measurement");
     expect(getStepLeftTab("draw")).toBe("blueprint");
     expect(getStepLeftTab("place")).toBe("library");
     expect(getStepLeftTab("review")).toBe("blueprint");

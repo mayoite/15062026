@@ -10,6 +10,7 @@ import {
 import { canvasUnitsToMillimeters } from "@/features/planner/lib/calibrationScale";
 import { RoomDetectionUtils } from "./RoomDetectionTool";
 import type { PlannerRoomTLShape } from "../shapes/tldrawShapeTypes";
+import { normalizeRectDrag } from "./rectDrag";
 import { snapEditorPointOrGrid } from "./tldrawSnap";
 
 /**
@@ -102,34 +103,20 @@ class PlannerRoomToolDrawing extends StateNode {
   override onPointerMove() {
     if (!this.roomId || !this.startPoint) return;
     const currentPoint = snapEditorPointOrGrid(this.editor, this.editor.inputs.getCurrentPagePoint(), this.roomId);
-    
-    const dx = currentPoint.x - this.startPoint.x;
-    const dy = currentPoint.y - this.startPoint.y;
-
-    const widthUnits = Math.max(1, Math.abs(dx));
-    const heightUnits = Math.max(1, Math.abs(dy));
-    const widthMm = canvasUnitsToMillimeters(widthUnits);
-    const heightMm = canvasUnitsToMillimeters(heightUnits);
-
-    // Handle negative dragging (drawing up or to the left)
-    const newX = dx < 0 ? currentPoint.x : this.startPoint.x;
-    const newY = dy < 0 ? currentPoint.y : this.startPoint.y;
+    const rect = normalizeRectDrag(this.startPoint, currentPoint);
+    const widthMm = canvasUnitsToMillimeters(rect.width);
+    const heightMm = canvasUnitsToMillimeters(rect.height);
 
     this.editor.updateShape({
       id: this.roomId,
       type: "planner-room",
-      x: newX,
-      y: newY,
+      x: rect.origin.x,
+      y: rect.origin.y,
       props: {
-        points: [
-          { x: 0, y: 0 },
-          { x: widthUnits, y: 0 },
-          { x: widthUnits, y: heightUnits },
-          { x: 0, y: heightUnits },
-        ],
-        widthMm: widthUnits,
-        heightMm: heightUnits,
-        areaSqm: (widthMm * heightMm) / 1000000,
+        points: rect.points,
+        widthMm,
+        heightMm,
+        areaSqm: (widthMm * heightMm) / 1_000_000,
         perimeterMm: Math.round((widthMm + heightMm) * 2),
       },
     });

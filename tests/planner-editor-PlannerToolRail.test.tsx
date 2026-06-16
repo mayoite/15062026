@@ -30,6 +30,23 @@ describe("PlannerToolRail", () => {
     );
 
     expect(screen.getByRole("button", { name: "Furniture" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Measure" })).toBeInTheDocument();
+  });
+
+  it("hides off-step tools when step-focused visibility is enabled", () => {
+    render(
+      <PlannerToolRail
+        activeTool="select"
+        activePlannerTool="select"
+        step="draw"
+        visibilityMode="step"
+        onSelect={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Wall" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Zone" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Furniture" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Measure" })).not.toBeInTheDocument();
   });
 

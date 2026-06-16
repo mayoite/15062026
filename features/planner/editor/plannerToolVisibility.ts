@@ -15,7 +15,7 @@ export const PLANNER_TOOL_VISIBILITY_LABELS: Record<PlannerToolVisibilityMode, s
   all: "All tools",
 };
 
-const NAVIGATE_TOOLS = new Set<ToolDef["plannerTool"]>(["select", "pan"]);
+const ALWAYS_VISIBLE_TOOLS = new Set<ToolDef["plannerTool"]>(["select", "pan", "eraser"]);
 
 /** Full planner drawing set — balanced mode keeps every custom tool available. */
 const ALL_DRAWING_TOOLS = new Set<ToolDef["plannerTool"]>([
@@ -46,7 +46,7 @@ export function isPlannerToolVisible(
   mode: PlannerToolVisibilityMode = "balanced",
 ): boolean {
   if (mode === "all") return true;
-  if (NAVIGATE_TOOLS.has(tool.plannerTool)) return true;
+  if (ALWAYS_VISIBLE_TOOLS.has(tool.plannerTool)) return true;
 
   const allowed =
     mode === "step" ? STEP_FOCUSED_BY_STEP[step] : BALANCED_BY_STEP[step];
@@ -55,12 +55,16 @@ export function isPlannerToolVisible(
 
 const STORAGE_KEY = "planner-tool-visibility-mode";
 
+function isStoredMode(value: string | null): value is PlannerToolVisibilityMode {
+  return value === "balanced" || value === "step" || value === "all";
+}
+
 export function readPlannerToolVisibilityMode(): PlannerToolVisibilityMode {
   if (typeof window === "undefined") return "all";
   const stored = window.localStorage.getItem(STORAGE_KEY);
-  if (stored === "all" || stored === "balanced") return "all";
-  if (stored === "step" && isPlannerDevToolsEnabled()) return "step";
-  return "all";
+  if (!isStoredMode(stored)) return "all";
+  if (stored === "step" && !isPlannerDevToolsEnabled()) return "all";
+  return stored;
 }
 
 export function writePlannerToolVisibilityMode(mode: PlannerToolVisibilityMode): void {

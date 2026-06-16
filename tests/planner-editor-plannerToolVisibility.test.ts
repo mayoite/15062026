@@ -19,18 +19,29 @@ describe("isPlannerToolVisible", () => {
     expect(isPlannerToolVisible("review", furniture, "all")).toBe(true);
   });
 
-  it("hides non-step tools in step-focused draw mode", () => {
+  it("hides off-step tools in step-focused draw mode", () => {
     const furniture = toolById("furniture");
+    const measure = toolById("measure");
     expect(isPlannerToolVisible("draw", furniture, "step")).toBe(false);
-    expect(isPlannerToolVisible("place", furniture, "step")).toBe(true);
+    expect(isPlannerToolVisible("draw", measure, "step")).toBe(false);
+    expect(isPlannerToolVisible("draw", toolById("wall"), "step")).toBe(true);
   });
 
-  it("keeps navigation tools visible in every mode", () => {
+  it("shows place-step tools in step-focused place mode", () => {
+    const furniture = toolById("furniture");
+    const zone = toolById("zone");
+    expect(isPlannerToolVisible("place", furniture, "step")).toBe(true);
+    expect(isPlannerToolVisible("place", zone, "step")).toBe(false);
+  });
+
+  it("keeps navigation and eraser visible in every mode", () => {
     const select = toolById("select");
     const pan = toolById("hand");
+    const eraser = toolById("eraser");
     for (const step of ["draw", "place", "review"] as const) {
       expect(isPlannerToolVisible(step, select, "step")).toBe(true);
       expect(isPlannerToolVisible(step, pan, "step")).toBe(true);
+      expect(isPlannerToolVisible(step, eraser, "step")).toBe(true);
     }
   });
 

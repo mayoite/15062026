@@ -50,9 +50,6 @@ export const DEFAULT_FURNITURE_PROPS: Partial<FurnitureShapeProps> = {
   showDimensions: false,
   showLabel: true,
   renderStyle: "filled",
-  opacity: 1,
-  isLocked: false,
-  rotation: 0,
   color: "var(--border-soft)",
   strokeWidth: 2,
 };

@@ -8,6 +8,10 @@ import {
   PLANNER_TOOL_VISIBILITY_MODES,
   type PlannerToolVisibilityMode,
 } from "@/features/planner/editor/plannerToolVisibility";
+import { PLANNER_TLDRAW_TOOLS } from "@/features/planner/tldraw/plannerTldrawRegistration";
+
+/** Bumped when planner tldraw registration changes — visible in dev status bar only. */
+const PLANNER_TLDRAW_BUILD_STAMP = "2026-06-16-tools";
 import type { PlanMetrics } from "./planMetrics";
 
 function fmtSqm(value: number): string {
@@ -67,9 +71,20 @@ export function PlannerStatusBar({
       ) : null}
 
       {showDevTools ? (
-        <label className="pw-status-dev">
+        <span
+          className="pw-status-dev-build"
+          title="Confirms this browser loaded the local planner tool registration bundle"
+        >
+          SDK {PLANNER_TLDRAW_BUILD_STAMP} · {PLANNER_TLDRAW_TOOLS.length} tools
+        </span>
+      ) : null}
+
+      {showDevTools ? (
+        <label className="pw-status-dev" htmlFor="planner-tool-visibility-mode">
           <span className="pw-status-dev-label">Tools</span>
           <select
+            id="planner-tool-visibility-mode"
+            name="planner-tool-visibility-mode"
             className="pw-status-dev-select"
             value={toolVisibilityMode}
             onChange={(event) =>

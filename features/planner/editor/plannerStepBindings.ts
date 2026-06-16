@@ -8,9 +8,9 @@ export function getStepToolBinding(step: PlannerStep): PlannerToolBinding {
     case "draw":
       return { toolId: "planner-wall", plannerTool: "wall" };
     case "place":
-      return { toolId: "select", plannerTool: "select" };
+      return { toolId: "planner-furniture", plannerTool: "furniture" };
     case "review":
-      return { toolId: "select", plannerTool: "select" };
+      return { toolId: "planner-measurement", plannerTool: "measure" };
     default:
       return { toolId: "select", plannerTool: "select" };
   }

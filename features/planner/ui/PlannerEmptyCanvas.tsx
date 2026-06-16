@@ -17,11 +17,11 @@ export function PlannerEmptyCanvas({
 }: PlannerEmptyCanvasProps) {
   return (
     <div
-      className="pw-empty-canvas pointer-events-none absolute inset-0 z-10 flex items-center justify-center p-8"
+      className="pw-empty-canvas pointer-events-none absolute inset-0 flex items-end justify-center px-4 pb-4"
       role="region"
       aria-label="Empty canvas guidance"
     >
-      <div className="pw-empty-canvas-card pointer-events-auto">
+      <div className="pw-empty-canvas-card pointer-events-auto max-w-full">
         <div className="pw-empty-canvas-icon" aria-hidden>
           <svg width="22" height="22" viewBox="0 0 36 36" fill="none">
             <rect x="3" y="3" width="30" height="30" rx="3" stroke="currentColor" strokeWidth="2" />

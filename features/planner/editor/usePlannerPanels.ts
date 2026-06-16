@@ -12,6 +12,12 @@ export function getStepLeftOpenDefault(step: PlannerStep, isCompact: boolean): b
   return !isCompact;
 }
 
+/** Canvas-first desktop: properties panel only on Review; mobile uses overlay dock. */
+export function getStepRightOpenDefault(step: PlannerStep, isCompact: boolean): boolean {
+  if (isCompact) return step === "review";
+  return step === "review";
+}
+
 export function getStepLeftEmphasis(step: PlannerStep): "muted" | "prominent" {
   return step === "place" ? "prominent" : "muted";
 }
@@ -19,7 +25,7 @@ export function getStepLeftEmphasis(step: PlannerStep): "muted" | "prominent" {
 export function usePlannerPanels() {
   const [isCompact, setIsCompact] = useState(false);
   const [leftOpen, setLeftOpenState] = useState(false);
-  const [rightOpen, setRightOpen] = useState(true);
+  const [rightOpen, setRightOpen] = useState(false);
   const [leftManualOverride, setLeftManualOverride] = useState(false);
 
   const setLeftOpen = useCallback((open: boolean) => {
@@ -38,8 +44,6 @@ export function usePlannerPanels() {
       if (compact) {
         setLeftOpenState(false);
         setRightOpen(false);
-      } else {
-        setRightOpen(true);
       }
     };
 
@@ -97,15 +101,13 @@ export function usePlannerPanels() {
       return;
     }
 
-    setRightOpen(true);
+    setRightOpen(getStepRightOpenDefault(step, isCompact));
   }, [isCompact, leftManualOverride]);
-
-  const showRight = !isCompact || rightOpen;
 
   return {
     isCompact,
     leftOpen,
-    rightOpen: showRight,
+    rightOpen,
     leftOpenRaw: leftOpen,
     rightOpenRaw: rightOpen,
     leftManualOverride,

@@ -1,6 +1,6 @@
 # Handover
 
-*2026-06-15 — Vitest coverage close block posted (site S0–S5 + planner slices). Run `git log -1 --oneline` for HEAD.*
+*2026-06-16 — Planner canvas-first shell + custom tldraw tools (v0). Run `git log -1 --oneline` for HEAD.*
 
 ## If you're lost
 
@@ -22,7 +22,8 @@
 | Legacy planners | Archived; 301s to `/planner/*` |
 | Homepage | `homepage-v2` — hero, collections, projects, contact; `homepage.css` imports `routes/home/base.css` |
 | Site typography | Default colors on `typ-*` utilities; `--text-muted` / `--text-subtle` darkened in `theme.css` |
-| Planner UI | `planner-shell.css` typography tokens + `--planner-*` aliases; `planner-workflow.css` for right-panel step bar; `planner-typography.css` imported last in workspace bundle |
+| Planner UI | Canvas-first shell (`planner-canvas-layout.css`); dockable chrome v0; slide-over panels; `planner-shell.css` + `planner-workflow.css` + `planner-typography.css` in workspace bundle |
+| Planner tools | Custom tldraw tools merged with `defaultTools`; native select/pan/erase; visibility dropdown wired; Playwright `planner-custom-tools.spec.ts` **17/17** |
 | Static catalog pages | **341** build pages via `buildProductStaticParams()` (Supabase rows merged with `localCatalogIndex.json` fallback) |
 | TypeScript | **6.x** (`^6.0.3`); root `tsconfig.json` — paths with `./` prefixes, no `baseUrl` |
 
@@ -56,6 +57,22 @@ Per-folder: `data/site` **100%** · `lib/catalog` **95%** · `features/catalog` 
 | **Remaining** | `ui/`, `viewer/`, `3d/`, `admin/`, `persistence/`, `onboarding/` — ratchet planner CI thresholds |
 
 Reports: `results/COVERAGE-REPORT.md` · `results/coverage-summary.json` · regen `npm run docs:sync:coverage`.
+
+## Planner chrome layout (2026-06-16) — v0 landed, M1–M5 planned
+
+**Plan:** [`plans/PLANNER-CHROME-LAYOUT.md`](../plans/PLANNER-CHROME-LAYOUT.md) — benchmark vs Planner 5D / RoomSketcher / Floorplanner; incremental milestones.
+
+| | |
+|---|---|
+| **Done (v0)** | Full-bleed canvas; floating dockable tool rail + step bar; slide-over left/right panels; `PlannerDockableChrome` + `plannerChromeDock.ts`; `rectDrag` normalize for up/left wall/room draws; tool visibility filter on rail |
+| **Verified** | `npm.cmd run typecheck` pass · Playwright `tests/planner-custom-tools.spec.ts` **17/17** on `http://localhost:3000/planner/guest/` |
+| **Desktop defaults** | Draw: panels closed, wall tool · Place: library open · Review: inspector open · Right panel not forced open on draw/place |
+| **Storage** | `planner-chrome-dock-v1` (per-widget placement in localStorage) |
+| **Remaining (M1–M5)** | Consolidate `chrome/` module · AccessChrome bar · smart snap/collision · reset layout · benchmark parity (collapse left rail, inspector on select, recents) |
+
+**Key files:** `features/planner/editor/PlannerWorkspace.tsx`, `PlannerDockableChrome.tsx`, `usePlannerPanels.ts`, `plannerTldrawRegistration.ts`, `app/css/core/planner/planner-canvas-layout.css`.
+
+**Dev note:** Hard-refresh `/planner/guest/` after CSS changes; kill stale `node` on port 3000 if UI looks unchanged.
 
 ## Verified (2026-06-16) — databases & catalog data
 
@@ -123,6 +140,10 @@ For E2E against a production build: `npm run build && npm run start` (often port
 - [x] Planner coverage slices — `store`, `hooks`, `tldraw`, `lib`, `catalog`, `editor` ≥85% (2026-06-15)
 - [x] `results/COVERAGE-REPORT.md` + `scripts/coverage-metrics.mjs` (lines from `statementMap`) (2026-06-15)
 - [x] **218** Vitest files / **1685** tests; PlannerWorkspace flake fix (60s timeout) (2026-06-15)
+- [x] Planner custom tldraw tools — `defaultTools` merge, furniture/door/window/zone/measure, native select/pan/erase (2026-06-16)
+- [x] Canvas-first workspace shell + dockable chrome v0 + slide-over panels (2026-06-16)
+- [x] Playwright `planner-custom-tools.spec.ts` — 17 browser tests for tools, visibility, up/left drag (2026-06-16)
+- [x] `plans/PLANNER-CHROME-LAYOUT.md` — competitive benchmark + M1–M5 roadmap (2026-06-16)
 
 ## Persistence (unified on Drizzle `plans`)
 
@@ -138,7 +159,7 @@ For E2E against a production build: `npm run build && npm run start` (often port
 |---|---|
 | Repo root | `Readme.md`, `AGENTS.md`, `CONTENTS.md` (generated) |
 | `docs/` | `Handover.md`, `Failures.md`, `DOC-MAP.md`, `TESTING.md`, `SCRIPTS.md`, `CSS-ARCHITECTURE.md` |
-| `plans/` | Roadmaps — `TESTING-PLAN.md`, `REPO-STRUCTURE-PLAN.md`, `ARCHIVE-MAP.md` |
+| `plans/` | Roadmaps — `PLANNER-CHROME-LAYOUT.md`, `TESTING-PLAN.md`, `REPO-STRUCTURE-PLAN.md`, `ARCHIVE-MAP.md` |
 | `results/` | Generated JSON — `test-inventory.json`, `coverage-summary.json`, `COVERAGE-REPORT.md` |
 
 ## Skipped / backlog
@@ -149,3 +170,4 @@ For E2E against a production build: `npm run build && npm run start` (often port
 - Opening collision detection
 - FilterGrid file split (~2.6k lines) — typography done, structural split pending
 - Shape size on reload when legacy mm values ≥ 1000 (see `plannerCanvasUnits`)
+- Planner chrome v1 (M1–M5) — see `plans/PLANNER-CHROME-LAYOUT.md`; v0 is local on branch until deployed

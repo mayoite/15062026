@@ -390,8 +390,6 @@ export class DoorWindowPlacementUtils {
         x: anchor.x,
         y: anchor.y,
         rotation: rotation,
-        opacity: 1,
-        isLocked: false,
         props: {
           ...DEFAULT_DOOR_PROPS,
           doorType: config.doorType,
@@ -420,8 +418,6 @@ export class DoorWindowPlacementUtils {
         x: anchor.x,
         y: anchor.y,
         rotation: rotation,
-        opacity: 1,
-        isLocked: false,
         props: {
           ...DEFAULT_WINDOW_PROPS,
           windowType: config.windowType,
@@ -445,10 +441,9 @@ export class DoorWindowPlacementUtils {
     const previewShape = this.createShape({
       ...placement,
       id: previewId,
-    }) as { opacity?: number } | null;
+    }) as { props: { strokeColor?: string } } | null;
 
     if (previewShape) {
-      previewShape.opacity = placement.placementBlocked ? 0.38 : 0.55;
       if (placement.placementBlocked && typeof previewShape === "object" && previewShape && "props" in previewShape) {
         (previewShape as { props: { strokeColor?: string } }).props.strokeColor = "var(--color-danger)";
       }
@@ -463,10 +458,9 @@ export class DoorWindowPlacementUtils {
     const previewShape = this.createShape({
       ...placement,
       id: previewId,
-    }) as { opacity?: number; id?: TLShapeId } | null;
+    }) as { props: { strokeColor?: string }; id?: TLShapeId } | null;
 
     if (previewShape) {
-      previewShape.opacity = placement.placementBlocked ? 0.38 : 0.55;
       if (typeof previewShape === "object" && previewShape && "props" in previewShape) {
         (previewShape as { props: { strokeColor?: string } }).props.strokeColor = placement.placementBlocked
           ? "var(--color-danger)"

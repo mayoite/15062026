@@ -8,11 +8,15 @@
 import type { Editor, TLShape, TLShapeId } from "@tldraw/editor";
 import { Vec, createShapeId } from "@tldraw/editor";
 import type { PlannerFurnitureTLShape } from "../shapes/tldrawShapeTypes";
-import type { CatalogItem} from "@/features/planner/store/catalogData";
-import { furnitureCatalog } from "@/features/planner/store/catalogData";
+import type { PlacementCatalogItem } from "@/features/planner/catalog/placementCatalogResolver";
+import {
+  getPlacementCatalogItem,
+  listPlacementCatalogItems,
+} from "@/features/planner/catalog/placementCatalogResolver";
 import { getUnifiedCatalog } from "@/features/planner/store/unifiedCatalog";
 import { DEFAULT_FURNITURE_PROPS } from "../shapes/FurnitureShape";
 import { catalogMmToCanvasCm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { catalogCategoryToFurnitureCategory } from "@/features/planner/tldraw/shapes/shapeUtils/furnitureCategoryMap";
 import { snapFurnitureAtPoint } from "./furnitureWallSnap";
 
 export interface FurniturePlacementOptions {
@@ -30,7 +34,7 @@ export interface PlacedFurniture {
   position: Vec;
   rotation: number;
   scale: number;
-  catalogItem: CatalogItem;
+  catalogItem: PlacementCatalogItem;
   isAgainstWall: boolean;
   snappedWallId: string | null;
 }
@@ -56,19 +60,20 @@ export class FurniturePlacementUtils {
   constructor(private editor: Editor) { }
 
   // Get catalog items
-  getCatalog(): CatalogItem[] {
-    return furnitureCatalog;
+  getCatalog(): PlacementCatalogItem[] {
+    return listPlacementCatalogItems();
   }
 
   // Get catalog items by category
-  getCatalogByCategory(category: string): CatalogItem[] {
-    if (category === "All") return furnitureCatalog;
-    return furnitureCatalog.filter(item => item.category === category);
+  getCatalogByCategory(category: string): PlacementCatalogItem[] {
+    const catalog = listPlacementCatalogItems();
+    if (category === "All") return catalog;
+    return catalog.filter((item) => item.category === category);
   }
 
   // Get catalog item by ID
-  getCatalogItem(id: string): CatalogItem | undefined {
-    return furnitureCatalog.find(item => item.id === id);
+  getCatalogItem(id: string): PlacementCatalogItem | undefined {
+    return getPlacementCatalogItem(id);
   }
 
   // Start placing furniture from catalog
@@ -160,7 +165,7 @@ export class FurniturePlacementUtils {
   }
 
   // Apply snapping to position
-  private applySnapping(position: Vec, catalogItem: CatalogItem): Vec {
+  private applySnapping(position: Vec, catalogItem: PlacementCatalogItem): Vec {
     let snappedPosition = position;
 
     // Snap to grid if enabled
@@ -174,7 +179,7 @@ export class FurniturePlacementUtils {
     return snappedPosition;
   }
 
-  private furnitureFootprintMm(catalogItem: CatalogItem): { widthMm: number; heightMm: number } {
+  private furnitureFootprintMm(catalogItem: PlacementCatalogItem): { widthMm: number; heightMm: number } {
     return {
       widthMm: catalogMmToCanvasCm(catalogItem.widthMm, catalogItem.depthMm),
       heightMm: catalogMmToCanvasCm(catalogItem.depthMm, catalogItem.widthMm),
@@ -214,12 +219,10 @@ export class FurniturePlacementUtils {
       x: position.x,
       y: position.y,
       rotation: rotation,
-      opacity: 1,
-      isLocked: false,
       props: {
         ...DEFAULT_FURNITURE_PROPS,
         catalogId: catalogItem.id,
-        furnitureCategory: catalogItem.category,
+        furnitureCategory: catalogCategoryToFurnitureCategory(catalogItem.category),
         furnitureType: catalogItem.shape,
         widthMm: catalogMmToCanvasCm(catalogItem.widthMm, catalogItem.depthMm),
         heightMm: catalogMmToCanvasCm(catalogItem.depthMm, catalogItem.widthMm),
@@ -249,7 +252,6 @@ export class FurniturePlacementUtils {
     });
 
     if (previewShape) {
-      previewShape.opacity = placement.isAgainstWall ? 0.62 : 0.5;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.editor.createShape(previewShape as any);
     }
@@ -264,7 +266,6 @@ export class FurniturePlacementUtils {
     });
 
     if (previewShape) {
-      previewShape.opacity = placement.isAgainstWall ? 0.62 : 0.5;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.editor.updateShape(previewShape as any);
     }

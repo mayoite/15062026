@@ -5,6 +5,7 @@ import {
   Armchair,
   BrickWall,
   DoorOpen,
+  Eraser,
   Hand,
   Layers2,
   MousePointer2,
@@ -24,6 +25,7 @@ import { PlannerTooltip } from "@/features/planner/ui/PlannerTooltip";
 export type PlannerToolId =
   | "select"
   | "hand"
+  | "eraser"
   | "planner-wall"
   | "planner-room"
   | "planner-door-window"
@@ -40,7 +42,8 @@ type PlannerStoreTool =
   | "window"
   | "furniture"
   | "zone"
-  | "measure";
+  | "measure"
+  | "eraser";
 
 export type ToolDef = {
   id: string;
@@ -156,6 +159,15 @@ export const TOOL_GROUPS: ToolGroup[] = [
         shortcut: "M",
         icon: Ruler,
       },
+      {
+        id: "eraser",
+        toolId: "eraser",
+        plannerTool: "eraser",
+        label: "Erase",
+        hint: "Remove shapes from the plan",
+        shortcut: "X",
+        icon: Eraser,
+      },
     ],
   },
 ];
@@ -201,6 +213,7 @@ export function PlannerToolRail({
           isPlannerToolVisible(step, tool, visibilityMode),
         );
         if (visibleTools.length === 0) return null;
+
         return (
         <div key={group.id} className="pwx-rail-group" role="group" aria-label={group.label}>
           <span className="pwx-rail-group-label" aria-hidden>
@@ -234,7 +247,8 @@ export function PlannerToolRail({
             );
           })}
         </div>
-      )})}
+        );
+      })}
     </nav>
   );
 }

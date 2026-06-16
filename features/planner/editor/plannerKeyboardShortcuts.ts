@@ -9,10 +9,11 @@ export type PlannerKeyboardPlannerTool =
   | "window"
   | "furniture"
   | "zone"
-  | "measure";
+  | "measure"
+  | "eraser";
 
 export interface PlannerToolBinding {
-  toolId: PlannerToolId | "planner-furniture";
+  toolId: PlannerToolId;
   plannerTool: PlannerKeyboardPlannerTool;
 }
 
@@ -25,6 +26,7 @@ export const PLANNER_TOOL_KEY_BINDINGS: Record<string, PlannerToolBinding> = {
   f: { toolId: "planner-furniture", plannerTool: "furniture" },
   z: { toolId: "planner-zone", plannerTool: "zone" },
   m: { toolId: "planner-measurement", plannerTool: "measure" },
+  x: { toolId: "eraser", plannerTool: "eraser" },
 };
 
 export function resolvePlannerToolKey(event: KeyboardEvent): PlannerToolBinding | null {

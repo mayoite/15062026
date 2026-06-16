@@ -260,6 +260,14 @@
   overflow: hidden;
 }
 
+/* Let drags continue up/left without the rail or side panels stealing pointer events. */
+.planner-workspace .pw-workspace[data-canvas-dragging="true"] .pw-tool-rail,
+.planner-workspace .pw-workspace[data-canvas-dragging="true"] .pw-dockable-chrome,
+.planner-workspace .pw-workspace[data-canvas-dragging="true"] .pw-left-panel,
+.planner-workspace .pw-workspace[data-canvas-dragging="true"] .pw-panel-reopen {
+  pointer-events: none;
+}
+
 /* ─── Tool rail ─────────────────────────────────────────────────────────── */
 
 .planner-workspace .pw-tool-rail {
@@ -385,17 +393,7 @@
   padding: var(--space-2);
 }
 
-@media (min-width: 1024px) {
-  .planner-workspace .pw-panel-reopen {
-    position: absolute;
-    top: var(--space-3);
-    left: calc(var(--pw-rail-w) + var(--space-2));
-    z-index: 30;
-    min-height: var(--control-height-xs);
-    padding: var(--space-2) var(--space-3);
-    box-shadow: var(--shadow-soft);
-  }
-}
+
 
 .planner-workspace .pw-panel-tab {
   flex: 1;
@@ -452,49 +450,7 @@
   opacity: 0.84;
 }
 
-/* Step-aware panel emphasis (desktop rhythm) */
-@media (min-width: 1024px) {
-  .planner-workspace .pw-left-panel,
-  .planner-workspace .pw-right-panel {
-    transition:
-      width var(--motion-base) var(--ease-standard),
-      opacity var(--motion-fast) var(--ease-standard),
-      border-color var(--motion-fast) var(--ease-standard);
-  }
-
-  .planner-workspace .pw-left-panel:not([data-open="true"]) {
-    width: 0;
-    min-width: 0;
-    border-right-width: 0;
-    opacity: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .planner-workspace .pw-left-panel[data-step="draw"][data-open="true"] {
-    width: calc(var(--pw-left-w) - var(--space-4));
-  }
-
-  .planner-workspace .pw-left-panel[data-step="place"] {
-    width: calc(var(--pw-left-w) + var(--space-5));
-  }
-
-  .planner-workspace .pw-left-panel[data-step="review"] {
-    width: calc(var(--pw-left-w) - var(--space-4));
-  }
-
-  .planner-workspace .pw-right-panel[data-step="draw"] {
-    width: calc(var(--pw-right-w) - var(--space-5));
-  }
-
-  .planner-workspace .pw-right-panel[data-step="place"] {
-    width: calc(var(--pw-right-w) - var(--space-2));
-  }
-
-  .planner-workspace .pw-right-panel[data-step="review"] {
-    width: calc(var(--pw-right-w) + var(--space-5));
-  }
-}
+/* Desktop slide-over panel sizing lives in planner-canvas-layout.css */
 
 .planner-workspace .pw-left-panel[data-step="draw"] .pw-panel-tab[data-relevant="false"] {
   opacity: 0.56;

@@ -1,6 +1,8 @@
 import type { Vec} from "@tldraw/editor";
 import { StateNode, createShapeId, type TLPointerEventInfo, type TLShapeId, type TLStateNodeConstructor } from "@tldraw/editor";
+import { canvasUnitsToMillimeters } from "@/features/planner/lib/calibrationScale";
 import type { PlannerZoneTLShape } from "../shapes/tldrawShapeTypes";
+import { normalizeRectDrag } from "./rectDrag";
 
 /**
  * PlannerZoneTool - StateNode for interactive zone overlay placement and sizing.
@@ -87,22 +89,19 @@ class PlannerZoneToolDrawing extends StateNode {
   override onPointerMove() {
     if (!this.zoneId || !this.startPoint) return;
     const currentPoint = this.editor.inputs.getCurrentPagePoint();
-    const dx = currentPoint.x - this.startPoint.x;
-    const dy = currentPoint.y - this.startPoint.y;
+    const rect = normalizeRectDrag(this.startPoint, currentPoint);
 
     this.editor.updateShape({
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       id: this.zoneId!,
       type: "planner-zone",
+      x: rect.origin.x,
+      y: rect.origin.y,
       props: {
-        points: [
-          { x: 0, y: 0 },
-          { x: dx, y: 0 },
-          { x: dx, y: dy },
-          { x: 0, y: dy },
-        ],
-        widthMm: Math.max(1, Math.abs(dx)),
-        heightMm: Math.max(1, Math.abs(dy)),
+        points: rect.points,
+        widthMm: canvasUnitsToMillimeters(rect.width),
+        heightMm: canvasUnitsToMillimeters(rect.height),
+        areaSqm: (canvasUnitsToMillimeters(rect.width) * canvasUnitsToMillimeters(rect.height)) / 1_000_000,
       },
     });
   }

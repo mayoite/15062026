@@ -12,7 +12,7 @@
   }
 
   .planner-workspace .pw-canvas-surface {
-    margin: var(--space-4);
+    margin: var(--space-3);
   }
 }
 
@@ -61,28 +61,46 @@
     transform: translateX(0);
   }
 
-  .planner-workspace .pw-tool-rail {
+  .planner-workspace .pw-canvas-chrome-layer {
+    pointer-events: none;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock-disabled="true"] {
     position: fixed;
     right: 0;
     bottom: var(--pw-dock-h);
     left: 0;
+    z-index: 35;
+    top: auto;
+    transform: none;
+    pointer-events: none;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock-disabled="true"] .pw-tool-rail {
+    pointer-events: auto;
+    position: relative;
     flex-direction: row;
     justify-content: flex-start;
     gap: 0.125rem;
     width: 100%;
     height: auto;
+    min-width: 0;
     padding: 0.375rem 0.5rem;
     overflow-x: auto;
+    border: none;
     border-top: 1px solid var(--border-soft);
-    border-right: none;
+    border-radius: 0;
+    background: color-mix(in srgb, var(--surface-panel) 92%, transparent);
+    box-shadow: none;
+    backdrop-filter: blur(12px);
     scrollbar-width: none;
   }
 
-  .planner-workspace .pw-tool-rail::-webkit-scrollbar {
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock-disabled="true"] .pw-tool-rail::-webkit-scrollbar {
     display: none;
   }
 
-  .planner-workspace .pw-tool-rail-divider {
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock-disabled="true"] .pw-tool-rail-divider {
     width: 1px;
     height: 1.5rem;
     margin: 0 0.125rem;

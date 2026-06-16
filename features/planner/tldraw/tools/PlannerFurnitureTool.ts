@@ -4,8 +4,17 @@ import {
   createShapeId,
   type TLStateNodeConstructor,
 } from "@tldraw/editor";
+import { LEGACY_FALLBACK_PLACEMENT_CATALOG_ID } from "@/features/planner/catalog/placementCatalogDefaults";
 import { FurniturePlacementUtils } from "./FurniturePlacementTool";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
+
+function resolveActiveCatalogId(): string | null {
+  const store = usePlannerStore.getState();
+  if (store.activeCatalogId) return store.activeCatalogId;
+
+  store.setActiveCatalogId(LEGACY_FALLBACK_PLACEMENT_CATALOG_ID);
+  return LEGACY_FALLBACK_PLACEMENT_CATALOG_ID;
+}
 
 /**
  * PlannerFurnitureTool — StateNode for placing furniture on canvas.
@@ -34,7 +43,7 @@ class PlannerFurnitureToolIdle extends StateNode {
     this.placementUtils = new FurniturePlacementUtils(this.editor);
     
     // Attempt an immediate preview start if we already have an ID and pointer coordinates
-    const activeCatalogId = usePlannerStore.getState().activeCatalogId;
+    const activeCatalogId = resolveActiveCatalogId();
     if (activeCatalogId) {
       const p = this.editor.inputs.getCurrentPagePoint();
       this.placementUtils.startPlacement(activeCatalogId, p);
@@ -48,11 +57,11 @@ class PlannerFurnitureToolIdle extends StateNode {
   }
 
   override onPointerMove() {
-    const activeCatalogId = usePlannerStore.getState().activeCatalogId;
+    const activeCatalogId = resolveActiveCatalogId();
     if (!activeCatalogId || !this.placementUtils) return;
-    
+
     const p = this.editor.inputs.getCurrentPagePoint();
-    
+
     if (!this.placementUtils.isCurrentlyPlacing()) {
       this.placementUtils.startPlacement(activeCatalogId, p);
     } else {
@@ -61,20 +70,19 @@ class PlannerFurnitureToolIdle extends StateNode {
   }
 
   override onPointerDown() {
-    const activeCatalogId = usePlannerStore.getState().activeCatalogId;
+    const activeCatalogId = resolveActiveCatalogId();
     if (!activeCatalogId || !this.placementUtils) return;
-    
+
     if (this.placementUtils.isCurrentlyPlacing()) {
       this.placementUtils.finishPlacement();
     } else {
-      // Fallback if they click instantly before the move event fires
       const p = this.editor.inputs.getCurrentPagePoint();
       this.placementUtils.startPlacement(activeCatalogId, p);
       this.placementUtils.finishPlacement();
     }
 
-    usePlannerStore.getState().setActiveCatalogId(null);
-    this.editor.setCurrentTool("select");
+    const p = this.editor.inputs.getCurrentPagePoint();
+    this.placementUtils.startPlacement(activeCatalogId, p);
   }
 }
 
