@@ -19,7 +19,6 @@ vi.mock("@/platform/drizzle/db", () => ({
 }));
 
 import { buildProductStaticParams, deriveSourceSlug } from "@/lib/catalog/productStaticParams";
-import { buildLocalCatalogFallbackProducts } from "@/lib/catalog/fallback";
 
 describe("product static params", () => {
   beforeEach(() => {

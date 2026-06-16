@@ -102,7 +102,7 @@ describe("useAssetLoader", () => {
 
     useLoader.mockReturnValue([]);
 
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       ({ ids }: { ids: readonly string[] }) =>
         useAssetLoader({
           catalogIds: ids,

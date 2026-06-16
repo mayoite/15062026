@@ -214,7 +214,6 @@ export function ProductViewer({
     if (typeof window === "undefined" || typeof customElements === "undefined") return;
 
     let cancelled = false;
-    setIsModelViewerReady(false);
 
     const prepareModelViewer = async () => {
       const [decoderDirs] = await Promise.all([
@@ -519,6 +518,7 @@ export function ProductViewer({
                   type="button"
                   onClick={() => {
                     if (!isModelAvailable) return;
+                    if (!is3DMode) setIsModelViewerReady(false);
                     setIs3DMode((prev) => !prev);
                   }}
                   aria-pressed={is3DMode}

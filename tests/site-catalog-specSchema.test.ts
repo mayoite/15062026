@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type * as FsModule from "fs";
 
 const { existsSync } = vi.hoisted(() => ({
   existsSync: vi.fn(),
 }));
 
 vi.mock("fs", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("fs")>();
+  const actual = await importOriginal<FsModule>();
   return {
     ...actual,
     existsSync,

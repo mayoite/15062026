@@ -2,7 +2,6 @@ import { z } from "zod";
 
 import {
   logPlannerSchemaValidationFailure,
-  summarizePlannerDocumentInput,
 } from "./plannerDocumentLogging";
 import { toPlannerJsonSafe } from "./plannerJsonSafe";
 

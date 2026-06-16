@@ -26,6 +26,12 @@ interface Planner3DViewerProps {
   className?: string;
 }
 
+interface WebGLProbeResult {
+  ok: boolean;
+  renderer: string | null;
+  context: "webgl2" | "webgl" | null;
+}
+
 type ViewerCameraMode = "orbit" | "walk";
 
 interface OrbitPose {
@@ -68,6 +74,29 @@ const UP_VECTOR = new THREE.Vector3(0, 1, 0);
 function clamp(value: number, min: number, max: number) {
   if (min > max) return (min + max) / 2;
   return Math.min(max, Math.max(min, value));
+}
+
+function probeWebGL(): WebGLProbeResult {
+  if (typeof document === "undefined") {
+    return { ok: false, renderer: null, context: null };
+  }
+
+  const canvas = document.createElement("canvas");
+  const contexts: Array<"webgl2" | "webgl"> = ["webgl2", "webgl"];
+
+  for (const contextName of contexts) {
+    const gl = canvas.getContext(contextName) as WebGLRenderingContext | WebGL2RenderingContext | null;
+    if (!gl) continue;
+
+    let renderer = "WebGL available";
+    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+    if (debugInfo) {
+      renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) as string;
+    }
+    return { ok: true, renderer, context: contextName };
+  }
+
+  return { ok: false, renderer: null, context: null };
 }
 
 function resolveItemColor(item: Planner3DItem) {
@@ -501,6 +530,7 @@ function PlannerScene({
 
 export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
   const [cameraMode, setCameraMode] = useState<ViewerCameraMode>("orbit");
+  const [webglProbe] = useState<WebGLProbeResult>(() => probeWebGL());
   const sceneDocument = useMemo(() => buildPlanner3DSceneDocument(document), [document]);
   const sceneSignature = useMemo(() => getSceneSignature(sceneDocument), [sceneDocument]);
   const cameraMemoryRef = useRef<CameraMemory>({ sceneSignature });
@@ -512,25 +542,42 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
   return (
     <div
       className={`surface-inverse relative overflow-hidden rounded-[2rem] border border-theme-soft shadow-theme-float ${className ?? ""}`}
+      data-testid="planner-3d-viewer"
+      data-webgl-status={webglProbe.ok ? "ready" : "fallback"}
     >
-      <Suspense
-        fallback={
-          <div className="surface-inverse flex h-full min-h-[420px] items-center justify-center">
-            <div className="planner-viewer-chip rounded-full px-4 py-2 typ-caption font-semibold uppercase tracking-[0.22em] text-body">
-              Preparing 3D scene
+      {webglProbe.ok ? (
+        <Suspense
+          fallback={
+            <div className="surface-inverse flex h-full min-h-[420px] items-center justify-center">
+              <div className="planner-viewer-chip rounded-full px-4 py-2 typ-caption font-semibold uppercase tracking-[0.22em] text-body">
+                Preparing 3D scene
+              </div>
+            </div>
+          }
+        >
+          <Canvas
+            shadows
+            dpr={[1, 1.75]}
+            gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+            className="h-full min-h-[420px] w-full"
+            data-testid="planner-3d-canvas"
+          >
+            <PlannerScene cameraMemoryRef={cameraMemoryRef} cameraMode={cameraMode} sceneDocument={sceneDocument} />
+          </Canvas>
+        </Suspense>
+      ) : (
+        <div
+          className="surface-inverse flex h-full min-h-[420px] items-center justify-center px-6"
+          data-testid="planner-3d-fallback"
+        >
+          <div className="planner-viewer-surface max-w-md rounded-[1.35rem] border border-warning px-5 py-4 text-center">
+            <div className="typ-caption font-semibold uppercase tracking-[0.16em] text-warning">3D unavailable</div>
+            <div className="mt-2 typ-caption-lg text-body">
+              WebGL is unavailable in this browser context. Continue editing in 2D or Split while the room data stays intact.
             </div>
           </div>
-        }
-      >
-        <Canvas
-          shadows
-          dpr={[1, 1.75]}
-          gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
-          className="h-full min-h-[420px] w-full"
-        >
-          <PlannerScene cameraMemoryRef={cameraMemoryRef} cameraMode={cameraMode} sceneDocument={sceneDocument} />
-        </Canvas>
-      </Suspense>
+        </div>
+      )}
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[color:var(--surface-inverse)] to-transparent" />
 
@@ -562,6 +609,14 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
             {cameraMode === "orbit"
               ? "Drag to inspect the document-mapped room and product shells."
               : "Click into the canvas, then use WASD or arrow keys with mouse look."}
+          </div>
+        </div>
+        <div className="planner-viewer-surface rounded-[1.35rem] border border-theme-soft px-4 py-3">
+          <div className="typ-caption font-semibold uppercase tracking-[0.16em] text-muted">Renderer</div>
+          <div className="mt-1 typ-caption-lg text-body" data-testid="planner-3d-renderer">
+            {webglProbe.ok
+              ? `${webglProbe.context?.toUpperCase() ?? "WEBGL"} · ${webglProbe.renderer ?? "Renderer unavailable"}`
+              : "Fallback mode"}
           </div>
         </div>
         {sceneDocument.items.length === 0 ? (

@@ -7,7 +7,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { PanelLeftOpen, PanelRightOpen, X } from "lucide-react";
+import { X } from "lucide-react";
 import type { Editor } from "tldraw";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
@@ -30,16 +30,17 @@ import { PlannerMobileDock } from "@/features/planner/editor/PlannerMobileDock";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
 import { PlannerCanvasGrid } from "@/features/planner/editor/PlannerCanvasGrid";
 import { repairPlannerShapeUnits } from "@/features/planner/editor/repairPlannerShapeUnits";
-import { PlannerDockableChrome } from "@/features/planner/editor/PlannerDockableChrome";
-import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
-import { PlannerToolRail, type PlannerToolId } from "@/features/planner/editor/PlannerToolRail";
+import type { PlannerToolId } from "@/features/planner/editor/PlannerToolRail";
 import {
   readPlannerToolVisibilityMode,
   writePlannerToolVisibilityMode,
   type PlannerToolVisibilityMode,
 } from "@/features/planner/editor/plannerToolVisibility";
 import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
+import { PlannerChromeHost } from "@/features/planner/editor/chrome/PlannerChromeHost";
+import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
+import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
 import {
   getDefaultPlacementCatalogItemId,
   isFurniturePlacementCatalogItem,
@@ -126,6 +127,7 @@ import {
 import { parsePlannerDocumentImportFile } from "@/features/planner/persistence/plannerImport";
 import { hydrateCloudPlanIntoIndexedDb } from "@/features/planner/persistence/cloudPlanHydration";
 import { normalizePlannerDocument } from "@/features/planner/model";
+import { resetPlannerChromeLayout } from "@/features/planner/editor/chrome/plannerChromeStorage";
 
 type PlannerWorkspaceProps = {
   guestMode?: boolean;
@@ -137,6 +139,21 @@ const DOCUMENT_REVISION_DEBOUNCE_MS = 300;
 export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspaceProps) {
   const { resolvedTheme } = useTheme();
   const panels = usePlannerPanels();
+  const {
+    applyStepLayout,
+    closeAll,
+    isCompact,
+    leftCollapsed,
+    leftOpen,
+    leftOpenRaw,
+    rightOpen,
+    rightOpenRaw,
+    setLeftOpen,
+    setRightOpen,
+    toggleLeft,
+    toggleRight,
+    toggleLeftCollapsed,
+  } = panels;
   const [viewMode, setViewMode] = useState<"2d" | "3d" | "split">("2d");
 
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
@@ -160,6 +177,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const [documentRevision, setDocumentRevision] = useState(0);
   const pendingDocumentRevisionRef = useRef(0);
   const documentRevisionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const seenCatalogShapeIdsRef = useRef<Set<string>>(new Set());
   const [selectionStatus, setSelectionStatus] = useState<string | null>(null);
   const [camera, setCamera] = useState<{ x: number; y: number; z: number } | null>(null);
   const [isCanvasDragging, setIsCanvasDragging] = useState(false);
@@ -168,6 +186,8 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const [sessionStatusMessage, setSessionStatusMessage] = useState<string | null>(null);
   const [sessionErrorMessage, setSessionErrorMessage] = useState<string | null>(null);
   const [localDraftVersion, setLocalDraftVersion] = useState(0);
+  const selectionOpenedRightPanelRef = useRef(false);
+  const [chromeResetToken, setChromeResetToken] = useState(0);
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const blueprint = usePlannerWorkspaceStore((s) => s.blueprint);
   const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
@@ -185,6 +205,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const toggleGrid = usePlannerUIStore((s) => s.toggleGrid);
   const setPlannerTool = usePlannerStore((s) => s.setTool);
   const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
+  const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
   const {
     status: saveStatus,
     lastSavedAt,
@@ -242,6 +263,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       const defaultCatalogId = getDefaultPlacementCatalogItemId();
       if (defaultCatalogId) {
         setActiveCatalogId(defaultCatalogId);
+        recordRecentPlacement(defaultCatalogId);
       }
     }
 
@@ -253,23 +275,30 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     if (activeEditor && activeEditor.getCurrentToolId() !== editorToolId) {
       activeEditor.setCurrentTool(editorToolId);
     }
-  }, [setActiveCatalogId, setPlannerTool]);
+  }, [recordRecentPlacement, setActiveCatalogId, setPlannerTool]);
 
   const syncPlannerStep = useCallback((step: PlannerStep) => {
     setPlannerStep(step);
     setLeftTab(getStepLeftTab(step));
     applyToolBinding(getStepToolBinding(step));
-    panels.applyStepLayout(step);
-  }, [applyToolBinding, panels, setPlannerStep]);
+    applyStepLayout(step);
+  }, [applyStepLayout, applyToolBinding, setPlannerStep]);
 
   const handlePlannerStepChange = useCallback((step: PlannerStep) => {
     setStepIntroVisible(false);
     syncPlannerStep(step);
   }, [syncPlannerStep]);
 
+  const handleAccessLeftToggle = useCallback(() => {
+    if (!leftOpen) {
+      setLeftTab("library");
+    }
+    toggleLeft();
+  }, [leftOpen, toggleLeft]);
+
   useEffect(() => {
-    panels.applyStepLayout(plannerStep);
-  }, [panels.isCompact, panels.applyStepLayout, plannerStep]);
+    applyStepLayout(plannerStep);
+  }, [applyStepLayout, plannerStep]);
 
   const handleToolSelect = useCallback((
     tool: PlannerToolId,
@@ -278,24 +307,35 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     applyToolBinding({ toolId: tool, plannerTool });
     if (plannerTool === "furniture") {
       setLeftTab("library");
-      if (!panels.leftOpen) {
-        panels.setLeftOpen(true);
+      if (!leftOpen) {
+        setLeftOpen(true);
       }
+      return;
     }
-  }, [applyToolBinding, panels]);
+
+    if ((plannerTool === "wall" || plannerTool === "room") && blueprint.dataUrl) {
+      setLeftTab("blueprint");
+      return;
+    }
+
+    if (plannerTool === "measure" && !rightOpen) {
+      selectionOpenedRightPanelRef.current = false;
+    }
+  }, [applyToolBinding, blueprint.dataUrl, leftOpen, rightOpen, setLeftOpen]);
 
   const placeCatalogItem = useCallback((item: CatalogItem, x: number, y: number) => {
     if (!editor) return;
     editor.createShape(
       buildCatalogShape(item, x, y) as unknown as Parameters<Editor["createShape"]>[0],
     );
+    recordRecentPlacement(item.id);
     syncViewerShapes(editor);
     const count = editor.getCurrentPageShapes().length;
     setShapeCount(count);
     if (count === 1) {
       requestAnimationFrame(() => fitPlannerContent(editor));
     }
-  }, [editor, syncViewerShapes]);
+  }, [editor, recordRecentPlacement, syncViewerShapes]);
 
   const handleCatalogItemClick = useCallback((item: CatalogItem) => {
     if (!editor) return;
@@ -317,6 +357,25 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       applyToolBinding({ toolId: "planner-zone", plannerTool: "zone" });
     }
   }, [applyToolBinding, editor, placeCatalogItem, setActiveCatalogId]);
+
+  useEffect(() => {
+    if (isCompact) {
+      selectionOpenedRightPanelRef.current = false;
+      return;
+    }
+
+    const hasSelection = Boolean(selectionStatus);
+    if (hasSelection && !rightOpen) {
+      setRightOpen(true);
+      selectionOpenedRightPanelRef.current = true;
+      return;
+    }
+
+    if (!hasSelection && selectionOpenedRightPanelRef.current) {
+      setRightOpen(false);
+      selectionOpenedRightPanelRef.current = false;
+    }
+  }, [isCompact, rightOpen, selectionStatus, setRightOpen]);
 
   const handleApplyTemplate = useCallback((template: LayoutTemplate) => {
     if (!editor) return;
@@ -376,10 +435,10 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     }
   }, [flushDocumentRevision, viewMode]);
 
-  const viewerDocument = useMemo(
-    () => buildCurrentPlannerDocument(),
-    [buildCurrentPlannerDocument, documentRevision],
-  );
+  const viewerDocument = useMemo(() => {
+    void documentRevision;
+    return buildCurrentPlannerDocument();
+  }, [buildCurrentPlannerDocument, documentRevision]);
 
   const applyPlannerDocument = useCallback((document: ReturnType<typeof normalizePlannerDocument>) => {
     if (!editor) return false;
@@ -432,14 +491,14 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           setPlannerStep("draw");
           setLeftTab(getStepLeftTab("draw"));
           applyToolBinding(getStepToolBinding("draw"), instance);
-          panels.applyStepLayout("draw");
+          applyStepLayout("draw");
           instance.selectNone();
           setDefaultPlannerCamera(instance);
         } else {
           setPlannerStep("draw");
           setLeftTab(getStepLeftTab("draw"));
           applyToolBinding(getStepToolBinding("draw"), instance);
-          panels.applyStepLayout("draw");
+          applyStepLayout("draw");
           instance.selectNone();
           fitPlannerContent(instance);
         }
@@ -448,8 +507,20 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     })();
 
     const syncDoc = () => {
+      const currentShapes = instance.getCurrentPageShapes();
+      const nextSeenIds = new Set<string>();
+      for (const shape of currentShapes) {
+        nextSeenIds.add(shape.id);
+        const props = shape.props as Record<string, unknown>;
+        const catalogId = typeof props.catalogId === "string" ? props.catalogId : null;
+        if (catalogId && !seenCatalogShapeIdsRef.current.has(shape.id)) {
+          recordRecentPlacement(catalogId);
+        }
+      }
+      seenCatalogShapeIdsRef.current = nextSeenIds;
+
       syncViewerShapes(instance);
-      const count = instance.getCurrentPageShapes().length;
+      const count = currentShapes.length;
       setShapeCount(count);
       setPlanMetrics(getPageMetrics(instance));
       setSelectionStatus(getEditorSelectionStatus(instance));
@@ -495,15 +566,16 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     };
   }, [
     applyToolBinding,
+    applyStepLayout,
     flushDocumentRevision,
     guestMode,
-    panels,
     planId,
     scheduleDocumentRevision,
     setPlannerStep,
     setPlannerTool,
     syncViewerShapes,
     restoreSnapshot,
+    recordRecentPlacement,
   ]);
 
   const handleToolVisibilityModeChange = useCallback((mode: PlannerToolVisibilityMode) => {
@@ -605,6 +677,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   }, [clearCatalogDrag, editor, placeCatalogItem]);
 
   const ghostFootprint = useMemo(() => {
+    void camera;
     if (!dragItem || !editor) return null;
     return catalogDropScreenFootprint(editor, dragItem);
   }, [camera, dragItem, editor]);
@@ -898,11 +971,17 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
   const handleOpenAiAssist = useCallback(() => {
     setLeftTab("ai-assist");
-    panels.setLeftOpen(true);
-    if (panels.isCompact) {
-      panels.setRightOpen(false);
+    setLeftOpen(true);
+    if (isCompact) {
+      setRightOpen(false);
     }
-  }, [panels]);
+  }, [isCompact, setLeftOpen, setRightOpen]);
+
+  const handleResetChromeLayout = useCallback(() => {
+    resetPlannerChromeLayout();
+    setChromeResetToken((value) => value + 1);
+    setSessionStatusMessage("Planner chrome layout reset.");
+  }, []);
 
   return (
     <div className="pw-shell">
@@ -930,16 +1009,18 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       />
 
       <div
-        className={`pw-workspace${panels.isCompact ? " pw-workspace--compact" : ""}`}
+        className={`pw-workspace${isCompact ? " pw-workspace--compact" : ""}`}
         data-step={plannerStep}
+        data-left-open={leftOpen || undefined}
+        data-left-collapsed={!isCompact && leftCollapsed ? true : undefined}
         data-canvas-dragging={isCanvasDragging || undefined}
       >
-        {panels.isCompact && (panels.leftOpenRaw || panels.rightOpenRaw) ? (
+        {isCompact && (leftOpenRaw || rightOpenRaw) ? (
           <button
             type="button"
             className="pw-panel-backdrop"
             aria-label="Close panel"
-            onClick={panels.closeAll}
+            onClick={closeAll}
           />
         ) : null}
 
@@ -947,77 +1028,25 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           <main className="pw-canvas-area" aria-label="Workspace canvas">
             <div className="pw-canvas-body">
               <div ref={chromeLayerRef} className="pw-canvas-chrome-layer">
-                {!panels.isCompact ? (
-                  <PlannerDockableChrome
-                    dockId="steps"
-                    layerRef={chromeLayerRef}
-                    label="Workflow steps"
-                    className="pw-canvas-chrome--steps"
-                  >
-                    <PlannerStepBar
-                      current={plannerStep}
-                      disabledSteps={disabledSteps}
-                      onChange={handlePlannerStepChange}
-                      compact
-                      showIntro={false}
-                    />
-                  </PlannerDockableChrome>
-                ) : null}
-
-                <PlannerDockableChrome
-                  dockId="tools"
+                <PlannerChromeHost
                   layerRef={chromeLayerRef}
-                  label="Drawing tools"
-                  className="pw-canvas-chrome--tools"
-                  dockDisabled={panels.isCompact}
-                >
-                  <PlannerToolRail
-                    activeTool={activeTool}
-                    activePlannerTool={activePlannerTool}
-                    step={plannerStep}
-                    visibilityMode={toolVisibilityMode}
-                    tooltipSide={panels.isCompact ? "top" : "right"}
-                    onSelect={handleToolSelect}
-                  />
-                </PlannerDockableChrome>
-
-                {!panels.isCompact && !panels.leftOpen ? (
-                  <PlannerDockableChrome
-                    dockId="panel-left"
-                    layerRef={chromeLayerRef}
-                    label="Library panel opener"
-                    className="pw-canvas-chrome--panel-left"
-                    variant="compact"
-                  >
-                    <button
-                      type="button"
-                      className="pw-panel-reopen pw-panel-reopen--left pw-icon-btn"
-                      onClick={panels.toggleLeft}
-                      aria-label="Open library and blueprint panel"
-                    >
-                      <PanelLeftOpen size={16} strokeWidth={2} aria-hidden />
-                    </button>
-                  </PlannerDockableChrome>
-                ) : null}
-
-                {!panels.isCompact && !panels.rightOpen ? (
-                  <PlannerDockableChrome
-                    dockId="panel-right"
-                    layerRef={chromeLayerRef}
-                    label="Properties panel opener"
-                    className="pw-canvas-chrome--panel-right"
-                    variant="compact"
-                  >
-                    <button
-                      type="button"
-                      className="pw-panel-reopen pw-panel-reopen--right pw-icon-btn"
-                      onClick={panels.toggleRight}
-                      aria-label="Open properties panel"
-                    >
-                      <PanelRightOpen size={16} strokeWidth={2} aria-hidden />
-                    </button>
-                  </PlannerDockableChrome>
-                ) : null}
+                  isCompact={isCompact}
+                  plannerStep={plannerStep}
+                  disabledSteps={disabledSteps}
+                  activeTool={activeTool}
+                  activePlannerTool={activePlannerTool}
+                  toolVisibilityMode={toolVisibilityMode}
+                  leftOpen={leftOpen}
+                  rightOpen={rightOpen}
+                  leftCollapsed={leftCollapsed}
+                  resetToken={chromeResetToken}
+                  onStepChange={handlePlannerStepChange}
+                  onToolSelect={handleToolSelect}
+                  onToggleLeft={handleAccessLeftToggle}
+                  onToggleRight={toggleRight}
+                  onToggleLeftCollapsed={toggleLeftCollapsed}
+                  onResetLayout={handleResetChromeLayout}
+                />
               </div>
 
               <div
@@ -1062,6 +1091,8 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
               metrics={planMetrics}
               selectionStatus={selectionStatus}
               showGrid={showGrid}
+              unitSystem={workspaceUnitSystem}
+              snapStatusLabel="Pending"
               onToggleGrid={toggleGrid}
               toolVisibilityMode={toolVisibilityMode}
               onToolVisibilityModeChange={handleToolVisibilityModeChange}
@@ -1073,9 +1104,11 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           guestMode={guestMode}
           editor={editor}
           plannerStep={plannerStep}
-          panelOpen={panels.leftOpen}
-          showPanelToggle={panels.leftOpen}
-          onTogglePanel={panels.toggleLeft}
+          panelOpen={leftOpen}
+          panelCollapsed={!isCompact && leftCollapsed}
+          showPanelToggle={leftOpen}
+          onTogglePanel={toggleLeft}
+          onToggleCollapsed={!isCompact ? toggleLeftCollapsed : undefined}
           activeTab={leftTab}
           onTabChange={setLeftTab}
           onItemClick={handleCatalogItemClick}
@@ -1084,13 +1117,13 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           unitSystem={measurementUnit}
         />
 
-        <aside className="pw-right-panel" data-open={panels.rightOpen} data-step={plannerStep}>
-          {panels.isCompact ? (
+        <aside className="pw-right-panel" data-open={rightOpen} data-step={plannerStep} data-selection={selectionStatus ? "active" : undefined}>
+          {isCompact ? (
             <PlannerStepBar
               current={plannerStep}
               disabledSteps={disabledSteps}
               onChange={handlePlannerStepChange}
-              compact={panels.isCompact}
+              compact={isCompact}
               showIntro={stepIntroVisible}
             />
           ) : null}
@@ -1109,13 +1142,13 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           {plannerStep === "review" ? <LayerManagerPanel editor={editor} unitSystem={workspaceUnitSystem} /> : null}
         </aside>
 
-        {panels.isCompact && (
+        {isCompact && (
           <PlannerMobileDock
-            leftActive={panels.leftOpenRaw}
-            rightActive={panels.rightOpenRaw}
-            onToggleLeft={panels.toggleLeft}
-            onToggleRight={panels.toggleRight}
-            onFocusCanvas={panels.closeAll}
+            leftActive={leftOpenRaw}
+            rightActive={rightOpenRaw}
+            onToggleLeft={toggleLeft}
+            onToggleRight={toggleRight}
+            onFocusCanvas={closeAll}
           />
         )}
       </div>

@@ -234,7 +234,7 @@ describe("AuthProvider", () => {
   it("unsubscribes on unmount", async () => {
     const unsubscribe = vi.fn();
     authMocks.onAuthStateChange.mockImplementation(
-      (callback: (event: string, session: unknown) => void) => ({
+      () => ({
         data: {
           subscription: { unsubscribe },
         },

@@ -48,7 +48,7 @@ Rule: join old path segments with `-` → `features/planner/store/foo.test.ts` �
 | `npm run test:coverage` | Vitest v8 → `results/coverage/` |
 | `npm run test:a11y` | Playwright a11y |
 | `npm run test:e2e:nav` | Playwright nav smoke |
-| `npm run test:planner-catalog` | Playwright catalog + guest workspace |
+| `npm run test:planner-catalog` | Playwright planner browser suite: catalog, guest workspace, custom tools, chrome |
 | `npm run release:gate` | lint + typecheck + test + build + a11y + e2e + planner-catalog |
 
 ```bash
@@ -118,10 +118,11 @@ Removed: `tests/unit|planner|features|playwright/`, Jest configs/packages.
 | `npm run test:unit` | 64 site-adjacent Vitest files (excludes `planner*`) |
 | `npm run test:coverage` | Pass — planner **78.4%** stmts (`results/coverage-summary.json`) |
 | `npm run test:coverage:site` | Pass — site **96.6%** stmts; thresholds **90/80/90/90** |
+| `npm run test:planner-catalog` | Playwright planner browser suite, including `planner-chrome.spec.ts` |
 | `npm run typecheck` | Pass |
 | `npm run build` | Pass — **341** static pages |
 
-Open blockers for `release:gate`: `DATABASE_URL` for Drizzle plan routes (`docs/Failures.md`).
+Open blockers for `release:gate`: `npm.cmd run test:planner-catalog` is currently blocked by the `planner-chrome.spec.ts` 3D nonblank-scene assertion (`docs/Failures.md`).
 
 ## Playwright
 

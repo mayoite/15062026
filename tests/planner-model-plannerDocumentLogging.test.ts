@@ -3,11 +3,11 @@ import { z } from "zod";
 
 import { plannerDocumentSchema } from "@/features/planner/model/plannerDocument";
 import {
+  type summarizePlannerSceneJson,
   describePlannerValueSample,
   formatPlannerZodIssues,
   logPlannerSchemaValidationFailure,
   summarizePlannerDocumentInput,
-  summarizePlannerSceneJson,
 } from "@/features/planner/model/plannerDocumentLogging";
 
 describe("plannerDocumentLogging", () => {

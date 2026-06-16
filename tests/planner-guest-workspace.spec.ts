@@ -15,11 +15,14 @@ test.describe("Planner guest workspace — plan 06 UI bar", () => {
     await expect(page.getByRole("button", { name: "2D", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Split" })).toBeVisible();
     await expect(page.getByRole("button", { name: "3D", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Open library and blueprint panel" }).click();
     await expect(page.getByLabel("Search catalog elements")).toBeVisible();
     await expect(page.locator("canvas").first()).toBeVisible();
   });
 
   test("empty canvas shows RoomSketcher-style starter actions", async ({ page }) => {
+    await page.getByRole("button", { name: "2D", exact: true }).click();
+    await page.getByRole("button", { name: "Select" }).click();
     await expect(page.getByRole("region", { name: "Empty canvas guidance" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Draw walls" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Use template" })).toBeVisible();
@@ -27,6 +30,7 @@ test.describe("Planner guest workspace — plan 06 UI bar", () => {
   });
 
   test("catalog search filters elements", async ({ page }) => {
+    await page.getByRole("button", { name: "Open library and blueprint panel" }).click();
     const search = page.getByLabel("Search catalog elements");
     await search.fill("meeting");
     await expect(page.getByRole("button", { name: /Add .* to canvas/i }).first()).toBeVisible();

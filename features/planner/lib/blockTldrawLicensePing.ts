@@ -52,8 +52,9 @@ export function installTldrawLicensePingBlock(): void {
     return nativeFetch(input, init);
   };
 
-  const nativeLog = console.log.bind(console);
-  console.log = (...args: unknown[]) => {
+  const runtimeConsole = globalThis.console;
+  const nativeLog = runtimeConsole.log.bind(runtimeConsole);
+  runtimeConsole.log = (...args: unknown[]) => {
     if (isTldrawLicenseConsoleNoise(args)) return;
     nativeLog(...args);
   };

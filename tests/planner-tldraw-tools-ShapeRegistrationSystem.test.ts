@@ -5,7 +5,7 @@ vi.mock("@tldraw/editor", async () => {
   return createTldrawEditorModule();
 });
 
-import type { TLShape, TLShapeId } from "@tldraw/editor";
+import type { TLShape } from "@tldraw/editor";
 import { ShapeRegistrationSystem } from "@/features/planner/tldraw/tools/ShapeRegistrationSystem";
 import {
   createMockEditor,

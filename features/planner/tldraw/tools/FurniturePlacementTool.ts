@@ -165,7 +165,7 @@ export class FurniturePlacementUtils {
   }
 
   // Apply snapping to position
-  private applySnapping(position: Vec, catalogItem: PlacementCatalogItem): Vec {
+  private applySnapping(position: Vec, _catalogItem: PlacementCatalogItem): Vec {
     let snappedPosition = position;
 
     // Snap to grid if enabled

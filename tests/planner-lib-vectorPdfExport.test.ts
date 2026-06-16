@@ -4,7 +4,7 @@ const drawImage = vi.fn();
 const drawText = vi.fn();
 
 vi.mock("pdf-lib", async () => {
-  const actual = await vi.importActual<typeof import("pdf-lib")>("pdf-lib");
+  const actual = await vi.importActual("pdf-lib");
   return {
     ...actual,
     PDFDocument: {

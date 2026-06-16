@@ -32,7 +32,6 @@ import {
   downloadPlannerJson,
   downloadPlannerPng,
   downloadPlannerSvg,
-  getExportShapeIds,
   getVectorExportShapeIds,
 } from "./exportActions";
 
