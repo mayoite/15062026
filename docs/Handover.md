@@ -170,4 +170,4 @@ For E2E against a production build: `npm run build && npm run start` (often port
 - Opening collision detection
 - FilterGrid file split (~2.6k lines) — typography done, structural split pending
 - Shape size on reload when legacy mm values ≥ 1000 (see `plannerCanvasUnits`)
-- Planner chrome v1 (M1–M5) — see `plans/PLANNER-CHROME-LAYOUT.md`; v0 is local on branch until deployed
+- Planner chrome v1 (M1–M5) — see `plans/PLANNER-CHROME-LAYOUT.md` (`8e5a8ed` on `main`)
