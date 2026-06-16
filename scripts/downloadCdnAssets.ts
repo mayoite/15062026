@@ -3,6 +3,13 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 
+import {
+  buildBasenameIndex,
+  copyWebAsset,
+  localAssetExists,
+  resolveMissingAssetPath,
+} from "./lib/cdnAssetResolver";
+
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -11,14 +18,26 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env
 const CDN_BASE_URL = "https://oando-worker-proxy.mayoite.workers.dev";
 const PUBLIC_DIR = path.resolve(process.cwd(), "public");
 
-async function downloadFile(url: string, destPath: string): Promise<boolean> {
+async function downloadFile(
+  url: string,
+  destPath: string,
+  relPath: string,
+  basenameIndex: Map<string, string[]>,
+): Promise<boolean> {
   const dir = path.dirname(destPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  // If file already exists and is non-empty, skip it
-  if (fs.existsSync(destPath) && fs.statSync(destPath).size > 0) {
+  if (localAssetExists(relPath)) {
+    return true;
+  }
+
+  const resolution = resolveMissingAssetPath(relPath, basenameIndex);
+  if (resolution.kind === "copy") {
+    copyWebAsset(resolution.sourceWebPath, relPath);
+// eslint-disable-next-line no-console
+    console.log(`✅ Copied local fallback: ${resolution.sourceWebPath} -> ${relPath}`);
     return true;
   }
 
@@ -164,15 +183,14 @@ async function run() {
 // eslint-disable-next-line prefer-const
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // eslint-disable-next-line prefer-const
-  let downloadedCount = 0;
   let successCount = 0;
+  const basenameIndex = buildBasenameIndex("images");
 
   for (const relPath of localRelativePaths) {
     const cdnUrl = `${CDN_BASE_URL}${relPath}`;
     const localDest = path.join(PUBLIC_DIR, relPath.replace(/\//g, path.sep));
-    
-    // We will download
-    const success = await downloadFile(cdnUrl, localDest);
+
+    const success = await downloadFile(cdnUrl, localDest, relPath, basenameIndex);
     if (success) {
       successCount++;
     }

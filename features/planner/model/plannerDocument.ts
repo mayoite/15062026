@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+import {
+  logPlannerSchemaValidationFailure,
+  summarizePlannerDocumentInput,
+} from "./plannerDocumentLogging";
+import { toPlannerJsonSafe } from "./plannerJsonSafe";
+
 export const PLANNER_DOCUMENT_SCHEMA_VERSION = 1 as const;
 export const PLANNER_ENQUIRY_PAYLOAD_SCHEMA_VERSION = 1 as const;
 
@@ -279,6 +285,11 @@ function normalizeUuid(value: unknown): string | undefined {
   return z.string().uuid().safeParse(trimmed).success ? trimmed : undefined;
 }
 
+/** Drop non-UUID ids such as LOCAL_CURRENT_DRAFT_ID ("current"). */
+export function normalizePlannerDocumentId(value: unknown): string | undefined {
+  return normalizeUuid(value);
+}
+
 function normalizeLooseText(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
@@ -304,7 +315,8 @@ function normalizeLooseUnitSystem(value: unknown): PlannerUnitSystem | undefined
 }
 
 function normalizeLooseSceneJson(value: unknown): PlannerJsonValue {
-  return plannerJsonValueSchema.safeParse(value).success ? (value as PlannerJsonValue) : {};
+  const safe = toPlannerJsonSafe(value ?? {});
+  return plannerJsonValueSchema.safeParse(safe).success ? safe : {};
 }
 
 function normalizeLooseTimestamp(value: unknown): string | undefined {
@@ -460,6 +472,50 @@ function getSceneRoomDimensions(sceneJson: PlannerJsonValue): { widthMm: number;
     : null;
 }
 
+function logPlannerDocumentParseFailure(context: string, error: unknown, data: unknown): void {
+  logPlannerSchemaValidationFailure(context, error, data, {
+    usedFallback: true,
+  });
+}
+
+function buildSafeFallbackPlannerDocument(source?: Record<string, unknown> | null): PlannerDocument {
+  const loose = source ?? {};
+
+  return {
+    schemaVersion: PLANNER_DOCUMENT_SCHEMA_VERSION,
+    id: normalizeUuid(loose.id),
+    name: normalizeLooseText(loose.name ?? loose.title) ?? "Untitled plan",
+    title: normalizeLooseText(loose.title ?? loose.name) ?? "Untitled plan",
+    projectName: normalizeLooseText(loose.projectName ?? loose.project_name),
+    clientName: normalizeLooseText(loose.clientName ?? loose.client_name),
+    preparedBy: normalizeLooseText(loose.preparedBy ?? loose.prepared_by),
+    roomWidthMm: normalizeLooseInteger(loose.roomWidthMm ?? loose.room_width_mm, 6000, 1),
+    roomDepthMm: normalizeLooseInteger(loose.roomDepthMm ?? loose.room_depth_mm, 8000, 1),
+    seatTarget: normalizeLooseInteger(loose.seatTarget ?? loose.seat_target, 10, 0),
+    unitSystem: normalizeLooseUnitSystem(loose.unitSystem ?? loose.unit_system) ?? "metric",
+    sceneJson: normalizeLooseSceneJson(loose.sceneJson ?? loose.scene_json),
+    itemCount: normalizeLooseInteger(loose.itemCount ?? loose.item_count, 0, 0),
+    thumbnailUrl: null,
+    status: loose.status === "active" || loose.status === "archived" ? loose.status : "draft",
+    createdAt: normalizeLooseTimestamp(loose.createdAt ?? loose.created_at),
+    updatedAt: normalizeLooseTimestamp(loose.updatedAt ?? loose.updated_at),
+  };
+}
+
+function parsePlannerDocumentOrFallback(
+  data: unknown,
+  context: string,
+  fallbackSource?: Record<string, unknown> | null,
+): PlannerDocument {
+  try {
+    return plannerDocumentSchema.parse(data);
+  } catch (error) {
+    logPlannerDocumentParseFailure(context, error, data);
+    const source = isRecord(data) ? data : fallbackSource ?? null;
+    return buildSafeFallbackPlannerDocument(source);
+  }
+}
+
 function finalizePlannerDocument(
   document: PlannerDocument,
   source: Record<string, unknown> | null = null,
@@ -469,7 +525,11 @@ function finalizePlannerDocument(
     name: document.name ?? document.title,
     title: document.title ?? document.name,
   };
-  const normalized = plannerDocumentSchema.parse(normalizedInput);
+  const normalized = parsePlannerDocumentOrFallback(
+    normalizedInput,
+    "finalizePlannerDocument(input)",
+    isRecord(source) ? source : (normalizedInput as Record<string, unknown>),
+  );
   const sceneMeasurement = getSceneMeasurementRecord(source?.sceneJson ?? source?.scene_json ?? normalized.sceneJson);
   const topMeasurement = isRecord(source?.measurement) ? source?.measurement : null;
   const displayUnit =
@@ -494,37 +554,47 @@ function finalizePlannerDocument(
       : Math.max(1, Math.trunc(convertDimensionToMillimeters(normalized.roomDepthMm, sourceUnit)));
   const sceneRoom = getSceneRoomDimensions(sceneJson);
 
-  return plannerDocumentSchema.parse({
+  const output = {
     ...normalized,
     title: normalized.title ?? normalized.name,
     unitSystem,
     roomWidthMm: sceneRoom?.widthMm ?? fallbackRoomWidthMm,
     roomDepthMm: sceneRoom?.depthMm ?? fallbackRoomDepthMm,
     sceneJson,
-  });
+  };
+
+  return parsePlannerDocumentOrFallback(
+    output,
+    "finalizePlannerDocument(output)",
+    output as Record<string, unknown>,
+  );
 }
 
 export function createPlannerDocument(defaults: PlannerDocumentDefaults = {}): PlannerDocument {
   return finalizePlannerDocument(
-    plannerDocumentSchema.parse({
-    schemaVersion: PLANNER_DOCUMENT_SCHEMA_VERSION,
-    id: defaults.id,
-    name: defaults.name ?? defaults.title,
-    title: defaults.title ?? defaults.name,
-    projectName: defaults.projectName ?? null,
-    clientName: defaults.clientName ?? null,
-    preparedBy: defaults.preparedBy ?? null,
-    roomWidthMm: defaults.roomWidthMm ?? 6000,
-    roomDepthMm: defaults.roomDepthMm ?? 8000,
-    seatTarget: defaults.seatTarget ?? 10,
-    unitSystem: defaults.unitSystem ?? "metric",
-    sceneJson: defaults.sceneJson ?? {},
-    itemCount: defaults.itemCount ?? 0,
-    thumbnailUrl: defaults.thumbnailUrl ?? null,
-    status: defaults.status ?? "draft",
-    createdAt: defaults.createdAt,
-    updatedAt: defaults.updatedAt,
-    }),
+    parsePlannerDocumentOrFallback(
+      {
+        schemaVersion: PLANNER_DOCUMENT_SCHEMA_VERSION,
+        id: defaults.id,
+        name: defaults.name ?? defaults.title,
+        title: defaults.title ?? defaults.name,
+        projectName: defaults.projectName ?? null,
+        clientName: defaults.clientName ?? null,
+        preparedBy: defaults.preparedBy ?? null,
+        roomWidthMm: defaults.roomWidthMm ?? 6000,
+        roomDepthMm: defaults.roomDepthMm ?? 8000,
+        seatTarget: defaults.seatTarget ?? 10,
+        unitSystem: defaults.unitSystem ?? "metric",
+        sceneJson: toPlannerJsonSafe(defaults.sceneJson ?? {}),
+        itemCount: defaults.itemCount ?? 0,
+        thumbnailUrl: defaults.thumbnailUrl ?? null,
+        status: defaults.status ?? "draft",
+        createdAt: defaults.createdAt,
+        updatedAt: defaults.updatedAt,
+      },
+      "createPlannerDocument",
+      { ...defaults },
+    ),
   );
 }
 
@@ -553,6 +623,27 @@ export function normalizePlannerDocument(input: unknown): PlannerDocument {
 
   const parsed = plannerDocumentSchema.safeParse(input);
   if (parsed.success) return finalizePlannerDocument(parsed.data, isRecord(input) ? input : null);
+
+  if (
+    isRecord(input)
+    && (
+      input.id
+      || input.name
+      || input.title
+      || input.sceneJson
+      || input.scene_json
+    )
+  ) {
+    logPlannerSchemaValidationFailure(
+      "normalizePlannerDocument(loose-fallback)",
+      parsed.error,
+      input,
+      {
+        envelopeIssueCount: envelope.error.issues.length,
+        saveRowIssueCount: row.error.issues.length,
+      },
+    );
+  }
 
   const loose = input && typeof input === "object" ? (input as Record<string, unknown>) : {};
   return finalizePlannerDocument(
@@ -681,13 +772,27 @@ export function parsePlannerDocumentImport(input: unknown): PlannerDocumentImpor
     return { ok: true, source: "document", document: normalizePlannerDocument(input), errors: [] };
   }
 
+  const errors = [
+    ...collectZodIssues(envelope.error),
+    ...collectZodIssues(row.error),
+    ...collectZodIssues(document.error),
+  ];
+
+  logPlannerSchemaValidationFailure(
+    "parsePlannerDocumentImport",
+    document.error,
+    input,
+    {
+      envelopeIssueCount: envelope.error.issues.length,
+      saveRowIssueCount: row.error.issues.length,
+      documentIssueCount: document.error.issues.length,
+      errorPreview: errors.slice(0, 6),
+    },
+  );
+
   return {
     ok: false,
-    errors: [
-      ...collectZodIssues(envelope.error),
-      ...collectZodIssues(row.error),
-      ...collectZodIssues(document.error),
-    ],
+    errors,
   };
 }
 

@@ -117,6 +117,8 @@ type PlannerWorkspaceProps = {
   planId?: string;
 };
 
+const DOCUMENT_REVISION_DEBOUNCE_MS = 300;
+
 export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspaceProps) {
   const { resolvedTheme } = useTheme();
   const panels = usePlannerPanels();
@@ -139,6 +141,9 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const [dropFlash, setDropFlash] = useState<{ x: number; y: number } | null>(null);
   const canvasSurfaceRef = useRef<HTMLDivElement | null>(null);
   const [planMetrics, setPlanMetrics] = useState<PlanMetrics>(getPageMetrics(null));
+  const [documentRevision, setDocumentRevision] = useState(0);
+  const pendingDocumentRevisionRef = useRef(0);
+  const documentRevisionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectionStatus, setSelectionStatus] = useState<string | null>(null);
   const [camera, setCamera] = useState<{ x: number; y: number; z: number } | null>(null);
   const [planNameOverride, setPlanNameOverride] = useState<string | null>(null);
@@ -293,7 +298,43 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       unitSystem: workspaceUnitSystem === "imperial" ? "ft-in" : "mm",
     });
   }, [activeDocumentId, editor, planName, workspaceUnitSystem]);
-  const viewerDocument = buildCurrentPlannerDocument();
+
+  const scheduleDocumentRevision = useCallback(() => {
+    pendingDocumentRevisionRef.current += 1;
+    if (documentRevisionTimerRef.current) {
+      clearTimeout(documentRevisionTimerRef.current);
+    }
+    documentRevisionTimerRef.current = setTimeout(() => {
+      setDocumentRevision(pendingDocumentRevisionRef.current);
+      documentRevisionTimerRef.current = null;
+    }, DOCUMENT_REVISION_DEBOUNCE_MS);
+  }, []);
+
+  const flushDocumentRevision = useCallback(() => {
+    if (documentRevisionTimerRef.current) {
+      clearTimeout(documentRevisionTimerRef.current);
+      documentRevisionTimerRef.current = null;
+    }
+    pendingDocumentRevisionRef.current += 1;
+    setDocumentRevision(pendingDocumentRevisionRef.current);
+  }, []);
+
+  useEffect(() => () => {
+    if (documentRevisionTimerRef.current) {
+      clearTimeout(documentRevisionTimerRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (viewMode !== "2d") {
+      flushDocumentRevision();
+    }
+  }, [flushDocumentRevision, viewMode]);
+
+  const viewerDocument = useMemo(
+    () => buildCurrentPlannerDocument(),
+    [buildCurrentPlannerDocument, documentRevision],
+  );
 
   const applyPlannerDocument = useCallback((document: ReturnType<typeof normalizePlannerDocument>) => {
     if (!editor) return false;
@@ -311,9 +352,10 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     editor.selectNone();
     syncPlannerStep("draw");
     setStepIntroVisible(editor.getCurrentPageShapes().length === 0);
+    flushDocumentRevision();
     requestAnimationFrame(() => fitPlannerContent(editor));
     return true;
-  }, [editor, setPlanNameOverride, syncPlannerStep]);
+  }, [editor, flushDocumentRevision, setPlanNameOverride, syncPlannerStep]);
 
   const handleEditorMount = useCallback((instance: Editor) => {
     setEditor(instance);
@@ -360,6 +402,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       setShapeCount(count);
       setPlanMetrics(getPageMetrics(instance));
       setSelectionStatus(getEditorSelectionStatus(instance));
+      scheduleDocumentRevision();
     };
 
     const syncSession = () => {
@@ -374,6 +417,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     syncDoc();
     syncCamera();
     syncSession();
+    flushDocumentRevision();
 
     const cleanupDoc = instance.store.listen(syncDoc, { scope: "document" });
     const cleanupSession = instance.store.listen(syncSession, { scope: "session" });
@@ -386,7 +430,16 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       cleanupSession();
       cleanupCamera();
     };
-  }, [guestMode, planId, setPlannerTool, syncPlannerStep, syncViewerShapes, restoreSnapshot]);
+  }, [
+    flushDocumentRevision,
+    guestMode,
+    planId,
+    scheduleDocumentRevision,
+    setPlannerTool,
+    syncPlannerStep,
+    syncViewerShapes,
+    restoreSnapshot,
+  ]);
 
   useEffect(() => {
     setToolVisibilityMode(readPlannerToolVisibilityMode());

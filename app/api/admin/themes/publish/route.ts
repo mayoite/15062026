@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
       });
 
       const r2Params = {
-        Bucket: process.env.CLOULDFLARE_R2_BUCKET || "oando-themes",
+        Bucket: process.env.CLOULDFLARE_R2_BUCKET || process.env.CLOUDFLARE_R2_CATALOG_BUCKET || "oando-asset-cdn",
         Key: fileKey,
         Body: payload,
         ContentType: "application/json",

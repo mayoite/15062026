@@ -20,6 +20,11 @@ import clsx from "clsx";
 import { Reviews } from "@/components/Reviews";
 import { ProductGallery } from "@/components/ProductGallery";
 import { loadModelViewer } from "@/lib/ui/loadModelViewer";
+import {
+  MODEL_VIEWER_DRACO,
+  MODEL_VIEWER_KTX2,
+  resolveModelViewerDecoderUrls,
+} from "@/lib/ui/selfHostedAssetUrls";
 import { useQuoteCart } from "@/lib/store/quoteCart";
 import { useProductCompare } from "@/lib/store/productCompare";
 import { CompareDock } from "@/components/products/CompareDock";
@@ -157,6 +162,13 @@ export function ProductViewer({
   const [isModelAvailable, setIsModelAvailable] = useState(false);
   const [isCheckingModel, setIsCheckingModel] = useState(false);
   const [isModelViewerReady, setIsModelViewerReady] = useState(false);
+  const [modelViewerDecoderDirs, setModelViewerDecoderDirs] = useState<{
+    draco: string;
+    ktx2: string;
+  }>({
+    draco: MODEL_VIEWER_DRACO.localDir,
+    ktx2: MODEL_VIEWER_KTX2.localDir,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -200,23 +212,28 @@ export function ProductViewer({
   useEffect(() => {
     if (!is3DMode || !isModelAvailable) return;
     if (typeof window === "undefined" || typeof customElements === "undefined") return;
- 
-    if (customElements.get("model-viewer")) {
-// eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsModelViewerReady(true);
-      return;
-    }
 
     let cancelled = false;
     setIsModelViewerReady(false);
 
-    void loadModelViewer()
-      .then(() => {
-        if (!cancelled) setIsModelViewerReady(true);
-      })
-      .catch(() => {
-        if (!cancelled) setIsModelViewerReady(false);
+    const prepareModelViewer = async () => {
+      const [decoderDirs] = await Promise.all([
+        resolveModelViewerDecoderUrls(),
+        customElements.get("model-viewer") ? Promise.resolve() : loadModelViewer(),
+      ]);
+
+      if (cancelled) return;
+
+      setModelViewerDecoderDirs({
+        draco: decoderDirs.dracoDir,
+        ktx2: decoderDirs.ktx2Dir,
       });
+      setIsModelViewerReady(true);
+    };
+
+    void prepareModelViewer().catch(() => {
+      if (!cancelled) setIsModelViewerReady(false);
+    });
 
     return () => {
       cancelled = true;
@@ -558,6 +575,8 @@ export function ProductViewer({
                           ios-src="${modelPath.replace(".glb", ".usdz")}"
                           camera-controls
                           shadow-intensity="1"
+                          draco-decoder-location="${modelViewerDecoderDirs.draco}"
+                          ktx2-transcoder-location="${modelViewerDecoderDirs.ktx2}"
                           alt="3D model of ${displayName}"
                           style="width: 100%; height: 100%;"
                         ></model-viewer>

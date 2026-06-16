@@ -17,7 +17,7 @@ import {
   DEFAULT_MM_PER_CANVAS_UNIT,
   millimetersToCanvasUnits,
 } from "@/features/planner/lib/calibrationScale";
-import { createPlannerSvgColorResolver } from "@/features/planner/lib/plannerSvgExportColors";
+import { getPlannerCanvasColorResolver } from "@/features/planner/lib/plannerSvgExportColors";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 import {
   computeSolidSpans,
@@ -123,6 +123,24 @@ function wallRectPoints(
 
 function pointsToSVGPath(pts: { x: number; y: number }[]): string {
   return pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ") + " Z";
+}
+
+function wallSvgBounds(shape: PlannerWallTLShape) {
+  const { startX, startY, endX, endY, thickness } = shape.props;
+  const pts = wallRectPoints(startX, startY, endX, endY, Math.max(1, thickness));
+  const xs = pts.map((p) => p.x);
+  const ys = pts.map((p) => p.y);
+  const minX = Math.min(...xs);
+  const minY = Math.min(...ys);
+  const maxX = Math.max(...xs);
+  const maxY = Math.max(...ys);
+  const width = Math.max(1, maxX - minX);
+  const height = Math.max(1, maxY - minY);
+  return {
+    width,
+    height,
+    viewBox: `${minX} ${minY} ${width} ${height}`,
+  };
 }
 
 function wallGeometryLengthMm(shape: PlannerWallTLShape): number {
@@ -244,15 +262,11 @@ function WallSvg({
     : isLoadBearing
       ? "var(--color-accent)"
       : (strokeColor || "var(--text-body)");
-  const resolveExportColor = exportColors ? createPlannerSvgColorResolver() : null;
-  const fill = resolveExportColor ? resolveExportColor(fillCol) : fillCol;
-  const stroke = resolveExportColor ? resolveExportColor(strokeCol) : strokeCol;
-  const hatchStroke = resolveExportColor
-    ? resolveExportColor("var(--color-bronze-600)")
-    : "var(--color-bronze-600)";
-  const labelFill = resolveExportColor
-    ? resolveExportColor("var(--text-muted)")
-    : "var(--text-muted)";
+  const resolveColor = getPlannerCanvasColorResolver();
+  const fill = resolveColor(fillCol);
+  const stroke = resolveColor(strokeCol);
+  const hatchStroke = resolveColor("var(--color-bronze-600)");
+  const labelFill = resolveColor("var(--text-muted)");
   const geometryLengthMm = wallGeometryLengthMm(shape);
 
   // Dimension label parameters
@@ -329,8 +343,14 @@ function WallSvg({
 }
 
 function WallBody({ shape }: { shape: PlannerWallTLShape }) {
+  const bounds = wallSvgBounds(shape);
   return (
-    <SVGContainer>
+    <SVGContainer
+      width={bounds.width}
+      height={bounds.height}
+      viewBox={bounds.viewBox}
+      style={{ overflow: "visible" }}
+    >
       <WallSvg shape={shape} spans={useWallSolidSpans(shape)} />
     </SVGContainer>
   );

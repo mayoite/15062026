@@ -1,0 +1,853 @@
+{
+  "generatedAt": "2026-06-16T04:16:43.709Z",
+  "totals": {
+    "referenced": 1195,
+    "alreadyLocal": 1112,
+    "missing": 83,
+    "copied": 0,
+    "seatingJsonUpdates": 0,
+    "unresolved": 83,
+    "appliedFixes": false
+  },
+  "byCategory": {
+    "workstations": 6,
+    "catalog": 4,
+    "tables": 3,
+    "storage": 6,
+    "chairs": 64
+  },
+  "failures": [
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899aa91f03e6a89282d60c6_image_(7).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e19ce6798d83eab6341c_panelpro_2.jpg",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899aa91f03e6a89282d60c6_image_(7).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899a9c13d41a799c8276857_image_(4).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899a9c13d41a799c8276857_image_(4).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899a993e44404f6f3bcc398_image_(3).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e32607cc220a51bf8b9d_deskpro_2.jpg",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899a993e44404f6f3bcc398_image_(3).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e46703f08bf146fecda9_presidency_2.jpg",
+      "category": "tables",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e4f47c86ba66b1d6d195_apex_2.jpg",
+      "category": "tables",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d88ac691a23437da4a9_locker_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e438d2d6d279597506e0_consulate_2.jpg",
+      "category": "tables",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33aed4aa7c59dfbd123f7_pedestal_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d1345008068da79673a_compactor_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d4537b54c7c3b17f77b_metal_locker_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899aa009be5eb667a604f17_image_(5).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899aa009be5eb667a604f17_image_(5).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33cd07e416b6139611e93_racks_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33bd6c74b7831216a4bd2_pedestal_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-32.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-33.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-34.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-35.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-39.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-31.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-32.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-33.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-34.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-35.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-36.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-37.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-38.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-39.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-42.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/phoenix/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/phoenix/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/phoenix/image-35.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid/image-31.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid/image-36.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-34.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/spino/image-27.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/spino/image-28.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/spino/image-32.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/flex/image-33.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/logica/image-27.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/logica/image-28.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sullion/image-28.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sullion/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/nuvic/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/nuvic/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/rock/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/rock/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/orbit/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-21.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-22.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-23.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-26.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/arvo/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/ember/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/caneva/image-13.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/crotch/image-15.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/smile/image-15.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/canaret/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/brim/image-12.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/dive/image-15.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-01.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-03.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-04.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-05.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-08.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lexus/image-12.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/zilo/image-13.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/zilo/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/zilo/image-17.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fynn/image-13.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/caneva-high/image-24.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/caneva-high/image-27.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lisbo/image-08.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lisbo/image-09.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lisbo/image-10.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    }
+  ],
+  "unresolved": [
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899aa91f03e6a89282d60c6_image_(7).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e19ce6798d83eab6341c_panelpro_2.jpg",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899aa91f03e6a89282d60c6_image_(7).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899a9c13d41a799c8276857_image_(4).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899a9c13d41a799c8276857_image_(4).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899a993e44404f6f3bcc398_image_(3).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e32607cc220a51bf8b9d_deskpro_2.jpg",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899a993e44404f6f3bcc398_image_(3).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e46703f08bf146fecda9_presidency_2.jpg",
+      "category": "tables",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e4f47c86ba66b1d6d195_apex_2.jpg",
+      "category": "tables",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d88ac691a23437da4a9_locker_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e438d2d6d279597506e0_consulate_2.jpg",
+      "category": "tables",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33aed4aa7c59dfbd123f7_pedestal_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d1345008068da79673a_compactor_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d4537b54c7c3b17f77b_metal_locker_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899aa009be5eb667a604f17_image_(5).png",
+      "category": "workstations",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899aa009be5eb667a604f17_image_(5).png",
+      "category": "catalog",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33cd07e416b6139611e93_racks_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33bd6c74b7831216a4bd2_pedestal_2.jpg",
+      "category": "storage",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-32.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-33.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-34.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-35.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/myel/image-39.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-31.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-32.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-33.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-34.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-35.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-36.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-37.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-38.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-39.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sway/image-42.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/phoenix/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/phoenix/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/phoenix/image-35.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid/image-31.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid/image-36.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-34.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/spino/image-27.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/spino/image-28.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/spino/image-32.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/flex/image-33.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/logica/image-27.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/logica/image-28.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sullion/image-28.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/sullion/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/nuvic/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/nuvic/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/rock/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/rock/image-30.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/orbit/image-29.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-21.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-22.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-23.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/toro/image-26.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/arvo/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/ember/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/caneva/image-13.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/crotch/image-15.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/smile/image-15.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/canaret/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/brim/image-12.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/dive/image-15.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-01.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-03.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-04.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-05.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/wing/image-08.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lexus/image-12.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/zilo/image-13.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/zilo/image-14.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/zilo/image-17.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/fynn/image-13.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/caneva-high/image-24.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/caneva-high/image-27.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lisbo/image-08.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lisbo/image-09.png",
+      "category": "chairs",
+      "resolution": "unresolved"
+    },
+    {
+      "path": "/images/chairs/lisbo/image-10.jpg",
+      "category": "chairs",
+      "resolution": "unresolved"
+    }
+  ]
+}

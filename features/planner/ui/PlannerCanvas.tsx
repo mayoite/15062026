@@ -1,7 +1,8 @@
 "use client";
 
+import { getAssetUrls } from "@tldraw/assets/selfHosted";
 import dynamic from "next/dynamic";
-import type { Editor, TLComponents, TLUiAssetUrlOverrides } from "tldraw";
+import type { Editor, TLComponents } from "tldraw";
 
 import type { PlannerStep } from "@/features/planner/shared/types/planner";
 
@@ -26,29 +27,7 @@ const CANVAS_COMPONENTS: TLComponents = {
   SharePanel: null,
 };
 
-const TLDRAW_LOCAL_ASSET_URLS: TLUiAssetUrlOverrides = {
-  fonts: {
-    tldraw_mono: "/cdn/tldraw/fonts/IBMPlexMono-Medium.woff2",
-    tldraw_mono_italic: "/cdn/tldraw/fonts/IBMPlexMono-MediumItalic.woff2",
-    tldraw_mono_bold: "/cdn/tldraw/fonts/IBMPlexMono-Bold.woff2",
-    tldraw_mono_italic_bold: "/cdn/tldraw/fonts/IBMPlexMono-BoldItalic.woff2",
-    tldraw_serif: "/cdn/tldraw/fonts/IBMPlexSerif-Medium.woff2",
-    tldraw_serif_italic: "/cdn/tldraw/fonts/IBMPlexSerif-MediumItalic.woff2",
-    tldraw_serif_bold: "/cdn/tldraw/fonts/IBMPlexSerif-Bold.woff2",
-    tldraw_serif_italic_bold: "/cdn/tldraw/fonts/IBMPlexSerif-BoldItalic.woff2",
-    tldraw_sans: "/cdn/tldraw/fonts/IBMPlexSans-Medium.woff2",
-    tldraw_sans_italic: "/cdn/tldraw/fonts/IBMPlexSans-MediumItalic.woff2",
-    tldraw_sans_bold: "/cdn/tldraw/fonts/IBMPlexSans-Bold.woff2",
-    tldraw_sans_italic_bold: "/cdn/tldraw/fonts/IBMPlexSans-BoldItalic.woff2",
-    tldraw_draw: "/cdn/tldraw/fonts/Shantell_Sans-Informal_Regular.woff2",
-    tldraw_draw_italic: "/cdn/tldraw/fonts/Shantell_Sans-Informal_Regular_Italic.woff2",
-    tldraw_draw_bold: "/cdn/tldraw/fonts/Shantell_Sans-Informal_Bold.woff2",
-    tldraw_draw_italic_bold: "/cdn/tldraw/fonts/Shantell_Sans-Informal_Bold_Italic.woff2",
-  },
-  translations: {
-    en: "/cdn/tldraw/translations/en.json",
-  },
-};
+const localAssetUrls = getAssetUrls({ baseUrl: "/tldraw-assets/" });
 
 const TldrawCanvas = dynamic(
   () => import("tldraw").then((module) => module.Tldraw),
@@ -75,7 +54,7 @@ export function PlannerCanvas({
       <TldrawCanvas
         onMount={onMount}
         className="absolute inset-0"
-        assetUrls={TLDRAW_LOCAL_ASSET_URLS}
+        assetUrls={localAssetUrls}
         components={CANVAS_COMPONENTS}
       />
 

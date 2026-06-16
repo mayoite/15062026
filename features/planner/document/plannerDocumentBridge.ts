@@ -5,6 +5,7 @@ import {
   createEmptyPlannerDocument,
   type PlannerDocument,
 } from "@/features/planner/model/plannerDocument";
+import { toPlannerJsonSafe } from "@/features/planner/model/plannerJsonSafe";
 import { getPageMetrics } from "@/features/planner/editor/planMetrics";
 import { metadataToDocumentFields } from "@/features/planner/onboarding/projectSetup";
 import { serializeWorkspaceState, usePlannerWorkspaceStore } from "../store/workspaceStore";
@@ -33,7 +34,7 @@ export function buildPlannerDocumentFromEditor(
     ...(projectFields ?? {}),
     roomWidthMm: metricRoomWidth ?? projectFields?.roomWidthMm ?? 6000,
     roomDepthMm: metricRoomDepth ?? projectFields?.roomDepthMm ?? 8000,
-    sceneJson: {
+    sceneJson: toPlannerJsonSafe({
       type: "cad-suite-planner-scene",
       version: 1,
       measurement: {
@@ -43,7 +44,7 @@ export function buildPlannerDocumentFromEditor(
       projectSetup: projectMetadata,
       tldrawSnapshot: getSnapshot(editor.store),
       workspace,
-    } as unknown as PlannerDocument["sceneJson"],
+    }),
     updatedAt: now,
     ...overrides,
   });

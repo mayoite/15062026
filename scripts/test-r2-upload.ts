@@ -22,7 +22,7 @@ async function testUpload() {
 
   try {
     const params = {
-      Bucket: "oando-themes", 
+      Bucket: process.env.CLOUDFLARE_R2_CATALOG_BUCKET || "oando-asset-cdn",
       Key: "test-auth.json",
       Body: JSON.stringify({ test: "auth" }),
       ContentType: "application/json"

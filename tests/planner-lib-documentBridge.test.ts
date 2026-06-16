@@ -7,7 +7,7 @@ import {
   isPlannerSceneEnvelope,
   loadPlannerDocumentIntoEditor,
 } from "@/features/planner/lib/documentBridge";
-import { createPlannerDocument } from "@/features/planner/model";
+import { createPlannerDocument, plannerDocumentSchema } from "@/features/planner/model";
 
 function makeEditor(overrides: Partial<Editor> = {}) {
   const roomId = createShapeId("room-shell");
@@ -256,6 +256,58 @@ describe("planner document bridge", () => {
     expect(document.roomWidthMm).toBe(6000);
     expect(document.roomDepthMm).toBe(8000);
     expect(document.unitSystem).toBe("imperial");
+  });
+
+  it("sanitizes messy tldraw snapshot props and session for plannerJsonValueSchema", () => {
+    const deskId = createShapeId("desk-messy");
+    const editor = {
+      getCurrentPageShapes: vi.fn(() => []),
+      getShapePageBounds: vi.fn(() => null),
+      getSnapshot: vi.fn(() => ({
+        document: {
+          store: {
+            [deskId]: {
+              id: deskId,
+              type: "geo",
+              props: {
+                w: 120,
+                depthMm: undefined,
+                label: Symbol("hidden"),
+                points: new Map([["a1", { x: 0, y: undefined, z: NaN }]]),
+                updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+              },
+              meta: { price: 500, text: "Desk", productId: undefined },
+            },
+          },
+          schema: { schemaVersion: 2, sequences: {} },
+        },
+        session: {
+          version: 0,
+          pageStates: [{ pageId: "page:page", camera: { x: NaN, y: 0, z: 1 }, focusedGroupId: null }],
+        },
+      })),
+    } as unknown as Editor;
+
+    const document = buildPlannerDocumentFromEditor(editor, { name: "Sanitized", unitSystem: "mm" });
+    const parsed = plannerDocumentSchema.safeParse({
+      schemaVersion: 1,
+      name: "Sanitized",
+      sceneJson: document.sceneJson,
+    });
+
+    expect(parsed.success).toBe(true);
+    expect(JSON.stringify(document.sceneJson)).not.toContain("price");
+    expect(JSON.stringify(document.sceneJson)).not.toContain("undefined");
+
+    const snapshot = getPlannerSceneEnvelope(document.sceneJson)?.tldrawSnapshot as {
+      document?: { store?: Record<string, { props?: Record<string, unknown> }> };
+    };
+    const props = snapshot?.document?.store?.[deskId]?.props;
+    expect(props?.w).toBe(120);
+    expect(props).not.toHaveProperty("depthMm");
+    expect(props).not.toHaveProperty("label");
+    expect(props?.updatedAt).toBe("2024-01-01T00:00:00.000Z");
+    expect(props?.points).toEqual({ a1: { x: 0, z: null } });
   });
 
   it("sanitizes nested snapshot arrays and infers desk heights without explicit dimensions", () => {

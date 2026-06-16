@@ -1,0 +1,1547 @@
+{
+  "generatedAt": "2026-06-16T04:23:42.226Z",
+  "supabaseConnected": false,
+  "total": 83,
+  "withSuggestion": 83,
+  "withoutSuggestion": 0,
+  "referencedInCatalog": 83,
+  "byConfidence": {
+    "high": 0,
+    "medium": 83,
+    "low": 0,
+    "none": 0
+  },
+  "suggestions": [
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899aa91f03e6a89282d60c6_image_(7).png",
+      "category": "workstations",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-workstations--panel-pro/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "86e3274a-8f85-42cd-b9a6-74c7f510f99a",
+          "slug": "oando-workstations--panel-pro",
+          "name": "Panel Pro",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e19ce6798d83eab6341c_panelpro_2.jpg",
+      "category": "workstations",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-workstations--panel-pro/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "86e3274a-8f85-42cd-b9a6-74c7f510f99a",
+          "slug": "oando-workstations--panel-pro",
+          "name": "Panel Pro",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899aa91f03e6a89282d60c6_image_(7).png",
+      "category": "catalog",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-workstations--panel-pro/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "86e3274a-8f85-42cd-b9a6-74c7f510f99a",
+          "slug": "oando-workstations--panel-pro",
+          "name": "Panel Pro",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899a9c13d41a799c8276857_image_(4).png",
+      "category": "workstations",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e2ecfb7309f199638de2_sleek_2.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "a5a5b6a4-c31a-4b23-9416-56d80e7169a9",
+          "slug": "oando-workstations--sleek",
+          "name": "Sleek",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899a9c13d41a799c8276857_image_(4).png",
+      "category": "catalog",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e2ecfb7309f199638de2_sleek_2.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "a5a5b6a4-c31a-4b23-9416-56d80e7169a9",
+          "slug": "oando-workstations--sleek",
+          "name": "Sleek",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899a993e44404f6f3bcc398_image_(3).png",
+      "category": "workstations",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-workstations--deskpro/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "8a259eef-4824-41cd-ab0c-fcff1d51ace7",
+          "slug": "oando-workstations--deskpro",
+          "name": "DeskPro",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e32607cc220a51bf8b9d_deskpro_2.jpg",
+      "category": "workstations",
+      "reason": "Matched catalog folder oando-workstations--deskpro by product slug \"deskpro\"",
+      "suggestedPath": "/images/catalog/oando-workstations--deskpro/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "8a259eef-4824-41cd-ab0c-fcff1d51ace7",
+          "slug": "oando-workstations--deskpro",
+          "name": "DeskPro",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899a993e44404f6f3bcc398_image_(3).png",
+      "category": "catalog",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-workstations--deskpro/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "8a259eef-4824-41cd-ab0c-fcff1d51ace7",
+          "slug": "oando-workstations--deskpro",
+          "name": "DeskPro",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e46703f08bf146fecda9_presidency_2.jpg",
+      "category": "tables",
+      "reason": "Matched catalog folder oando-tables--presidency by product slug \"presidency\"",
+      "suggestedPath": "/images/catalog/oando-tables--presidency/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "af4e8109-71be-4751-b92a-30d2fc556c1e",
+          "slug": "oando-tables--presidency",
+          "name": "Presidency",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e4f47c86ba66b1d6d195_apex_2.jpg",
+      "category": "tables",
+      "reason": "Matched catalog folder oando-tables--apex by product slug \"apex\"",
+      "suggestedPath": "/images/catalog/oando-tables--apex/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "dfc41751-43ad-446c-b4e7-d6f63b69ef1a",
+          "slug": "oando-tables--apex",
+          "name": "Apex",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d88ac691a23437da4a9_locker_2.jpg",
+      "category": "storage",
+      "reason": "Matched catalog folder oando-storage--metal-locker by product slug \"locker\"",
+      "suggestedPath": "/images/catalog/oando-storage--metal-locker/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "de6456fb-48c5-46bc-94be-df296a1f2c51",
+          "slug": "oando-storage--prelam-locker",
+          "name": "Wooden",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/tables/686d3b55385e7b905b01d3a5_68a2e438d2d6d279597506e0_consulate_2.jpg",
+      "category": "tables",
+      "reason": "Matched catalog folder oando-tables--consulate by product slug \"consulate\"",
+      "suggestedPath": "/images/catalog/oando-tables--consulate/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "9a3ce9fd-6a55-4e64-a91a-f96062b07df7",
+          "slug": "oando-tables--consulate",
+          "name": "Consulate",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33aed4aa7c59dfbd123f7_pedestal_2.jpg",
+      "category": "storage",
+      "reason": "Matched catalog folder oando-storage--metal-pedestal by product slug \"pedestal\"",
+      "suggestedPath": "/images/catalog/oando-storage--metal-pedestal/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "a880c7cd-f07b-422f-b6a7-a176bb14ce6f",
+          "slug": "oando-storage--pedestal",
+          "name": "Prelam",
+          "field": "localCatalogIndex.json"
+        },
+        {
+          "table": "catalog_products",
+          "id": "46a518fe-88f6-401d-ae11-c0972ba012b5",
+          "slug": "oando-storage--prelam-storage",
+          "name": "Prelam",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d1345008068da79673a_compactor_2.jpg",
+      "category": "storage",
+      "reason": "Matched catalog folder oando-storage--compactor by product slug \"compactor\"",
+      "suggestedPath": "/images/catalog/oando-storage--compactor/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "4592c07b-5a1f-4bb8-9947-43a15a8a638c",
+          "slug": "oando-storage--compactor",
+          "name": "Compactor",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33d4537b54c7c3b17f77b_metal_locker_2.jpg",
+      "category": "storage",
+      "reason": "Matched catalog folder oando-storage--metal-locker by product slug \"locker\"",
+      "suggestedPath": "/images/catalog/oando-storage--metal-locker/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "4337b19b-d05e-46e3-b9a1-07d507c887a5",
+          "slug": "oando-storage--metal-locker",
+          "name": "Metal Locker",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/workstations/686d3b55385e7b905b01d3a5_6899aa009be5eb667a604f17_image_(5).png",
+      "category": "workstations",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e2908a7da0ff41267d9c_curvivo_2.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "2bf1e86c-6dfb-4898-9612-ac7554c7b02f",
+          "slug": "oando-workstations--curvivo",
+          "name": "Curvivo",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/catalog/686d3b55385e7b905b01d3a5_6899aa009be5eb667a604f17_image_(5).png",
+      "category": "catalog",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/workstations/686d3b55385e7b905b01d3a5_68a2e2908a7da0ff41267d9c_curvivo_2.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "2bf1e86c-6dfb-4898-9612-ac7554c7b02f",
+          "slug": "oando-workstations--curvivo",
+          "name": "Curvivo",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33cd07e416b6139611e93_racks_2.jpg",
+      "category": "storage",
+      "reason": "Matched catalog folder oando-storage--heavy-duty-racks by product slug \"racks\"",
+      "suggestedPath": "/images/catalog/oando-storage--heavy-duty-racks/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "c75d456e-da5f-4292-ac68-734bb766c77d",
+          "slug": "oando-storage--heavy-duty-racks",
+          "name": "Heavy Dut",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/storage/686d3b55385e7b905b01d3a5_68a33bd6c74b7831216a4bd2_pedestal_2.jpg",
+      "category": "storage",
+      "reason": "Matched catalog folder oando-storage--metal-pedestal by product slug \"pedestal\"",
+      "suggestedPath": "/images/catalog/oando-storage--metal-pedestal/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fbefa799-0278-4c9b-8e85-9574e068e26c",
+          "slug": "oando-storage--metal-pedestal",
+          "name": "Metal Pedestal",
+          "field": "localCatalogIndex.json"
+        },
+        {
+          "table": "catalog_products",
+          "id": "bfada07d-f94e-424c-bcd9-7890aa0c66af",
+          "slug": "oando-storage--metal-storages",
+          "name": "Metal",
+          "field": "localCatalogIndex.json"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/myel/image-32.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--myel",
+      "suggestedPath": "/images/catalog/oando-seating--myel/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "myel-with-headrest",
+          "slug": "myel-with-headrest",
+          "name": "Myel (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "myel-without-headrest",
+          "slug": "myel-without-headrest",
+          "name": "Myel (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/myel/image-33.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--myel",
+      "suggestedPath": "/images/catalog/oando-seating--myel/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "myel-with-headrest",
+          "slug": "myel-with-headrest",
+          "name": "Myel (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "myel-without-headrest",
+          "slug": "myel-without-headrest",
+          "name": "Myel (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/myel/image-34.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--myel",
+      "suggestedPath": "/images/catalog/oando-seating--myel/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "myel-with-headrest",
+          "slug": "myel-with-headrest",
+          "name": "Myel (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "myel-without-headrest",
+          "slug": "myel-without-headrest",
+          "name": "Myel (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/myel/image-35.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--myel",
+      "suggestedPath": "/images/catalog/oando-seating--myel/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "myel-with-headrest",
+          "slug": "myel-with-headrest",
+          "name": "Myel (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "myel-without-headrest",
+          "slug": "myel-without-headrest",
+          "name": "Myel (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/myel/image-39.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--myel",
+      "suggestedPath": "/images/catalog/oando-seating--myel/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "myel-with-headrest",
+          "slug": "myel-with-headrest",
+          "name": "Myel (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "myel-without-headrest",
+          "slug": "myel-without-headrest",
+          "name": "Myel (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-31.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-32.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-33.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-34.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-35.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-36.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-37.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-38.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-39.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sway/image-42.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sway",
+      "suggestedPath": "/images/catalog/oando-seating--sway/image-23.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sway-with-headrest",
+          "slug": "sway-with-headrest",
+          "name": "Sway (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "sway-without-headrest",
+          "slug": "sway-without-headrest",
+          "name": "Sway (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/phoenix/image-29.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--phoenix",
+      "suggestedPath": "/images/catalog/oando-seating--phoenix/image-15.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "phoenix-with-headrest",
+          "slug": "phoenix-with-headrest",
+          "name": "Phoenix (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "phoenix-without-headrest",
+          "slug": "phoenix-without-headrest",
+          "name": "Phoenix (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/phoenix/image-30.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--phoenix",
+      "suggestedPath": "/images/catalog/oando-seating--phoenix/image-15.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "phoenix-with-headrest",
+          "slug": "phoenix-with-headrest",
+          "name": "Phoenix (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "phoenix-without-headrest",
+          "slug": "phoenix-without-headrest",
+          "name": "Phoenix (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/phoenix/image-35.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--phoenix",
+      "suggestedPath": "/images/catalog/oando-seating--phoenix/image-15.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "phoenix-with-headrest",
+          "slug": "phoenix-with-headrest",
+          "name": "Phoenix (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "phoenix-without-headrest",
+          "slug": "phoenix-without-headrest",
+          "name": "Phoenix (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/fluid/image-30.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--fluid",
+      "suggestedPath": "/images/catalog/oando-seating--fluid/image-16.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fluid-with-headrest",
+          "slug": "fluid-with-headrest",
+          "name": "Fluid (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "fluid-without-headrest",
+          "slug": "fluid-without-headrest",
+          "name": "Fluid (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/fluid/image-31.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--fluid",
+      "suggestedPath": "/images/catalog/oando-seating--fluid/image-16.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fluid-with-headrest",
+          "slug": "fluid-with-headrest",
+          "name": "Fluid (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "fluid-without-headrest",
+          "slug": "fluid-without-headrest",
+          "name": "Fluid (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/fluid/image-36.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--fluid",
+      "suggestedPath": "/images/catalog/oando-seating--fluid/image-16.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fluid-with-headrest",
+          "slug": "fluid-with-headrest",
+          "name": "Fluid (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "fluid-without-headrest",
+          "slug": "fluid-without-headrest",
+          "name": "Fluid (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-29.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--fluid-x",
+      "suggestedPath": "/images/catalog/oando-seating--fluid-x/image-10.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fluid-x-with-headrest",
+          "slug": "fluid-x-with-headrest",
+          "name": "Fluid X (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "fluid-x-without-headrest",
+          "slug": "fluid-x-without-headrest",
+          "name": "Fluid X (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-30.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--fluid-x",
+      "suggestedPath": "/images/catalog/oando-seating--fluid-x/image-10.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fluid-x-with-headrest",
+          "slug": "fluid-x-with-headrest",
+          "name": "Fluid X (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "fluid-x-without-headrest",
+          "slug": "fluid-x-without-headrest",
+          "name": "Fluid X (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/fluid-x/image-34.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--fluid-x",
+      "suggestedPath": "/images/catalog/oando-seating--fluid-x/image-10.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fluid-x-with-headrest",
+          "slug": "fluid-x-with-headrest",
+          "name": "Fluid X (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "fluid-x-without-headrest",
+          "slug": "fluid-x-without-headrest",
+          "name": "Fluid X (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/spino/image-27.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--spino",
+      "suggestedPath": "/images/catalog/oando-seating--spino/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "spino-with-headrest",
+          "slug": "spino-with-headrest",
+          "name": "Spino (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "spino-without-headrest",
+          "slug": "spino-without-headrest",
+          "name": "Spino (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/spino/image-28.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--spino",
+      "suggestedPath": "/images/catalog/oando-seating--spino/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "spino-with-headrest",
+          "slug": "spino-with-headrest",
+          "name": "Spino (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "spino-without-headrest",
+          "slug": "spino-without-headrest",
+          "name": "Spino (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/spino/image-32.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--spino",
+      "suggestedPath": "/images/catalog/oando-seating--spino/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "spino-with-headrest",
+          "slug": "spino-with-headrest",
+          "name": "Spino (With Headrest)",
+          "field": "images (catalog-seating.json)"
+        },
+        {
+          "table": "catalog_products",
+          "id": "spino-without-headrest",
+          "slug": "spino-without-headrest",
+          "name": "Spino (Without Headrest)",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/flex/image-33.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--flex",
+      "suggestedPath": "/images/catalog/oando-seating--flex/image-13.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "flex",
+          "slug": "flex",
+          "name": "Flex",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/logica/image-27.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--logica",
+      "suggestedPath": "/images/catalog/oando-seating--logica/image-09.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "logica",
+          "slug": "logica",
+          "name": "Logica",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/logica/image-28.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--logica",
+      "suggestedPath": "/images/catalog/oando-seating--logica/image-09.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "logica",
+          "slug": "logica",
+          "name": "Logica",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sullion/image-28.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sullion",
+      "suggestedPath": "/images/catalog/oando-seating--sullion/image-11.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sullion",
+          "slug": "sullion",
+          "name": "Sullion",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/sullion/image-29.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--sullion",
+      "suggestedPath": "/images/catalog/oando-seating--sullion/image-11.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "sullion",
+          "slug": "sullion",
+          "name": "Sullion",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/nuvic/image-29.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--nuvic",
+      "suggestedPath": "/images/catalog/oando-seating--nuvic/image-13.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "nuvic",
+          "slug": "nuvic",
+          "name": "Nuvic",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/nuvic/image-30.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--nuvic",
+      "suggestedPath": "/images/catalog/oando-seating--nuvic/image-13.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "nuvic",
+          "slug": "nuvic",
+          "name": "Nuvic",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/rock/image-29.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--rock",
+      "suggestedPath": "/images/catalog/oando-seating--rock/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "rock",
+          "slug": "rock",
+          "name": "Rock",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/rock/image-30.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--rock",
+      "suggestedPath": "/images/catalog/oando-seating--rock/image-14.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "rock",
+          "slug": "rock",
+          "name": "Rock",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/orbit/image-29.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--orbit",
+      "suggestedPath": "/images/catalog/oando-seating--orbit/image-13.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "orbit",
+          "slug": "orbit",
+          "name": "Orbit",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/toro/image-21.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--toro",
+      "suggestedPath": "/images/catalog/oando-seating--toro/image-20.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "toro",
+          "slug": "toro",
+          "name": "Toro",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/toro/image-22.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--toro",
+      "suggestedPath": "/images/catalog/oando-seating--toro/image-20.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "toro",
+          "slug": "toro",
+          "name": "Toro",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/toro/image-23.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--toro",
+      "suggestedPath": "/images/catalog/oando-seating--toro/image-20.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "toro",
+          "slug": "toro",
+          "name": "Toro",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/toro/image-26.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--toro",
+      "suggestedPath": "/images/catalog/oando-seating--toro/image-20.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "toro",
+          "slug": "toro",
+          "name": "Toro",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/arvo/image-14.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--arvo",
+      "suggestedPath": "/images/catalog/oando-seating--arvo/image-11.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "arvo",
+          "slug": "arvo",
+          "name": "Arvo",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/ember/image-14.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--ember",
+      "suggestedPath": "/images/catalog/oando-seating--ember/image-12.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "ember",
+          "slug": "ember",
+          "name": "Ember",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/caneva/image-13.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--caneva",
+      "suggestedPath": "/images/catalog/oando-seating--caneva/image-11.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "caneva",
+          "slug": "caneva",
+          "name": "Caneva",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/crotch/image-15.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--crotch",
+      "suggestedPath": "/images/catalog/oando-seating--crotch/image-13.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "crotch",
+          "slug": "crotch",
+          "name": "Crotch",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/smile/image-15.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--smile",
+      "suggestedPath": "/images/catalog/oando-seating--smile/image-13.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "smile",
+          "slug": "smile",
+          "name": "Smile",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/canaret/image-14.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--canaret",
+      "suggestedPath": "/images/catalog/oando-seating--canaret/image-12.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "canaret",
+          "slug": "canaret",
+          "name": "Canaret",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/brim/image-12.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--brim",
+      "suggestedPath": "/images/catalog/oando-seating--brim/image-11.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "brim",
+          "slug": "brim",
+          "name": "Brim",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/dive/image-15.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--dive",
+      "suggestedPath": "/images/catalog/oando-seating--dive/image-13.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "dive",
+          "slug": "dive",
+          "name": "Dive",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/wing/image-01.png",
+      "category": "chairs",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-seating--breeze/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "wing",
+          "slug": "wing",
+          "name": "Wing",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/wing/image-03.png",
+      "category": "chairs",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-seating--breeze/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "wing",
+          "slug": "wing",
+          "name": "Wing",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/wing/image-04.png",
+      "category": "chairs",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-seating--breeze/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "wing",
+          "slug": "wing",
+          "name": "Wing",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/wing/image-05.jpg",
+      "category": "chairs",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-seating--breeze/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "wing",
+          "slug": "wing",
+          "name": "Wing",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/wing/image-08.png",
+      "category": "chairs",
+      "reason": "Resolved via features/catalog/imageMetadata for referenced product",
+      "suggestedPath": "/images/catalog/oando-seating--breeze/image-1.jpg",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "wing",
+          "slug": "wing",
+          "name": "Wing",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/lexus/image-12.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--lexus",
+      "suggestedPath": "/images/catalog/oando-seating--lexus/image-11.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "lexus",
+          "slug": "lexus",
+          "name": "Lexus",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/zilo/image-13.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--zilo",
+      "suggestedPath": "/images/catalog/oando-seating--zilo/image-12.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "zilo",
+          "slug": "zilo",
+          "name": "Zilo",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/zilo/image-14.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--zilo",
+      "suggestedPath": "/images/catalog/oando-seating--zilo/image-12.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "zilo",
+          "slug": "zilo",
+          "name": "Zilo",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/zilo/image-17.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--zilo",
+      "suggestedPath": "/images/catalog/oando-seating--zilo/image-12.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "zilo",
+          "slug": "zilo",
+          "name": "Zilo",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/fynn/image-13.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--fynn",
+      "suggestedPath": "/images/catalog/oando-seating--fynn/image-11.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "fynn",
+          "slug": "fynn",
+          "name": "Fynn",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/caneva-high/image-24.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--caneva-high",
+      "suggestedPath": "/images/catalog/oando-seating--caneva-high/image-12.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "caneva-high",
+          "slug": "caneva-high",
+          "name": "Caneva-High",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/caneva-high/image-27.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--caneva-high",
+      "suggestedPath": "/images/catalog/oando-seating--caneva-high/image-12.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "caneva-high",
+          "slug": "caneva-high",
+          "name": "Caneva-High",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/lisbo/image-08.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--lisbo",
+      "suggestedPath": "/images/catalog/oando-seating--lisbo/image-07.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "lisbo",
+          "slug": "lisbo",
+          "name": "Lisbo",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/lisbo/image-09.png",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--lisbo",
+      "suggestedPath": "/images/catalog/oando-seating--lisbo/image-07.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "lisbo",
+          "slug": "lisbo",
+          "name": "Lisbo",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    },
+    {
+      "path": "/images/chairs/lisbo/image-10.jpg",
+      "category": "chairs",
+      "reason": "Nearest ingested image for oando-seating--lisbo",
+      "suggestedPath": "/images/catalog/oando-seating--lisbo/image-07.webp",
+      "confidence": "medium",
+      "referencedBy": [
+        {
+          "table": "catalog_products",
+          "id": "lisbo",
+          "slug": "lisbo",
+          "name": "Lisbo",
+          "field": "images (catalog-seating.json)"
+        }
+      ]
+    }
+  ]
+}

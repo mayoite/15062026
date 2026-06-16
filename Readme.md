@@ -16,7 +16,7 @@ Ops state lives in `docs/Handover.md` and `docs/Failures.md` — not at root.
 
 ## Read next
 
-`docs/DOC-MAP.md` → `docs/TESTING.md`, `docs/SCRIPTS.md`, `docs/CSS-ARCHITECTURE.md` · **`plans/MASTER-PLAN.md`** (start here) · `plans/TESTING-PLAN.md`, `plans/COVERAGE-PLAN.md`
+`docs/DOC-MAP.md` → `docs/TESTING.md`, `docs/SCRIPTS.md`, `docs/CSS-ARCHITECTURE.md`, **`docs/workflow/`** · **`plans/MASTER-PLAN.md`** (start here) · `plans/TESTING-PLAN.md`, `plans/COVERAGE-PLAN.md`
 
 ## Layout
 
@@ -33,6 +33,22 @@ Target tree: `plans/REPO-STRUCTURE-PLAN.md`. Subfolder blurbs: `<dir>/CONTENTS.m
 - **Planner:** `app/css/core/planner/bundles/*` — workspace bundle imports `planner-shell.css`, `planner-workflow.css`, `planner-typography.css` (last), then canvas rules.
 
 See `docs/CSS-ARCHITECTURE.md` for the full import map.
+
+## Assets & CDN
+
+| Layer | Location | Deployed? |
+|-------|----------|-----------|
+| App SDKs (tldraw, model-viewer, Draco) | `public/cdn/` | Yes (small, in git) |
+| Catalog images + 3D | R2 bucket **`oando-asset-cdn`** | Cloud only |
+| Local mirror + upload source | `asset-cdn/` | No (gitignored) |
+| Path strings | Supabase | DB only |
+
+```bash
+npm.cmd run assets:cdn:upload          # local → oando-asset-cdn
+node scripts/count-r2-objects.mjs oando-asset-cdn
+```
+
+Asset & CDN workflow: **`docs/workflow/README.md`** (site · planner · backend · folders · operations).
 
 ## Planner delivery loop
 

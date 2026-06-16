@@ -156,6 +156,30 @@ Excludes: `node_modules`, `.git`, `.next`, `archive`, `results`, `test-results`,
 
 ---
 
+## CDN & catalog assets
+
+Canonical R2 bucket: **`oando-asset-cdn`**. See `docs/workflow/operations.md`.
+
+| npm script | Script file | Purpose |
+|---|---|---|
+| `assets:cdn:sync` | `syncVendorCdnAssets.mjs` | Download vendor SDKs into `public/cdn/vendor/` |
+| `assets:cdn:catalog` | `downloadCdnAssets.ts` | Pull catalog paths from cloud → local (`asset-cdn/` or `public/`) |
+| `assets:cdn:upload` | `uploadCdnAssets.ts` | Push `asset-cdn/` / `public/images` / `public/models` → R2 |
+| `assets:cdn:audit` | `auditCdnAssetFailures.ts` | Report missing local/cloud catalog assets |
+| `assets:cdn:fix` | `auditCdnAssetFailures.ts --apply` | Apply catalog path fixes |
+| `assets:cdn:replacements` | `auditUnresolvedCdnPaths.ts` | Suggest replacements for unresolved paths |
+| `assets:r2:create-bucket` | `create-bucket.ts` | Create R2 bucket (default `oando-asset-cdn`) |
+| `assets:r2:delete-bucket` | `deleteR2Bucket.ts` | Delete bucket(s); refuses `oando-asset-cdn` |
+
+| Helper (no npm script) | Purpose |
+|---|---|
+| `count-r2-objects.mjs` | `node scripts/count-r2-objects.mjs [bucket]` |
+| `list-r2-buckets.mjs` | `node scripts/list-r2-buckets.mjs` |
+
+Upload flags: `--dry-run`, `--limit=N`, `--only=images|models`, `--force` (overwrite existing keys).
+
+---
+
 ## Deploy
 
 | File | npm script | Purpose |

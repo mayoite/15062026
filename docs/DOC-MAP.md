@@ -9,7 +9,7 @@ Three layers — do not mix them:
 | Layer | What | Where | Edit when |
 |-------|------|-------|-----------|
 | **Live ops** | Current milestones + open breakages | `Handover.md`, `Failures.md` | Something changes today |
-| **Reference** | How the repo works (stable how-to) | `TESTING.md`, `SCRIPTS.md`, `CSS-ARCHITECTURE.md` | Tooling or layout changes |
+| **Reference** | How the repo works (stable how-to) | `TESTING.md`, `SCRIPTS.md`, `CSS-ARCHITECTURE.md`, `workflow/` | Tooling or layout changes |
 | **Ops evidence** | Point-in-time audits + context tables | `ops/audits/`, `ops/context/` | After an audit run |
 
 **Not in `docs/`:** phased roadmaps → `plans/`. Retired plans and recovered session logs → `archive/docs/`.
@@ -22,6 +22,14 @@ docs/
 ├── TESTING.md              ← reference: test layout & commands
 ├── SCRIPTS.md              ← reference: npm scripts
 ├── CSS-ARCHITECTURE.md     ← reference: CSS import map
+├── CDN-ARCHITECTURE.md     ← redirect → workflow/
+├── workflow/               ← asset & CDN workflow (start: README.md)
+│   ├── README.md
+│   ├── site.md
+│   ├── planner.md
+│   ├── backend.md
+│   ├── folders.md
+│   └── operations.md
 ├── CONTENTS.md             ← generated folder blurb
 └── ops/
     ├── audits/             ← Supabase audit snapshots (md + json)
@@ -70,6 +78,7 @@ Markdown under `archive/` is a **frozen snapshot** for things worth keeping read
 | Open breakages | `docs/Failures.md` |
 | How tests work | `docs/TESTING.md` |
 | npm scripts | `docs/SCRIPTS.md` |
+| CDN / R2 / catalog assets | `docs/workflow/README.md` |
 | Program dashboard | `plans/MASTER-PLAN.md` |
 | Test/coverage roadmap | `plans/TESTING-PLAN.md` |
 | Folder cleanup roadmap | `plans/REPO-STRUCTURE-PLAN.md` |

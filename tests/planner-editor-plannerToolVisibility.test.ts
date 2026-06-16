@@ -12,11 +12,17 @@ function toolById(id: string) {
 }
 
 describe("isPlannerToolVisible", () => {
-  it("shows furniture in place for balanced and step modes", () => {
+  it("shows furniture in balanced and all modes on every step", () => {
     const furniture = toolById("furniture");
+    expect(isPlannerToolVisible("draw", furniture, "balanced")).toBe(true);
     expect(isPlannerToolVisible("place", furniture, "balanced")).toBe(true);
+    expect(isPlannerToolVisible("review", furniture, "all")).toBe(true);
+  });
+
+  it("hides non-step tools in step-focused draw mode", () => {
+    const furniture = toolById("furniture");
+    expect(isPlannerToolVisible("draw", furniture, "step")).toBe(false);
     expect(isPlannerToolVisible("place", furniture, "step")).toBe(true);
-    expect(isPlannerToolVisible("draw", furniture, "balanced")).toBe(false);
   });
 
   it("keeps navigation tools visible in every mode", () => {
