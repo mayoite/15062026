@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T15:36:03.878Z",
+  "generatedAt": "2026-06-16T17:54:41.126Z",
   "vitestExitCode": 0,
   "vitestSiteExitCode": 0,
   "coverageRunExclude": [],
@@ -8,46 +8,46 @@
   "scopes": {
     "all": {
       "statements": {
-        "covered": 9707,
-        "total": 12356,
-        "pct": 78.6
+        "covered": 10511,
+        "total": 13469,
+        "pct": 78
       },
       "functions": {
-        "covered": 2301,
-        "total": 3054,
-        "pct": 75.3
+        "covered": 2450,
+        "total": 3261,
+        "pct": 75.1
       },
       "branches": {
-        "covered": 5972,
-        "total": 8556,
-        "pct": 69.8
+        "covered": 6673,
+        "total": 9629,
+        "pct": 69.3
       },
       "lines": {
-        "covered": 8797,
-        "total": 10927,
-        "pct": 80.5
+        "covered": 9536,
+        "total": 11914,
+        "pct": 80
       }
     },
     "features/planner": {
       "statements": {
-        "covered": 9707,
-        "total": 12356,
-        "pct": 78.6
+        "covered": 10511,
+        "total": 13469,
+        "pct": 78
       },
       "functions": {
-        "covered": 2301,
-        "total": 3054,
-        "pct": 75.3
+        "covered": 2450,
+        "total": 3261,
+        "pct": 75.1
       },
       "branches": {
-        "covered": 5972,
-        "total": 8556,
-        "pct": 69.8
+        "covered": 6673,
+        "total": 9629,
+        "pct": 69.3
       },
       "lines": {
-        "covered": 8797,
-        "total": 10927,
-        "pct": 80.5
+        "covered": 9536,
+        "total": 11914,
+        "pct": 80
       }
     },
     "features/other": {
@@ -162,8 +162,8 @@
     },
     "site": {
       "statements": {
-        "covered": 2220,
-        "total": 2297,
+        "covered": 2221,
+        "total": 2298,
         "pct": 96.6
       },
       "functions": {
@@ -172,13 +172,13 @@
         "pct": 96.3
       },
       "branches": {
-        "covered": 1747,
+        "covered": 1752,
         "total": 1988,
-        "pct": 87.9
+        "pct": 88.1
       },
       "lines": {
-        "covered": 1971,
-        "total": 2015,
+        "covered": 1972,
+        "total": 2016,
         "pct": 97.8
       }
     }

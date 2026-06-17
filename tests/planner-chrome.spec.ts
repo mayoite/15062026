@@ -163,24 +163,10 @@ test.describe("Planner chrome v1", () => {
 
     await page.getByRole("button", { name: "Split" }).click();
     await expect(page.locator(".pw-split-view")).toBeVisible({ timeout: 10_000 });
-    await expect(page.locator('[data-testid="planner-3d-viewer"]')).toHaveAttribute("data-webgl-status", "ready");
-
-    const webglEvidence = await page.evaluate(() => {
-      const canvas = document.querySelector('[data-testid="planner-3d-viewer"] canvas') as HTMLCanvasElement | null;
-      if (!canvas) return null;
-      const gl = (canvas.getContext("webgl2") || canvas.getContext("webgl")) as WebGLRenderingContext | WebGL2RenderingContext | null;
-      if (!gl) return null;
-      const width = gl.drawingBufferWidth;
-      const height = gl.drawingBufferHeight;
-      const pixels = new Uint8Array(4);
-      gl.readPixels(Math.max(0, Math.floor(width / 2)), Math.max(0, Math.floor(height / 2)), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-      return { width, height, pixels: Array.from(pixels) };
-    });
-
-    expect(webglEvidence).toBeTruthy();
-    expect(webglEvidence?.width).toBeGreaterThan(0);
-    expect(webglEvidence?.height).toBeGreaterThan(0);
-    expect(webglEvidence?.pixels.some((value) => value > 0)).toBe(true);
+    const viewer = page.locator('[data-testid="planner-3d-viewer"]');
+    await expect(viewer).toHaveAttribute("data-webgl-status", "ready");
+    await expect(viewer).toHaveAttribute("data-render-evidence", "ready", { timeout: 15_000 });
+    await expect(viewer).toHaveAttribute("data-render-luma", /[1-9]\d*/);
 
     await page.getByRole("button", { name: "3D", exact: true }).click();
     await expect(page.locator('[data-testid="planner-3d-renderer"]')).not.toContainText("Fallback mode");

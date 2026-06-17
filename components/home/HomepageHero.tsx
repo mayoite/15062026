@@ -4,17 +4,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, SealCheck } from "@phosphor-icons/react";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 
 import {
   HOMEPAGE_HERO_CONTENT,
   HOMEPAGE_HERO_IMAGES,
 } from "@/data/site/homepage";
-import { MOTION_EASE } from "@/lib/helpers/motion";
+import {
+  MOTION_EASE,
+  MOTION_TOKENS,
+  useMotionSafeHover,
+} from "@/lib/helpers/motion";
 
 const containerVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.14, delayChildren: 0.2 } },
+  visible: { transition: { staggerChildren: 0.18, delayChildren: 0.32 } },
 };
 
 const wordVariants: Variants = {
@@ -23,34 +27,45 @@ const wordVariants: Variants = {
     y: 0,
     opacity: 1,
     rotate: 0,
-    transition: { duration: 0.9, ease: MOTION_EASE },
+    transition: { duration: MOTION_TOKENS.slow, ease: MOTION_EASE },
   },
 };
 
 const fadeUpVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: MOTION_EASE } },
+  hidden: { opacity: 0, y: MOTION_TOKENS.distanceMd },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: MOTION_TOKENS.medium, ease: MOTION_EASE },
+  },
 };
 
 export function HomepageHero() {
   const { kicker, title, primaryCta, secondaryCta, glassProof } = HOMEPAGE_HERO_CONTENT;
   const [currentIndex, setCurrentIndex] = useState(0);
+  const reduceMotion = useReducedMotion();
+  const primaryCtaHover = useMotionSafeHover({ scale: 1.02, y: -2 }, { scale: 0.98 });
+  const secondaryCtaHover = useMotionSafeHover({ scale: 1.02, y: -2 }, { scale: 0.98 });
 
   const currentImage = HOMEPAGE_HERO_IMAGES[currentIndex];
+
+  const imageTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: MOTION_TOKENS.medium, ease: MOTION_EASE };
 
   return (
     <section
       id="home-hero"
       className="relative min-h-[78vh] w-full overflow-hidden bg-inverse pt-20 md:min-h-[85vh] md:pt-24"
     >
-      <AnimatePresence mode="sync" initial={false}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={currentIndex}
           className="absolute inset-0 h-[115%] w-full -top-[7%] origin-center"
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.4, ease: "easeOut" }}
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={reduceMotion ? undefined : { opacity: 0 }}
+          transition={imageTransition}
         >
           <Image
             src={currentImage.src}
@@ -86,8 +101,15 @@ export function HomepageHero() {
             ))}
           </h1>
 
+          <motion.p
+            variants={fadeUpVariants}
+            className="home-kicker text-[color:var(--color-bronze-300)]"
+          >
+            {kicker}
+          </motion.p>
+
           <motion.div variants={fadeUpVariants} className="home-actions">
-            <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+            <motion.div {...primaryCtaHover}>
               <Link
                 href={primaryCta.href}
                 className="btn-hero-primary btn-primary shadow-theme-panel"
@@ -95,7 +117,7 @@ export function HomepageHero() {
                 {primaryCta.label}
               </Link>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+            <motion.div {...secondaryCtaHover}>
               <Link
                 href={secondaryCta.href}
                 className="btn-hero-secondary btn-accent shadow-theme-panel"
@@ -104,13 +126,6 @@ export function HomepageHero() {
               </Link>
             </motion.div>
           </motion.div>
-
-          <motion.p
-            variants={fadeUpVariants}
-            className="home-kicker text-[color:var(--color-bronze-300)]"
-          >
-            {kicker}
-          </motion.p>
         </motion.div>
 
         <motion.div

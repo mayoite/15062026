@@ -4,7 +4,9 @@ import { type KeyboardEvent, useCallback, useEffect, useState, type ReactNode } 
 import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { fadeUp, useMotionSafeHover } from "@/lib/helpers/motion";
 
 export interface CarouselItem {
   id: string;
@@ -36,6 +38,7 @@ export function ShowcaseCarousel({
   className = "",
   dark = false,
 }: ShowcaseCarouselProps) {
+  const navHover = useMotionSafeHover({ scale: 1.04 }, { scale: 0.98 });
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", loop: false });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -84,11 +87,15 @@ export function ShowcaseCarousel({
 
   return (
     <section
+      data-testid="home-showcase"
       className={`${sectionClass} ${className}`.trim()}
       aria-label={sectionAriaLabel}
     >
       <div className="home-shell-xl">
-        <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <motion.div
+          className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"
+          {...fadeUp(16, 0.06)}
+        >
           <div>
             {sectionLabel ? (
               <p
@@ -109,38 +116,41 @@ export function ShowcaseCarousel({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
+            <motion.button
               type="button"
               aria-label="Previous project"
               onClick={() => emblaApi?.scrollPrev()}
               disabled={!canScrollPrev}
               className={navButtonClass}
+              {...navHover}
             >
               <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               type="button"
               aria-label="Next project"
               onClick={() => emblaApi?.scrollNext()}
               disabled={!canScrollNext}
               className={navButtonClass}
+              {...navHover}
             >
               <ChevronRight className="h-5 w-5" />
-            </button>
+            </motion.button>
             {browseLink ? (
               <Link href={browseLink} className={`${browseLinkClass} typ-cta`}>
                 {browseLabel}
               </Link>
             ) : null}
           </div>
-        </div>
+        </motion.div>
 
-        <div
-          ref={emblaRef}
-          className="overflow-hidden"
-          onKeyDown={handleKeyDown}
-          tabIndex={0}
-        >
+        <motion.div {...fadeUp(22, 0.18)}>
+          <div
+            ref={emblaRef}
+            className="overflow-hidden"
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+          >
           <div className="flex gap-5">
             {items.map((item) => (
               <article
@@ -154,20 +164,21 @@ export function ShowcaseCarousel({
                       alt={item.name}
                       fill
                       sizes="(max-width: 768px) 88vw, (max-width: 1280px) 42vw, 28rem"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
                     <div className="home-showcase-overlay" />
                     <div className="home-showcase-card__caption">
-                      <h3 className="home-showcase-card__title">{item.name}</h3>
+                      <h3 className="typ-overlay-title text-inverse">{item.name}</h3>
                     </div>
                   </div>
                 </Link>
               </article>
             ))}
           </div>
-        </div>
+          </div>
+        </motion.div>
 
-        <div className="mt-8 flex items-center justify-between gap-4">
+        <motion.div className="mt-8 flex items-center justify-between gap-4" {...fadeUp(10, 0.26)}>
           {items.length > 5 ? (
             <p
               className={`home-showcase-mobile-count ${
@@ -197,7 +208,7 @@ export function ShowcaseCarousel({
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

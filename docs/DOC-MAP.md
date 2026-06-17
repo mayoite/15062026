@@ -12,7 +12,7 @@ Three layers — do not mix them:
 | **Reference** | How the repo works (stable how-to) | `TESTING.md`, `SCRIPTS.md`, `CSS-ARCHITECTURE.md`, `workflow/` | Tooling or layout changes |
 | **Ops reference** | Static context tables | `ops/context/` | After `docs:routes` |
 
-**Not in `docs/`:** phased roadmaps → `plans/`. Retired plans and recovered session logs → `archive/docs/`.
+**Not in `docs/`:** phased roadmaps / planning-related (e.g. *-PLAN.md, MASTER-PLAN.md etc.) → `plans/`. Non-plan reference/how-to/ops (Handover, Failures, TESTING.md etc.) stay in `docs/`. Retired plans and recovered session logs → `archive/docs/`. (See completed batch in `archive/docs/plans/completed-2026-06-16/`.)
 
 ```
 docs/
@@ -84,10 +84,10 @@ Markdown under `archive/` is a **frozen snapshot** for things worth keeping read
 | Databases (Supabase + Drizzle) | `docs/workflow/database.md` |
 | Program dashboard | `plans/MASTER-PLAN.md` |
 | Test/coverage roadmap | `plans/TESTING-PLAN.md` |
-| Folder cleanup roadmap | `plans/REPO-STRUCTURE-PLAN.md` |
+| Folder cleanup roadmap | `plans/REPO-STRUCTURE-PLAN.md` (archived to archive/docs/plans/completed-2026-06-16/) |
 | Hardcoding inventory | `docs/HARDCODING-INVENTORY.md` |
 | Hardcoding remediation plan | `plans/HARDCODING-PLAN.md` |
-| Homepage layout + typography | `plans/HOMEPAGE-LAYOUT-TYPOGRAPHY.md` |
+| Homepage layout + typography | `plans/HOMEPAGE-LAYOUT-TYPOGRAPHY.md` (archived to archive/docs/plans/completed-2026-06-16/) |
 | Archived plans crosswalk | `plans/ARCHIVE-MAP.md` |
 | Audit snapshots (Supabase, lighthouse, security) | `results/audits/` |
 | Test file list | `tests/INVENTORY.md` or `results/test-inventory.json` |
@@ -95,7 +95,7 @@ Markdown under `archive/` is a **frozen snapshot** for things worth keeping read
 | Coverage report (per-metric remarks) | `results/COVERAGE-REPORT.md` — `npm run docs:sync:coverage` |
 | Coverage handover / close block | `docs/Handover.md` § Coverage close block · `plans/SITE-COVERAGE.md` |
 | Recovered session logs | `archive/docs/recovered-2026-06-15/` |
-| Historical plans | `archive/docs/plans/`, `archive/docs/plans-retired-2026-06-14/` — see `plans/ARCHIVE-MAP.md` |
+| Historical plans | `archive/docs/plans/`, `archive/docs/plans-retired-2026-06-14/`, `archive/docs/plans/completed-2026-06-16/` — see `plans/ARCHIVE-MAP.md` |
 
 ## Sync (one script, one pass)
 

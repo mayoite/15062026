@@ -15,20 +15,52 @@ test.describe("site navigation smoke", () => {
     await expect(secondDot).toHaveAttribute("aria-current", "true");
   });
 
+  test("homepage hero exposes product and quote CTAs plus trusted-by glass proof", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const exploreProducts = page.getByRole("link", { name: "Explore Products" });
+    await expect(exploreProducts).toBeVisible();
+    await expect(exploreProducts).toHaveAttribute("href", /\/products\/?$/);
+
+    const requestQuote = page.getByRole("link", { name: "Request a quote" });
+    await expect(requestQuote).toBeVisible();
+    await expect(requestQuote).toHaveAttribute("href", /\/contact\/?$/);
+
+    const glassProof = page.getByRole("link", { name: /View clients/i });
+    await expect(glassProof).toBeVisible();
+    await expect(glassProof).toHaveAttribute("href", /\/trusted-by\/?$/);
+    await expect(glassProof).toContainText(/Trusted by/i);
+    await expect(glassProof).toContainText(/400\+/i);
+  });
+
   test("homepage shows Final0704-inspired sections", async ({ page }) => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { name: /Browse/i })).toBeVisible();
     await expect(page.getByTestId("kpi-client-organisations")).toBeVisible();
+    await expect(page.getByTestId("kpi-locations-served")).toBeVisible();
     await expect(page.getByRole("heading", { name: /Delivered for/i })).toContainText(
       /leading organizations/i,
     );
+    await expect(
+      page.getByRole("heading", { name: /Official Strategic/i }),
+    ).toContainText(/Partner/i);
     await expect(page.getByRole("heading", { name: /Design your workspace/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Oando Planner/i })).toBeVisible();
     await expect(page.locator("a.home-tool-card", { hasText: /Planning service/i })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: /We engineer workspaces/i }),
     ).toBeVisible();
+
+    const briefForm = page.getByRole("form", { name: "Project brief enquiry" });
+    await expect(briefForm).toBeVisible();
+    await expect(briefForm.getByRole("button", { name: /Send Brief/i })).toBeVisible();
+    await expect(briefForm.getByLabel("Name")).toBeVisible();
+    await expect(briefForm.getByLabel("City")).toBeVisible();
+    await expect(briefForm.getByLabel("Phone or Email")).toBeVisible();
+    await expect(briefForm.locator("#contact-teaser-brief")).toBeVisible();
   });
 
   test("/planning service page loads with workflow section", async ({ page }) => {

@@ -143,7 +143,7 @@
 .home-planner-suite-metric__value {
   font-family: var(--font-display);
   font-size: clamp(1.65rem, 2.6vw, 2.1rem);
-  font-weight: 350;
+  font-weight: var(--font-weight-display-light, 300);
   line-height: 0.95;
   letter-spacing: -0.04em;
   color: var(--text-inverse);
@@ -222,20 +222,21 @@
   line-height: 1.3;
 }
 
+.typ-stat {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 67px);
+  font-weight: var(--font-weight-display-light, 300);
+  letter-spacing: -0.06em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
 .home-collection-card .typ-overlay-title {
   text-shadow: 0 2px 18px rgb(0 0 0 / 0.42);
 }
 
-.home-showcase-card__title {
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 1.15rem + 1.1vw, 2.25rem);
-  font-weight: var(--font-weight-display-regular, 400);
-  letter-spacing: -0.03em;
-  line-height: 1.04;
-  text-align: left;
-  color: var(--text-inverse);
+.home-showcase-card__caption .typ-overlay-title {
   text-shadow: 0 2px 20px rgb(0 0 0 / 0.5);
-  text-wrap: balance;
 }
 
 .home-showcase-card__caption {
@@ -311,40 +312,13 @@
   background: var(--color-white-50);
 }
 
-.home-trust-section {
-  width: 100%;
-  background: var(--surface-soft);
-  padding-block: 2rem;
-}
-
-@media (min-width: 768px) {
-  .home-trust-section {
-    padding-block: 2.5rem;
-  }
-}
-
 .home-showcase-section {
   width: 100%;
   overflow: hidden;
-  padding-block: 3rem;
-}
-
-@media (min-width: 768px) {
-  .home-showcase-section {
-    padding-block: 5rem;
-  }
 }
 
 .home-showcase-section--light {
   background: var(--surface-page);
-}
-
-.home-tool-title {
-  margin-bottom: 0.5rem;
-  font-size: 1.125rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--text-strong);
 }
 
 .home-process-copy {
@@ -372,16 +346,7 @@
   color: var(--text-inverse-muted);
 }
 
-.home-tool-heading--dark {
-  margin-bottom: 0.5rem;
-  font-family: var(--font-display);
-  font-size: var(--type-title-sm-size, clamp(18px, 1.04rem + 0.24vw, 20px));
-  font-weight: var(--font-weight-display-regular, 400);
-  letter-spacing: -0.038em;
-  line-height: var(--type-leading-h3, 1.12);
-  color: var(--text-inverse);
-  text-wrap: balance;
-}
+
 
 .home-tool-link--dark {
   margin-top: auto;

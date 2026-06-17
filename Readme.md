@@ -22,7 +22,7 @@ Ops state lives in `docs/Handover.md` and `docs/Failures.md` — not at root.
 
 `app/` · `features/planner/` · `components/` · `lib/` · `tests/` · `scripts/` · `docs/` · `plans/` · `platform/` · `config/` · `results/` · `archive/`
 
-Target tree: `plans/REPO-STRUCTURE-PLAN.md`. Subfolder blurbs: `<dir>/CONTENTS.md` (`npm run docs:sync:all`).
+Target tree: `plans/REPO-STRUCTURE-PLAN.md` (archived to archive/docs/plans/completed-2026-06-16/). Subfolder blurbs: `<dir>/CONTENTS.md` (`npm run docs:sync:all`).
 
 ## CSS
 

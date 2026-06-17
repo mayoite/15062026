@@ -73,7 +73,7 @@ describe("Planner StateNode tools", () => {
     expect(editor.updateShape).toHaveBeenCalled();
   });
 
-  it("PlannerFurnitureTool places catalog item on pointer down", async () => {
+  it("PlannerFurnitureTool places a catalog item and keeps placement armed", async () => {
     const store = await import("@/features/planner/store/plannerStore") as {
       __plannerStoreState: { activeCatalogId: string | null };
     };
@@ -85,7 +85,7 @@ describe("Planner StateNode tools", () => {
     tool.onPointerMove();
     tool.onPointerDown();
     expect(editor.createShape).toHaveBeenCalled();
-    expect(editor.setCurrentTool).toHaveBeenCalledWith("select");
+    expect(editor.setCurrentTool).not.toHaveBeenCalledWith("select");
   });
 
   it("PlannerZoneTool draws zone polygon", () => {
@@ -201,13 +201,11 @@ describe("Planner StateNode tools", () => {
     expect(editor.deleteShape).toHaveBeenCalled();
   });
 
-  it("PlannerZoneTool deletes tiny zone and supports cancel paths", () => {
+  it("PlannerZoneTool deletes truly tiny zones and supports cancel paths", () => {
     const tool = new PlannerZoneTool({ editor });
     tool.activate();
     editor._setPagePoint(0, 0);
     tool.onPointerDown({});
-    editor._setPagePoint(2, 2);
-    tool.onPointerMove();
     tool.onPointerUp();
     expect(editor.deleteShape).toHaveBeenCalled();
 
@@ -222,7 +220,7 @@ describe("Planner StateNode tools", () => {
     expect(editor.setCurrentTool).toHaveBeenCalledWith("select");
   });
 
-  it("PlannerFurnitureTool does nothing without active catalog item", async () => {
+  it("PlannerFurnitureTool falls back to the default catalog item when none is active", async () => {
     const store = (await import("@/features/planner/store/plannerStore")) as {
       __plannerStoreState: { activeCatalogId: string | null };
     };
@@ -232,6 +230,7 @@ describe("Planner StateNode tools", () => {
     tool.activate();
     editor._setPagePoint(40, 40);
     tool.onPointerDown();
-    expect(editor.createShape).not.toHaveBeenCalled();
+    expect(store.__plannerStoreState.activeCatalogId).toBeTruthy();
+    expect(editor.createShape).toHaveBeenCalled();
   });
 });

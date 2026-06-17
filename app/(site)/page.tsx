@@ -39,7 +39,7 @@ export default async function Home() {
       <HomepageHero />
       <PartnershipBanner />
       <Collections />
-      <TrustStrip stats={stats} showLogos={false} />
+      <TrustStrip stats={stats} />
       <ShowcaseCarousel
         sectionLabel={HOMEPAGE_SHOWCASE_CONTENT.sectionLabel}
         sectionAriaLabel={`${HOMEPAGE_SHOWCASE_CONTENT.sectionTitleLead} ${HOMEPAGE_SHOWCASE_CONTENT.sectionTitleAccent}`}

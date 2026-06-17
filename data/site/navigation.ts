@@ -70,6 +70,11 @@ export const SITE_FOOTER_NAV = [
       { href: "/projects", label: "Projects" },
       { href: "/portfolio", label: "Portfolio" },
       { href: "/sustainability", label: "Sustainability" },
+    ],
+  },
+  {
+    heading: "Services",
+    links: [
       { href: "/service", label: "After Sales" },
       { href: "/contact", label: "Contact Us" },
       { href: "/planning", label: "Planning Service" },

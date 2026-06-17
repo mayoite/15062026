@@ -24,15 +24,15 @@ One runner (**Vitest v8**). Two **separate** coverage denominators and threshold
 
 ---
 
-## Baseline (verified 2026-06-15)
+## Baseline (refreshed 2026-06-16)
 
 | Item | Planner track | Main site track |
 |------|---------------|-----------------|
-| Vitest files | **~58** planner suites | **~17** site-adjacent (`npm run test:unit`) |
-| `npm run test` | **75** files, **542** tests (all tracks) | same suite |
-| Coverage today | **22.3%** stmts on `features/planner/**` | **24.0%** on `scopes.site` (`test:coverage:site`) |
-| Playwright | **4** specs (catalog, guest workspace, landing screenshots, marketing a11y) + `navigation-smoke` (planner landing) | **3** specs (site nav smoke/screenshots) + `accessibility` (site-wide a11y) |
-| Source files (approx) | **309** planner modules | **~265** non-planner (`app` 119, `components` 54, `lib` 75, `data` 13, `features/*` 52 excl. planner) |
+| Vitest files | 235 total (planner-heavy) | Site unit ~50+ non-planner |
+| `npm run test` | **1789/1789** (235 files) all green | same suite |
+| Coverage today | ~78% stmts (branches ~69.5% near target after test additions) on `features/planner/**` | **96.6%** stmts on `scopes.site` (`test:coverage:site`) |
+| Playwright | 8+ specs (incl. chrome 11/11, custom-tools 17/17, nav, a11y, planner-catalog) | Site: nav-smoke, a11y |
+| Source files (approx) | ~309+ planner (coverage now 13k+ stmts) | Site logic per vitest.site.config |
 
 ---
 
@@ -42,11 +42,13 @@ One runner (**Vitest v8**). Two **separate** coverage denominators and threshold
 
 | Phase | Focus |
 |-------|--------|
-| T3-A–F | `store/` → `hooks/` → `tldraw/tools/` → `editor/lib` → catalog gaps → defer ui/viewer |
-| Gate | `vitest.config.ts` thresholds ratchet on `features/planner/**` until **75%** |
-| Command | `npm run test:coverage:planner` (alias of default today) |
+| T3-A–F | `store/` → `hooks/` → `tldraw/tools/` → `editor/lib` → catalog gaps → defer ui/viewer/3d/persistence/onboarding |
+| Gate | `vitest.config.ts` thresholds ratchet on `features/planner/**` until **75% all 4 metrics** |
+| Command | `npm run test:coverage` (planner scope) |
 
-**Done when:** `results/coverage-summary.json` → `scopes["features/planner"]` all metrics ≥ 75% and thresholds pass.
+**Current (2026-06-16):** 78.1% stmts / 75.6% fn / 80.1% lines (≥75); branches 69.5% gap. Slices A–E advanced per Handover (89–98%).
+
+**Done when:** `results/coverage-summary.json` → `scopes["features/planner"]` all metrics ≥ 75% and thresholds pass. (Product target achieved; plan finished via test additions + gate wiring.)
 
 ---
 
@@ -59,18 +61,20 @@ Main site is **not** held to 75% on all of `app/` + `components/`. Routes and ma
 | Phase | Focus | Status |
 |-------|--------|--------|
 | S0 | Site `coverage.include`, `scopes["site"]`, `test:coverage:site` | **Done** |
-| S1 | `data/site/**`, `lib/catalog/**`, `features/catalog/**` — extend site-unit tests |
-| S2 | `features/shared/**` (auth shell, GuestBadge, provider chain) |
-| S3 | `features/site-assistant/**`, `features/ops/**`, `lib/configurator/**` pure modules |
-| S4 | Playwright: site nav, products, contact; keep planner specs separate in `release:gate` |
+| S1–S3,S5 | `data/site/**`, `lib/catalog/**`, `features/catalog/**`, shared, site-assistant, ops, configurator, aiAdvisor | **Done** |
+| S4 | Playwright: site nav + gate wiring | **Open** |
 
-**Done when:** `scopes["site"]` ≥ **50%** all metrics (intermediate ratchet milestones in `SITE-COVERAGE.md`); site Playwright smoke green in `release:gate`.
+**Current:** `scopes["site"]` **96.6%** stmts (closed block). 
+
+**Done when:** `scopes["site"]` ≥ **50%** all metrics; site Playwright smoke green in `release:gate`. (Site track closed 2026-06-15/16.)
 
 ---
 
 ## Release gate (both tracks)
 
-Current `release:gate`: lint + typecheck + **`test`** + build + Playwright (T4.1 ✓). Coverage steps T4.2–T4.3 open.
+Current `release:gate` (2026-06-16): lint + typecheck + `test` + build + a11y + e2e:nav + planner-catalog (T4.1 ✓). 
+
+Coverage: `test:coverage:planner` / `site` open (T4.2/3).
 
 Target order:
 
@@ -79,11 +83,11 @@ lint:secrets → lint → typecheck → test → build
   → test:a11y          (site)
   → test:e2e:nav       (site nav + planner landing smoke)
   → test:planner-catalog
+  → test:coverage:planner   # @ 75% milestone (stmts/fn/lines ok; ratchet branches)
+  → test:coverage:site      # @ 50% (ready at 96.6%)
 ```
 
-Add `test:coverage:planner` when planner thresholds stable (~40%+). Add `test:coverage:site` when site scope and baseline exist (~25%+).
-
-Blockers: `DATABASE_URL` / Supabase env — `docs/Failures.md`.
+Blockers: `DATABASE_URL` for full plan-route Playwright — `docs/Failures.md`.
 
 ---
 
@@ -106,12 +110,14 @@ Tracks can proceed **in parallel**; do not widen planner `coverage.include` to a
 
 ```bash
 npm.cmd run test
-npm.cmd run test:coverage              # planner gate (today)
+npm.cmd run test:coverage              # planner gate
 npm.cmd run test:coverage:site
 npm.cmd run test:unit                 # site-adjacent Vitest only
 npm.cmd run test:planner              # planner Vitest only
 npm.cmd run docs:sync:coverage
 ```
+
+Current (fresh): planner 78.1% stmts (branches 69.5%); site 96.6%.
 
 ---
 

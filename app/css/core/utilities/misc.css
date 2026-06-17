@@ -80,10 +80,22 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
-  @media (min-width: 768px) {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(2rem, 4.5vw, 3.5rem);
-    align-items: start;
+  align-items: start;
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 3vw, 3rem) clamp(2rem, 4vw, 3.5rem);
+  }
+}
+
+@utility site-footer__brand-col {
+  @media (min-width: 1024px) {
+    grid-column: 1 / -1;
+  }
+}
+
+@utility site-footer__nav-col--products {
+  @media (min-width: 1024px) {
+    grid-column: 1 / -1;
   }
 }
 

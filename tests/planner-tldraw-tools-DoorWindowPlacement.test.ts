@@ -263,6 +263,32 @@ describe("DoorWindowPlacementUtils", () => {
     expect(utils.finishPlacement()).toBeNull();
   });
 
+  it("blocks window placement when it overlaps an existing window on the wall", () => {
+    editor._shapes.push({
+      id: "w-existing",
+      type: "planner-window",
+      x: 142,
+      y: -5,
+      rotation: 0,
+      opacity: 1,
+      isLocked: false,
+      props: {
+        widthMm: 1200,
+        frameThicknessMm: 50,
+        wallId: "w1",
+      },
+    } as never);
+
+    const utils = new DoorWindowPlacementUtils(editor);
+    const placement = utils.startPlacement("window-single-600", new Vec(170, 2)) as {
+      placementBlocked: boolean;
+      blockReason?: string;
+    };
+    expect(placement.placementBlocked).toBe(true);
+    expect(placement.blockReason).toBe("overlap");
+    expect(utils.finishPlacement()).toBeNull();
+  });
+
   it("startPlacement tolerates degenerate zero-length wall", () => {
     editor = createMockEditor({
       shapes: [makePlannerWallShape("zero", 50, 50, 0, 0)],

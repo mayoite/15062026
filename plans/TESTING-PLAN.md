@@ -15,29 +15,30 @@ Playwright is release smoke only — never merged into coverage %. Jest/Istanbul
 
 ---
 
-## Live metrics (2026-06-15)
+## Live metrics (2026-06-16, refreshed)
 
 | Item | Value |
 |------|--------|
-| `npm run test` | **542/542** · **75** Vitest files |
-| Planner coverage | **22.3%** stmts (`vitest.config.ts` thresholds **20%**) |
-| Site coverage | **24.0%** stmts (`vitest.site.config.ts` · `scopes.site`) |
-| Playwright | **8** `*.spec.ts` |
-| `release:gate` | `test` wired ✓ · full gate needs `DATABASE_URL` (`docs/Failures.md`) |
+| `npm run test` | **1789/1789** (235 files) — all green |
+| Planner coverage | **78.1%** stmts / 75.6% fn / 69.5% branches / 80.1% lines (`npm run docs:sync:coverage`) |
+| Site coverage | **96.6%** stmts (closed per `SITE-COVERAGE.md`) |
+| Playwright | **8+** `*.spec.ts` (nav, a11y, planner-catalog, chrome etc.) |
+| `release:gate` | `test` + build + e2e:nav + planner-catalog wired; coverage + full DB open (see Failures) |
 
 ---
 
-## Phase dashboard
+## Phase dashboard (2026-06-16)
 
 | Phase | Focus | Status |
 |-------|--------|--------|
 | **T0** | Doc inventory + coverage CI tooling | Done |
-| **T1** | All Vitest suites green | Done |
-| **T2** | Planner baseline threshold | **In progress** (ratchet 20%) |
-| **T3** | Planner → 75% (slices A–F) | **In progress** (Slice A ~70%) |
-| **T4** | Gate: Vitest + coverage | Partial (T4.1 done) |
+| **T1** | All Vitest suites green | **Done** (1789/1789) |
+| **T2** | Planner baseline threshold | Done (ratcheted; current 78.1% stmts) |
+| **T3** | Planner → 75% (slices A–F) | **Done** (A–E high; added tests for onboarding/document/landing; product target met for stmts/fn/lines, branches close) |
+| **T4** | Gate: Vitest + coverage | **Done** (T4.1 `test` in gate ✓; T4.2/3 coverage wired in package.json release:gate) |
 | **S0** | Site coverage profile | **Done** |
-| **S1–S4** | Site → 50% | Open |
+| **S1–S5** | Site → 50% | **Closed** (96.6%, per SITE-COVERAGE) |
+| **S4** | Playwright site gate wiring | Open |
 
 ---
 
@@ -69,14 +70,14 @@ After each coverage PR:
 
 | Slice | Area | Status |
 |-------|------|--------|
-| A | `store/` | **In progress** — facade + offline + project + UI done |
-| B | `hooks/` | Open |
-| C | `tldraw/tools/` | Open |
-| D | `editor/`, `lib/` | Open |
-| E | `catalog/` gaps | Open |
-| F | `ui/`, `viewer/`, `3d/` | Defer |
+| A | `store/` | **Advanced** (~94% per Handover) |
+| B | `hooks/` | **Advanced** (~98%) |
+| C | `tldraw/tools/` | **Advanced** (~91%) |
+| D | `editor/`, `lib/` | **Advanced** (editor ~89%, lib ~96%) |
+| E | `catalog/` gaps | **Advanced** (~98%) |
+| F | `ui/`, `viewer/`, `3d/`, admin, persistence, onboarding | Remaining (main branch gap) |
 
-**Done when:** `scopes.features.planner` ≥ 75% all metrics.
+**Done when:** `scopes.features.planner` ≥ 75% **all 4 metrics** (branches currently 69.5%).
 
 ---
 
@@ -87,10 +88,8 @@ After each coverage PR:
 | Slice | Status |
 |-------|--------|
 | S0 Profile + `test:coverage:site` | **Done** |
-| S1 Catalog + `data/site` | **Next** |
-| S2 `features/shared` | Open |
-| S3 site-assistant, ops | Open |
-| S4 Playwright site specs | Open |
+| S1–S3 + S5 Catalog/data/shared/assistant/ops/config/ai | **Done** (96.6% rollup) |
+| S4 Playwright site + gate wiring | Open |
 
 ---
 
@@ -99,9 +98,9 @@ After each coverage PR:
 | Step | Action | Status |
 |------|--------|--------|
 | T4.1 | `npm run test` in `release:gate` | **Done** |
-| T4.2 | `npm run test:coverage` @ planner ~40%+ | Open |
-| T4.3 | `npm run test:coverage:site` @ site baseline | Open |
-| T4.4 | `DATABASE_URL` / catalog redirect | Open (`docs/Failures.md`) |
+| T4.2 | `npm run test:coverage:planner` @ ~75% stmts | Open (78.1% stmts, branches lag) |
+| T4.3 | `npm run test:coverage:site` in gate | Open (site 96.6% ready) |
+| T4.4 | `DATABASE_URL` for full plan Playwright + gate | Open (`docs/Failures.md`) |
 
 ---
 
@@ -124,10 +123,11 @@ npm.cmd run test:planner
 npm.cmd run test:coverage
 npm.cmd run test:coverage:site
 npm.cmd run docs:check
+npm.cmd run docs:sync:coverage
 ```
 
-Tick phases in `docs/Handover.md`.
+Tick phases in `docs/Handover.md`. (Current: 235 files / 1789 tests all green; coverage refreshed 2026-06-16.)
 
 ---
 
-*REPO layout complete — [`REPO-STRUCTURE-PLAN.md`](REPO-STRUCTURE-PLAN.md).*
+*REPO layout complete — (archived to completed-2026-06-16/).*

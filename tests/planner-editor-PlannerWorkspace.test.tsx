@@ -87,9 +87,7 @@ vi.mock("@/features/planner/lib/compliance", () => ({
 }));
 
 vi.mock("@/features/planner/lib/measurements", async () => {
-  const actual = await vi.importActual<typeof import("@/features/planner/lib/measurements")>(
-    "@/features/planner/lib/measurements",
-  );
+  const actual = await vi.importActual("@/features/planner/lib/measurements");
   return {
     ...actual,
     deriveViewportState: vi.fn(() => ({ canvasMeasurements: [] })),
@@ -108,9 +106,7 @@ vi.mock("@/features/planner/lib/documentBridge", () => ({
 }));
 
 vi.mock("@/features/planner/catalog/shapeTypeRegistry", async () => {
-  const actual = await vi.importActual<typeof import("@/features/planner/catalog/shapeTypeRegistry")>(
-    "@/features/planner/catalog/shapeTypeRegistry",
-  );
+  const actual = await vi.importActual("@/features/planner/catalog/shapeTypeRegistry");
   return {
     ...actual,
     acceptsCatalogDrag: vi.fn(() => true),
@@ -201,7 +197,7 @@ describe("PlannerWorkspace", () => {
     await waitFor(() => expect(mockEditor.store.listen).toHaveBeenCalled());
 
     fireEvent.click(screen.getByRole("button", { name: /Review/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Draw/i }));
+    fireEvent.click(document.querySelector('.pw-step-bar__btn[data-step="draw"]') as HTMLElement);
 
     fireEvent.click(screen.getByRole("button", { name: "Wall" }));
     expect(setPlannerTool).toHaveBeenCalledWith("wall");

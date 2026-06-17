@@ -414,19 +414,22 @@ const folders = {
   },
   plans: {
     title: "Active plans",
-    why: "Phased roadmaps with acceptance criteria. Reference how-to stays in docs/.",
+    why: "Phased roadmaps with acceptance criteria. Reference how-to stays in docs/. Completed plans archived under archive/docs/plans/completed-*/.",
     contains: [
       "MASTER-PLAN.md — program dashboard, metrics, critical path",
       "TESTING-PLAN.md — Vitest/Playwright phases, dual coverage tracks",
       "COVERAGE-PLAN.md — planner 75% + site 50% strategy",
-      "REPO-STRUCTURE-PLAN.md — folder layout steps 00–06 (complete)",
       "HARDCODING-PLAN.md — literal remediation steps 00–06",
+      "ARCHIVE-MAP.md — crosswalk of archived plans → live plans/ owners",
+      "PLANNER-COVERAGE-75.md — detailed planner coverage execution slices to 75%",
+      "SITE-COVERAGE.md — main site (catalog/marketing/shared) coverage execution to 50% (S4 remaining)",
     ],
     see: ["docs/DOC-MAP.md", "docs/TESTING.md", "docs/Handover.md"],
     rules: [
-      "One plan file per initiative",
+      "One top-level plan (or subdir for multi-file execution detail) per initiative",
       "Historical plans: archive/docs/plans/",
       "Do not duplicate docs/TESTING.md or docs/SCRIPTS.md content",
+      "Keep plans/ index truthful — edit manifest here then rerun docs:sync:all",
     ],
   },
   "docs/workflow": {

@@ -5,9 +5,9 @@ import { TOOL_GROUPS } from "@/features/planner/editor/PlannerToolRail";
 describe("PlannerToolRail TOOL_GROUPS", () => {
   const allTools = TOOL_GROUPS.flatMap((group) => group.tools);
 
-  it("exposes three labelled groups covering all eight tools", () => {
+  it("exposes three labelled groups covering the full ten-tool rail", () => {
     expect(TOOL_GROUPS).toHaveLength(3);
-    expect(allTools).toHaveLength(8);
+    expect(allTools).toHaveLength(10);
     for (const group of TOOL_GROUPS) {
       expect(group.label.length).toBeGreaterThan(0);
       expect(group.tools.length).toBeGreaterThan(0);

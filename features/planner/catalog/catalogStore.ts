@@ -12,7 +12,7 @@ import type { CatalogCategory, CatalogItem } from "./catalogTypes";
 import { PLANNER_CATALOG_ITEMS } from "./workspaceCatalog";
 
 const RECENT_STORAGE_KEY = "planner-catalog-recent";
-const RECENT_LIMIT = 5;
+const RECENT_LIMIT = 8;
 
 function readRecentIds(): string[] {
   if (typeof window === "undefined") return [];

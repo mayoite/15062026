@@ -20,6 +20,7 @@ export type PlannerEditorMock = MockEditor & {
   getCanRedo: ReturnType<typeof vi.fn>;
   getCurrentPageShapeIds: ReturnType<typeof vi.fn>;
   deleteShapes: ReturnType<typeof vi.fn>;
+  updateShapes: ReturnType<typeof vi.fn>;
   selectNone: ReturnType<typeof vi.fn>;
   clearHistory: ReturnType<typeof vi.fn>;
   zoomToBounds: ReturnType<typeof vi.fn>;
@@ -63,7 +64,7 @@ export function createPlannerEditorMock(
   let selectedIds = [...(options.selectedIds ?? [])];
   let canUndo = options.canUndo ?? false;
   let canRedo = options.canRedo ?? false;
-  let currentToolId = options.currentToolId ?? "select";
+  const currentToolId = options.currentToolId ?? "select";
   const camera = { ...(options.camera ?? { x: 0, y: 0, z: 1 }) };
 
   const emit = () => {
@@ -94,6 +95,20 @@ export function createPlannerEditorMock(
     getCurrentPageShapeIds: vi.fn(() => shapes.map((shape) => shape.id)),
     deleteShapes: vi.fn((ids: TLShapeId[]) => {
       for (const id of ids) base.deleteShape(id);
+      emit();
+    }),
+    updateShapes: vi.fn((updates: Array<{ id: TLShapeId; type?: string; x?: number; y?: number; props?: Record<string, unknown> }>) => {
+      for (const update of updates) {
+        const index = shapes.findIndex((shape) => shape.id === update.id);
+        if (index < 0) continue;
+        const current = shapes[index]!;
+        shapes[index] = {
+          ...current,
+          ...("x" in update ? { x: update.x ?? current.x } : {}),
+          ...("y" in update ? { y: update.y ?? current.y } : {}),
+          props: update.props ? { ...current.props, ...update.props } : current.props,
+        };
+      }
       emit();
     }),
     selectNone: vi.fn(() => {

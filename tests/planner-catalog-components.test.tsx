@@ -100,7 +100,7 @@ describe("planner/catalog components", () => {
       const addButtons = screen.getAllByRole("button", { name: /Add .+ to canvas/i });
       fireEvent.click(addButtons[0]);
       expect(onItemClick).toHaveBeenCalled();
-      expect(usePlannerCatalogStore.getState().recentIds.length).toBeGreaterThan(0);
+      expect(usePlannerCatalogStore.getState().recentIds).toHaveLength(0);
     },
     15000,
   );

@@ -161,9 +161,9 @@ export function applyProjectSetup(metadata: PlannerProjectMetadata): void {
   setPurposeFilter(metadata.primaryPurpose);
 }
 
-export function createDefaultProjectSetupDraft(): PlannerProjectSetupDraft {
+export function createDefaultProjectSetupDraft(options?: { guestMode?: boolean }): PlannerProjectSetupDraft {
   return {
-    projectName: "",
+    projectName: options?.guestMode ? "Guest workspace" : "",
     city: PLANNER_INDIAN_CITIES[0],
     floorAreaSqFt: 1000,
     primaryPurpose: "workstations",

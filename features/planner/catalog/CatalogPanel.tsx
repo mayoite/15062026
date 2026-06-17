@@ -47,7 +47,6 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
   const catalogItems = usePlannerCatalogStore((s) => s.items);
   const purposeFilter = usePlannerCatalogStore((s) => s.purposeFilter);
   const recentIds = usePlannerCatalogStore((s) => s.recentIds);
-  const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
 
   const defaultPurposeTab = mapPurposeFilterToCatalogTab(purposeFilter);
   const [tabPick, setTabPick] = useState<{
@@ -71,13 +70,18 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
     return scoped.map(enrichCatalogItem);
   }, [catalogItems, purposeFilter]);
 
+  const allCatalogItems = useMemo(
+    () => catalogItems.map(enrichCatalogItem),
+    [catalogItems],
+  );
+
   const recentItems = useMemo(
     () =>
       recentIds
-        .map((id) => purposeScopedItems.find((item) => item.id === id))
+        .map((id) => allCatalogItems.find((item) => item.id === id))
         .filter((item): item is CatalogItem => Boolean(item))
         .slice(0, 5),
-    [purposeScopedItems, recentIds],
+    [allCatalogItems, recentIds],
   );
 
   const subCategoryOptions = useMemo(() => {
@@ -151,10 +155,9 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
 
   const handleItemClick = useCallback(
     (item: CatalogItem) => {
-      recordRecentPlacement(item.id);
       onItemClick?.(item);
     },
-    [onItemClick, recordRecentPlacement],
+    [onItemClick],
   );
 
   const isSearchActive = searchQuery.trim().length > 0;

@@ -23,7 +23,9 @@ type ProjectSetupStepProps = {
 };
 
 export function ProjectSetupStep({ guestMode = false, planId, onComplete }: ProjectSetupStepProps) {
-  const [draft, setDraft] = useState<PlannerProjectSetupDraft>(createDefaultProjectSetupDraft);
+  const [draft, setDraft] = useState<PlannerProjectSetupDraft>(() =>
+    createDefaultProjectSetupDraft({ guestMode }),
+  );
   const [error, setError] = useState<string | null>(null);
 
   const updateDraft = <K extends keyof PlannerProjectSetupDraft>(key: K, value: PlannerProjectSetupDraft[K]) => {

@@ -54,6 +54,12 @@ export function isPlannerToolVisible(
 }
 
 const STORAGE_KEY = "planner-tool-visibility-mode";
+const DEV_TOOLS_QUERY_PARAM = "plannerDevTools";
+
+function hasPlannerDevToolsQueryFlag(): boolean {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get(DEV_TOOLS_QUERY_PARAM) === "1";
+}
 
 function isStoredMode(value: string | null): value is PlannerToolVisibilityMode {
   return value === "balanced" || value === "step" || value === "all";
@@ -73,5 +79,5 @@ export function writePlannerToolVisibilityMode(mode: PlannerToolVisibilityMode):
 }
 
 export function isPlannerDevToolsEnabled(): boolean {
-  return process.env.NODE_ENV === "development";
+  return process.env.NODE_ENV === "development" || hasPlannerDevToolsQueryFlag();
 }

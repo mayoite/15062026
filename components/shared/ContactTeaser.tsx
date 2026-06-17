@@ -96,7 +96,7 @@ export function ContactTeaser() {
       <div className="home-shell-xl">
         <div className="contact-teaser home-frame home-frame--standard">
           <div className="contact-teaser__stack">
-            <motion.div className="contact-teaser__intro" {...fadeUp(12, 0.02)}>
+            <motion.div className="contact-teaser__intro" {...fadeUp(12, 0.06)}>
               <h2 className="home-heading max-w-2xl">
                 {HOMEPAGE_CONTACT_CONTENT.titleLead}{" "}
                 <span className="text-accent-italic">{HOMEPAGE_CONTACT_CONTENT.titleAccent}</span>
@@ -107,7 +107,7 @@ export function ContactTeaser() {
               aria-label="Project brief enquiry"
               className="contact-teaser__form"
               onSubmit={handleSubmit}
-              {...fadeUp(16, 0.08)}
+              {...fadeUp(16, 0.14)}
             >
               <div className="contact-teaser__mini-grid">
                 <label className="contact-teaser__field">

@@ -132,8 +132,8 @@ describe("plannerStore facade", () => {
       const setCurrentTool = vi.fn();
       vi.stubGlobal("__webpack_require__", function webpackRequire() {});
       vi.stubGlobal("__non_webpack_require__", (id: string) => {
-        if (id.includes("usePlannerR3FSync")) {
-          return { getTldrawEditor: () => ({ setCurrentTool }) };
+        if (id.includes("plannerTldrawEditorBridge")) {
+          return { getPlannerTldrawEditor: () => ({ setCurrentTool }) };
         }
         throw new Error(`unexpected require: ${id}`);
       });

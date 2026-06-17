@@ -15,11 +15,11 @@ Remove or justify live-repo hardcoding (P0–P4 in the inventory) without breaki
 | Step | Name | Severity | Status | Depends on |
 |------|------|----------|--------|------------|
 | **00** | Baseline & inventory | — | **Done** | — |
-| **01** | Secrets & tokens | P0 | Open | 00 |
-| **02** | Infra & URL fallbacks | P1 | Open | 01 |
+| **01** | Secrets & tokens | P0 | Open (local only) | 00 |
+| **02** | Infra & URL fallbacks | P1 | Open (scripts, some API) | 01 |
 | **03** | Script path repair | P4 | **Done** (REPO step 04) | 00 |
 | **04** | Planner units & geometry | P2 | Open | `PLANNER-COVERAGE-75` Slice D |
-| **05** | CSS & color tokens | P3 | Open | `CSS-ARCHITECTURE` Phase 5 |
+| **05** | CSS & color tokens | P3 | **Advanced** (CSS migration + homepage waves done/in-flight; neutral-* + hex in planner 3D remain) | `CSS-ARCHITECTURE` Phase 5 |
 | **06** | Legacy routes (`proxy.ts`) | P4 | **Done** (REPO step 05) | Approval was given in REPO batch |
 
 **Run order:** `00` → `01` → `02` → `03` (then `04`–`06` in parallel with coverage where noted).
@@ -108,7 +108,7 @@ Remove or justify live-repo hardcoding (P0–P4 in the inventory) without breaki
 
 # Step 03 — Script path repair (P4)
 
-**Same work as `REPO-STRUCTURE-PLAN` Phase 3.** Can run in parallel with Step 01–02.
+**Same work as `REPO-STRUCTURE-PLAN` Phase 3 (archived).** Can run in parallel with Step 01–02.
 
 | # | Script | Action |
 |---|--------|--------|
@@ -229,8 +229,8 @@ Every PR: `npm run test` · `lint` · `typecheck` · refresh inventory summary.
 
 | Other plan | Maps to step |
 |------------|--------------|
-| `REPO-STRUCTURE-PLAN` step **04** | **03** (script paths) |
-| `REPO-STRUCTURE-PLAN` step **05** | **06** (`proxy.ts`) |
+| `REPO-STRUCTURE-PLAN` (archived) step **04** | **03** (script paths) |
+| `REPO-STRUCTURE-PLAN` (archived) step **05** | **06** (`proxy.ts`) |
 | `PLANNER-COVERAGE-75` Slice D | gate for **04** |
 | `CSS-ARCHITECTURE` Phase 5 | **05** |
 
@@ -263,7 +263,7 @@ rg "neutral-[0-9]" features/site-assistant features/ops components/support --glo
 ## See also
 
 - `docs/HARDCODING-INVENTORY.md` — file-level list
-- `plans/REPO-STRUCTURE-PLAN.md`
+- `plans/REPO-STRUCTURE-PLAN.md` (archived)
 - `plans/COVERAGE-PLAN.md`
 - `docs/CSS-ARCHITECTURE.md`
 - `results/audits/security-audit.md`

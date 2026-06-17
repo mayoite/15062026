@@ -41,7 +41,7 @@ describe("usePlannerPanels", () => {
   it("opens both panels on desktop and toggles exclusively on compact", () => {
     const { result } = renderHook(() => usePlannerPanels());
     expect(result.current.leftOpen).toBe(false);
-    expect(result.current.rightOpen).toBe(true);
+    expect(result.current.rightOpen).toBe(false);
 
     act(() => {
       result.current.setRightOpen(false);

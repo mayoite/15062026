@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-06-16T06:21:16.744Z",
+  "generatedAt": "2026-06-16T17:50:42.870Z",
   "source": "tests/",
   "counts": {
-    "total": 240,
-    "vitest": 230,
+    "total": 250,
+    "vitest": 238,
     "vitestExcluded": 0,
-    "playwright": 8,
+    "playwright": 10,
     "helpers": 2
   },
   "vitestExclude": [],
@@ -257,6 +257,12 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-catalog-placementCatalogResolver.test.ts",
+      "path": "tests/planner-catalog-placementCatalogResolver.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-catalog-plannerCatalogCore.test.ts",
       "path": "tests/planner-catalog-plannerCatalogCore.test.ts",
       "kind": "planner",
@@ -291,6 +297,24 @@
       "path": "tests/planner-catalogBlockBridge.test.ts",
       "kind": "planner",
       "runner": "vitest"
+    },
+    {
+      "name": "planner-chrome-layout.test.ts",
+      "path": "tests/planner-chrome-layout.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-chrome.spec.ts",
+      "path": "tests/planner-chrome.spec.ts",
+      "kind": "playwright",
+      "runner": "playwright"
+    },
+    {
+      "name": "planner-custom-tools.spec.ts",
+      "path": "tests/planner-custom-tools.spec.ts",
+      "kind": "playwright",
+      "runner": "playwright"
     },
     {
       "name": "planner-editor-BlueprintPanel.test.tsx",
@@ -431,6 +455,12 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-editor-plannerChromeDock.test.ts",
+      "path": "tests/planner-editor-plannerChromeDock.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-editor-plannerShapeFactories.test.ts",
       "path": "tests/planner-editor-plannerShapeFactories.test.ts",
       "kind": "planner",
@@ -535,6 +565,12 @@
     {
       "name": "planner-landing-data.test.ts",
       "path": "tests/planner-landing-data.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-landing-plannerfeaturedemo.test.tsx",
+      "path": "tests/planner-landing-plannerfeaturedemo.test.tsx",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -761,6 +797,12 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-onboarding-onboardingcoach.test.tsx",
+      "path": "tests/planner-onboarding-onboardingcoach.test.tsx",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-openingCollision.test.ts",
       "path": "tests/planner-openingCollision.test.ts",
       "kind": "planner",
@@ -793,6 +835,12 @@
     {
       "name": "planner-shared-catalog-catalogAdapter.test.ts",
       "path": "tests/planner-shared-catalog-catalogAdapter.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-shared-document-documentbridge.test.ts",
+      "path": "tests/planner-shared-document-documentbridge.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -1001,8 +1049,20 @@
       "runner": "vitest"
     },
     {
+      "name": "planner-tldraw-plannerTldrawEditorBridge.test.ts",
+      "path": "tests/planner-tldraw-plannerTldrawEditorBridge.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
       "name": "planner-tldraw-plannerTldrawRegistration.test.ts",
       "path": "tests/planner-tldraw-plannerTldrawRegistration.test.ts",
+      "kind": "planner",
+      "runner": "vitest"
+    },
+    {
+      "name": "planner-tldraw-rectDrag.test.ts",
+      "path": "tests/planner-tldraw-rectDrag.test.ts",
       "kind": "planner",
       "runner": "vitest"
     },
@@ -1456,6 +1516,8 @@
       "accessibility.spec.ts",
       "navigation-smoke.spec.ts",
       "planner-catalog.spec.ts",
+      "planner-chrome.spec.ts",
+      "planner-custom-tools.spec.ts",
       "planner-guest-workspace.spec.ts",
       "planner-landing-screenshots.spec.ts",
       "planner-marketing-a11y.spec.ts",
@@ -1524,11 +1586,13 @@
       "planner-catalog-exports.test.ts",
       "planner-catalog-ingest-csvCatalogIngest.test.ts",
       "planner-catalog-managedProducts.test.ts",
+      "planner-catalog-placementCatalogResolver.test.ts",
       "planner-catalog-plannerCatalogCore.test.ts",
       "planner-catalog-shapeTypeRegistry.test.ts",
       "planner-catalog-workspaceCatalog.test.ts",
       "planner-catalog.test.ts",
       "planner-catalogBlockBridge.test.ts",
+      "planner-chrome-layout.test.ts",
       "planner-editor-BlueprintPanel.test.tsx",
       "planner-editor-BlueprintTraceGuideOverlay.test.tsx",
       "planner-editor-BlueprintUnderlay.test.tsx",
@@ -1552,6 +1616,7 @@
       "planner-editor-exportActions.test.ts",
       "planner-editor-layerManagerEntries.test.ts",
       "planner-editor-overlays.test.tsx",
+      "planner-editor-plannerChromeDock.test.ts",
       "planner-editor-plannerShapeFactories.test.ts",
       "planner-editor-plannerToolVisibility.test.ts",
       "planner-editor-pure.test.ts",
@@ -1569,6 +1634,7 @@
       "planner-hooks-usePlannerUiState.test.tsx",
       "planner-hooks-usePlannerWorkspace.test.tsx",
       "planner-landing-data.test.ts",
+      "planner-landing-plannerfeaturedemo.test.tsx",
       "planner-layerCounts.test.ts",
       "planner-layerManagerEntries.test.ts",
       "planner-layerManagerUiState.test.ts",
@@ -1604,12 +1670,14 @@
       "planner-model-plannerJsonSafe.test.ts",
       "planner-model-plannerPermissions.test.ts",
       "planner-model-plannerPlacement.test.ts",
+      "planner-onboarding-onboardingcoach.test.tsx",
       "planner-openingCollision.test.ts",
       "planner-openingWallSnap.test.ts",
       "planner-persistence-plannerDraft.test.ts",
       "planner-shapeTypeRegistry.test.ts",
       "planner-shared-boq-quoteCartBridge.test.ts",
       "planner-shared-catalog-catalogAdapter.test.ts",
+      "planner-shared-document-documentbridge.test.ts",
       "planner-shared-export-exportBoq.test.ts",
       "planner-shared-plannerShared.test.tsx",
       "planner-state.test.ts",
@@ -1644,7 +1712,9 @@
       "planner-tldraw-catalogBlockBridge-extra.test.ts",
       "planner-tldraw-exports.test.ts",
       "planner-tldraw-furnitureBlocks2d.test.ts",
+      "planner-tldraw-plannerTldrawEditorBridge.test.ts",
       "planner-tldraw-plannerTldrawRegistration.test.ts",
+      "planner-tldraw-rectDrag.test.ts",
       "planner-tldraw-renderBlockPrims.test.tsx",
       "planner-tldraw-shapeUtils-branches.test.tsx",
       "planner-tldraw-shapeUtils-labelEdit.test.tsx",

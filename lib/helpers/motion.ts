@@ -4,10 +4,10 @@ import { useReducedMotion } from "framer-motion";
 export const MOTION_EASE = [0.22, 1, 0.36, 1] as const;
 
 export const MOTION_TOKENS = {
-  fast: 0.18,
-  base: 0.24,
-  medium: 0.48,
-  slow: 0.62,
+  fast: 0.26,
+  base: 0.38,
+  medium: 0.72,
+  slow: 0.92,
   distanceSm: 12,
   distanceMd: 24,
   distanceLg: 44,
@@ -32,8 +32,8 @@ export const staggerContainer: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.04,
+      staggerChildren: 0.12,
+      delayChildren: 0.08,
     },
   },
 };

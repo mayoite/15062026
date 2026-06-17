@@ -3,8 +3,9 @@ import {
   HOMEPAGE_HERO_CONTENT,
   HOMEPAGE_HERO_IMAGES,
   HOMEPAGE_COLLECTIONS_CONTENT,
-  HOMEPAGE_PLANNER_SUITE_CONTENT,
-  HOMEPAGE_PROJECTS_CONTENT,
+  HOMEPAGE_SHOWCASE_CONTENT,
+  HOMEPAGE_PARTNERSHIP_CONTENT,
+  HOMEPAGE_CONTACT_CONTENT,
   HOMEPAGE_WHY_CHOOSE_US_CONTENT,
 } from "@/data/site/homepage";
 
@@ -36,12 +37,6 @@ describe("homepage data", () => {
     expect(HOMEPAGE_HERO_IMAGES.length).toBeGreaterThanOrEqual(5);
   });
 
-  it("planner section links to member login and overview", () => {
-    expect(HOMEPAGE_PLANNER_SUITE_CONTENT.loginHref).toContain("/login");
-    expect(HOMEPAGE_PLANNER_SUITE_CONTENT.loginLabel).toBe("Member login");
-    expect(HOMEPAGE_PLANNER_SUITE_CONTENT.overviewHref).toBe("/planner");
-  });
-
   it("why choose us keeps the workspace systems headline", () => {
     expect(HOMEPAGE_WHY_CHOOSE_US_CONTENT.titleLead).toBe("We engineer");
     expect(HOMEPAGE_WHY_CHOOSE_US_CONTENT.titleAccent).toBe("workspaces");
@@ -49,6 +44,43 @@ describe("homepage data", () => {
 
   it("collections shows six featured categories", () => {
     expect(HOMEPAGE_COLLECTIONS_CONTENT.items).toHaveLength(6);
-    expect(HOMEPAGE_PROJECTS_CONTENT.cards).toHaveLength(3);
+    expect(HOMEPAGE_COLLECTIONS_CONTENT.catalogCta.href).toBe("/products");
+    expect(HOMEPAGE_COLLECTIONS_CONTENT.catalogCta.label).toBe("Browse full catalog");
+  });
+
+  it("showcase carousel uses three portfolio clients and portfolio CTA", () => {
+    expect(HOMEPAGE_SHOWCASE_CONTENT.items).toHaveLength(3);
+    expect(HOMEPAGE_SHOWCASE_CONTENT.items.map((item) => item.id)).toEqual([
+      "dmrc",
+      "titan",
+      "tvs",
+    ]);
+    expect(HOMEPAGE_SHOWCASE_CONTENT.sectionTitleLead).toBe("Delivered for");
+    expect(HOMEPAGE_SHOWCASE_CONTENT.sectionTitleAccent).toBe("leading organizations");
+    expect(HOMEPAGE_SHOWCASE_CONTENT.browseCta).toEqual({
+      label: "View portfolio",
+      href: "/portfolio",
+    });
+  });
+
+  it("partnership banner uses AFC strategic partner copy", () => {
+    expect(HOMEPAGE_PARTNERSHIP_CONTENT.title).toEqual([
+      "Official Strategic",
+      "Partner",
+    ]);
+    expect(HOMEPAGE_PARTNERSHIP_CONTENT.image.src).toBe("/catalog-logo-sharp.webp");
+    expect(HOMEPAGE_PARTNERSHIP_CONTENT.image.alt).toMatch(/AFC/i);
+  });
+
+  it("contact teaser leads with requirement headline and direct actions", () => {
+    expect(HOMEPAGE_CONTACT_CONTENT.titleLead).toBe("Share your");
+    expect(HOMEPAGE_CONTACT_CONTENT.titleAccent).toBe("requirement");
+    expect(HOMEPAGE_CONTACT_CONTENT.directActions).toHaveLength(2);
+    expect(HOMEPAGE_CONTACT_CONTENT.directActions.map((a) => a.type)).toEqual([
+      "whatsapp",
+      "phone",
+    ]);
+    expect(HOMEPAGE_CONTACT_CONTENT.directActions[0].label).toBe("WhatsApp now");
+    expect(HOMEPAGE_CONTACT_CONTENT.directActions[1].label).toBe("Call team");
   });
 });

@@ -397,6 +397,10 @@
 
 .planner-workspace .pw-panel-tab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
   min-height: var(--control-height-xs);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
@@ -413,6 +417,10 @@
     color var(--motion-fast) var(--ease-standard),
     box-shadow var(--motion-fast) var(--ease-standard),
     opacity var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .pw-panel-tab span {
+  white-space: nowrap;
 }
 
 .planner-workspace .pw-panel-tab:hover {
@@ -503,6 +511,26 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+.planner-workspace .pw-left-panel[data-collapsed="true"] .pw-panel-tabs {
+  flex-direction: column;
+  align-items: stretch;
+  padding-inline: var(--space-2);
+}
+
+.planner-workspace .pw-left-panel[data-collapsed="true"] .pw-panel-tab {
+  flex: 0 0 auto;
+  width: 100%;
+  padding-inline: var(--space-2);
+}
+
+.planner-workspace .pw-left-panel[data-collapsed="true"] .pw-panel-tab span {
+  display: none;
+}
+
+.planner-workspace .pw-left-panel[data-collapsed="true"] .pw-panel-collapse {
+  margin-left: 0;
 }
 
 .planner-workspace .pw-panel-step-note {

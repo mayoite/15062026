@@ -6,7 +6,7 @@ export async function enterGuestPlannerWorkspace(
   options: { projectName?: string; navigate?: boolean } = {},
 ): Promise<void> {
   if (options.navigate !== false) {
-    await page.goto("/planner/guest/", { waitUntil: "domcontentloaded" });
+    await page.goto("/planner/guest/?plannerDevTools=1", { waitUntil: "domcontentloaded" });
   }
 
   const setupHeading = page.getByRole("heading", { name: /Set up your space/i });

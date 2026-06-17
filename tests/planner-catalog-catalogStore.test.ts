@@ -71,12 +71,12 @@ describe("planner/catalog/catalogStore", () => {
 
   it("deduplicates recent placements and caps the list", () => {
     const store = usePlannerCatalogStore.getState();
-    for (const id of ["a", "b", "c", "d", "e", "f"]) {
+    for (const id of ["a", "b", "c", "d", "e", "f", "g", "h", "i"]) {
       store.recordRecentPlacement(id);
     }
     const recentIds = usePlannerCatalogStore.getState().recentIds;
-    expect(recentIds).toHaveLength(5);
-    expect(recentIds[0]).toBe("f");
+    expect(recentIds).toHaveLength(8);
+    expect(recentIds[0]).toBe("i");
     expect(recentIds).not.toContain("a");
   });
 });

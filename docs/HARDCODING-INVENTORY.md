@@ -13,7 +13,7 @@
 | **P4** | Stale paths, dead scripts, legacy route lists |
 | **OK** | Intentional — content data, test fixtures, conversion constants with tests |
 
-**Related:** **`plans/HARDCODING-PLAN.md`** (execution plan) · `docs/CSS-ARCHITECTURE.md` (Phase 5 sweep) · `results/audits/security-audit.md` (some rows **stale** — see below) · `plans/REPO-STRUCTURE-PLAN.md` Phase 2–4 · `docs/Failures.md` (geometry reload cosmetic)
+**Related:** **`plans/HARDCODING-PLAN.md`** (execution plan) · `docs/CSS-ARCHITECTURE.md` (Phase 5 sweep) · `results/audits/security-audit.md` (some rows **stale** — see below) · `plans/REPO-STRUCTURE-PLAN.md` (archived) Phase 2–4 · `docs/Failures.md` (geometry reload cosmetic)
 
 ---
 
@@ -29,7 +29,7 @@
 | 3D / export hex colors | P3 | 4 files | `viewerMaterials.ts`, `finishVariants.ts`, `3d/types.ts` |
 | Tailwind `neutral-*` (live) | P3 | 4 components + 2 features | `site-assistant`, `ops`, `VisualIVR`, `ProductGallery` |
 | Legacy planner routes | P4 | 2 files | `proxy.ts`, `plannerIdentity.ts` |
-| Dead `packages/` script paths | P4 | 4 scripts | `plans/REPO-STRUCTURE-PLAN.md` Phase 3 |
+| Dead `packages/` script paths | P4 | 4 scripts | `plans/REPO-STRUCTURE-PLAN.md` (archived) Phase 3 |
 | Marketing / contact copy | OK | `data/site/*` | Emails, phone — product content |
 | Vitest fixtures | OK | `tests/planner-store-*.test.ts` | Deterministic UUIDs, sample projects |
 
@@ -177,5 +177,5 @@ Tick progress in `docs/Handover.md` / `docs/Failures.md` when an item is fixed �
 - `plans/HARDCODING-PLAN.md` — phased remediation (H1–H6)
 - `docs/DOC-MAP.md` — doc index
 - `docs/CSS-ARCHITECTURE.md` — token architecture
-- `plans/REPO-STRUCTURE-PLAN.md` — Phases 2–4 overlap
+- `plans/REPO-STRUCTURE-PLAN.md` (archived) — Phases 2–4 overlap
 - `results/audits/security-audit.md` — historical P0 list (verify before acting)

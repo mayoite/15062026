@@ -28,7 +28,12 @@ One clear folder layout: flat `tests/`, root `scripts/`, live code in `app/` + `
               └────► 05 ──┘
 ```
 
-**Program complete.** Ongoing work: **coverage** (`plans/COVERAGE-PLAN.md`), **hardcoding** (`plans/HARDCODING-PLAN.md`).
+**Program complete (2026-06-16 verified).** Ongoing work: **coverage** (`plans/COVERAGE-PLAN.md` — planner branches gap), **hardcoding** (`plans/HARDCODING-PLAN.md`).
+
+Verify commands from plan still pass:
+- `npm.cmd run test:layout:check` → OK (no co-located tests)
+- `npm.cmd run docs:check` (may flag stale inventory due to dirty tree; run after clean)
+- typecheck / test / lint green.
 
 ---
 

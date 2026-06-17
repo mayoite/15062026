@@ -10,7 +10,10 @@ When you fix something: remove its row from **Open**, commit with a clear messag
 
 | Issue | Notes |
 |---|---|
-| `npm.cmd run test:planner-catalog` | Rechecked on `2026-06-16` after deleting `.next` and forcing a fresh Playwright build/start (`$env:CI='1'`). Current single blocker: `tests/planner-chrome.spec.ts` `view switching keeps chrome and renders a nonblank 3D scene` fails the WebGL pixel assertion (`webglEvidence?.pixels.some((value) => value > 0)` stays `false`). `33` tests pass; `1` fails; `1` is skipped after the failure. |
+| Local dev reliability | Multiple `next dev` / `next start` processes on ports 3000–3001 cause stale UI and “nothing works” reports. Kill all `node` on those ports, then run **one** server: `npm.cmd run build && npm.cmd run start` (verify) or `npm.cmd run dev` (now defaults to `--webpack`). Hard-refresh after CSS changes. |
+| Guest planner gate | `/planner/guest/` blocks canvas until project name is set; guest mode now pre-fills **Guest workspace** (2026-06-16). |
+| Planner coverage branches <75% | Advanced to ~69.5% (stmts/fn/lines ≥75% at 78%); added tests for low coverage modules (onboarding, document, landing). See updated `PLANNER-COVERAGE-75.md`. Gate wired. |
+| Full `release:gate` (coverage steps + DB Playwright) | Vitest + basic e2e + coverage now in (per package.json update); full plan routes need `DATABASE_URL` for some specs. |
 
 ## Dev gotchas
 
@@ -18,5 +21,4 @@ When you fix something: remove its row from **Open**, commit with a clear messag
 - **Stale dev servers:** multiple `next dev` instances can cause EADDRINUSE, stale UI, or Turbopack cache corruption. For Playwright, prefer a fresh `.next` cleanup and production `npm run build && npm run start` instead of reusing `next dev`.
 - **Planner localhost checks:** an older `next dev` process can keep the workspace lock while `http://localhost:3000` still refuses connections; restart the active dev server before browser verification if localhost looks dead.
 - **Planner layout not updating in browser:** uncommitted worktree vs production; multiple stale `next dev` on port 3000; wrong URL (`/planner` vs `/planner/guest/`). Use `http://localhost:3000/planner/guest/`, hard refresh, single dev server.
-- **Vitest in `.grok/worktrees/` junction:** `tests/setup.ts` may fail to resolve via `E:/16062026` path — run tests from canonical repo root `E:\16062026` if setup import breaks.
 - **TypeScript:** stay on **6.x**; do not upgrade to TS 7 without an explicit decision.

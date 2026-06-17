@@ -116,7 +116,7 @@ export const HOMEPAGE_PROJECTS_CONTENT = {
 } as const;
 
 export const HOMEPAGE_SHOWCASE_CONTENT = {
-  sectionLabel: "",
+  sectionLabel: "Selected projects",
   sectionTitleLead: "Delivered for",
   sectionTitleAccent: "leading organizations",
   browseCta: { label: "View portfolio", href: "/portfolio" },

@@ -1,0 +1,243 @@
+@media (min-width: 1024px) {
+  .planner-workspace .pw-dockable-chrome {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    pointer-events: auto;
+    transition: box-shadow var(--motion-fast) var(--ease-standard);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock="left"] {
+    left: var(--space-3);
+    top: calc(var(--dock-offset, 0.5) * 100%);
+    transform: translateY(-50%);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock="right"] {
+    right: var(--space-3);
+    top: calc(var(--dock-offset, 0.5) * 100%);
+    transform: translateY(-50%);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock="top"] {
+    top: var(--space-3);
+    left: calc(var(--dock-offset, 0.5) * 100%);
+    transform: translateX(-50%);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock="bottom"] {
+    bottom: var(--space-3);
+    left: calc(var(--dock-offset, 0.5) * 100%);
+    transform: translateX(-50%);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock="free"] {
+    left: calc(var(--dock-x, 0.5) * 100%);
+    top: calc(var(--dock-y, 0.5) * 100%);
+    transform: translate(-50%, -50%);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dragging="true"] {
+    z-index: 49;
+    cursor: grabbing;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-preview-edge]::after {
+    content: "";
+    position: absolute;
+    inset: calc(var(--space-1) * -1);
+    border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--border-soft));
+    border-radius: calc(var(--radius-md) + var(--space-1));
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+    pointer-events: none;
+  }
+
+  .planner-workspace .pw-dockable-chrome__handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    width: 1.75rem;
+    height: 1.125rem;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--border-soft) 80%, transparent);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface-panel) 88%, transparent);
+    color: var(--text-muted);
+    cursor: grab;
+    touch-action: none;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(8px);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock="left"] .pw-dockable-chrome__handle,
+  .planner-workspace .pw-dockable-chrome[data-dock="right"] .pw-dockable-chrome__handle {
+    width: 1.125rem;
+    height: 1.75rem;
+  }
+
+  .planner-workspace .pw-dockable-chrome__handle:hover {
+    color: var(--text-strong);
+    border-color: var(--border-hover, var(--border-soft));
+  }
+
+  .planner-workspace .pw-dockable-chrome__handle:focus-visible,
+  .planner-workspace .pw-access-chrome__btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-color: color-mix(in srgb, var(--accent) 38%, var(--border-soft));
+    color: var(--text-strong);
+  }
+
+  .planner-workspace .pw-dockable-chrome__handle:active {
+    cursor: grabbing;
+  }
+
+  .planner-workspace .pw-dockable-chrome__body {
+    pointer-events: auto;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-variant="compact"] .pw-dockable-chrome__handle {
+    width: 1.5rem;
+    height: 1rem;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"] .pw-tool-rail {
+    width: auto;
+    min-width: var(--pw-rail-w);
+    padding: var(--space-2);
+    border: 1px solid color-mix(in srgb, var(--border-soft) 88%, transparent);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--surface-panel) 90%, transparent);
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(10px);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock="top"] .pw-tool-rail,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock="bottom"] .pw-tool-rail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: min(40rem, calc(100vw - var(--space-8)));
+    padding-inline: var(--space-3);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock="top"] .pwx-rail-group,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock="bottom"] .pwx-rail-group {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock="top"] .pwx-rail-group-label,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="tools"][data-dock="bottom"] .pwx-rail-group-label {
+    display: none;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] {
+    width: min(40rem, calc(100% - var(--space-8)));
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"][data-dock="left"],
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"][data-dock="right"] {
+    width: auto;
+    max-width: 12rem;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar {
+    width: 100%;
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid color-mix(in srgb, var(--border-soft) 88%, transparent);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface-panel) 90%, transparent);
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(10px);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar__intro,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar__intro-card,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar__steps-label,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar__hint {
+    display: none;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"][data-dock="left"] .pw-step-bar,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"][data-dock="right"] .pw-step-bar {
+    flex-direction: column;
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar__steps {
+    display: flex;
+    flex: 1;
+    gap: var(--space-1);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"][data-dock="left"] .pw-step-bar__steps,
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"][data-dock="right"] .pw-step-bar__steps {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="steps"] .pw-step-bar__btn {
+    flex: 1;
+    min-height: 2rem;
+    padding-inline: var(--space-3);
+  }
+
+  .planner-workspace .pw-dockable-chrome[data-dock-id="access"] .pw-access-chrome {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    border: 1px solid color-mix(in srgb, var(--border-soft) 88%, transparent);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--surface-panel) 90%, transparent);
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(10px);
+  }
+
+  .planner-workspace .pw-workspace[data-left-open="true"]:not([data-left-collapsed="true"]) .pw-dockable-chrome[data-dock-id="access"] {
+    left: calc(var(--pw-left-w) + var(--space-5));
+    transform: translateX(0);
+  }
+
+  .planner-workspace .pw-access-chrome__btn {
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    border: 1px solid color-mix(in srgb, var(--border-soft) 80%, transparent);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--surface-panel) 92%, transparent);
+    color: var(--text-muted);
+  }
+
+  .planner-workspace .pw-access-chrome__btn[data-active="true"] {
+    color: var(--text-strong);
+    border-color: color-mix(in srgb, var(--accent) 48%, var(--border-soft));
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface-panel));
+  }
+
+  .planner-workspace .pw-access-chrome__btn:disabled {
+    opacity: 0.55;
+  }
+
+  .planner-workspace .pw-dockable-chrome__live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}

@@ -9,7 +9,6 @@ import {
   type PlannerToolVisibilityMode,
 } from "@/features/planner/editor/plannerToolVisibility";
 import { PLANNER_TLDRAW_TOOLS } from "@/features/planner/tldraw/plannerTldrawRegistration";
-
 /** Bumped when planner tldraw registration changes — visible in dev status bar only. */
 const PLANNER_TLDRAW_BUILD_STAMP = "2026-06-16-tools";
 import type { PlanMetrics } from "./planMetrics";
@@ -23,6 +22,8 @@ interface PlannerStatusBarProps {
   metrics: PlanMetrics;
   selectionStatus?: string | null;
   showGrid?: boolean;
+  unitSystem?: "metric" | "imperial";
+  snapStatusLabel?: string;
   onToggleGrid?: () => void;
   toolVisibilityMode?: PlannerToolVisibilityMode;
   onToolVisibilityModeChange?: (mode: PlannerToolVisibilityMode) => void;
@@ -32,6 +33,8 @@ export function PlannerStatusBar({
   metrics,
   selectionStatus,
   showGrid = true,
+  unitSystem = "metric",
+  snapStatusLabel = "Pending",
   onToggleGrid,
   toolVisibilityMode = "balanced",
   onToolVisibilityModeChange,
@@ -50,6 +53,7 @@ export function PlannerStatusBar({
       <span>{metrics.furnitureCount} furniture</span>
       <span>Rooms {fmtSqm(metrics.roomAreaSqm)}</span>
       <span>Zones {fmtSqm(metrics.zoneAreaSqm)}</span>
+      <span>Units <strong>{unitSystem === "imperial" ? "Imperial" : "Metric"}</strong></span>
       <span>
         Floor <strong>{fmtSqm(metrics.totalFloorAreaSqm)}</strong>
         {metrics.calibrated ? " (calibrated)" : ""}
@@ -66,9 +70,13 @@ export function PlannerStatusBar({
           title={showGrid ? "Hide grid (G)" : "Show grid (G)"}
         >
           <Grid3x3 size={12} strokeWidth={2} aria-hidden />
-          Grid
+          Grid {showGrid ? "On" : "Off"}
         </button>
       ) : null}
+
+      <span className="pw-status-snap" data-active={snapStatusLabel !== "Pending" || undefined}>
+        Snap <strong>{snapStatusLabel}</strong>
+      </span>
 
       {showDevTools ? (
         <span

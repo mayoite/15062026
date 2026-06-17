@@ -1,21 +1,33 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { HOMEPAGE_PARTNERSHIP_CONTENT } from "@/data/site/homepage";
 import { fadeUp } from "@/lib/helpers/motion";
 
 export function PartnershipBanner() {
   const { image, title } = HOMEPAGE_PARTNERSHIP_CONTENT;
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section className="home-section--white border-t border-theme-soft [padding-block:calc(var(--section-space-sm)*0.8)]">
+    <section
+      data-testid="home-partnership"
+      className="home-section--white border-t border-theme-soft section-y-sm"
+    >
       <div className="home-shell-xl">
         <motion.div
           className="home-partnership-panel flex flex-col items-center justify-between gap-8 px-8 py-8 text-center md:flex-row md:text-left md:gap-12 md:px-12"
-          {...fadeUp(18, 0.04)}
+          {...fadeUp(18, 0.08)}
         >
-          <div className="shrink-0">
+          <motion.div
+            className="shrink-0"
+            animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
+            transition={{
+              duration: 7,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
             <Image
               src={image.src}
               alt={image.alt}
@@ -25,7 +37,7 @@ export function PartnershipBanner() {
               className="h-auto w-[108px] md:w-[158px]"
               priority
             />
-          </div>
+          </motion.div>
 
           <div className="flex-1 max-w-xl">
             <h2 className="home-heading">

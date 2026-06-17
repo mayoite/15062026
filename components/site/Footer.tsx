@@ -38,7 +38,7 @@ export function SiteFooter() {
     <footer className="site-footer w-full surface-inverse text-inverse">
       <div className="shell-container py-12 md:py-14">
         <div className="site-footer__columns">
-          <div className="flex flex-col gap-5">
+          <div className="site-footer__brand-col flex flex-col gap-5">
             <Link href="/" prefetch={false} className={`site-footer__link ${footerInteractiveClass} block`}>
               <OneAndOnlyLogo variant="orange" className="h-10" />
             </Link>
@@ -92,8 +92,15 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {SITE_FOOTER_NAV.map((col) => (
-            <div key={col.heading} className="site-footer__nav-col">
+          {SITE_FOOTER_NAV.map((col, index) => (
+            <div
+              key={col.heading}
+              className={`site-footer__nav-col ${
+                index === 0 ? "site-footer__nav-col--products" : ""
+              } ${index === 1 ? "site-footer__nav-col--company" : ""} ${
+                index === 2 ? "site-footer__nav-col--services" : ""
+              }`.trim()}
+            >
               <p className="site-footer__heading site-footer__nav-heading typ-overline mb-3">{col.heading}</p>
               <ul className="flex flex-col gap-2">
                 {col.links.map(({ href, label }) => (

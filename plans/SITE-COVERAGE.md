@@ -2,14 +2,16 @@
 
 *Execution · Program: [`MASTER-PLAN.md`](MASTER-PLAN.md) · Track 2 of [`COVERAGE-PLAN.md`](COVERAGE-PLAN.md) · How-to: [`docs/TESTING.md`](../docs/TESTING.md)*
 
-## Block closure (2026-06-15)
+## Block closure (2026-06-15, verified 2026-06-16)
 
 | | |
 |---|---|
 | **Done** | S0–S5 Vitest site scope — all folders in `vitest.site.config.ts` include list |
-| **Verified** | Site rollup **96.6%** stmts · **96.3%** fn · **87.9%** branches · **97.8%** lines · **0** zero-statement files (`results/COVERAGE-REPORT.md`) |
+| **Verified** | Site rollup **96.6%** stmts · **96.3%** fn · **87.9%** branches · **97.8%** lines · **0** zero-statement files (`results/COVERAGE-REPORT.md` + fresh sync) |
 | **Remaining** | S4 Playwright site-only CI script; wire `test:coverage:site` into `release:gate` |
 | **Next** | S4 Playwright expansion; optional site threshold ratchet toward **90%** all metrics when `lib/catalog` branches ≥85% |
+
+**Track status:** Closed for Vitest % (>>50%). See Handover "Site track — closed".
 
 ---
 
@@ -118,7 +120,7 @@ Run subset: `npm run test:unit` (excludes `**/planner*`). Full inventory: **206*
 
 ---
 
-## Phase status
+## Phase status (2026-06-16)
 
 | Phase | Focus | Status |
 |-------|--------|--------|
@@ -128,6 +130,8 @@ Run subset: `npm run test:unit` (excludes `**/planner*`). Full inventory: **206*
 | S3 | site-assistant, ops, configurator pure logic | **Done** |
 | S5 | `features/catalog` (site) + `lib/configurator` + `aiAdvisor.ts` | **Done** |
 | S4 | Playwright site expansion + gate split | **Open** |
+
+**Vitest % target met and closed.** Playwright S4 remains for full gate.
 
 ---
 

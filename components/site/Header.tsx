@@ -102,6 +102,15 @@ export function SiteHeader() {
 
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const searchPanelRef = useRef<HTMLDivElement>(null);
+  const closeMegaMenu = () => setActiveMega(null);
+
+  const isMegaPointerTarget = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) return false;
+    return (
+      target.closest("[data-mega-zone]") !== null ||
+      target.closest("#products-mega-menu") !== null
+    );
+  };
 
   // Fetch real product categories for mega menu
   useEffect(() => {
@@ -120,9 +129,12 @@ export function SiteHeader() {
       .catch(() => {});
   }, []);
 
-  // Scroll shadow
+  // Scroll shadow + close flyouts
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 16);
+      setActiveMega(null);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -163,6 +175,7 @@ export function SiteHeader() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sync search panel visibility with route changes
     setShowSearchPanel(false);
+    setActiveMega(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -331,12 +344,17 @@ export function SiteHeader() {
                   return (
                     <div
                       key={link.label}
-                      className="relative"
+                      data-mega-zone
+                      className="relative flex h-full items-stretch"
                       onMouseEnter={() => setActiveMega(link.label)}
-                      onMouseLeave={() => setActiveMega(null)}
+                      onMouseLeave={(event) => {
+                        if (isMegaPointerTarget(event.relatedTarget)) return;
+                        closeMegaMenu();
+                      }}
                     >
                       <button
                         type="button"
+                        data-mega-trigger
                         aria-expanded={activeMega === link.label}
                         aria-controls="products-mega-menu"
                         onFocus={() => setActiveMega(link.label)}
@@ -367,6 +385,7 @@ export function SiteHeader() {
                   <Link
                     key={link.label}
                     href={link.href}
+                    onMouseEnter={closeMegaMenu}
                     className={cn(
                       "typ-nav shell-nav-link shell-nav-link--desktop relative whitespace-nowrap px-2 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary xl:px-2.5",
                       isActive
@@ -382,7 +401,11 @@ export function SiteHeader() {
 
             {/* Right CTAs */}
             <div className="flex h-full shrink-0 items-center gap-1.5">
-              <div ref={searchPanelRef} className="site-header__search relative">
+              <div
+                ref={searchPanelRef}
+                className="site-header__search relative"
+                onMouseEnter={closeMegaMenu}
+              >
                 <form
                   className={headerSearchShellClass}
                   onSubmit={(event) => {
@@ -507,8 +530,11 @@ export function SiteHeader() {
             <div
               id="products-mega-menu"
               onMouseEnter={() => setActiveMega("Products")}
-              onMouseLeave={() => setActiveMega(null)}
-              className="hidden lg:block border-t border-soft bg-panel shadow-theme-soft animate-in fade-in slide-in-from-top-2 duration-150"
+              onMouseLeave={(event) => {
+                if (isMegaPointerTarget(event.relatedTarget)) return;
+                closeMegaMenu();
+              }}
+              className="mega-menu-panel hidden lg:block border-t border-soft bg-panel shadow-theme-soft animate-in fade-in slide-in-from-top-2 duration-150"
             >
               <div className="shell-container-wide px-6 py-8">
                 <div className={cn("grid gap-5", megaMenuOthers.length > 0 ? "grid-cols-7" : "grid-cols-6")}>

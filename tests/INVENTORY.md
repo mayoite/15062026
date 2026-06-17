@@ -8,17 +8,17 @@ Auto-generated file list and counts. Folder rules: `tests/CONTENTS.md`.
 
 | Kind | Count |
 |------|-------|
-| Vitest (active) | 230 |
+| Vitest (active) | 238 |
 | Vitest (excluded in config) | 0 |
-| Playwright | 8 |
+| Playwright | 10 |
 | Helpers | 2 |
-| **Total files** | **240** |
+| **Total files** | **250** |
 
 JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.json` · Coverage: `results/coverage-summary.json` (`npm run docs:sync:coverage`)
 
 ## Files by category
 
-### planner (165)
+### planner (173)
 
 - `planner-3d-types.test.ts`
 - `planner-blueprintCanvasFrame.test.ts`
@@ -36,11 +36,13 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-catalog-exports.test.ts`
 - `planner-catalog-ingest-csvCatalogIngest.test.ts`
 - `planner-catalog-managedProducts.test.ts`
+- `planner-catalog-placementCatalogResolver.test.ts`
 - `planner-catalog-plannerCatalogCore.test.ts`
 - `planner-catalog-shapeTypeRegistry.test.ts`
 - `planner-catalog-workspaceCatalog.test.ts`
 - `planner-catalog.test.ts`
 - `planner-catalogBlockBridge.test.ts`
+- `planner-chrome-layout.test.ts`
 - `planner-editor-BlueprintPanel.test.tsx`
 - `planner-editor-BlueprintTraceGuideOverlay.test.tsx`
 - `planner-editor-BlueprintUnderlay.test.tsx`
@@ -64,6 +66,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-editor-exportActions.test.ts`
 - `planner-editor-layerManagerEntries.test.ts`
 - `planner-editor-overlays.test.tsx`
+- `planner-editor-plannerChromeDock.test.ts`
 - `planner-editor-plannerShapeFactories.test.ts`
 - `planner-editor-plannerToolVisibility.test.ts`
 - `planner-editor-pure.test.ts`
@@ -81,6 +84,7 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-hooks-usePlannerUiState.test.tsx`
 - `planner-hooks-usePlannerWorkspace.test.tsx`
 - `planner-landing-data.test.ts`
+- `planner-landing-plannerfeaturedemo.test.tsx`
 - `planner-layerCounts.test.ts`
 - `planner-layerManagerEntries.test.ts`
 - `planner-layerManagerUiState.test.ts`
@@ -116,12 +120,14 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-model-plannerJsonSafe.test.ts`
 - `planner-model-plannerPermissions.test.ts`
 - `planner-model-plannerPlacement.test.ts`
+- `planner-onboarding-onboardingcoach.test.tsx`
 - `planner-openingCollision.test.ts`
 - `planner-openingWallSnap.test.ts`
 - `planner-persistence-plannerDraft.test.ts`
 - `planner-shapeTypeRegistry.test.ts`
 - `planner-shared-boq-quoteCartBridge.test.ts`
 - `planner-shared-catalog-catalogAdapter.test.ts`
+- `planner-shared-document-documentbridge.test.ts`
 - `planner-shared-export-exportBoq.test.ts`
 - `planner-shared-plannerShared.test.tsx`
 - `planner-state.test.ts`
@@ -156,7 +162,9 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-tldraw-catalogBlockBridge-extra.test.ts`
 - `planner-tldraw-exports.test.ts`
 - `planner-tldraw-furnitureBlocks2d.test.ts`
+- `planner-tldraw-plannerTldrawEditorBridge.test.ts`
 - `planner-tldraw-plannerTldrawRegistration.test.ts`
+- `planner-tldraw-rectDrag.test.ts`
 - `planner-tldraw-renderBlockPrims.test.tsx`
 - `planner-tldraw-shapeUtils-branches.test.tsx`
 - `planner-tldraw-shapeUtils-labelEdit.test.tsx`
@@ -263,11 +271,13 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `site-data-routeCopy.test.ts`
 - `spaceSuggest.test.ts`
 
-### playwright (8)
+### playwright (10)
 
 - `accessibility.spec.ts`
 - `navigation-smoke.spec.ts`
 - `planner-catalog.spec.ts`
+- `planner-chrome.spec.ts`
+- `planner-custom-tools.spec.ts`
 - `planner-guest-workspace.spec.ts`
 - `planner-landing-screenshots.spec.ts`
 - `planner-marketing-a11y.spec.ts`

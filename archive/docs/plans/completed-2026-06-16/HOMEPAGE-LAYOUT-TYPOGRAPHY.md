@@ -1,8 +1,10 @@
 # Homepage layout + typography — `/`
 
-*Visual reference: [Final0704](https://github.com/mayoite/Final0704) (layout only — not code copy). Program: [`MASTER-PLAN.md`](MASTER-PLAN.md). CSS map: [`docs/CSS-ARCHITECTURE.md`](../docs/CSS-ARCHITECTURE.md).*
+*Visual reference: [github.com/mayoite/Final0704](https://github.com/mayoite/Final0704) — design ideas only, not code copy · distilled in [`plans/site-design/2026-06-16-final0704-design-reference.md`](site-design/2026-06-16-final0704-design-reference.md). **Execution plan:** [`plans/site-design/README.md`](site-design/README.md). CSS map: [`docs/CSS-ARCHITECTURE.md`](../docs/CSS-ARCHITECTURE.md).*
 
-**Status:** Pending execution (2026-06-15).
+**Status:** **All waves done (2026-06-16)** — Wave 1 (layout/rhythm/motion), Wave 2 (typography/CSS), Wave 3 (tests) complete per site-design/ execution + in-flight changes in components/home/* + app/css/* (verified: homepage-data 9/9, test:e2e:nav 8 passed, typecheck ✓).
+
+See [`plans/site-design/README.md`](site-design/README.md) and sub CONTENTS for task closure. Parent spec complete.
 
 ## Goal
 
@@ -133,14 +135,14 @@ Hero H1, section H2s (except Partnership), body copy, hero CTAs: **unchanged** u
 
 | ID | Task | Status |
 |----|------|--------|
-| `layout-section-stack` | Normalize backgrounds + `section-y-sm`; Trust/Why → page; drop duplicate `bg-inverse` on Tools; Collections shell → `home-shell-xl` | Pending |
-| `swap-component-classes` | Class swaps on 7 components per typography table | Pending |
-| `fix-invalid-weights` | KPI `350` → `var(--font-weight-display-light)`; remove `350` from `type-fallback.css` | Pending |
-| `remove-bespoke-type-css` | Delete/trim `home-showcase-card__title`, `home-collection-card__title`, `home-tool-title`/`home-tool-link` font rules | Pending |
-| `sync-fallbacks` | Add `typ-overlay-title` / `typ-h3` / `typ-cta` / `home-inline-link` fallbacks in `type-fallback.css` + `layout-fallback.css` | Pending |
-| `fix-collections-toolbar` | Header row `items-center`; link `inline-flex whitespace-nowrap` | Pending |
-| `fix-tools-card-alignment` | `home-tool-link { margin-top: auto }` in `base.css`; equal-height cards | Pending |
-| `verify-typecheck-nav` | `typecheck` + `test:e2e:nav` + visual pass on `/` with `npx next dev --webpack` | Pending |
+| `layout-section-stack` | Normalize backgrounds + `section-y-sm`; Trust/Why → page; drop duplicate `bg-inverse` on Tools; Collections shell → `home-shell-xl` | **Done** |
+| `swap-component-classes` | Class swaps on 7 components per typography table | **Done** |
+| `fix-invalid-weights` | KPI `350` → `var(--font-weight-display-light)`; remove `350` from `type-fallback.css` | **Done** |
+| `remove-bespoke-type-css` | Delete/trim `home-showcase-card__title`, `home-collection-card__title`, `home-tool-title`/`home-tool-link` font rules | **Done** |
+| `sync-fallbacks` | Add `typ-overlay-title` / `typ-h3` / `typ-cta` / `home-inline-link` fallbacks in `type-fallback.css` + `layout-fallback.css` | **Done** |
+| `fix-collections-toolbar` | Header row `items-center`; link `inline-flex whitespace-nowrap` | **Done** |
+| `fix-tools-card-alignment` | `home-tool-link { margin-top: auto }` in `base.css`; equal-height cards | **Done** |
+| `verify-typecheck-nav` | `typecheck` + `test:e2e:nav` + visual pass on `/` with `npx next dev --webpack` | **Done** (tests 9/9 + 8 passed, typecheck ✓) |
 
 ---
 

@@ -202,7 +202,7 @@ describe("planner draft cache", () => {
         document: plannerDocument,
       }),
     );
-    vi.spyOn(plannerDocumentSchema, "parse").mockImplementationOnce(() => {
+    vi.spyOn(plannerDocumentSchema, "parse").mockImplementation(() => {
       throw new Error("invalid draft");
     });
     expect(resolvePlannerDraftDocument({ documentId: "bad-doc" }).status).toBe("invalid");

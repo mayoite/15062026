@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { addAfterEffect, Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   ContactShadows,
   Html,
@@ -474,20 +474,65 @@ function WalkCamera({
   return <PerspectiveCamera ref={cameraRef} makeDefault fov={70} near={0.1} far={metrics.cameraFar} />;
 }
 
+function Planner3DRenderEvidence({
+  viewerRef,
+}: {
+  viewerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const { gl } = useThree();
+  const reported = useRef(false);
+
+  useEffect(() => {
+    return addAfterEffect(() => {
+      if (reported.current) return;
+
+      const context = gl.getContext();
+      const width = context.drawingBufferWidth;
+      const height = context.drawingBufferHeight;
+      if (width <= 0 || height <= 0) return;
+
+      const pixels = new Uint8Array(4);
+      context.readPixels(
+        Math.max(0, Math.floor(width / 2)),
+        Math.max(0, Math.floor(height / 2)),
+        1,
+        1,
+        context.RGBA,
+        context.UNSIGNED_BYTE,
+        pixels,
+      );
+
+      if (!pixels.some((value) => value > 0)) return;
+
+      viewerRef.current?.setAttribute("data-render-evidence", "ready");
+      viewerRef.current?.setAttribute(
+        "data-render-luma",
+        String(pixels[0] + pixels[1] + pixels[2] + pixels[3]),
+      );
+      reported.current = true;
+    });
+  }, [gl, viewerRef]);
+
+  return null;
+}
+
 function PlannerScene({
   cameraMemoryRef,
   cameraMode,
   sceneDocument,
+  viewerRef,
 }: {
   cameraMemoryRef: React.MutableRefObject<CameraMemory>;
   cameraMode: ViewerCameraMode;
   sceneDocument: Planner3DSceneDocument;
+  viewerRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { room, items } = sceneDocument;
   const metrics = useMemo(() => getSceneMetrics(sceneDocument), [sceneDocument]);
 
   return (
     <>
+      <Planner3DRenderEvidence viewerRef={viewerRef} />
       <color attach="background" args={[FOCSS_3D_COLORS.darkMidnightBlue950]} />
       <fog attach="fog" args={[FOCSS_3D_COLORS.darkMidnightBlue950, metrics.fogNear, metrics.fogFar]} />
       <ambientLight intensity={0.92} />
@@ -531,6 +576,7 @@ function PlannerScene({
 export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
   const [cameraMode, setCameraMode] = useState<ViewerCameraMode>("orbit");
   const [webglProbe] = useState<WebGLProbeResult>(() => probeWebGL());
+  const viewerRef = useRef<HTMLDivElement>(null);
   const sceneDocument = useMemo(() => buildPlanner3DSceneDocument(document), [document]);
   const sceneSignature = useMemo(() => getSceneSignature(sceneDocument), [sceneDocument]);
   const cameraMemoryRef = useRef<CameraMemory>({ sceneSignature });
@@ -539,8 +585,14 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
     cameraMemoryRef.current = { sceneSignature };
   }, [sceneSignature]);
 
+  useEffect(() => {
+    viewerRef.current?.removeAttribute("data-render-evidence");
+    viewerRef.current?.removeAttribute("data-render-luma");
+  }, [sceneSignature, webglProbe.ok]);
+
   return (
     <div
+      ref={viewerRef}
       className={`surface-inverse relative overflow-hidden rounded-[2rem] border border-theme-soft shadow-theme-float ${className ?? ""}`}
       data-testid="planner-3d-viewer"
       data-webgl-status={webglProbe.ok ? "ready" : "fallback"}
@@ -558,11 +610,21 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
           <Canvas
             shadows
             dpr={[1, 1.75]}
-            gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+            gl={{
+              antialias: true,
+              alpha: false,
+              powerPreference: "high-performance",
+              preserveDrawingBuffer: true,
+            }}
             className="h-full min-h-[420px] w-full"
             data-testid="planner-3d-canvas"
           >
-            <PlannerScene cameraMemoryRef={cameraMemoryRef} cameraMode={cameraMode} sceneDocument={sceneDocument} />
+            <PlannerScene
+              cameraMemoryRef={cameraMemoryRef}
+              cameraMode={cameraMode}
+              sceneDocument={sceneDocument}
+              viewerRef={viewerRef}
+            />
           </Canvas>
         </Suspense>
       ) : (

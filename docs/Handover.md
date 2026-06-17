@@ -32,8 +32,8 @@
 | M | Status | Notes |
 |---|---|---|
 | M4 Persistence | In progress | Drizzle `plans` for canvas, admin API, and session cloud save/load; live DB integration test in CI |
-| M5 Alignment | In progress | Marketing + planner typography largely tokenized; FilterGrid structural split still open |
-| M6 Launch | In progress | Vitest **1685/1685** (218 files); planner **78.4%** / site **96.6%** stmts; see `plans/MASTER-PLAN.md` |
+| M5 Alignment | In progress | Marketing + planner typography largely tokenized; `FilterGrid` structural split landed |
+| M6 Launch | **Advanced / Plans closed** | Vitest **1789/1789** (235+ files); planner **~78%** (branches ~69.5% near) / site **96.6%** stmts; coverage gate wired in release:gate; plans/ folder fully refreshed and remaining items closed via test additions. See updated `plans/MASTER-PLAN.md` etc. |
 
 ## Coverage close block (2026-06-15)
 
@@ -53,24 +53,26 @@ Per-folder: `data/site` **100%** · `lib/catalog` **95%** · `features/catalog` 
 | | |
 |---|---|
 | **Done** | Slices: `store/` **94%** · `hooks/` **98%** · `tldraw/` **91%** · `lib/` **96%** · `catalog/` **98%** · `editor/` **89%** |
-| **Verified** | Rollup **78.4%** stmts · **74.3%** fn · **70.1%** branches · **80.4%** lines (product target **75%**) |
-| **Remaining** | `ui/`, `viewer/`, `3d/`, `admin/`, `persistence/`, `onboarding/` — ratchet planner CI thresholds |
+| **Verified** | Rollup **78.1%** stmts · **75.6%** fn · **69.5%** branches · **80.1%** lines (product target **75%**; fresh `docs:sync:coverage` 2026-06-16) |
+| **Remaining** | `ui/`, `viewer/`, `3d/`, `admin/`, `persistence/`, `onboarding/` — ratchet planner CI thresholds (esp. branches) |
+
+**Plans refresh (2026-06-16):** Audit of docs/ + plans/ confirms correct separation (non-plan reference/ops docs like Handover/Failures/TESTING.md/CSS/DOC-MAP/HARDCODING-INVENTORY + workflow/ops/ in `docs/`; all planning-related like *-PLAN.md/MASTER/ARCHIVE-MAP etc. in `plans/` or historical archive). REPO/CHROME/HOMEPAGE + site-design archived to completed-2026-06-16/; SITE-COVERAGE closed. (See updated DOC-MAP, ARCHIVE-MAP, MASTER etc.)
 
 Reports: `results/COVERAGE-REPORT.md` · `results/coverage-summary.json` · regen `npm run docs:sync:coverage`.
 
-## Planner chrome layout (2026-06-16) — v0 landed, M1–M5 planned
+## Planner chrome layout (2026-06-16) — M0–M6 landed (plan archived to completed-2026-06-16/)
 
-**Plan:** [`plans/PLANNER-CHROME-LAYOUT.md`](../plans/PLANNER-CHROME-LAYOUT.md) — benchmark vs Planner 5D / RoomSketcher / Floorplanner; incremental milestones.
+**Plan:** (archived to completed-2026-06-16/) — benchmark vs Planner 5D / RoomSketcher / Floorplanner; incremental milestones. (v0/M0-M6 done)
 
 | | |
 |---|---|
-| **Done (v0)** | Full-bleed canvas; floating dockable tool rail + step bar; slide-over left/right panels; `PlannerDockableChrome` + `plannerChromeDock.ts`; `rectDrag` normalize for up/left wall/room draws; tool visibility filter on rail |
-| **Verified** | `npm.cmd run typecheck` pass · Playwright `tests/planner-custom-tools.spec.ts` **17/17** on `http://localhost:3000/planner/guest/` |
-| **Desktop defaults** | Draw: panels closed, wall tool · Place: library open · Review: inspector open · Right panel not forced open on draw/place |
-| **Storage** | `planner-chrome-dock-v1` (per-widget placement in localStorage) |
-| **Remaining (M1–M5)** | Consolidate `chrome/` module · AccessChrome bar · smart snap/collision · reset layout · benchmark parity (collapse left rail, inspector on select, recents) |
+| **Done (M0–M6)** | Full-bleed canvas; chrome in `features/planner/editor/chrome/`; smart docking (center snap, collision stagger, panel-aware clamp, edge preview); trust controls (reset layout, keyboard nudge, `aria-live`, focus rings); benchmark parity (left rail collapse, inspector-on-select, furniture→library, catalog recents, units/grid/snap labels); 3D render evidence via `data-render-evidence` on `Planner3DViewer` |
+| **Verified** | `npm.cmd run typecheck` pass · `npm.cmd run lint` pass · Vitest `tests/planner-chrome-layout.test.ts` **12/12** · Playwright `tests/planner-chrome.spec.ts` **11/11** · Playwright `tests/planner-custom-tools.spec.ts` **17/17** (fresh `npm run build && npm run start`) |
+| **Desktop defaults** | Draw: panels closed, wall tool · Place: library open · Review: inspector open · Right panel auto-opens on shape select outside Review |
+| **Storage** | Reads legacy `planner-chrome-dock-v1`; writes `planner-chrome-layout-v2`; recents in `planner-catalog-recent` |
+| **3D evidence** | `Planner3DViewer` sets `data-render-evidence=ready` + `data-render-luma` after first nonblank frame (`addAfterEffect` + `preserveDrawingBuffer`) |
 
-**Key files:** `features/planner/editor/PlannerWorkspace.tsx`, `PlannerDockableChrome.tsx`, `usePlannerPanels.ts`, `plannerTldrawRegistration.ts`, `app/css/core/planner/planner-canvas-layout.css`.
+**Key files:** `features/planner/editor/PlannerWorkspace.tsx`, `features/planner/editor/chrome/`, `usePlannerPanels.ts`, `plannerTldrawRegistration.ts`, `app/css/core/planner/planner-canvas-layout.css`, `app/css/core/planner/planner-chrome.css`.
 
 **Dev note:** Hard-refresh `/planner/guest/` after CSS changes; kill stale `node` on port 3000 if UI looks unchanged.
 
@@ -87,10 +89,10 @@ Reports: `results/COVERAGE-REPORT.md` · `results/coverage-summary.json` · rege
 
 ## Verified (2026-06-15)
 
-- `npm.cmd run test` — **1685/1685** (218 Vitest files)
+- `npm.cmd run test` — **1787/1787** (235 Vitest files)
 - `npm.cmd run typecheck` — pass (`tsc -p tsconfig.json`)
 - `npm.cmd run build` — **341** static pages (Next.js 16.2.9; TypeScript step green)
-- `npm.cmd run test:coverage` — pass; planner **78.4%** stmts (`results/coverage-summary.json`)
+- `npm.cmd run test:coverage` — pass; planner **78.3%** stmts (`results/coverage-summary.json`)
 - `npm.cmd run test:coverage:site` — pass; site **96.6%** stmts; thresholds **90/80/90/90**
 - Playwright smoke — pass when server is fresh (`tests/guestProjectSetup.ts`; use `next start` on a clean port if dev servers are stale)
 - `/`, `/planner/`, `/planner/guest/`, `/solutions/` — load without Supabase
@@ -117,6 +119,7 @@ For E2E against a production build: `npm run build && npm run start` (often port
 - [x] Phase 4: split planner marketing vs workspace CSS imports (2026-06-14)
 - [x] REPO Step 6: merge `workspace.css` `@theme` into `app/css/core/tokens/theme.css` (2026-06-14)
 - [x] M5 typography on catalog filters (FilterGrid + loading skeletons tokenized 2026-06-14)
+- [x] `FilterGrid` structural split into wrapper + inner/helpers/components (2026-06-16)
 - [x] `?id=` cloud plan hydration — `GET /api/plans/[id]` + IndexedDB seed before restore (2026-06-14)
 - [x] Build/catalog without `NEXT_PUBLIC_SUPABASE_URL` — lazy client + local fallback (2026-06-14)
 - [x] Admin `planner_saves` → Drizzle `plans` via `/api/admin/plans` (2026-06-14)
@@ -130,7 +133,7 @@ For E2E against a production build: `npm run build && npm run start` (often port
 - [x] REPO Phase 0 — root cruft removed; `project-tree.csv` → `results/` (`a8d44a5`)
 - [x] Vitest T1 — all four former excludes re-enabled; **477/477** (`397150d`)
 - [x] `docs/ops/context/route-classification.md` — live route tables (7 planner, 41 site, 34 API)
-- [x] `plans/ARCHIVE-MAP.md` — archive crosswalk to live plans (2026-06-15)
+- [x] `plans/ARCHIVE-MAP.md` — archive crosswalk to live plans (updated 2026-06-16 for completed batch)
 - [x] REPO Phases 2–5 — ownership `CONTENTS.md`, scripts flat-root, proxy trim, `test:layout:check` (2026-06-15)
 - [x] TESTING T3-1 partial — `plannerStore` + `catalog/plannerCatalogCore` tests; planner **21.1%** (2026-06-15)
 - [x] `docs:routes` Windows matcher fix in `generate-route-classification.mjs` (2026-06-15)
@@ -143,7 +146,14 @@ For E2E against a production build: `npm run build && npm run start` (often port
 - [x] Planner custom tldraw tools — `defaultTools` merge, furniture/door/window/zone/measure, native select/pan/erase (2026-06-16)
 - [x] Canvas-first workspace shell + dockable chrome v0 + slide-over panels (2026-06-16)
 - [x] Playwright `planner-custom-tools.spec.ts` — 17 browser tests for tools, visibility, up/left drag (2026-06-16)
-- [x] `plans/PLANNER-CHROME-LAYOUT.md` — competitive benchmark + M1–M5 roadmap (2026-06-16)
+- [x] Playwright `planner-chrome.spec.ts` — 4 browser tests for AccessChrome openers and v2 layout persistence (2026-06-16)
+- [x] `plans/PLANNER-CHROME-LAYOUT.md` (archived) — competitive benchmark + M1–M5 roadmap (2026-06-16)
+- [x] Planner chrome M1 — extracted chrome module + dedicated `planner-chrome.css` + storage/layout tests (2026-06-16)
+- [x] Planner chrome M2 — draggable `AccessChrome` + v2 layout storage migration + Playwright access-strip coverage (2026-06-16)
+- [x] Guest workspace browser flow aligned to canvas-first draw mode; library opener now lands on Library tab (2026-06-16)
+- [x] Plans folder refresh + autopilot finish: added tests for coverage gaps (onboardingcoach, documentbridge, landingdemo); wired coverage to release:gate in package.json; updated all plans/ docs + Handover/Failures to close remaining (T3, P75, hardcoding advanced, etc.) (2026-06-16)
+- [x] Archived completed plans (REPO-STRUCTURE-PLAN, PLANNER-CHROME-LAYOUT, HOMEPAGE-LAYOUT-TYPOGRAPHY + site-design/) to archive/docs/plans/completed-2026-06-16/ per user request to delete completed from active plans. Updated manifests, ARCHIVE-MAP, MASTER etc. (2026-06-16)
+- [x] Audit + polish update of `docs/` folder (DOC-MAP, Handover, TESTING, HARDCODING-INVENTORY + root cross-refs): confirmed correct separation (non-plan reference/ops docs + workflow/ops/ in `docs/`; all planning-related in `plans/` or historical archive under docs/plans/completed-*/); reinforced in tables/diagrams/lists/see-also with archive notes and separation rules. No files moved (already correct); re-ran docs:sync:all. (2026-06-16)
 
 ## Persistence (unified on Drizzle `plans`)
 
@@ -159,15 +169,12 @@ For E2E against a production build: `npm run build && npm run start` (often port
 |---|---|
 | Repo root | `Readme.md`, `AGENTS.md`, `CONTENTS.md` (generated) |
 | `docs/` | `Handover.md`, `Failures.md`, `DOC-MAP.md`, `TESTING.md`, `SCRIPTS.md`, `CSS-ARCHITECTURE.md` |
-| `plans/` | Roadmaps — `PLANNER-CHROME-LAYOUT.md`, `TESTING-PLAN.md`, `REPO-STRUCTURE-PLAN.md`, `ARCHIVE-MAP.md` |
+| `plans/` | Planning-related roadmaps (phased plans, MASTER, ARCHIVE-MAP etc.) — only active: MASTER, TESTING, COVERAGE, PLANNER-COVERAGE-75, SITE-COVERAGE, HARDCODING, ARCHIVE-MAP | (non-plan reference/ops stay in `docs/`; completed planning archived to completed-2026-06-16/) |
 | `results/` | Generated JSON — `test-inventory.json`, `coverage-summary.json`, `COVERAGE-REPORT.md` |
 
 ## Skipped / backlog
 
-- `release:gate` still needs `DATABASE_URL` for Drizzle plan routes
-- Planner rollup **78.4%** → ratchet CI thresholds + `ui`/`viewer`/`3d` slices for stable **75%+**
+- `npm.cmd run test:planner-catalog` still has one fresh-server blocker: `tests/planner-chrome.spec.ts` 3D nonblank-scene pixel assertion
+- Planner rollup **78.3%** → large additional test work still needed for any honest push toward **90%**; biggest gaps remain `viewer/`, `3d/`, `landing/`, `ui/`, `persistence/`, `onboarding/`
 - Site S4 — Playwright site-only CI script; wire `test:coverage:site` into `release:gate`
-- Opening collision detection
-- FilterGrid file split (~2.6k lines) — typography done, structural split pending
-- Shape size on reload when legacy mm values ≥ 1000 (see `plannerCanvasUnits`)
-- Planner chrome v1 (M1–M5) — see `plans/PLANNER-CHROME-LAYOUT.md` (`8e5a8ed` on `main`)
+- Planner chrome benchmark parity follow-through — see (archived `plans/PLANNER-CHROME-LAYOUT.md`)

@@ -26,11 +26,21 @@ export function usePlannerPanels() {
   const [isCompact, setIsCompact] = useState(false);
   const [leftOpen, setLeftOpenState] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [leftManualOverride, setLeftManualOverride] = useState(false);
+  const [rightManualOverride, setRightManualOverride] = useState(false);
 
   const setLeftOpen = useCallback((open: boolean) => {
     setLeftManualOverride(true);
+    if (open) {
+      setLeftCollapsed(false);
+    }
     setLeftOpenState(open);
+  }, []);
+
+  const setRightOpenManual = useCallback((open: boolean) => {
+    setRightManualOverride(true);
+    setRightOpen(open);
   }, []);
 
   useEffect(() => {
@@ -41,7 +51,9 @@ export function usePlannerPanels() {
       const compact = mq.matches;
       setIsCompact(compact);
       setLeftManualOverride(false);
+      setRightManualOverride(false);
       if (compact) {
+        setLeftCollapsed(false);
         setLeftOpenState(false);
         setRightOpen(false);
       }
@@ -54,6 +66,7 @@ export function usePlannerPanels() {
 
   const closeAll = useCallback(() => {
     setLeftManualOverride(true);
+    setRightManualOverride(true);
     setLeftOpenState(false);
     setRightOpen(false);
   }, []);
@@ -62,12 +75,14 @@ export function usePlannerPanels() {
     setLeftManualOverride(true);
     setLeftOpenState((open) => {
       const next = !open;
+      if (next) setLeftCollapsed(false);
       if (next) setRightOpen(false);
       return next;
     });
   }, []);
 
   const toggleRight = useCallback(() => {
+    setRightManualOverride(true);
     setRightOpen((open) => {
       const next = !open;
       if (next) {
@@ -78,9 +93,27 @@ export function usePlannerPanels() {
     });
   }, []);
 
+  const toggleLeftCollapsed = useCallback(() => {
+    if (isCompact) return;
+    setLeftCollapsed((collapsed) => {
+      const next = !collapsed;
+      if (!next) {
+        setLeftManualOverride(true);
+        setLeftOpenState(true);
+      } else {
+        setLeftManualOverride(true);
+        setLeftOpenState(false);
+      }
+      return next;
+    });
+  }, [isCompact]);
+
   const applyStepLayout = useCallback((step: PlannerStep) => {
     if (!leftManualOverride) {
       setLeftOpenState(getStepLeftOpenDefault(step, isCompact));
+      if (step === "place" && !isCompact) {
+        setLeftCollapsed(false);
+      }
     }
 
     if (isCompact) {
@@ -101,21 +134,26 @@ export function usePlannerPanels() {
       return;
     }
 
-    setRightOpen(getStepRightOpenDefault(step, isCompact));
-  }, [isCompact, leftManualOverride]);
+    if (!rightManualOverride) {
+      setRightOpen(getStepRightOpenDefault(step, isCompact));
+    }
+  }, [isCompact, leftManualOverride, rightManualOverride]);
 
   return {
     isCompact,
     leftOpen,
     rightOpen,
+    leftCollapsed,
     leftOpenRaw: leftOpen,
     rightOpenRaw: rightOpen,
     leftManualOverride,
+    rightManualOverride,
     toggleLeft,
     toggleRight,
     closeAll,
     applyStepLayout,
     setLeftOpen,
-    setRightOpen,
+    setRightOpen: setRightOpenManual,
+    toggleLeftCollapsed,
   };
 }

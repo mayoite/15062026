@@ -69,6 +69,24 @@
   }
 }
 
+.home-section--white {
+  background: var(--surface-page);
+}
+
+.home-section--soft {
+  background: var(--surface-soft);
+}
+
+.home-section--sand {
+  background: var(--surface-muted);
+}
+
+.home-section--accent-dark {
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  border-top: 2px solid var(--color-accent);
+}
+
 .home-partnership-panel {
   border-radius: var(--radius-giant, 1.6rem);
   border: 1px solid var(--border-soft);
@@ -121,11 +139,30 @@
 }
 
 .home-trust-strip {
-  background: var(--surface-panel);
+  background: var(--surface-page);
 }
 
 .home-trust-strip__track {
   mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.site-footer__columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .site-footer__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 3vw, 3rem) clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .site-footer__brand-col,
+  .site-footer__nav-col--products {
+    grid-column: 1 / -1;
+  }
 }
 
 .home-feature-card__media {
@@ -336,11 +373,13 @@
 
 .home-tool-card--dark {
   position: relative;
+  box-sizing: border-box;
   border-radius: var(--radius-xl, 1.25rem);
   border: 1px solid color-mix(in srgb, white 14%, transparent);
   background: color-mix(in srgb, white 6%, transparent);
   box-shadow: 0 24px 60px -32px color-mix(in srgb, black 55%, transparent);
   display: flex;
+  height: 100%;
   flex-direction: column;
   min-height: 170px;
   padding: 1.5rem;
@@ -372,17 +411,6 @@
 
 .home-tool-title--dark {
   color: var(--text-inverse);
-}
-
-.home-tool-heading--dark {
-  margin-bottom: 0.5rem;
-  font-family: var(--font-display);
-  font-size: var(--type-title-sm-size, clamp(18px, 1.04rem + 0.24vw, 20px));
-  font-weight: var(--font-weight-display-regular, 400);
-  letter-spacing: -0.038em;
-  line-height: var(--type-leading-h3, 1.12);
-  color: var(--text-inverse);
-  text-wrap: balance;
 }
 
 .home-tool-link,

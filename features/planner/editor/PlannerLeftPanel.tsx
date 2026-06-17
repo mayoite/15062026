@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutGrid, Map, PanelLeftClose, Sparkles, type LucideIcon } from "lucide-react";
+import { LayoutGrid, Map, PanelLeftClose, PanelLeftOpen, Sparkles, type LucideIcon } from "lucide-react";
 import type { Editor } from "tldraw";
 
 import { AIAssistDrawer } from "@/features/planner/ai/AIAssistDrawer";
@@ -59,8 +59,10 @@ interface PlannerLeftPanelProps {
   editor?: Editor | null;
   plannerStep?: PlannerStep;
   panelOpen?: boolean;
+  panelCollapsed?: boolean;
   showPanelToggle?: boolean;
   onTogglePanel?: () => void;
+  onToggleCollapsed?: () => void;
   activeTab?: PlannerLeftTab;
   onTabChange?: (tab: PlannerLeftTab) => void;
   onItemClick: (item: CatalogItem) => void;
@@ -74,8 +76,10 @@ export function PlannerLeftPanel({
   editor = null,
   plannerStep = "draw",
   panelOpen = true,
+  panelCollapsed = false,
   showPanelToggle = false,
   onTogglePanel,
+  onToggleCollapsed,
   activeTab,
   onTabChange,
   onItemClick,
@@ -106,6 +110,7 @@ export function PlannerLeftPanel({
       data-coach="catalog"
       data-step={plannerStep}
       data-open={panelOpen ? true : undefined}
+      data-collapsed={panelCollapsed ? true : undefined}
       data-emphasis={emphasis}
       className="pw-left-panel"
     >
@@ -120,14 +125,26 @@ export function PlannerLeftPanel({
               className="pw-panel-tab pwx-panel-tab"
               data-active={tab === tabId}
               data-relevant={tabId === primaryTab}
+              data-collapsed={panelCollapsed || undefined}
               aria-selected={tab === tabId}
+              aria-label={label}
               onClick={() => selectTab(tabId)}
             >
               <Icon size={12} strokeWidth={2} aria-hidden />
-              {label}
+              <span>{label}</span>
             </button>
           );
         })}
+        {onToggleCollapsed ? (
+          <button
+            type="button"
+            className="pw-panel-collapse pw-icon-btn"
+            onClick={onToggleCollapsed}
+            aria-label={panelCollapsed ? "Expand left panel" : "Collapse left panel"}
+          >
+            {panelCollapsed ? <PanelLeftOpen size={14} strokeWidth={2} aria-hidden /> : <PanelLeftClose size={14} strokeWidth={2} aria-hidden />}
+          </button>
+        ) : null}
         {showPanelToggle && onTogglePanel ? (
           <button
             type="button"
@@ -139,7 +156,7 @@ export function PlannerLeftPanel({
           </button>
         ) : null}
       </div>
-      <div className="pw-panel-body" data-active-tab={tab}>
+      <div className="pw-panel-body" data-active-tab={tab} hidden={panelCollapsed}>
         <p className="pw-panel-step-note">{stepNote}</p>
         {tab === "library" ? (
           <CatalogSidebar

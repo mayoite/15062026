@@ -1,80 +1,60 @@
-import Image from "next/image";
-import Link from "next/link";
+"use client";
+
+import { motion } from "framer-motion";
 import type { BusinessStats } from "@/lib/types/businessStats";
-import { formatKpiValuePlus } from "@/lib/kpiFormat";
-import { HOMEPAGE_TRUST_CONTENT } from "@/data/site/homepage";
+import { staggerContainer, staggerItem } from "@/lib/helpers/motion";
+import { KpiCounter } from "@/components/home/KpiCounter";
 
 interface TrustStripProps {
   stats: BusinessStats;
   embedded?: boolean;
-  showLogos?: boolean;
   dark?: boolean;
 }
 
-export function TrustStrip({
-  stats,
-  embedded = false,
-  showLogos = true,
-}: TrustStripProps) {
+export function TrustStrip({ stats, embedded = false }: TrustStripProps) {
   const items = [
     {
-      value: formatKpiValuePlus(stats.yearsExperience),
+      value: stats.yearsExperience,
       label: "Years of experience",
       testId: "kpi-years-experience",
     },
     {
-      value: formatKpiValuePlus(stats.projectsDelivered),
+      value: stats.projectsDelivered,
       label: "Projects completed",
       testId: "kpi-projects-delivered",
     },
     {
-      value: formatKpiValuePlus(stats.clientOrganisations),
+      value: stats.clientOrganisations,
       label: "Corporate clients",
       testId: "kpi-client-organisations",
     },
     {
-      value: formatKpiValuePlus(stats.locationsServed),
+      value: stats.locationsServed,
       label: "Locations serviced",
+      testId: "kpi-locations-served",
     },
   ];
 
   const content = (
-    <>
-      <div className="stats-block grid grid-cols-2 gap-4 md:grid-cols-4">
-        {items.map(({ value, label, testId }) => (
-          <div
-            key={label}
-            className="scheme-panel scheme-border rounded-2xl border p-6 text-center"
-            {...(testId ? { "data-testid": testId } : {})}
-          >
-            <p className="typ-stat text-primary">{value}</p>
-            <p className="stats-block__label mt-2">{label}</p>
-          </div>
-        ))}
-      </div>
-
-      {showLogos ? (
-        <div className="home-hero-trust-bar mt-10 border-t border-theme-soft pt-8">
-          <p className="home-hero-trust-bar__label">{HOMEPAGE_TRUST_CONTENT.logoLabel}</p>
-          <ul className="home-hero-trust-bar__logos flex flex-wrap items-center gap-x-5 gap-y-3.5">
-            {HOMEPAGE_TRUST_CONTENT.logos.map((logo) => (
-              <li key={logo.name} className="shrink-0">
-                <Image
-                  src={logo.src}
-                  alt={logo.name}
-                  width={84}
-                  height={24}
-                  className="home-hero-trust-bar__logo h-6 w-auto max-w-[5.25rem] object-contain"
-                />
-              </li>
-            ))}
-          </ul>
-          <Link href="/portfolio" className="home-inline-link mt-4 inline-flex items-center gap-1.5">
-            {HOMEPAGE_TRUST_CONTENT.projectsCta}
-          </Link>
-        </div>
-      ) : null}
-    </>
+    <motion.div
+      className="grid grid-cols-2 gap-4 md:grid-cols-4"
+      variants={staggerContainer}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.25 }}
+    >
+      {items.map(({ value, label, testId }) => (
+        <motion.div
+          key={label}
+          variants={staggerItem}
+          className="home-trust-kpi home-trust-kpi--light"
+          {...(testId ? { "data-testid": testId } : {})}
+        >
+          <KpiCounter value={value} className="typ-stat text-primary" />
+          <p className="typ-label mt-2">{label}</p>
+        </motion.div>
+      ))}
+    </motion.div>
   );
 
   if (embedded) {
@@ -82,8 +62,11 @@ export function TrustStrip({
   }
 
   return (
-    <section className="scheme-section-soft scheme-border w-full border-y section-y">
-      <div className="container px-6 2xl:px-0">{content}</div>
+    <section
+      data-testid="home-trust"
+      className="home-section--white w-full border-t border-theme-soft section-y-sm"
+    >
+      <div className="home-shell-xl">{content}</div>
     </section>
   );
 }

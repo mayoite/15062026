@@ -1,6 +1,6 @@
 # Testing
 
-*Updated: 2026-06-15 — flat `tests/`, Vitest only. Index: `docs/DOC-MAP.md`. Roadmap: `plans/TESTING-PLAN.md`. Structure: `plans/REPO-STRUCTURE-PLAN.md`.*
+*Updated: 2026-06-16 — flat `tests/`, Vitest only. Index: `docs/DOC-MAP.md`. Roadmap: `plans/TESTING-PLAN.md`. Structure: `plans/REPO-STRUCTURE-PLAN.md` (archived; see archive/docs/plans/completed-2026-06-16/).*
 
 ## Principle
 
