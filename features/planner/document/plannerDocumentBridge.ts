@@ -1,39 +1,47 @@
-import type { Editor } from "tldraw";
-import { getSnapshot } from "tldraw";
-
 import {
   createEmptyPlannerDocument,
   type PlannerDocument,
 } from "@/features/planner/model/plannerDocument";
 import { toPlannerJsonSafe } from "@/features/planner/model/plannerJsonSafe";
+import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 import { getPageMetrics } from "@/features/planner/editor/planMetrics";
 import { metadataToDocumentFields } from "@/features/planner/onboarding/projectSetup";
+import { buildPlannerDocumentFromFabric } from "@/features/planner/lib/fabricDocumentBridge";
 import { serializeWorkspaceState, usePlannerWorkspaceStore } from "../store/workspaceStore";
 
-/** Build canonical PlannerDocument from live editor + workspace state. */
+function readFabricExportDraft(): string | null {
+  return getPlannerFabricRuntime()?.exportDraft() ?? null;
+}
+
+/** Build canonical PlannerDocument from fabric canvas + workspace state. */
 export function buildPlannerDocumentFromEditor(
-  editor: Editor,
+  _editor: null,
   overrides: Partial<PlannerDocument> = {},
 ): PlannerDocument {
-  const shapes = editor.getCurrentPageShapes();
-  const furnitureCount = shapes.filter((s) => s.type === "planner-furniture").length;
-  const metrics = getPageMetrics(editor);
   const workspace = serializeWorkspaceState();
   const projectMetadata = usePlannerWorkspaceStore.getState().projectMetadata;
   const projectFields = projectMetadata ? metadataToDocumentFields(projectMetadata) : null;
-  const now = new Date().toISOString();
+  const metrics = getPageMetrics(null);
 
   const metricRoomWidth =
     metrics.totalFloorAreaSqm > 0 ? Math.round(Math.sqrt(metrics.totalFloorAreaSqm) * 1000) : undefined;
   const metricRoomDepth =
     metrics.totalFloorAreaSqm > 0 ? Math.round(Math.sqrt(metrics.totalFloorAreaSqm) * 1000) : undefined;
 
+  const fabricDoc = buildPlannerDocumentFromFabric(readFabricExportDraft(), {
+    name: overrides.title ?? projectMetadata?.projectName ?? "Workspace Plan",
+    projectName: projectMetadata?.projectName,
+    unitSystem: workspace.unitSystem === "imperial" ? "ft-in" : "mm",
+  });
+  const serializedDraft = readFabricExportDraft();
+
   return createEmptyPlannerDocument({
+    ...fabricDoc,
     title: overrides.title ?? projectMetadata?.projectName ?? "Workspace Plan",
-    itemCount: furnitureCount,
+    itemCount: fabricDoc.itemCount,
     ...(projectFields ?? {}),
-    roomWidthMm: metricRoomWidth ?? projectFields?.roomWidthMm ?? 6000,
-    roomDepthMm: metricRoomDepth ?? projectFields?.roomDepthMm ?? 8000,
+    roomWidthMm: metricRoomWidth ?? projectFields?.roomWidthMm ?? fabricDoc.roomWidthMm ?? 6000,
+    roomDepthMm: metricRoomDepth ?? projectFields?.roomDepthMm ?? fabricDoc.roomDepthMm ?? 8000,
     sceneJson: toPlannerJsonSafe({
       type: "cad-suite-planner-scene",
       version: 1,
@@ -42,10 +50,10 @@ export function buildPlannerDocumentFromEditor(
         displayUnit: workspace.unitSystem === "imperial" ? "ft-in" : "mm",
       },
       projectSetup: projectMetadata,
-      tldrawSnapshot: getSnapshot(editor.store),
       workspace,
+      fabricSnapshot: serializedDraft ? JSON.parse(serializedDraft) : null,
     }),
-    updatedAt: now,
+    updatedAt: new Date().toISOString(),
     ...overrides,
   });
 }

@@ -1,4 +1,12 @@
-import type { FurnitureCategory } from "@/features/planner/tldraw/shapes/sharedTypes";
+export type FurnitureCategory =
+  | "workstation"
+  | "seating"
+  | "table"
+  | "storage"
+  | "softSeating"
+  | "accessory"
+  | "partition"
+  | "custom";
 
 export interface UnifiedCatalogItem {
   id: string;

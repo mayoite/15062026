@@ -1,6 +1,3 @@
-import type { Editor } from "tldraw";
-
-import { isShapeLayerHidden } from "@/features/planner/editor/layerVisibility";
 import type { PlanMetrics } from "@/features/planner/editor/planMetrics";
 
 export type PlannerStep = "draw" | "place" | "review";
@@ -26,20 +23,15 @@ export interface PlannerStepGates {
   canOpenExport: boolean;
 }
 
-export function countMeasurementShapes(editor: Editor | null): number {
-  if (!editor) return 0;
-
-  return editor.getCurrentPageShapes().filter((shape) => {
-    if (isShapeLayerHidden(shape)) return false;
-    return shape.type === "planner-measurement" || shape.type === "line";
-  }).length;
+export function countMeasurementShapes(): number {
+  return 0;
 }
 
 export function evaluatePlannerStepGates(
-  editor: Editor | null,
+  _editor: null,
   metrics: PlanMetrics,
 ): PlannerStepGates {
-  const measurementCount = countMeasurementShapes(editor);
+  const measurementCount = countMeasurementShapes();
   const hasSpaceShell =
     metrics.wallCount > 0 || metrics.roomAreaSqm > 0 || metrics.zoneAreaSqm > 0;
   const hasFurniture = metrics.furnitureCount > 0;

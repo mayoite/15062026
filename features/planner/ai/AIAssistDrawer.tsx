@@ -2,11 +2,12 @@
 
 import { useCallback, useSyncExternalStore, useState } from "react";
 import { ChevronDown, Loader2, MessageSquare, Sparkles, Wand2 } from "lucide-react";
-import type { Editor } from "tldraw";
+
 
 import { CatalogBlockPreview } from "@/features/planner/catalog/CatalogBlockPreview";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
-import { buildCatalogShape } from "@/features/planner/editor/plannerShapeFactories";
+import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
+
 import {
   PLANNER_PRIMARY_PURPOSE_OPTIONS,
   type PlannerPrimaryPurpose,
@@ -27,13 +28,10 @@ import type { PlannerProjectMetadata } from "@/features/planner/onboarding/proje
 
 import type { CatalogMatchResult, SuggestedLayoutJson } from "./types";
 
-function useCanvasPlacementCount(editor: Editor | null): number {
+function useCanvasPlacementCount(_editor?: null): number {
   return useSyncExternalStore(
-    (onStoreChange) => {
-      if (!editor) return () => {};
-      return editor.store.listen(onStoreChange, { scope: "document" });
-    },
-    () => (editor ? extractCanvasPlacements(editor).length : 0),
+    () => () => {},
+    () => extractCanvasPlacements(null).length,
     () => 0,
   );
 }
@@ -41,7 +39,7 @@ function useCanvasPlacementCount(editor: Editor | null): number {
 type AiAssistTab = "suggest-layout" | "match-catalog" | "chat";
 
 export type AIAssistDrawerProps = {
-  editor: Editor | null;
+  editor?: null;
   /** When false, only the header row is shown until expanded. */
   defaultExpanded?: boolean;
   embedded?: boolean;
@@ -71,22 +69,12 @@ export function AIAssistDrawer({
   }, [editor]);
 
   const handleApplyCatalogMatch = useCallback(
-    (shapeId: string, catalogItemId: string) => {
-      if (!editor) return;
-      const shape = editor.getShape(shapeId as Parameters<Editor["getShape"]>[0]);
-      if (!shape) return;
-
+    (_shapeId: string, catalogItemId: string) => {
       const item = PLANNER_CATALOG_ITEMS.find((entry) => entry.id === catalogItemId);
       if (!item) return;
-
-      const replacement = buildCatalogShape(item, shape.x, shape.y);
-      replacement.rotation = shape.rotation;
-      editor.deleteShapes([shape.id]);
-      editor.createShape(
-        replacement as unknown as Parameters<Editor["createShape"]>[0],
-      );
+      getPlannerFabricRuntime()?.placeCatalogItem(item);
     },
-    [editor],
+    [],
   );
 
   const emptyCanvasHint = !editor || placementCount === 0;
@@ -261,7 +249,7 @@ function SuggestLayoutPane({
   editor,
   projectMetadata,
 }: {
-  editor: Editor | null;
+  editor?: null;
   projectMetadata: PlannerProjectMetadata | null;
 }) {
   const defaults = resolveSpaceSuggestDefaults(projectMetadata);

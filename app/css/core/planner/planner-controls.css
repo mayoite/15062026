@@ -1,12 +1,18 @@
 /* ─── Canvas area ─────────────────────────────────────────────────────────── */
 
 .planner-workspace .pw-canvas-area {
+  position: relative;
+  z-index: 0;
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
   padding: var(--space-1);
   background: color-mix(in srgb, var(--surface-soft) 96%, var(--surface-page));
+}
+
+.planner-workspace .pw-canvas-body {
+  position: relative;
 }
 
 .planner-workspace .pw-canvas-surface {
@@ -28,6 +34,8 @@
 }
 
 .planner-workspace .pw-status-bar {
+  position: relative;
+  z-index: 48;
   display: flex;
   flex-wrap: wrap;
   align-items: center;

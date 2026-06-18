@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Send, Sparkles, Wand2 } from "lucide-react";
-import type { Editor } from "tldraw";
+
 
 import type { PlannerProjectMetadata } from "@/features/planner/onboarding/projectSetup";
 
@@ -30,7 +30,7 @@ type LayoutSuggestion = {
 };
 
 export type AiAdvisorChatPaneProps = {
-  editor: Editor | null;
+  editor?: null;
   projectMetadata: PlannerProjectMetadata | null;
   onApplySuggestion?: (suggestion: LayoutSuggestion) => void;
 };

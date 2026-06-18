@@ -1,5 +1,5 @@
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
-import { plannerCanvasUnits } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { plannerCanvasUnits } from "@/features/planner/catalog/catalogBlockBridge";
 
 import type { SuggestedLayoutJson } from "./types";
 

@@ -2,7 +2,13 @@
 
 Flat-root Next.js app. Furniture company site at `oando.co.in` with one workspace planner at `/planner`.
 
-**Canonical repo:** `E:\16062026` (commit/push here). If docs feel missing, read `docs/Handover.md` § *If you're lost*.
+**Canonical repo:** `E:\16062026` (commit/push here).
+
+**2026-06-18 session focus (per user):** Finish the project today. Old tldraw canvas + UI fully replaced by the new fabric canvas/interface from the prototype (E:\floorplan-react). Combined with 3D (r3f). No more circling on plans/docs — archived per instruction.
+
+Plans and docs directories archived to `archive/docs/2026-06-18-plans-docs-deleted/`.
+
+Active code: `features/planner/` + `app/planner/`. Focus on making the swap work: new canvas as replacement, 3D integration, functional planner.
 
 ## Root markdown
 
@@ -10,19 +16,12 @@ Flat-root Next.js app. Furniture company site at `oando.co.in` with one workspac
 |------|------|
 | `Readme.md` | Orientation (this file) |
 | `AGENTS.md` | Agent rules |
-| `CONTENTS.md` | Generated repo map (`npm run docs:sync:all`) |
-
-Ops state lives in `docs/Handover.md` and `docs/Failures.md` — not at root.
-
-## Read next
-
-`docs/DOC-MAP.md` → `docs/TESTING.md`, `docs/SCRIPTS.md`, `docs/CSS-ARCHITECTURE.md`, **`docs/workflow/`** · **`plans/MASTER-PLAN.md`** (start here) · `plans/TESTING-PLAN.md`, `plans/COVERAGE-PLAN.md`
 
 ## Layout
 
-`app/` · `features/planner/` · `components/` · `lib/` · `tests/` · `scripts/` · `docs/` · `plans/` · `platform/` · `config/` · `results/` · `archive/`
+`app/` · `features/planner/` · `components/` · `lib/` · `tests/` · `scripts/` · `archive/` · `platform/` · `config/` · `results/`
 
-Target tree: `plans/REPO-STRUCTURE-PLAN.md` (archived to archive/docs/plans/completed-2026-06-16/). Subfolder blurbs: `<dir>/CONTENTS.md` (`npm run docs:sync:all`).
+All previous planning/docs moved to archive. Dev now on the canvas replacement.
 
 ## CSS
 

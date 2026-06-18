@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { LayoutGrid, Map, PanelLeftClose, PanelLeftOpen, Sparkles, type LucideIcon } from "lucide-react";
-import type { Editor } from "tldraw";
+
 
 import { AIAssistDrawer } from "@/features/planner/ai/AIAssistDrawer";
-import { CatalogSidebar } from "@/features/planner/catalog/CatalogSidebar";
+import { CatalogPanel } from "@/features/planner/catalog/CatalogPanel";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import type { MeasurementUnit } from "@/features/planner/lib/measurements";
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
@@ -37,10 +37,10 @@ function getStepNote(step: PlannerStep, tab: PlannerLeftTab): string {
   switch (step) {
     case "draw":
       return tab === "library"
-        ? "Browse products now, or switch to Blueprint to define the space shell first."
+        ? "Browse Oando SVG symbols — click or drag desks, seating, and storage onto the canvas."
         : tab === "ai-assist"
-          ? "Use AI for layout ideas, then return to Blueprint or Library to keep editing."
-          : "Start by tracing a blueprint or defining the space shell.";
+          ? "Use AI for layout ideas, then return to Library or Blueprint to keep editing."
+          : "Start by tracing a blueprint or pick a room preset when the canvas opens.";
     case "place":
       return tab === "blueprint"
         ? "Keep the shell visible while you place furniture, doors, and windows."
@@ -56,7 +56,7 @@ function getStepNote(step: PlannerStep, tab: PlannerLeftTab): string {
 
 interface PlannerLeftPanelProps {
   guestMode: boolean;
-  editor?: Editor | null;
+  editor?: null;
   plannerStep?: PlannerStep;
   panelOpen?: boolean;
   panelCollapsed?: boolean;
@@ -105,6 +105,17 @@ export function PlannerLeftPanel({
     else setPickedTab(next);
   };
 
+  const panelCollapseControl = onToggleCollapsed ? (
+    <button
+      type="button"
+      className="pw-panel-collapse pw-icon-btn"
+      onClick={onToggleCollapsed}
+      aria-label={panelCollapsed ? "Expand left panel" : "Collapse left panel"}
+    >
+      {panelCollapsed ? <PanelLeftOpen size={14} strokeWidth={2} aria-hidden /> : <PanelLeftClose size={14} strokeWidth={2} aria-hidden />}
+    </button>
+  ) : null;
+
   return (
     <aside
       data-coach="catalog"
@@ -135,16 +146,7 @@ export function PlannerLeftPanel({
             </button>
           );
         })}
-        {onToggleCollapsed ? (
-          <button
-            type="button"
-            className="pw-panel-collapse pw-icon-btn"
-            onClick={onToggleCollapsed}
-            aria-label={panelCollapsed ? "Expand left panel" : "Collapse left panel"}
-          >
-            {panelCollapsed ? <PanelLeftOpen size={14} strokeWidth={2} aria-hidden /> : <PanelLeftClose size={14} strokeWidth={2} aria-hidden />}
-          </button>
-        ) : null}
+        {panelCollapseControl}
         {showPanelToggle && onTogglePanel ? (
           <button
             type="button"
@@ -157,9 +159,9 @@ export function PlannerLeftPanel({
         ) : null}
       </div>
       <div className="pw-panel-body" data-active-tab={tab} hidden={panelCollapsed}>
-        <p className="pw-panel-step-note">{stepNote}</p>
+        {tab !== "library" ? <p className="pw-panel-step-note">{stepNote}</p> : null}
         {tab === "library" ? (
-          <CatalogSidebar
+          <CatalogPanel
             embedded
             onItemClick={onItemClick}
             onDragStart={onDragStart}

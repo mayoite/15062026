@@ -1,6 +1,6 @@
 "use client";
 
-import type { Editor } from "tldraw";
+
 
 import type { BoqItem, CatalogProduct, PlannerStep, RoomPreset } from "@/features/planner/shared/types/planner";
 import type { PlannerSelectionDimensions } from "../lib/editorTools";
@@ -11,7 +11,7 @@ import { LayersPanel } from "./LayersPanel";
 import { MobileDrawerSheet } from "./MobileDrawerSheet";
 
 interface PlannerMobilePanelsProps {
-  editor: Editor | null;
+  editor?: null;
   catalogProducts: CatalogProduct[];
   roomPresets: RoomPreset[];
   boqItems: BoqItem[];

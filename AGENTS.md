@@ -1,32 +1,30 @@
 # AGENTS.md
 
-Rules for agents working in this repo.
+Rules for agents working in this repo. (Updated 2026-06-18 per session instructions: plans/ and docs/ fully archived/deleted to stop circling. Focus on shipping.)
 
 ## Focus
 
 - One flat-root Next.js app. One unified planner for `oando.co.in`.
 - Active planner code: `features/planner/` + `app/planner/`.
-- Legacy planner trees are archived — do not revive competing surfaces.
+- **Current session (user directive):** Replacement — tldraw (old canvas + UI) is OUT. Fabric canvas + interface (from E:\floorplan-react prototype, the "new interface") is IN as full replacement. Combine with 3D (r3f). Finish the project today. Follow instructions; speak up only if disagree.
+
+Legacy planner trees are archived — do not revive competing surfaces. (tldraw for planner 2D is now competing/legacy.)
 
 ## Read first
 
 1. `Readme.md` (repo root)
 2. `AGENTS.md` (this file)
-3. `docs/DOC-MAP.md` — docs vs plans index
-4. `docs/Handover.md` — milestones
-5. `docs/Failures.md` — open breakages
-6. Live files you will touch
+3. Live files you will touch (focus: features/planner/editor/*, canvas-fabric/, 3d/*, catalog/*, chrome/* )
 
-CSS layout reference: `docs/CSS-ARCHITECTURE.md`. Test counts: `docs/TESTING.md` (not this file).
+(No more docs/Handover etc — archived.)
 
 ## Rules
 
 - No claim without proof.
-- No broad refactor without a stated target.
-- No commit, push, migrate, or destructive change unless explicitly requested.
-- Stay in scope; do not silently fix unrelated files.
-- Archive instead of delete unless deletion is requested.
-- Log failures, skips, and blockers in `docs/Failures.md`.
+- Follow user instructions for the session exactly (e.g. archive plans/docs done, swap canvas/UI, combine 3D, finish today).
+- No commit, push, migrate, or destructive change unless explicitly requested. (Archive of plans/docs was requested.)
+- Stay in scope of the replacement task.
+- Log only if needed; prioritize code over docs.
 
 ## Stop and confirm
 
@@ -37,23 +35,22 @@ Do not change without explicit approval:
 - Database migrations or generated schema
 - Top-level folder structure
 
-## Quality bar
+## Quality bar (still)
 
 - `npm.cmd run typecheck` passes (`tsc -p tsconfig.json` — root config, TypeScript **6.x**)
-- Relevant tests pass — see `docs/TESTING.md` § Current status for live counts
 - `npm.cmd run lint` passes when touched
-- Use `npm.cmd run release:gate` before ship when env is available
+- Relevant tests pass (note: many planner tests were tldraw-specific; will adapt or note as we swap).
 
-**TypeScript:** stay on **6.x** (`^6.0.3`). Do not upgrade to TS 7 unless explicitly requested. Root `tsconfig.json` has path aliases with `./` prefixes and no `baseUrl`.
-
-**Known blocker (2026-06-15):** `platform/drizzle/drizzle.config.ts` may fail typecheck — see `docs/Failures.md` before claiming build/typecheck green.
+**TypeScript:** stay on **6.x** (`^6.0.3`).
 
 ## Dev
 
 - PowerShell: use `npm.cmd`, not `npm`.
 - If Turbopack panics on CSS `@source`, use `npx next dev --webpack`.
-- Production build target: **~341** static pages when catalog merge + typecheck succeed.
+- Production build target: adapt as needed.
 
 ## Report after meaningful work
 
 Done · Verified · Skipped · Risks · Next
+
+**This session:** Archive done. Now pure dev on canvas replacement + 3D combine. User: "start dev", "we are not going as per plan" (so direct to code), "no tld is out, fabric is in".

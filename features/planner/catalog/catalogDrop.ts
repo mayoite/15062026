@@ -1,8 +1,7 @@
 import type { DragEvent } from "react";
-import type { Editor } from "tldraw";
 
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
-import { plannerCanvasUnits } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { plannerCanvasUnits } from "@/features/planner/catalog/catalogBlockBridge";
 
 /** Canvas footprint (cm) used when placing a catalog item. */
 export function catalogFootprintCanvasCm(item: CatalogItem): { w: number; h: number } {
@@ -12,30 +11,24 @@ export function catalogFootprintCanvasCm(item: CatalogItem): { w: number; h: num
   };
 }
 
-/** Screen-pixel footprint at the current editor zoom — for drag ghost sizing. */
+/** Screen-pixel footprint — fabric-era fixed ghost size. */
 export function catalogDropScreenFootprint(
-  editor: Editor,
+  _editor: null,
   item: CatalogItem,
 ): { w: number; h: number } {
   const { w, h } = catalogFootprintCanvasCm(item);
-  const origin = editor.pageToScreen({ x: 0, y: 0 });
-  const corner = editor.pageToScreen({ x: w, y: h });
-  return {
-    w: Math.max(28, Math.abs(corner.x - origin.x)),
-    h: Math.max(20, Math.abs(corner.y - origin.y)),
-  };
+  return { w: Math.max(28, w * 0.5), h: Math.max(20, h * 0.5) };
 }
 
-/** Page point for top-left corner so the item footprint is centered on the cursor. */
+/** Page point for catalog drop — fabric uses screen coords via placement helper. */
 export function centeredCatalogDropPagePoint(
-  editor: Editor,
+  _editor: null,
   clientX: number,
   clientY: number,
   item: CatalogItem,
 ): { x: number; y: number } {
-  const page = editor.screenToPage({ x: clientX, y: clientY });
   const { w, h } = catalogFootprintCanvasCm(item);
-  return { x: page.x - w / 2, y: page.y - h / 2 };
+  return { x: clientX - w / 2, y: clientY - h / 2 };
 }
 
 let transparentDragImage: HTMLCanvasElement | null = null;

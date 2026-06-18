@@ -14,7 +14,7 @@ import {
   isRoomCatalogShapeType,
   PlannerCatalogShapeType,
 } from "@/features/planner/catalog/shapeTypeRegistry";
-import { normalizeCatalogMm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { normalizeCatalogMm } from "@/features/planner/catalog/catalogBlockBridge";
 
 export type PlacementCatalogItem = {
   id: string;

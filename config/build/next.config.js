@@ -190,7 +190,7 @@ const nextConfig = {
     remotePatterns: imageRemotePatterns,
   },
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion", "three", "@react-three/fiber", "@react-three/drei", "tldraw"], // PERF-FIX: tree-shake heavy deps,
+    optimizePackageImports: ["lucide-react", "framer-motion", "three", "@react-three/fiber", "@react-three/drei"], // PERF-FIX: tree-shake heavy deps,
   },
   typescript: {
     ignoreBuildErrors: false, // PERF-FIX: enforce type safety at build time

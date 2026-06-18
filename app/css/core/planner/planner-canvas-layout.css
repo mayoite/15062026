@@ -38,6 +38,32 @@
     min-height: 0;
   }
 
+  .planner-workspace .pw-canvas-body[data-view-mode="3d"],
+  .planner-workspace .pw-canvas-body[data-view-mode="split"] {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .planner-workspace .pw-canvas-body[data-view-mode="3d"] > .pw-left-panel,
+  .planner-workspace .pw-canvas-body[data-view-mode="split"] > .pw-left-panel {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    flex-shrink: 0;
+    align-self: stretch;
+    height: auto;
+    transform: none;
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  .planner-workspace .pw-canvas-body[data-view-mode="3d"] > .pw-canvas-surface,
+  .planner-workspace .pw-canvas-body[data-view-mode="split"] > .pw-canvas-surface {
+    flex: 1;
+    min-width: 0;
+  }
+
   .planner-workspace .pw-canvas-chrome-layer {
     position: absolute;
     inset: 0;
@@ -122,6 +148,17 @@
 
   .planner-workspace .pw-right-panel[data-open="true"] {
     transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .planner-workspace .pw-right-panel[data-collapsed="true"] {
+    width: 4.5rem;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .planner-workspace .pw-right-panel[data-collapsed="true"]:not([data-open="true"]) {
+    width: 4.5rem;
     pointer-events: auto;
   }
 

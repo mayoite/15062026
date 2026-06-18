@@ -8,6 +8,7 @@ import type { CatalogCategory } from "../catalog/catalogTypes";
 import { DoorMesh, RoomSlab, WallMesh, WindowMesh, ZoneSlab } from "./FixtureMeshes";
 import { InstancedFurnitureRenderer } from "./InstancedFurnitureRenderer";
 import { SceneEnvironment } from "./SceneEnvironment";
+import { ShadowConfig } from "./ShadowConfig";
 import {
   boundsCenter,
   computeSceneBounds,
@@ -102,6 +103,14 @@ function CameraRig({ shapeCount, framing }: { shapeCount: number; framing: Frame
   return null;
 }
 
+function InvalidateOnShapeChange({ shapes }: { shapes: PlannerViewerShape[] }) {
+  const invalidate = useThree((state) => state.invalidate);
+  useEffect(() => {
+    invalidate();
+  }, [invalidate, shapes]);
+  return null;
+}
+
 function Scene({ isOrtho, shapes }: { isOrtho: boolean; shapes: PlannerViewerShape[] }) {
   const bounds = useMemo(() => computeSceneBounds(shapes), [shapes]);
   const framing = useMemo(() => frameToContent(shapes), [shapes]);
@@ -136,6 +145,9 @@ function Scene({ isOrtho, shapes }: { isOrtho: boolean; shapes: PlannerViewerSha
 
       {!isOrtho && <CameraRig shapeCount={shapes.length} framing={framing} />}
 
+      <InvalidateOnShapeChange shapes={shapes} />
+
+      <ShadowConfig />
       <SceneEnvironment bounds={bounds} />
       <ElementsMesh shapes={shapes} />
     </>

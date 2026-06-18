@@ -188,15 +188,15 @@ describe("catalog adapter helpers", () => {
     expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 
-  it("throws a descriptive error when the planner catalog fetch fails", async () => {
+  it("falls back to workspace catalog when the planner catalog fetch fails", async () => {
     vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,
       status: 503,
       statusText: "Service Unavailable",
     } as Response);
 
-    await expect(loadPlannerCatalog()).rejects.toThrow(
-      "Failed to load planner catalog (503 Service Unavailable)",
-    );
+    const items = await loadPlannerCatalog();
+    expect(items.length).toBeGreaterThan(0);
+    expect(items[0]).toEqual(expect.objectContaining({ id: expect.any(String), name: expect.any(String) }));
   });
 });

@@ -22,7 +22,7 @@ import {
   FileCode,
   AlertCircle,
 } from "lucide-react";
-import type { Editor } from "tldraw";
+
 
 import type { ExportPresetId } from "@/features/planner/lib/exportPresets";
 import {
@@ -38,7 +38,7 @@ import {
 interface ExportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  editor: Editor;
+  editor?: null;
 }
 
 type ExportFormat = "pdf" | "svg" | "png" | "json";
@@ -90,8 +90,8 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const scopeLabel = describeExportScope(editor);
-  const canExportVectors = getVectorExportShapeIds(editor).length > 0;
+  const scopeLabel = describeExportScope(null);
+  const canExportVectors = getVectorExportShapeIds(null).length > 0;
 
   // Focus trap + Escape
   useEffect(() => {
@@ -137,13 +137,13 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
 
     try {
       if (selectedFormat === "json") {
-        downloadPlannerJson(editor);
+        downloadPlannerJson(null);
       } else if (selectedFormat === "pdf") {
-        await downloadPlannerBoqPdf(editor, "Workspace Plan", selectedPreset);
+        await downloadPlannerBoqPdf(null, "Workspace Plan", selectedPreset);
       } else if (selectedFormat === "svg") {
-        await downloadPlannerSvg(editor);
+        await downloadPlannerSvg(null);
       } else {
-        await downloadPlannerPng(editor);
+        await downloadPlannerPng(null);
       }
       setDownloadState("success");
       setStatusMessage(`Your ${selectedFormat.toUpperCase()} file is ready.`);

@@ -2,7 +2,6 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
-import { createPlannerEditorMock } from "./planner-editor-mockEditor";
 
 vi.mock("next/link", () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
@@ -32,25 +31,28 @@ describe("PlannerTopBar", () => {
   const baseProps = {
     guestMode: false,
     planName: "HQ Layout",
-    viewMode: "2d" as const,
-    onViewModeChange: vi.fn(),
+    plannerStep: "draw" as const,
+    disabledSteps: {},
+    onPlannerStepChange: vi.fn(),
     saveStatus: "saved" as const,
     lastSavedAt: "2026-06-15T10:00:00.000Z",
     onRetrySave: vi.fn(),
     onOpenSession: vi.fn(),
+    onSaveDraft: vi.fn(),
+    onImport: vi.fn(),
     onOpenTemplates: vi.fn(),
     onOpenAi: vi.fn(),
-    onOpenExport: vi.fn(),
-    editor: createPlannerEditorMock(),
   };
 
-  it("renders brand, view toggle, and actions", () => {
+  it("renders brand, workflow steps, and session actions", () => {
     render(<PlannerTopBar {...baseProps} />);
     expect(screen.getByText("HQ Layout")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "3D" }));
-    expect(baseProps.onViewModeChange).toHaveBeenCalledWith("3d");
-    fireEvent.click(screen.getByRole("button", { name: "Export" }));
-    expect(baseProps.onOpenExport).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: /Place/i }));
+    expect(baseProps.onPlannerStepChange).toHaveBeenCalledWith("place");
+    fireEvent.click(screen.getByRole("button", { name: "Save local draft" }));
+    expect(baseProps.onSaveDraft).toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Import planner JSON" }));
+    expect(baseProps.onImport).toHaveBeenCalled();
   });
 
   it("opens overflow menu actions", () => {
@@ -63,31 +65,26 @@ describe("PlannerTopBar", () => {
     expect(baseProps.onOpenAi).toHaveBeenCalled();
   });
 
-  it("opens sessions, split view, and closes menu on outside click", () => {
+  it("opens sessions and closes menu on outside click", () => {
     const onOpenSession = vi.fn();
-    const onViewModeChange = vi.fn();
     render(
       <PlannerTopBar
         {...baseProps}
         onOpenSession={onOpenSession}
-        onViewModeChange={onViewModeChange}
       />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "More actions" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "Plan sessions" }));
     expect(onOpenSession).toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Split" }));
-    expect(onViewModeChange).toHaveBeenCalledWith("split");
 
     fireEvent.click(screen.getByRole("button", { name: "More actions" }));
     fireEvent.pointerDown(document.body);
     expect(screen.queryByRole("menuitem", { name: "Plan sessions" })).not.toBeInTheDocument();
   });
 
-  it("shows fallback title and hides export when editor is null", () => {
-    render(<PlannerTopBar {...baseProps} planName="   " editor={null} />);
+  it("shows fallback title when plan name is blank", () => {
+    render(<PlannerTopBar {...baseProps} planName="   " />);
     expect(screen.getByText("Workspace Planner")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Export" })).not.toBeInTheDocument();
   });
 });

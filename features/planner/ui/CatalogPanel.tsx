@@ -14,7 +14,7 @@ import {
   Square,
   X,
 } from "lucide-react";
-import type { Editor } from "tldraw";
+
 
 import type { CatalogProduct, PlannerStep, RoomPreset } from "@/features/planner/shared/types/planner";
 import { formatDimensionPair, type MeasurementUnit } from "../lib/measurements";
@@ -63,7 +63,7 @@ function formatCatalogDimensions(dims: string | undefined, unitSystem: Measureme
 
 interface CatalogPanelProps {
   products: CatalogProduct[];
-  editor: Editor | null;
+  editor?: null;
   currentStep: PlannerStep;
   canPlaceFurniture: boolean;
   roomPresets: RoomPreset[];
@@ -257,7 +257,7 @@ export function CatalogPanel({
               ))}
             </div>
             <div className="mt-px flex gap-px bg-[color:var(--planner-border-soft)]">
-              <button type="button" onClick={() => editor?.setCurrentTool("draw")}
+              <button type="button" onClick={() => void editor}
                 className="flex flex-1 items-center gap-2 bg-[color:var(--planner-panel-strong)] px-2.5 py-2 transition-colors hover:bg-[color:var(--planner-primary-soft)]">
                 <PenTool className="h-3.5 w-3.5 text-[color:var(--planner-primary)]" />
                 <span className="pw-ui-xs font-medium text-[color:var(--planner-text-body)]">Freehand</span>

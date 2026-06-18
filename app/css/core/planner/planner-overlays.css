@@ -27,6 +27,35 @@ html.dark .planner-workspace .pw-canvas-surface {
 
 /* ─── Split view ──────────────────────────────────────────────────────────── */
 
+.planner-workspace .pw-view-stack {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+}
+
+.planner-workspace .pw-view-stack__pane {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.planner-workspace .pw-view-stack__pane[data-active="true"] {
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.planner-workspace .pw-view-stack__pane--3d .pw-viewer-canvas,
+.planner-workspace .pw-view-stack__pane--3d .pw-viewer-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .planner-workspace .pw-split-view {
   display: flex;
   flex-direction: row;
@@ -105,9 +134,14 @@ html.dark .planner-workspace .pw-canvas-surface {
   color: var(--text-body);
 }
 
+.planner-workspace .pw-viewer-host,
 .planner-workspace .pw-viewer-canvas {
   width: 100%;
   height: 100%;
+  min-height: 0;
+}
+
+.planner-workspace .pw-viewer-canvas {
   background: var(--surface-inverse);
 }
 

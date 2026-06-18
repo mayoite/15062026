@@ -19,6 +19,7 @@ export function getStepToolBinding(step: PlannerStep): PlannerToolBinding {
 export function getStepLeftTab(step: PlannerStep): PlannerLeftTab {
   switch (step) {
     case "draw":
+      return "library";
     case "review":
       return "blueprint";
     case "place":

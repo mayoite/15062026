@@ -3,52 +3,53 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  FileDown,
+  FileUp,
   FolderOpen,
   HelpCircle,
   LayoutTemplate,
   MoreHorizontal,
+  Save,
   Sparkles,
 } from "lucide-react";
-import type { Editor } from "tldraw";
 
 import { PlannerThemeToggle } from "@/features/planner/components/PlannerThemeToggle";
 import { useTheme } from "@/features/planner/components/WorkspaceThemeProvider";
 import { OneAndOnlyLogo } from "@/components/ui/Logo";
 import type { PlannerSaveStatus } from "@/features/planner/hooks/usePlannerAutosave";
-import { PlannerHistoryControls } from "@/features/planner/editor/PlannerHistoryControls";
 import { PlannerSaveIndicator } from "@/features/planner/ui/PlannerSaveIndicator";
+import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
+import type { PlannerStep } from "@/features/planner/editor/plannerStep";
 
 interface PlannerTopBarProps {
   guestMode: boolean;
   planName: string;
-  viewMode: "2d" | "3d" | "split";
-  onViewModeChange: (mode: "2d" | "3d" | "split") => void;
+  plannerStep: PlannerStep;
+  disabledSteps: Partial<Record<PlannerStep, boolean>>;
+  onPlannerStepChange: (step: PlannerStep) => void;
   saveStatus: PlannerSaveStatus;
   lastSavedAt: string | null;
   onRetrySave: () => void;
   onOpenSession: () => void;
+  onSaveDraft: () => void;
+  onImport: () => void;
   onOpenTemplates: () => void;
   onOpenAi: () => void;
-  onOpenExport: () => void;
-  editor: Editor | null;
-  onCanvasReset?: () => void;
 }
 
 export function PlannerTopBar({
   guestMode,
   planName,
-  viewMode,
-  onViewModeChange,
+  plannerStep,
+  disabledSteps,
+  onPlannerStepChange,
   saveStatus,
   lastSavedAt,
   onRetrySave,
   onOpenSession,
+  onSaveDraft,
+  onImport,
   onOpenTemplates,
   onOpenAi,
-  onOpenExport,
-  editor,
-  onCanvasReset,
 }: PlannerTopBarProps) {
   const { resolvedTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -83,21 +84,14 @@ export function PlannerTopBar({
         {guestMode && <span className="pw-badge">Guest</span>}
       </div>
 
-      <PlannerHistoryControls editor={editor} onReset={onCanvasReset} tooltipSide="bottom" />
-
-      <div data-coach="view-toggle" className="pw-topbar-center pw-segment">
-        {(["2d", "3d", "split"] as const).map((mode) => (
-          <button
-            key={mode}
-            type="button"
-            onClick={() => onViewModeChange(mode)}
-            className="pw-segment-btn"
-            data-active={viewMode === mode}
-            aria-pressed={viewMode === mode}
-          >
-            {mode === "2d" ? "2D" : mode === "3d" ? "3D" : "Split"}
-          </button>
-        ))}
+      <div className="pw-topbar-center">
+        <PlannerStepBar
+          current={plannerStep}
+          disabledSteps={disabledSteps}
+          onChange={onPlannerStepChange}
+          compact
+          showIntro={false}
+        />
       </div>
 
       <div className="pw-topbar-actions">
@@ -145,21 +139,26 @@ export function PlannerTopBar({
             aria-label="Open plan sessions"
           >
             <FolderOpen size={14} aria-hidden />
-            <span>Plans</span>
+            <span>Plan Sessions</span>
           </button>
-          {editor && (
-            <div data-coach="export" className="pw-topbar-export">
-              <button
-                type="button"
-                onClick={onOpenExport}
-                className="pw-icon-btn pw-icon-btn--labeled"
-                title="Export plan"
-              >
-                <FileDown size={14} aria-hidden />
-                <span>Export</span>
-              </button>
-            </div>
-          )}
+          <button
+            type="button"
+            className="pw-icon-btn pw-icon-btn--labeled"
+            onClick={onSaveDraft}
+            aria-label="Save local draft"
+          >
+            <Save size={14} aria-hidden />
+            <span>Save Draft</span>
+          </button>
+          <button
+            type="button"
+            className="pw-icon-btn pw-icon-btn--labeled"
+            onClick={onImport}
+            aria-label="Import planner JSON"
+          >
+            <FileUp size={14} aria-hidden />
+            <span>Import</span>
+          </button>
         </div>
 
         <div className="pw-topbar-menu" ref={menuRef}>
@@ -184,14 +183,15 @@ export function PlannerTopBar({
               <button type="button" role="menuitem" className="pw-menu-item" onClick={() => { onOpenSession(); setMenuOpen(false); }}>
                 Plan sessions
               </button>
+              <button type="button" role="menuitem" className="pw-menu-item" onClick={() => { onSaveDraft(); setMenuOpen(false); }}>
+                Save draft
+              </button>
+              <button type="button" role="menuitem" className="pw-menu-item" onClick={() => { onImport(); setMenuOpen(false); }}>
+                Import JSON
+              </button>
               <Link href="/planner/help/" role="menuitem" className="pw-menu-item" onClick={() => setMenuOpen(false)}>
                 Help
               </Link>
-              {editor && (
-                <button type="button" role="menuitem" className="pw-menu-item" onClick={() => { onOpenExport(); setMenuOpen(false); }}>
-                  Export plan
-                </button>
-              )}
             </div>
           )}
         </div>

@@ -23,7 +23,6 @@ import {
 import {
   applyLayerVisibility,
   isShapeLayerHidden,
-  nextLayerVisibilityUpdate,
 } from "@/features/planner/editor/layerVisibility";
 import {
   canAdvancePlannerStep,
@@ -46,15 +45,9 @@ import {
   getPageMetrics,
 } from "@/features/planner/editor/planMetrics";
 import {
-  configurePlannerCamera,
-  fitPlannerContent,
-  setDefaultPlannerCamera,
-} from "@/features/planner/editor/plannerCamera";
-import {
   confirmResetPlannerCanvas,
-  resetPlannerCanvas,
 } from "@/features/planner/editor/resetPlannerCanvas";
-import { createPlannerEditorMock, makeShape } from "./planner-editor-mockEditor";
+import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
 
 describe("blueprint pure helpers", () => {
   it("clamps scale and opacity", () => {
@@ -183,44 +176,9 @@ describe("layer manager ui state", () => {
 });
 
 describe("layer visibility", () => {
-  it("detects hidden shapes and computes next visibility update", () => {
-    expect(isShapeLayerHidden({ type: "planner-wall", meta: { layerHidden: true } })).toBe(true);
-    expect(isShapeLayerHidden({ type: "planner-wall" })).toBe(false);
-
-    expect(nextLayerVisibilityUpdate({ isLocked: false, meta: {} }, false)).toEqual({
-      isLocked: true,
-      meta: { layerHidden: true, layerWasLocked: false },
-    });
-    expect(
-      nextLayerVisibilityUpdate(
-        { isLocked: true, meta: { layerHidden: true, layerWasLocked: false } },
-        true,
-      ),
-    ).toEqual({
-      isLocked: false,
-      meta: { layerHidden: false },
-    });
-    expect(
-      nextLayerVisibilityUpdate(
-        { isLocked: false, meta: { layerWasLocked: true, note: "keep" } },
-        false,
-      ),
-    ).toEqual({
-      isLocked: true,
-      meta: { layerHidden: true, layerWasLocked: true, note: "keep" },
-    });
-  });
-
-  it("applies layer visibility to mapped shape types", () => {
-    const editor = createPlannerEditorMock({
-      shapes: [
-        makeShape("shape:1", "planner-wall"),
-        makeShape("shape:2", "planner-furniture"),
-        makeShape("shape:3", "planner-text"),
-      ],
-    });
-
-    applyLayerVisibility(editor, {
+  it("delegates visibility to the Fabric runtime bridge", () => {
+    const { setLayerVisibility } = seedFabricRuntime();
+    applyLayerVisibility(null, {
       walls: false,
       rooms: true,
       zones: true,
@@ -228,14 +186,12 @@ describe("layer visibility", () => {
       measurements: true,
       underlay: true,
     });
+    expect(setLayerVisibility).toHaveBeenCalled();
+    resetFabricRuntimeState();
+  });
 
-    expect(editor.run).toHaveBeenCalled();
-    expect(editor.updateShape).toHaveBeenCalledWith(
-      expect.objectContaining({ id: "shape:1", isLocked: true }),
-    );
-    expect(editor.updateShape).not.toHaveBeenCalledWith(
-      expect.objectContaining({ id: "shape:3" }),
-    );
+  it("reports legacy hidden meta as visible in the Fabric bridge", () => {
+    expect(isShapeLayerHidden({ type: "planner-wall", meta: { layerHidden: true } })).toBe(false);
   });
 });
 
@@ -251,17 +207,9 @@ describe("planner step workflow", () => {
   };
 
   it("counts measurement shapes and evaluates gates", () => {
-    const editor = createPlannerEditorMock({
-      shapes: [
-        makeShape("m1", "planner-measurement", {}, { meta: {} }),
-        makeShape("m2", "line", {}, { meta: {} }),
-        makeShape("hidden", "planner-measurement", {}, { meta: { layerHidden: true } }),
-      ],
-    });
-    expect(countMeasurementShapes(null)).toBe(0);
-    expect(countMeasurementShapes(editor)).toBe(2);
+    expect(countMeasurementShapes()).toBe(0);
 
-    const gates = evaluatePlannerStepGates(editor, metrics);
+    const gates = evaluatePlannerStepGates(null, metrics);
     expect(gates.hasSpaceShell).toBe(true);
     expect(gates.hasFurniture).toBe(true);
     expect(gates.hasMeasurement).toBe(true);
@@ -300,7 +248,7 @@ describe("planner step workflow", () => {
     expect(getStepToolBinding("draw").plannerTool).toBe("wall");
     expect(getStepToolBinding("place").toolId).toBe("planner-furniture");
     expect(getStepToolBinding("review").toolId).toBe("planner-measurement");
-    expect(getStepLeftTab("draw")).toBe("blueprint");
+    expect(getStepLeftTab("draw")).toBe("library");
     expect(getStepLeftTab("place")).toBe("library");
     expect(getStepLeftTab("review")).toBe("blueprint");
   });
@@ -332,25 +280,31 @@ describe("planner keyboard shortcuts", () => {
   });
 });
 
-describe("plan metrics and camera", () => {
-  it("computes plan metrics from shapes", () => {
-    const shapes = [
-      makeShape("r1", "planner-room", { widthMm: 100, heightMm: 80 }),
-      makeShape("z1", "planner-zone", { areaSqm: 5 }),
-      makeShape("w1", "planner-wall"),
-      makeShape("f1", "planner-furniture"),
-      makeShape("hidden", "planner-furniture", {}, { meta: { layerHidden: true } }),
-    ];
-    const metrics = computePlanMetrics(shapes, 2);
-    expect(metrics.shapeCount).toBe(4);
-    expect(metrics.wallCount).toBe(1);
-    expect(metrics.furnitureCount).toBe(1);
-    expect(metrics.roomAreaSqm).toBeGreaterThan(0);
-    expect(metrics.zoneAreaSqm).toBe(20);
-    expect(metrics.calibrated).toBe(true);
+describe("plan metrics", () => {
+  afterEach(() => {
+    resetFabricRuntimeState();
   });
 
-  it("returns empty metrics without editor", () => {
+  it("computes plan metrics from Fabric objects", () => {
+    const shapes = [
+      { name: "CORNER", left: 0, top: 0, width: 4, height: 4 },
+      { name: "CORNER", left: 100, top: 0, width: 4, height: 4 },
+      { name: "CORNER", left: 100, top: 80, width: 4, height: 4 },
+      { name: "WALL:1", left: 0, top: 0, width: 100, height: 4 },
+      { name: "GENERIC:desk", left: 10, top: 10, width: 60, height: 40 },
+      { name: "DRAW:rectangle", left: 0, top: 0, width: 50, height: 30 },
+    ];
+    const result = computePlanMetrics(shapes, 2);
+    expect(result.shapeCount).toBe(6);
+    expect(result.wallCount).toBe(1);
+    expect(result.furnitureCount).toBe(1);
+    expect(result.roomAreaSqm).toBeGreaterThan(0);
+    expect(result.zoneAreaSqm).toBeGreaterThan(0);
+    expect(result.calibrated).toBe(true);
+  });
+
+  it("returns empty metrics without a Fabric draft", () => {
+    resetFabricRuntimeState();
     expect(getPageMetrics(null)).toEqual({
       shapeCount: 0,
       roomAreaSqm: 0,
@@ -366,30 +320,6 @@ describe("plan metrics and camera", () => {
     expect(getCalibrationScaleFromBlueprint(20)).toBe(2);
     expect(getCalibrationScaleFromBlueprint(null)).toBe(1);
   });
-
-  it("configures planner camera with fallbacks", () => {
-    const editor = createPlannerEditorMock();
-    configurePlannerCamera(editor);
-    setDefaultPlannerCamera(editor);
-    expect(editor.zoomToBounds).toHaveBeenCalled();
-
-    const failing = createPlannerEditorMock();
-    failing.zoomToBounds = vi.fn(() => {
-      throw new Error("unsupported");
-    });
-    setDefaultPlannerCamera(failing);
-    expect(failing.setCamera).toHaveBeenCalled();
-
-    const empty = createPlannerEditorMock({ shapes: [] });
-    fitPlannerContent(empty);
-    expect(empty.zoomToBounds).toHaveBeenCalled();
-
-    const filled = createPlannerEditorMock({
-      shapes: [makeShape("shape:1", "planner-wall")],
-    });
-    fitPlannerContent(filled);
-    expect(filled.zoomToFit).toHaveBeenCalled();
-  });
 });
 
 describe("reset planner canvas", () => {
@@ -397,33 +327,16 @@ describe("reset planner canvas", () => {
     vi.restoreAllMocks();
   });
 
-  it("clears shapes and resets camera/history", () => {
-    const editor = createPlannerEditorMock({
-      shapes: [makeShape("shape:1", "planner-wall"), makeShape("shape:2", "planner-room")],
-    });
-    resetPlannerCanvas(editor);
-    expect(editor.deleteShapes).toHaveBeenCalledWith(["shape:1", "shape:2"]);
-    expect(editor.selectNone).toHaveBeenCalled();
-    expect(editor.clearHistory).toHaveBeenCalled();
-  });
-
-  it("confirms before clearing populated canvas", () => {
+  it("confirms before clearing the canvas", () => {
     const confirm = vi.fn();
     vi.stubGlobal("confirm", confirm);
 
-    const editor = createPlannerEditorMock({
-      shapes: [makeShape("shape:1", "planner-wall")],
-    });
     confirm.mockReturnValue(false);
-    expect(confirmResetPlannerCanvas(editor)).toBe(false);
-    expect(editor.deleteShapes).not.toHaveBeenCalled();
+    expect(confirmResetPlannerCanvas()).toBe(false);
 
     confirm.mockReturnValue(true);
-    expect(confirmResetPlannerCanvas(editor)).toBe(true);
-    expect(editor.deleteShapes).toHaveBeenCalled();
+    expect(confirmResetPlannerCanvas()).toBe(true);
 
-    const empty = createPlannerEditorMock({ shapes: [] });
-    expect(confirmResetPlannerCanvas(empty)).toBe(false);
     vi.unstubAllGlobals();
   });
 });

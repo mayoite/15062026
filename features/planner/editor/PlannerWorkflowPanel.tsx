@@ -1,8 +1,6 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { AlertTriangle, CircleAlert } from "lucide-react";
-import type { Editor } from "tldraw";
+
 
 import type { PlanMetrics } from "@/features/planner/editor/planMetrics";
 import {
@@ -23,7 +21,7 @@ type WorkflowFinding = {
 };
 
 interface PlannerWorkflowPanelProps {
-  editor: Editor | null;
+  editor?: null;
   metrics: PlanMetrics;
   step: PlannerStep;
   onStepChange: (step: PlannerStep) => void;
@@ -62,22 +60,9 @@ export function PlannerWorkflowPanel({
   onStepChange,
   onOpenExport,
 }: PlannerWorkflowPanelProps) {
-  const [findings, setFindings] = useState<WorkflowFinding[]>([]);
+  const findings = runPlannerComplianceCheck(editor ?? null, []).map(toWorkflowFinding);
 
-  useEffect(() => {
-    if (!editor) return;
-
-    const sync = () => {
-      const warnings = runPlannerComplianceCheck(editor, editor.getCurrentPageShapes());
-      setFindings(warnings.map(toWorkflowFinding));
-    };
-
-    sync();
-    const cleanup = editor.store.listen(sync, { scope: "document" });
-    return () => cleanup();
-  }, [editor]);
-
-  const gates = evaluatePlannerStepGates(editor, metrics);
+  const gates = evaluatePlannerStepGates(null, metrics);
 
   const hint = getPlannerStepHint(step, gates);
   const actionLabel = getPlannerStepActionLabel(step);

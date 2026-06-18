@@ -1,7 +1,5 @@
-import type { Editor, TLShape } from "tldraw";
-
-import { getCalibrationScale, readCalibrationScale } from "@/features/planner/lib/calibrationScale";
-import { plannerCanvasUnits } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { getPlannerFabricRuntimeState } from "@/features/planner/canvas-fabric";
+import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 
 export interface PlanMetrics {
   shapeCount: number;
@@ -13,74 +11,108 @@ export interface PlanMetrics {
   calibrated: boolean;
 }
 
-function roomAreaFromProps(
-  props: Record<string, unknown>,
-  scale: number,
-): number {
-  if (typeof props.areaSqm === "number" && props.areaSqm > 0) {
-    return props.areaSqm * scale * scale;
+const EMPTY_METRICS: PlanMetrics = {
+  shapeCount: 0,
+  roomAreaSqm: 0,
+  zoneAreaSqm: 0,
+  totalFloorAreaSqm: 0,
+  wallCount: 0,
+  furnitureCount: 0,
+  calibrated: false,
+};
+
+const FABRIC_TO_MM = 10;
+
+function roundSqm(valueMm2: number): number {
+  const sqm = valueMm2 / 1_000_000;
+  return Number(sqm.toFixed(2));
+}
+
+function areaFromObject(object: Record<string, unknown>) {
+  return Math.max(0, Number(object.width) || 0) * Math.max(0, Number(object.height) || 0) * FABRIC_TO_MM * FABRIC_TO_MM;
+}
+
+function roomAreaFromWalls(objects: Record<string, unknown>[]) {
+  const corners = objects.filter((object) => String(object.name ?? "") === "CORNER");
+  if (corners.length < 3) return 0;
+
+  const points = corners.map((corner) => ({
+    x: Number(corner.left) || 0,
+    y: Number(corner.top) || 0,
+  }));
+
+  let area = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    area += current.x * next.y - next.x * current.y;
   }
-  const w = typeof props.widthMm === "number" ? plannerCanvasUnits(props.widthMm) : 0;
-  const h = typeof props.heightMm === "number" ? plannerCanvasUnits(props.heightMm) : 0;
-  if (w > 0 && h > 0) {
-    const wM = (w * scale) / 100;
-    const hM = (h * scale) / 100;
-    return wM * hM;
-  }
-  return 0;
+  return Math.abs(area / 2) * FABRIC_TO_MM * FABRIC_TO_MM;
 }
 
 export function computePlanMetrics(
-  shapes: TLShape[],
+  shapes: unknown[],
   calibrationScale = 1,
 ): PlanMetrics {
-  let roomAreaSqm = 0;
-  let zoneAreaSqm = 0;
+  const objects = shapes.filter((shape): shape is Record<string, unknown> => Boolean(shape) && typeof shape === "object");
+  if (!objects.length) return { ...EMPTY_METRICS };
+
   let wallCount = 0;
   let furnitureCount = 0;
+  let zoneAreaMm2 = 0;
 
-  for (const shape of shapes) {
-    if (shape.meta?.layerHidden) continue;
+  objects.forEach((object) => {
+    const name = String(object.name ?? "");
+    if (name === "CORNER" || name.startsWith("WALL:") || name.startsWith("DOOR") || name.startsWith("WINDOW")) {
+      if (name.startsWith("WALL:")) wallCount += 1;
+      return;
+    }
 
-    const props = (shape.props ?? {}) as Record<string, unknown>;
-    if (shape.type === "planner-room") {
-      roomAreaSqm += roomAreaFromProps(props, calibrationScale);
-    } else if (shape.type === "planner-zone") {
-      zoneAreaSqm += roomAreaFromProps(props, calibrationScale);
-    } else if (shape.type === "planner-wall") {
-      wallCount += 1;
-    } else if (shape.type === "planner-furniture") {
+    if (name.startsWith("DRAW:rectangle")) {
+      zoneAreaMm2 += areaFromObject(object);
+      return;
+    }
+
+    if (
+      name.startsWith("GENERIC:")
+      || name.startsWith("TABLE")
+      || name.startsWith("CHAIR")
+      || name.startsWith("DESK")
+    ) {
       furnitureCount += 1;
     }
-  }
+  });
+
+  const roomAreaMm2 = roomAreaFromWalls(objects);
+  const scaledRoomArea = roomAreaMm2 * calibrationScale * calibrationScale;
+  const scaledZoneArea = zoneAreaMm2 * calibrationScale * calibrationScale;
 
   return {
-    shapeCount: shapes.filter((s) => !s.meta?.layerHidden).length,
-    roomAreaSqm,
-    zoneAreaSqm,
-    totalFloorAreaSqm: Math.max(roomAreaSqm, zoneAreaSqm),
+    shapeCount: objects.length,
+    roomAreaSqm: roundSqm(scaledRoomArea),
+    zoneAreaSqm: roundSqm(scaledZoneArea),
+    totalFloorAreaSqm: roundSqm(Math.max(scaledRoomArea, scaledZoneArea || scaledRoomArea)),
     wallCount,
     furnitureCount,
     calibrated: calibrationScale !== 1,
   };
 }
 
-export function getPageMetrics(editor: Editor | null): PlanMetrics {
-  if (!editor) {
-    return {
-      shapeCount: 0,
-      roomAreaSqm: 0,
-      zoneAreaSqm: 0,
-      totalFloorAreaSqm: 0,
-      wallCount: 0,
-      furnitureCount: 0,
-      calibrated: false,
-    };
+export function getPageMetrics(_editor: null): PlanMetrics {
+  const serializedDraft = getPlannerFabricRuntimeState().serializedDraft;
+  const mmPerUnit = usePlannerWorkspaceStore.getState().blueprint.mmPerUnit;
+  const calibrationScale = getCalibrationScaleFromBlueprint(mmPerUnit);
+  if (!serializedDraft) return { ...EMPTY_METRICS, calibrated: calibrationScale !== 1 };
+
+  try {
+    const snapshot = JSON.parse(serializedDraft) as { objects?: unknown[] };
+    return computePlanMetrics(snapshot.objects ?? [], calibrationScale);
+  } catch {
+    return { ...EMPTY_METRICS, calibrated: calibrationScale !== 1 };
   }
-  const scale = readCalibrationScale();
-  return computePlanMetrics(editor.getCurrentPageShapes(), scale);
 }
 
 export function getCalibrationScaleFromBlueprint(mmPerUnit: number | null): number {
-  return getCalibrationScale(mmPerUnit);
+  if (!mmPerUnit || !Number.isFinite(mmPerUnit) || mmPerUnit <= 0) return 1;
+  return mmPerUnit / 10;
 }

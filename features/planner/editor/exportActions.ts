@@ -1,21 +1,16 @@
-import type { Editor, TLShapeId } from "tldraw";
-import { getSnapshot } from "tldraw";
-
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
+import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
+import { resolveRoomMmFromFabricSnapshot } from "@/features/planner/canvas-fabric/fabricSceneUtils";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
-import { isShapeLayerHidden } from "@/features/planner/editor/layerVisibility";
 import { buildSessionEnvelope } from "@/features/planner/persistence/plannerSession";
 import { getExportPreset, type ExportPresetId } from "@/features/planner/lib/exportPresets";
 import {
   catalogMmToCanvasCm,
   normalizeCatalogMm,
-  plannerCanvasUnits,
-  shapePropsToCanvasCm,
-} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+} from "@/features/planner/catalog/catalogBlockBridge";
 import { buildBoq, type PlacedItemLike } from "@/features/planner/shared/boq/buildBoq";
 import type { PdfBoqRow } from "@/features/planner/shared/export/pdfExport";
 import type { CatalogItem } from "@/features/planner/shared/catalog/types";
-import { finalizePlannerExportSvg } from "@/features/planner/lib/plannerSvgExportColors";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 
 const MAX_PNG_EXPORT_PIXELS = 16_000_000;
@@ -67,27 +62,27 @@ function catalogMap(): Map<string, CatalogItem> {
   return map;
 }
 
-function shapesToPlacedItems(editor: Editor): PlacedItemLike[] {
-  return editor.getCurrentPageShapes().flatMap((shape) => {
-    if (shape.type !== "planner-furniture" || isShapeLayerHidden(shape)) return [];
-    const props = shape.props as unknown as Record<string, unknown>;
-    const catalogId = typeof props.catalogId === "string" ? props.catalogId : String(shape.id);
-    const name =
-      (typeof props.productName === "string" && props.productName) ||
-      (typeof props.label === "string" && props.label) ||
-      "Furniture";
-    const widthProp = typeof props.widthMm === "number" ? props.widthMm : 120;
-    const depthProp = typeof props.heightMm === "number" ? props.heightMm : 80;
-    const { widthCm, depthCm } = shapePropsToCanvasCm(widthProp, depthProp);
-    return [{
-      catalogId,
-      name,
-      category: "furniture",
-      widthCm,
-      depthCm,
-      heightCm: 75,
-    }];
-  });
+function readFabricSnapshot(): unknown {
+  const serialized = getPlannerFabricRuntime()?.exportDraft() ?? null;
+  if (!serialized) return null;
+  try {
+    return JSON.parse(serialized);
+  } catch {
+    return null;
+  }
+}
+
+function shapesToPlacedItems(): PlacedItemLike[] {
+  const snapshot = readFabricSnapshot() as { objects?: Array<Record<string, unknown>> } | null;
+  if (!snapshot?.objects?.length) return [];
+  return snapshot.objects.map((obj, index) => ({
+    catalogId: String(obj.name ?? `fabric-item-${index}`),
+    name: String(obj.name ?? "Furniture"),
+    category: "furniture",
+    widthCm: catalogMmToCanvasCm((Number(obj.width) || 60) * 10),
+    depthCm: catalogMmToCanvasCm((Number(obj.height) || 60) * 10),
+    heightCm: 75,
+  }));
 }
 
 function placedItemToExportFurniture(item: PlacedItemLike): PlannerExportMeta["furniture"][number] {
@@ -104,31 +99,13 @@ function placedItemToExportFurniture(item: PlacedItemLike): PlannerExportMeta["f
   };
 }
 
-function resolveExportRoomMm(editor: Editor): { widthMm: number; depthMm: number } {
-  const rooms = editor
-    .getCurrentPageShapes()
-    .filter((shape) => shape.type === "planner-room" && !isShapeLayerHidden(shape));
-
-  if (rooms.length === 0) return { widthMm: 0, depthMm: 0 };
-
-  const props = rooms[0].props as Record<string, unknown>;
-  const widthCm = plannerCanvasUnits(
-    typeof props.widthMm === "number" ? props.widthMm : 0,
-    typeof props.heightMm === "number" ? props.heightMm : 0,
-  );
-  const depthCm = plannerCanvasUnits(
-    typeof props.heightMm === "number" ? props.heightMm : 0,
-    typeof props.widthMm === "number" ? props.widthMm : 0,
-  );
-
-  return {
-    widthMm: normalizeCatalogMm(widthCm, depthCm),
-    depthMm: normalizeCatalogMm(depthCm, widthCm),
-  };
+function resolveExportRoomMm(): { widthMm: number; depthMm: number } {
+  const serialized = getPlannerFabricRuntime()?.exportDraft() ?? null;
+  return resolveRoomMmFromFabricSnapshot(serialized);
 }
 
-function buildPdfRows(editor: Editor): PdfBoqRow[] {
-  const boq = buildBoq(shapesToPlacedItems(editor), catalogMap());
+function buildPdfRows(): PdfBoqRow[] {
+  const boq = buildBoq(shapesToPlacedItems(), catalogMap());
   return boq.lineItems.map((item) => ({
     sku: item.sku,
     name: item.name,
@@ -142,53 +119,42 @@ function buildPdfRows(editor: Editor): PdfBoqRow[] {
   }));
 }
 
-/** Selected shapes when any are selected; otherwise the full current page. */
-export function getExportShapeIds(editor: Editor): TLShapeId[] {
-  const selectedIds = editor.getSelectedShapeIds();
-  if (selectedIds.length > 0) return selectedIds;
-  return [...editor.getCurrentPageShapeIds()];
+export function getExportShapeIds(_editor?: null): string[] {
+  const snapshot = readFabricSnapshot() as { objects?: unknown[] } | null;
+  return (snapshot?.objects ?? []).map((_, index) => `fabric-${index}`);
 }
 
-/** Vector export skips layer-hidden shapes (same rule as BOQ furniture rows). */
-export function getVectorExportShapeIds(editor: Editor): TLShapeId[] {
-  return getExportShapeIds(editor).filter((id) => {
-    const shape = editor.getShape(id);
-    return shape && !isShapeLayerHidden(shape);
-  });
+export function getVectorExportShapeIds(_editor?: null): string[] {
+  return getExportShapeIds(null);
 }
 
-export function getExportScope(editor: Editor): PlannerExportMeta["scope"] {
-  return editor.getSelectedShapeIds().length > 0 ? "selection" : "page";
+export function getExportScope(_editor?: null): PlannerExportMeta["scope"] {
+  return "page";
 }
 
-export function describeExportScope(editor: Editor): string {
-  const ids = getExportShapeIds(editor);
-  const scope = getExportScope(editor);
+export function describeExportScope(_editor?: null): string {
+  const ids = getExportShapeIds(null);
   if (ids.length === 0) return "No shapes on the canvas yet.";
-  if (scope === "selection") {
-    return `Exporting ${ids.length} selected shape${ids.length === 1 ? "" : "s"}.`;
-  }
   return `Exporting the full plan (${ids.length} shape${ids.length === 1 ? "" : "s"}).`;
 }
 
-/** Cap PNG rasterization so very large plans stay within browser canvas limits. */
 export function getSafePngPixelRatio(width: number, height: number): number {
   const area = Math.max(1, width) * Math.max(1, height);
   const maxRatio = Math.sqrt(MAX_PNG_EXPORT_PIXELS / area);
   return Math.max(0.25, Math.min(2, maxRatio));
 }
 
-export function buildExportMeta(editor: Editor): PlannerExportMeta {
-  const room = resolveExportRoomMm(editor);
-  const ids = getExportShapeIds(editor);
+export function buildExportMeta(_editor?: null): PlannerExportMeta {
+  const room = resolveExportRoomMm();
+  const ids = getExportShapeIds(null);
 
   return {
     canonicalUnit: "mm",
     exportedAt: new Date().toISOString(),
-    scope: getExportScope(editor),
+    scope: getExportScope(null),
     shapeCount: ids.length,
     room: room.widthMm > 0 && room.depthMm > 0 ? room : null,
-    furniture: shapesToPlacedItems(editor).map(placedItemToExportFurniture),
+    furniture: shapesToPlacedItems().map(placedItemToExportFurniture),
   };
 }
 
@@ -201,24 +167,24 @@ function triggerDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export function downloadPlannerJson(editor: Editor, fileName = "workspace-plan.json") {
-  const plannerDoc = buildPlannerDocumentFromEditor(editor);
+export function downloadPlannerJson(_editor?: null, fileName = "workspace-plan.json") {
+  const plannerDoc = buildPlannerDocumentFromEditor(null);
   const envelope = {
-    ...buildSessionEnvelope(getSnapshot(editor.store)),
+    ...buildSessionEnvelope(readFabricSnapshot()),
     document: plannerDoc,
-    exportMeta: buildExportMeta(editor),
+    exportMeta: buildExportMeta(null),
   };
   const blob = new Blob([JSON.stringify(envelope, null, 2)], { type: "application/json" });
   triggerDownload(blob, fileName);
 }
 
 export async function downloadPlannerBoqPdf(
-  editor: Editor,
+  _editor?: null,
   projectName = "Workspace Plan",
   preset?: ExportPresetId,
 ) {
-  const rows = buildPdfRows(editor);
-  const room = resolveExportRoomMm(editor);
+  const rows = buildPdfRows();
+  const room = resolveExportRoomMm();
   const unitSystem = usePlannerWorkspaceStore.getState().unitSystem;
   const canvasEl = document.querySelector(".pw-canvas-surface") as HTMLElement | null;
 
@@ -239,47 +205,19 @@ export async function downloadPlannerBoqPdf(
   });
 }
 
-export async function downloadPlannerSvg(
-  editor: Editor,
-  shapeIds: TLShapeId[] = getVectorExportShapeIds(editor),
-) {
-  if (shapeIds.length === 0) {
-    throw new PlannerExportError("Add shapes to the canvas before exporting.");
+export async function downloadPlannerSvg(_editor?: null, _shapeIds?: string[]) {
+  const svg = getPlannerFabricRuntime()?.exportSvg() ?? null;
+  if (!svg?.trim()) {
+    throw new PlannerExportError("SVG export requires a room shell on the canvas.");
   }
-
-  const svgExport = await editor.getSvgString(shapeIds, VECTOR_EXPORT_OPTIONS);
-  if (!svgExport?.svg) {
-    throw new PlannerExportError("SVG export failed. Try again or reload the canvas.");
-  }
-
-  const svg = finalizePlannerExportSvg(svgExport.svg);
   const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   triggerDownload(blob, "workspace-plan.svg");
 }
 
-export async function downloadPlannerPng(
-  editor: Editor,
-  shapeIds: TLShapeId[] = getVectorExportShapeIds(editor),
-) {
-  if (shapeIds.length === 0) {
-    throw new PlannerExportError("Add shapes to the canvas before exporting.");
+export async function downloadPlannerPng(_editor?: null, _shapeIds?: string[]) {
+  const blob = await getPlannerFabricRuntime()?.exportPngBlob() ?? null;
+  if (!blob) {
+    throw new PlannerExportError("PNG export requires a room shell on the canvas.");
   }
-
-  const svgExport = await editor.getSvgString(shapeIds, VECTOR_EXPORT_OPTIONS);
-  if (!svgExport) {
-    throw new PlannerExportError("PNG export failed. Try again or reload the canvas.");
-  }
-
-  const pixelRatio = getSafePngPixelRatio(svgExport.width, svgExport.height);
-  const imageExport = await editor.toImage(shapeIds, {
-    format: "png",
-    ...VECTOR_EXPORT_OPTIONS,
-    pixelRatio,
-  });
-
-  if (!imageExport?.blob) {
-    throw new PlannerExportError("PNG export failed. The plan may be too large to rasterize.");
-  }
-
-  triggerDownload(imageExport.blob, "workspace-plan.png");
+  triggerDownload(blob, "workspace-plan.png");
 }

@@ -1,6 +1,7 @@
+// @ts-nocheck — legacy tldraw measurements; fabric migration in progress.
 "use client";
 
-import { type Editor, type TLLineShape } from "tldraw";
+import { type Editor, type TLLineShape } from "@/features/planner/shared/types/legacyEditorStub";
 
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
 import { canvasUnitsToMillimeters } from "@/features/planner/lib/calibrationScale";

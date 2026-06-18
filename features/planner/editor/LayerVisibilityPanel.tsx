@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
   Armchair,
   BrickWall,
@@ -12,8 +13,12 @@ import {
   Ruler,
   type LucideIcon,
 } from "lucide-react";
-import type { Editor } from "tldraw";
 
+
+import {
+  getPlannerFabricRuntimeState,
+  subscribePlannerFabricRuntimeState,
+} from "@/features/planner/canvas-fabric";
 import {
   PLANNER_LAYER_CATEGORIES,
   type PlannerLayerCategory,
@@ -69,27 +74,47 @@ export function countShapesByLayer(
 }
 
 interface LayerVisibilityPanelProps {
-  /** Optional tldraw editor — enables live per-layer count badges. */
-  editor?: Editor | null;
+  editor?: null;
+}
+
+function readLayerCounts() {
+  const serializedDraft = getPlannerFabricRuntimeState().serializedDraft;
+  if (!serializedDraft) return undefined;
+  try {
+    const snapshot = JSON.parse(serializedDraft) as { objects?: Array<{ name?: string }> };
+    const normalized = (snapshot.objects ?? []).map((object) => {
+      const name = String(object.name ?? "");
+      if (name.startsWith("WALL:") || name === "CORNER" || name.startsWith("DOOR") || name.startsWith("WINDOW")) {
+        return { type: "planner-wall" };
+      }
+      if (name.startsWith("DRAW:measure")) {
+        return { type: "planner-measurement" };
+      }
+      if (name.startsWith("DRAW:")) {
+        return { type: "planner-zone" };
+      }
+      return { type: "planner-furniture" };
+    });
+    return countShapesByLayer(normalized);
+  } catch {
+    return undefined;
+  }
 }
 
 export function LayerVisibilityPanel({ editor = null }: LayerVisibilityPanelProps) {
+  void editor;
   const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
   const toggleLayer = usePlannerWorkspaceStore((s) => s.toggleLayer);
-  const [, setDocumentVersion] = useState(0);
+  const [counts, setCounts] = useState(readLayerCounts);
 
   useEffect(() => {
-    if (!editor) return;
-    const cleanup = editor.store.listen(
-      () => setDocumentVersion((current) => current + 1),
-      { scope: "document" },
-    );
+    const unsubscribe = subscribePlannerFabricRuntimeState(() => {
+      setCounts(readLayerCounts());
+    });
     return () => {
-      cleanup();
+      unsubscribe();
     };
-  }, [editor]);
-
-  const counts = editor ? countShapesByLayer(editor.getCurrentPageShapes()) : null;
+  }, []);
 
   return (
     <div className="pwx-layers">

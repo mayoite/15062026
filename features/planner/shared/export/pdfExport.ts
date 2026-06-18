@@ -1,6 +1,6 @@
 import type { ExportLayout } from "./types";
 import type { ExportPreset } from "@/features/planner/lib/exportPresets";
-import { catalogMmToCanvasCm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { catalogMmToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
 
 export type PdfBoqRow = {
   sku?: string;

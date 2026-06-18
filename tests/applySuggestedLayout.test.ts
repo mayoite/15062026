@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { buildShapesFromSuggestedLayout } from "@/features/planner/ai/applySuggestedLayout";
 import { suggestLayoutGridPack } from "@/features/planner/ai/spaceSuggest";
-import { catalogMmToCanvasCm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { catalogMmToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
 
 describe("applySuggestedLayout helpers", () => {
   it("converts real-mm room dimensions to canvas units", () => {

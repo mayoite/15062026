@@ -21,12 +21,13 @@ describe("PlannerLeftPanel", () => {
       <PlannerLeftPanel
         guestMode={false}
         plannerStep="draw"
+        activeTab="blueprint"
         onItemClick={vi.fn()}
         onDragStart={vi.fn()}
       />,
     );
 
-    expect(screen.getByText("Start by tracing a blueprint or defining the space shell.")).toBeInTheDocument();
+    expect(screen.getByText(/Start by tracing a blueprint or pick a room preset/i)).toBeInTheDocument();
     expect(screen.getAllByRole("tab")[0]).toHaveTextContent("Blueprint");
     fireEvent.click(screen.getByRole("tab", { name: /Blueprint/i }));
     expect(screen.getByText("Blueprint panel")).toBeInTheDocument();

@@ -8,7 +8,7 @@ import {
   plannerCanvasUnits,
   resolveCatalogItemBlock2D,
   shapePropsToCanvasCm,
-} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+} from "@/features/planner/catalog/catalogBlockBridge";
 
 function catalogItem(id: string): CatalogItem {
   const item = PLANNER_CATALOG_ITEMS.find((entry) => entry.id === id);

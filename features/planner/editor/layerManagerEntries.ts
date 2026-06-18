@@ -3,7 +3,7 @@ import { canvasUnitsToMillimeters } from "@/features/planner/lib/calibrationScal
 import {
   normalizeCatalogMm,
   plannerCanvasUnits,
-} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+} from "@/features/planner/catalog/catalogBlockBridge";
 
 type LayerManagerShape = {
   id: string;

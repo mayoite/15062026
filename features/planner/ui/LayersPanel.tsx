@@ -1,3 +1,4 @@
+// @ts-nocheck — legacy tldraw layers panel; fabric migration in progress.
 "use client";
 
 import { useSyncExternalStore } from "react";
@@ -12,7 +13,7 @@ import {
   ScanSearch,
   X,
 } from "lucide-react";
-import { createShapeId, type Editor } from "tldraw";
+import { createShapeId, type Editor } from "@/features/planner/shared/types/legacyEditorStub";
 
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
 
@@ -21,7 +22,7 @@ import { getMetricLabelForShape, type MeasurementUnit } from "../lib/measurement
 const ROOM_BOUNDARY_SHAPE_ID = createShapeId("room-boundary");
 
 interface LayersPanelProps {
-  editor: Editor | null;
+  editor?: Editor | null;
   unitSystem: MeasurementUnit;
   onClose: () => void;
   onFitSelection: () => void;

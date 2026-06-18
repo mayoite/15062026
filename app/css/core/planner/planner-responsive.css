@@ -35,7 +35,7 @@
   .planner-workspace .pw-left-panel,
   .planner-workspace .pw-right-panel {
     position: fixed;
-    top: var(--pw-topbar-h);
+    top: var(--pw-header-h);
     bottom: var(--pw-dock-h);
     z-index: 40;
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
@@ -183,7 +183,7 @@
   }
 
   .planner-workspace .pw-panel-backdrop {
-    top: var(--pw-topbar-h);
+    top: var(--pw-header-h);
     bottom: var(--pw-dock-h);
   }
 
@@ -218,7 +218,19 @@
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       "brand actions"
-      "history center";
+      "center center";
+  }
+
+  .planner-workspace {
+    --pw-header-h: calc(var(--pw-topbar-h) + var(--pw-subtopbar-h));
+  }
+
+  .planner-workspace .pw-subtopbar-shell {
+    padding-inline: var(--space-3);
+  }
+
+  .planner-workspace .pw-subtopbar--fabric .fcw-toolbar-group:not(.fcw-toolbar-group--draw):nth-of-type(n + 4) {
+    display: none;
   }
 
   .planner-workspace .pw-history-reset-label {

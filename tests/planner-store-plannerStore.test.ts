@@ -123,29 +123,9 @@ describe("plannerStore facade", () => {
   });
 
   describe("setTool", () => {
-    it("updates the local tool when no tldraw editor is available", () => {
+    it("updates the local tool when no fabric editor bridge is available", () => {
       facade().setTool("wall");
       expect(usePlannerStore.getState().tool).toBe("wall");
-    });
-
-    it("bridges setTool to the tldraw editor when available", () => {
-      const setCurrentTool = vi.fn();
-      vi.stubGlobal("__webpack_require__", function webpackRequire() {});
-      vi.stubGlobal("__non_webpack_require__", (id: string) => {
-        if (id.includes("plannerTldrawEditorBridge")) {
-          return { getPlannerTldrawEditor: () => ({ setCurrentTool }) };
-        }
-        throw new Error(`unexpected require: ${id}`);
-      });
-
-      facade().setTool("furniture");
-      expect(usePlannerStore.getState().tool).toBe("furniture");
-      expect(setCurrentTool).toHaveBeenCalledWith("planner-furniture");
-
-      facade().setTool("pan");
-      expect(setCurrentTool).toHaveBeenCalledWith("hand");
-
-      vi.unstubAllGlobals();
     });
 
   });

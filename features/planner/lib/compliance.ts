@@ -1,58 +1,90 @@
-"use client";
+import { getPlannerFabricRuntimeState } from "@/features/planner/canvas-fabric";
 
-import type { Editor } from "tldraw";
+type RectLike = {
+  name: string;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
 
-import { getShapeMeta } from "./measurements";
+const FABRIC_TO_MM = 10;
 
-type PlannerShape = ReturnType<Editor["getCurrentPageShapes"]>[number];
+function readFurnitureRects(): RectLike[] {
+  const serializedDraft = getPlannerFabricRuntimeState().serializedDraft;
+  if (!serializedDraft) return [];
 
-const PAGE_UNIT_MM = 10;
+  try {
+    const snapshot = JSON.parse(serializedDraft) as { objects?: Array<Record<string, unknown>> };
+    return (snapshot.objects ?? [])
+      .map((object) => ({
+        name: String(object.name ?? "Item"),
+        left: Number(object.left) || 0,
+        top: Number(object.top) || 0,
+        width: Number(object.width) || 0,
+        height: Number(object.height) || 0,
+      }))
+      .filter((item) => item.name.startsWith("GENERIC:") || item.name.startsWith("TABLE") || item.name.startsWith("DESK"));
+  } catch {
+    return [];
+  }
+}
+
+function overlaps(a: RectLike, b: RectLike) {
+  return (
+    a.left < b.left + b.width
+    && a.left + a.width > b.left
+    && a.top < b.top + b.height
+    && a.top + a.height > b.top
+  );
+}
+
+function rectGapMm(a: RectLike, b: RectLike): number | null {
+  const gapX =
+    a.left + a.width <= b.left
+      ? b.left - (a.left + a.width)
+      : b.left + b.width <= a.left
+        ? a.left - (b.left + b.width)
+        : 0;
+  const gapY =
+    a.top + a.height <= b.top
+      ? b.top - (a.top + a.height)
+      : b.top + b.height <= a.top
+        ? a.top - (b.top + b.height)
+        : 0;
+
+  if (gapX > 0 && gapY === 0) return gapX * FABRIC_TO_MM;
+  if (gapY > 0 && gapX === 0) return gapY * FABRIC_TO_MM;
+  if (gapX > 0 && gapY > 0) return Math.min(gapX, gapY) * FABRIC_TO_MM;
+  return null;
+}
+
 const ADA_CLEARANCE_MM = 900;
-const ADA_CLEARANCE_CANVAS_UNITS = ADA_CLEARANCE_MM / PAGE_UNIT_MM; // 90
 
-export function runPlannerComplianceCheck(editor: Editor, shapes: PlannerShape[]) {
-  const warnings: string[] = [];
-  const plannerShapes = shapes.filter((shape) => getShapeMeta(shape.meta).isPlannerItem);
-  let overlapCount = 0;
+export function runPlannerComplianceCheck(_editor: null, _shapes: unknown[]): string[] {
+  const items = readFurnitureRects();
+  const findings: string[] = [];
   let tightClearanceCount = 0;
 
-  for (let index = 0; index < plannerShapes.length; index += 1) {
-    for (let nextIndex = index + 1; nextIndex < plannerShapes.length; nextIndex += 1) {
-      const boundsA = editor.getShapePageBounds(plannerShapes[index]);
-      const boundsB = editor.getShapePageBounds(plannerShapes[nextIndex]);
-
-      if (!boundsA || !boundsB) continue;
-
-      const isOverlapping = !(
-        boundsA.maxX < boundsB.minX ||
-        boundsA.minX > boundsB.maxX ||
-        boundsA.maxY < boundsB.minY ||
-        boundsA.minY > boundsB.maxY
-      );
-
-      if (isOverlapping) {
-        overlapCount += 1;
+  for (let index = 0; index < items.length; index += 1) {
+    for (let inner = index + 1; inner < items.length; inner += 1) {
+      if (overlaps(items[index], items[inner])) {
+        findings.push(`CRITICAL: ${items[index].name} overlaps ${items[inner].name}`);
         continue;
       }
 
-      const clearanceX = Math.max(0, Math.max(boundsA.minX - boundsB.maxX, boundsB.minX - boundsA.maxX));
-      const clearanceY = Math.max(0, Math.max(boundsA.minY - boundsB.maxY, boundsB.minY - boundsA.maxY));
-      const distance = Math.sqrt(clearanceX * clearanceX + clearanceY * clearanceY);
-
-      if (distance > 0 && distance < ADA_CLEARANCE_CANVAS_UNITS) {
+      const gapMm = rectGapMm(items[index], items[inner]);
+      if (gapMm !== null && gapMm < ADA_CLEARANCE_MM) {
         tightClearanceCount += 1;
       }
     }
   }
 
-  if (overlapCount > 0) {
-    warnings.push(`CRITICAL: ${overlapCount} workstation(s) are severely overlapping.`);
-  }
   if (tightClearanceCount > 0) {
-    warnings.push(
-      `COMPLIANCE WARNING: ${tightClearanceCount} module boundary clearances are under the strict ${ADA_CLEARANCE_MM}mm ADA minimum.`
+    findings.push(
+      `COMPLIANCE WARNING: ${tightClearanceCount} module boundary clearances are under the strict ${ADA_CLEARANCE_MM}mm ADA minimum.`,
     );
   }
 
-  return warnings;
+  return findings;
 }

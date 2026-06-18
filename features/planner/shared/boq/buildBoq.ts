@@ -1,6 +1,6 @@
 import type { BoqLineItem, BoqSummary } from "./types"; 
 import type { CatalogItem, CatalogItemDimensions } from "../catalog/types"; 
-import { normalizeCatalogMm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { normalizeCatalogMm } from "@/features/planner/catalog/catalogBlockBridge";
  
 export type PlacedItemLike = { 
   catalogId: string; 

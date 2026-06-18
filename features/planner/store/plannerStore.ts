@@ -2,9 +2,8 @@
  * Compatibility facade over the domain stores.
  *
  * `tool` is the only state owned here — no domain store tracks the active
- * editor tool. `setTool` stores it locally AND bridges it to the live tldraw
- * editor via getTldrawEditor() so the canvas actually switches tools on every
- * toolbar / catalog click.
+ * editor tool. Fabric canvas owns its own toolbar; this field is legacy state
+ * for step bindings and keyboard shortcuts.
  *
  * @deprecated Prefer domain stores directly where possible.
  */
@@ -19,35 +18,6 @@ import type { PlannerState, Tool, FurnitureItem, StructuralElementDraft, Backgro
 import type { HistorySnapshot } from "./plannerStoreSupport";
 import type { LightingPreset } from "@/features/planner/lib/lightingPresets";
 import type { FloorTemplate } from "./floorTemplates";
-
-// Resolved at call-time to avoid pulling tldraw (ESM) into the module graph
-// during Jest runs. Do NOT convert to a static import.
-let _getPlannerTldrawEditor: (() => unknown) | null = null;
-
-// Declare globals for webpack environments
-declare const __webpack_require__: unknown;
-declare const __non_webpack_require__: NodeRequire;
-
-function getTldrawEditorLazy(): unknown {
-  try {
-    if (!_getPlannerTldrawEditor) {
-      const requireFn = typeof __webpack_require__ === "function"
-        ? __non_webpack_require__
-        : typeof module !== "undefined" && typeof module.require === "function"
-          ? module.require.bind(module)
-          : null;
-      if (requireFn) {
-        const bridge = requireFn("../tldraw/plannerTldrawEditorBridge") as {
-          getPlannerTldrawEditor: () => unknown;
-        };
-        _getPlannerTldrawEditor = bridge.getPlannerTldrawEditor;
-      }
-    }
-    return _getPlannerTldrawEditor?.() ?? null;
-  } catch {
-    return null;
-  }
-}
 
 export * from "./plannerTypes";
 export { validateImportedProject } from "./plannerProjectStore";
@@ -65,21 +35,6 @@ export function setToastStoreRef(store: { addToast: (type: string, message: stri
   if (toastStoreRef === store) return;
   toastStoreRef = store;
 }
-
-// ── Tool → tldraw id map ──────────────────────────────────────────────────────
-
-const TLDRAW_TOOL_MAP: Partial<Record<Tool, string>> = {
-  select:    "select",
-  pan:       "hand",
-  wall:      "planner-wall",
-  room:      "planner-room",
-  door:      "planner-door-window",
-  window:    "planner-door-window",
-  furniture: "planner-furniture",
-  zone:      "planner-zone",
-  measure:   "planner-measurement",
-  eraser:    "eraser",
-};
 
 // ── History helper ────────────────────────────────────────────────────────────
 
@@ -141,15 +96,9 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   get isSaving()          { return usePlannerProjectStore.getState().isSaving; },
   get saveError()         { return usePlannerProjectStore.getState().saveError; },
 
-  // ── Tool — local + tldraw bridge ─────────────────────────────────────────
+  // ── Tool — legacy planner step / shortcut state ────────────────────────────
   tool: "select" as Tool,
-  setTool: (tool) => {
-    set({ tool });
-    const editor = getTldrawEditorLazy();
-    if (!editor) return;
-    const tldrawId = TLDRAW_TOOL_MAP[tool];
-    if (tldrawId) { try { (editor as { setCurrentTool: (id: string) => void }).setCurrentTool(tldrawId); } catch { /* not ready */ } }
-  },
+  setTool: (tool) => set({ tool }),
 
 
   // ── Geometry mutations ─────────────────────────────────────────────────────

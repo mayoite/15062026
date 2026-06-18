@@ -7,8 +7,8 @@ import type { PlannerStep } from "@/features/planner/editor/plannerStep";
 const COMPACT_QUERY = "(max-width: 1023px)";
 
 export function getStepLeftOpenDefault(step: PlannerStep, isCompact: boolean): boolean {
-  if (step === "place") return true;
-  if (step === "draw" || step === "review") return false;
+  if (step === "place" || step === "draw") return true;
+  if (step === "review") return false;
   return !isCompact;
 }
 
@@ -24,9 +24,10 @@ export function getStepLeftEmphasis(step: PlannerStep): "muted" | "prominent" {
 
 export function usePlannerPanels() {
   const [isCompact, setIsCompact] = useState(false);
-  const [leftOpen, setLeftOpenState] = useState(false);
+  const [leftOpen, setLeftOpenState] = useState(true);
   const [rightOpen, setRightOpen] = useState(false);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const [rightCollapsed, setRightCollapsed] = useState(true);
   const [leftManualOverride, setLeftManualOverride] = useState(false);
   const [rightManualOverride, setRightManualOverride] = useState(false);
 
@@ -54,6 +55,7 @@ export function usePlannerPanels() {
       setRightManualOverride(false);
       if (compact) {
         setLeftCollapsed(false);
+        setRightCollapsed(false);
         setLeftOpenState(false);
         setRightOpen(false);
       }
@@ -86,12 +88,28 @@ export function usePlannerPanels() {
     setRightOpen((open) => {
       const next = !open;
       if (next) {
+        setRightCollapsed(false);
         setLeftManualOverride(true);
         setLeftOpenState(false);
       }
       return next;
     });
   }, []);
+
+  const toggleRightCollapsed = useCallback(() => {
+    if (isCompact) return;
+    setRightCollapsed((collapsed) => {
+      const next = !collapsed;
+      if (!next) {
+        setRightManualOverride(true);
+        setRightOpen(true);
+      } else {
+        setRightManualOverride(true);
+        setRightOpen(false);
+      }
+      return next;
+    });
+  }, [isCompact]);
 
   const toggleLeftCollapsed = useCallback(() => {
     if (isCompact) return;
@@ -144,6 +162,7 @@ export function usePlannerPanels() {
     leftOpen,
     rightOpen,
     leftCollapsed,
+    rightCollapsed,
     leftOpenRaw: leftOpen,
     rightOpenRaw: rightOpen,
     leftManualOverride,
@@ -155,5 +174,6 @@ export function usePlannerPanels() {
     setLeftOpen,
     setRightOpen: setRightOpenManual,
     toggleLeftCollapsed,
+    toggleRightCollapsed,
   };
 }

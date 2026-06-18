@@ -5,7 +5,10 @@ import { PlannerWorkflowPanel } from "@/features/planner/editor/PlannerWorkflowP
 import { createPlannerEditorMock } from "./planner-editor-mockEditor";
 
 vi.mock("@/features/planner/lib/compliance", () => ({
-  runPlannerComplianceCheck: vi.fn(() => ["CRITICAL: overlap", "WARNING: clearance"]),
+  runPlannerComplianceCheck: vi.fn(() => [
+    "CRITICAL: overlap",
+    "COMPLIANCE WARNING: clearance below ADA minimum.",
+  ]),
 }));
 
 describe("PlannerWorkflowPanel", () => {

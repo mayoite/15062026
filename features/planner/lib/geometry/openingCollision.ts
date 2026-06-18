@@ -1,5 +1,3 @@
-import type { Editor, TLShape, TLShapeId } from "@tldraw/editor";
-
 import {
   doorPlanSize,
   projectPointOntoSegment,
@@ -10,7 +8,6 @@ import {
   type Point2,
   type WallSegmentSpec,
 } from "@/features/planner/lib/geometry/wallOpenings";
-import type { PlannerDoorTLShape, PlannerWindowTLShape } from "@/features/planner/tldraw/shapes/tldrawShapeTypes";
 
 const END_MARGIN = 8;
 const OPENING_GAP = 6;
@@ -51,75 +48,22 @@ export function pointAlongWall(wall: WallSegmentSpec, along: number): Point2 {
   };
 }
 
-export function wallSegmentFromEditorShape(shape: TLShape): WallSegmentSpec | null {
-  if (shape.type !== "planner-wall") return null;
-  const props = shape.props as {
-    startX?: number;
-    startY?: number;
-    endX?: number;
-    endY?: number;
-    thickness?: number;
-  };
-  return {
-    id: String(shape.id),
-    start: { x: shape.x + (props.startX ?? 0), y: shape.y + (props.startY ?? 0) },
-    end: { x: shape.x + (props.endX ?? 0), y: shape.y + (props.endY ?? 0) },
-    thickness: Math.max(1, props.thickness ?? 8),
-  };
+/** Fabric-era stub — wall segments no longer come from tldraw shapes. */
+export function wallSegmentFromEditorShape(_shape: unknown): WallSegmentSpec | null {
+  return null;
 }
 
-export function openingCandidateFromShape(shape: TLShape): OpeningCandidate | null {
-  if (shape.type === "planner-door") {
-    const door = shape as PlannerDoorTLShape;
-    const { width, depth } = doorPlanSize({
-      widthMm: door.props.widthMm,
-      thicknessMm: door.props.thicknessMm ?? 40,
-    });
-    return {
-      id: String(shape.id),
-      kind: "door",
-      center: rectCenterAt(shape.x, shape.y, width, depth, shape.rotation ?? 0),
-      width,
-    };
-  }
-
-  if (shape.type === "planner-window") {
-    const window = shape as PlannerWindowTLShape;
-    const { width, depth } = windowPlanSize({
-      widthMm: window.props.widthMm,
-      frameThicknessMm: window.props.frameThicknessMm,
-    });
-    return {
-      id: String(shape.id),
-      kind: "window",
-      center: rectCenterAt(shape.x, shape.y, width, depth, shape.rotation ?? 0),
-      width,
-    };
-  }
-
+/** Fabric-era stub — openings no longer come from tldraw shapes. */
+export function openingCandidateFromShape(_shape: unknown): OpeningCandidate | null {
   return null;
 }
 
 export function collectOpeningCandidates(
-  editor: Editor,
-  wall: WallSegmentSpec,
-  excludeId?: TLShapeId | string | null,
+  _editor: null,
+  _wall: WallSegmentSpec,
+  _excludeId?: string | null,
 ): OpeningCandidate[] {
-  const maxDistance = wall.thickness / 2 + 8;
-  const ignored = excludeId ? String(excludeId) : null;
-  const candidates: OpeningCandidate[] = [];
-
-  for (const shape of editor.getCurrentPageShapes()) {
-    if (ignored && String(shape.id) === ignored) continue;
-    const candidate = openingCandidateFromShape(shape);
-    if (!candidate) continue;
-    const projection = projectPointOntoSegment(candidate.center, wall.start, wall.end);
-    if (projection.distance <= maxDistance) {
-      candidates.push(candidate);
-    }
-  }
-
-  return candidates;
+  return [];
 }
 
 export function checkOpeningPlacementOnWall(
@@ -161,3 +105,6 @@ export function checkOpeningPlacementOnWall(
 
   return { blocked: false };
 }
+
+// Re-export geometry helpers used by tests
+export { doorPlanSize, windowPlanSize, rectCenterAt };

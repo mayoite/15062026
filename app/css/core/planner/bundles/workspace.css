@@ -1,5 +1,7 @@
 @import "../planner-shell.css";
 @import "../planner-canvas-layout.css";
+@import "../fabric-canvas-workspace.css";
+@import "../fabric-library-panel.css";
 @import "../planner-chrome.css";
 @import "../planner-workflow.css";
 @import "../planner-controls.css";
@@ -9,4 +11,3 @@
 @import "../workspace.css";
 @import "../editor-chrome.css";
 @import "../planner-typography.css";
-@import "../tldraw-license-overrides.css";

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import * as catalogBlockBridge from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import * as catalogBlockBridge from "@/features/planner/catalog/catalogBlockBridge";
 import { CatalogBlockPreview } from "@/features/planner/catalog/CatalogBlockPreview";
 import { CatalogDropGhost } from "@/features/planner/catalog/CatalogDropGhost";
 import { CatalogPanel } from "@/features/planner/catalog/CatalogPanel";

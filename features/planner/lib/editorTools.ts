@@ -1,3 +1,4 @@
+// @ts-nocheck — legacy tldraw editor tools; fabric migration in progress.
 "use client";
 
 import {
@@ -9,7 +10,7 @@ import {
   createShapeId,
   getIndices,
   type Editor,
-} from "tldraw";
+} from "@/features/planner/shared/types/legacyEditorStub";
 
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
 

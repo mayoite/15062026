@@ -1,0 +1,304 @@
+/* Fabric prototype library + presets — matches scrrenshotsforgrok reference layout */
+
+.planner-workspace .pw-left-panel[data-fabric-library="true"][data-open="true"] {
+  width: 20rem;
+}
+
+.planner-workspace .pw-panel-tabs--fabric {
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.planner-workspace .pw-panel-fabric-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.planner-workspace .pw-panel-body--fabric-library {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 var(--pw-panel-pad-lg);
+}
+
+.planner-workspace .fabric-library-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: var(--space-4);
+  scrollbar-gutter: stable;
+}
+
+.planner-workspace .flp-section {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.planner-workspace .flp-section--drawer {
+  background: color-mix(in srgb, var(--surface-panel) 96%, var(--surface-soft));
+}
+
+.planner-workspace .flp-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.planner-workspace .flp-section__header h3 {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.planner-workspace .flp-tool-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+  scrollbar-width: thin;
+}
+
+.planner-workspace .flp-tool-card {
+  flex: 0 0 auto;
+  min-height: unset;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-panel) 94%, var(--color-white));
+  color: var(--text-heading);
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard),
+    color var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .flp-tool-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+.planner-workspace .flp-tool-card--active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  border-color: color-mix(in srgb, var(--color-primary) 80%, var(--color-dark-midnight-blue-800));
+  color: var(--text-inverse);
+}
+
+.planner-workspace .flp-preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.planner-workspace .flp-preset-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 0.75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-panel) 94%, var(--color-white)) 0%,
+    color-mix(in srgb, var(--surface-soft) 90%, var(--surface-panel)) 100%
+  );
+  color: var(--text-heading);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .flp-preset-card:hover {
+  transform: translateX(2px);
+  border-color: color-mix(in srgb, var(--color-primary) 26%, var(--border-soft));
+  background: var(--surface-hover);
+}
+
+.planner-workspace .flp-preset-card__title {
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.planner-workspace .flp-preset-card__meta {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.planner-workspace .flp-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.planner-workspace .flp-preview-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.planner-workspace .flp-preview-item {
+  position: relative;
+  padding: 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-panel) 94%, var(--color-white));
+  cursor: pointer;
+  transition:
+    transform var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .flp-preview-item:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--color-primary) 26%, var(--border-soft));
+  box-shadow: 0 16px 28px -24px color-mix(in srgb, var(--color-dark-midnight-blue-950) 70%, transparent);
+}
+
+.planner-workspace .flp-preview-title {
+  margin-top: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.planner-workspace .flp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.planner-workspace .flp-field input,
+.planner-workspace .flp-field select {
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel);
+  color: var(--text-heading);
+  font-size: 0.82rem;
+}
+
+.planner-workspace .flp-text-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.planner-workspace .flp-radio-row {
+  display: flex;
+  gap: 0.85rem;
+  font-size: 0.8rem;
+}
+
+.planner-workspace .flp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel);
+  color: var(--text-heading);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.planner-workspace .flp-btn--primary {
+  background: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 80%, var(--color-dark-midnight-blue-800));
+  color: var(--text-inverse);
+}
+
+.planner-workspace .flp-btn--block {
+  width: 100%;
+}
+
+/* Room presets popup (on canvas open) */
+
+.planner-workspace .frp-modal-root {
+  z-index: 60;
+}
+
+.planner-workspace .frp-preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planner-workspace .frp-preset-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 0.85rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface-panel) 94%, var(--color-white)) 0%,
+    color-mix(in srgb, var(--surface-soft) 90%, var(--surface-panel)) 100%
+  );
+  color: var(--text-heading);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--motion-fast) var(--ease-standard),
+    border-color var(--motion-fast) var(--ease-standard),
+    background-color var(--motion-fast) var(--ease-standard);
+}
+
+.planner-workspace .frp-preset-card:hover {
+  transform: translateX(2px);
+  border-color: color-mix(in srgb, var(--color-primary) 26%, var(--border-soft));
+  background: var(--surface-hover);
+}
+
+.planner-workspace .frp-preset-card__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.planner-workspace .frp-preset-card__meta {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}

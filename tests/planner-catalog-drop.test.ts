@@ -38,15 +38,14 @@ describe("catalogDrop helpers", () => {
     expect(point).toEqual({ x: 150, y: 80 });
   });
 
-  it("scales screen footprint with editor zoom", () => {
+  it("scales screen footprint from catalog dimensions", () => {
     const sample: CatalogItem = {
       ...deskItem,
       widthMm: 80,
       heightMm: 40,
     };
-    const at1 = catalogDropScreenFootprint(mockEditor(1), sample);
-    const at2 = catalogDropScreenFootprint(mockEditor(2), sample);
-    expect(at2.w).toBeGreaterThan(at1.w);
-    expect(at2.h).toBeGreaterThan(at1.h);
+    const footprint = catalogDropScreenFootprint(null, sample);
+    expect(footprint.w).toBeGreaterThan(0);
+    expect(footprint.h).toBeGreaterThan(0);
   });
 });

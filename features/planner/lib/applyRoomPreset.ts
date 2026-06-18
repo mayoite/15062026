@@ -1,67 +1,19 @@
-import type { Editor } from "tldraw";
-
 import type { RoomPreset } from "@/features/planner/catalog/roomPresets";
-import {
-  applyShapes,
-  buildRoomShape,
-  buildZoneShape,
-  type PlannerCanvasShape,
-  type PlannerRoomType,
-  type PlannerZoneType,
-} from "@/features/planner/editor/plannerShapeFactories";
-import { plannerCanvasUnits } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 
-function zoneTypeFromLabel(label: string): PlannerZoneType {
-  const normalized = label.toLowerCase();
-  if (normalized.includes("meeting") || normalized.includes("board")) return "collaborative";
-  if (normalized.includes("lounge") || normalized.includes("reception") || normalized.includes("pantry")) {
-    return "social";
-  }
-  if (normalized.includes("cabin") || normalized.includes("quiet")) return "focus";
-  return "collaborative";
-}
+const MM_PER_INCH = 25.4;
 
-function roomTypeFromPreset(preset: RoomPreset): PlannerRoomType {
-  const name = preset.name.toLowerCase();
-  if (name.includes("meeting") || name.includes("board")) return "meeting";
-  if (name.includes("conference")) return "conference";
-  return "office";
-}
+/** Apply a catalog room preset through the Fabric runtime contract. */
+export function applyRoomPreset(_editor: null, preset: RoomPreset): void {
+  const runtime = getPlannerFabricRuntime();
+  if (!runtime) return;
 
-export function buildRoomPresetShapes(
-  preset: RoomPreset,
-  origin: { x: number; y: number },
-): PlannerCanvasShape[] {
-  const width = plannerCanvasUnits(preset.widthMm);
-  const height = plannerCanvasUnits(preset.heightMm);
-  const { x: ox, y: oy } = origin;
-  const zones = preset.zones ?? [{ label: preset.name, widthMm: preset.widthMm }];
-  const isMultiZone = zones.length > 1;
-
-  const shapes: PlannerCanvasShape[] = [
-    buildRoomShape(ox, oy, width, height, preset.name, roomTypeFromPreset(preset)),
-  ];
-
-  if (isMultiZone) {
-    let xCursor = 0;
-    zones.forEach((zone, index) => {
-      const zoneWidth = plannerCanvasUnits(zone.widthMm);
-      shapes.push(
-        buildZoneShape(ox + xCursor, oy, zoneWidth, height, zone.label, zoneTypeFromLabel(zone.label)),
-      );
-      xCursor += zoneWidth;
-      if (index >= zones.length - 1) return;
-    });
-  }
-
-  return shapes;
-}
-
-export function applyRoomPreset(editor: Editor, preset: RoomPreset): void {
-  const width = plannerCanvasUnits(preset.widthMm);
-  const height = plannerCanvasUnits(preset.heightMm);
-  const center = editor.getViewportPageBounds().center;
-  const origin = { x: center.x - width / 2, y: center.y - height / 2 };
-
-  applyShapes(editor, buildRoomPresetShapes(preset, origin));
+  runtime.insertObject({
+    type: "ROOM",
+    object: {
+      title: preset.name,
+      width: Math.round(preset.widthMm / MM_PER_INCH),
+      height: Math.round(preset.heightMm / MM_PER_INCH),
+    },
+  });
 }

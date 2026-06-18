@@ -4,7 +4,7 @@ import { millimetersToCanvasUnits, readMmPerCanvasUnit } from "@/features/planne
 import {
   normalizeCatalogMm,
   plannerCanvasUnits,
-} from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+} from "@/features/planner/catalog/catalogBlockBridge";
 
 import { buildSpaceSuggestUserPrompt, SPACE_SUGGEST_SYSTEM_PROMPT } from "./prompts";
 import type { SpaceSuggestInput, SuggestedLayoutJson } from "./types";

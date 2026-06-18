@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import "@/app/css/core/planner/bundles/workspace.css";
-import "tldraw/tldraw.css";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },

@@ -12,6 +12,8 @@
   --pw-left-w: 17rem;
   --pw-right-w: 17.5rem;
   --pw-topbar-h: 3.5rem;
+  --pw-subtopbar-h: 2.75rem;
+  --pw-header-h: calc(var(--pw-topbar-h) + var(--pw-subtopbar-h));
   --pw-dock-h: 3.25rem;
   --pw-panel-pad: var(--space-3);
   --pw-panel-pad-lg: var(--space-4);
@@ -77,8 +79,87 @@
   box-shadow:
     0 1px 0 color-mix(in srgb, var(--border-soft) 70%, transparent),
     0 8px 24px -20px color-mix(in srgb, var(--text-strong) 12%, transparent);
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
-  grid-template-areas: "brand history center actions";
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas: "brand center actions";
+}
+
+.planner-workspace .pw-subtopbar-shell {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  gap: var(--space-2);
+  min-height: var(--pw-subtopbar-h);
+  padding: var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--border-soft);
+  background: color-mix(in srgb, var(--surface-soft) 72%, var(--surface-panel));
+  overflow-x: auto;
+  overflow-y: hidden;
+  z-index: 49;
+}
+
+.planner-workspace .pw-subtopbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+}
+
+.planner-workspace .pw-subtopbar--access {
+  padding: var(--space-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel);
+}
+
+.planner-workspace .pw-subtopbar--fabric {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    180deg,
+    var(--surface-panel) 0%,
+    color-mix(in srgb, var(--surface-soft) 88%, var(--surface-panel)) 100%
+  );
+}
+
+.planner-workspace .pw-subtopbar--fabric.fcw-toolbar {
+  min-height: calc(var(--pw-subtopbar-h) - var(--space-2));
+  padding: 0.08rem 0.22rem;
+  border-bottom: none;
+}
+
+.planner-workspace .pw-subtopbar--view {
+  margin-left: auto;
+  padding: var(--space-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface-panel);
+  gap: var(--space-2);
+}
+
+.planner-workspace .pw-subtopbar--view .pw-segment--compact {
+  padding: 0.1rem;
+}
+
+.planner-workspace .pw-topbar-center .pw-step-bar {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.planner-workspace .pw-topbar-center .pw-step-bar__intro,
+.planner-workspace .pw-topbar-center .pw-step-bar__intro-card,
+.planner-workspace .pw-topbar-center .pw-step-bar__steps-label {
+  display: none;
+}
+
+.planner-workspace .pw-topbar-center .pw-step-bar__steps {
+  display: flex;
+  gap: var(--space-1);
 }
 
 .planner-workspace .pw-topbar-brand {

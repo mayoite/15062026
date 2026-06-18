@@ -1,45 +1,34 @@
 /**
  * PlannerWorkspace — unified workspace planner editor shell.
  *
- * Tldraw canvas + catalog + inspector + 3D preview + AI advisor.
+ * **REPLACEMENT IN PROGRESS (2026-06-18 user directive):** tldraw (old canvas + UI) OUT.
+ * Fabric canvas + interface (new from E:\floorplan-react prototype) IN as full replacement.
+ * Combined with 3D (r3f). Old tldraw code left for reference during swap but no longer driving 2D.
+ * Finish today: functional planner with new canvas in shell, catalog placement, 3D sync.
  */
 
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type ComponentProps, type DragEvent } from "react";
 import { X } from "lucide-react";
-import type { Editor } from "tldraw";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
-import { Planner3DViewer } from "@/features/planner/3d";
-import { SharedTldrawEngine } from "@/features/planner/shared/engine/SharedTldrawEngine";
-import {
-  registerPlannerTldrawEditor,
-  unregisterPlannerTldrawEditor,
-} from "@/features/planner/tldraw/plannerTldrawEditorBridge";
-import { PLANNER_TLDRAW_SHAPE_UTILS, PLANNER_TLDRAW_TOOLS } from "@/features/planner/tldraw/plannerTldrawRegistration";
-import { isPlannerCanvasDragToolId } from "@/features/planner/tldraw/tools/rectDrag";
+import { PlannerViewer } from "@/features/planner/viewer/PlannerViewer";
 import { SplitViewLayout } from "@/features/planner/shared/components/SplitViewLayout";
-import type { PlannerViewerShape } from "@/features/planner/viewer/PlannerViewer";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
+import type { PlannerViewerShape } from "@/features/planner/viewer/PlannerViewer";
 import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
-
 import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
 import { PlannerMobileDock } from "@/features/planner/editor/PlannerMobileDock";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
-import { PlannerCanvasGrid } from "@/features/planner/editor/PlannerCanvasGrid";
-import { repairPlannerShapeUnits } from "@/features/planner/editor/repairPlannerShapeUnits";
-import type { PlannerToolId } from "@/features/planner/editor/PlannerToolRail";
-import {
-  readPlannerToolVisibilityMode,
-  writePlannerToolVisibilityMode,
-  type PlannerToolVisibilityMode,
-} from "@/features/planner/editor/plannerToolVisibility";
+import { PlannerSubTopBar } from "@/features/planner/editor/PlannerSubTopBar";
+
 import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
 import { PlannerChromeHost } from "@/features/planner/editor/chrome/PlannerChromeHost";
 import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
+import { shapePropsToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
 import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
 import {
   getDefaultPlacementCatalogItemId,
@@ -52,34 +41,23 @@ import {
 } from "@/features/planner/catalog/shapeTypeRegistry";
 import { type LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
 import {
-  catalogDropScreenFootprint,
-  centeredCatalogDropPagePoint,
-} from "@/features/planner/catalog/catalogDrop";
+  acceptsCatalogDrag,
+  readCatalogDragPayload,
+} from "@/features/planner/catalog/shapeTypeRegistry";
 import { CatalogDropFlash } from "@/features/planner/catalog/CatalogDropFlash";
 import { CatalogDropGhost } from "@/features/planner/catalog/CatalogDropGhost";
 import { BlueprintPanel } from "@/features/planner/editor/BlueprintPanel";
-import { PlannerEmptyCanvas } from "@/features/planner/ui/PlannerEmptyCanvas";
 import { useTheme } from "@/features/planner/components/WorkspaceThemeProvider";
-import { usePlannerAutosave } from "@/features/planner/hooks/usePlannerAutosave";
+import { usePlannerFabricAutosave } from "@/features/planner/hooks/usePlannerFabricAutosave";
+import {
+  useFabricPlanMetrics,
+  useFabricSelectionStatus,
+} from "@/features/planner/hooks/useFabricPlannerState";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
-import { BlueprintUnderlay } from "@/features/planner/editor/BlueprintUnderlay";
-import { CalibrationCapture } from "@/features/planner/editor/CalibrationCapture";
-import { BlueprintMoveCapture } from "@/features/planner/editor/BlueprintMoveCapture";
-import { BlueprintTraceGuideOverlay } from "@/features/planner/editor/BlueprintTraceGuideOverlay";
 import { LayerVisibilityPanel } from "@/features/planner/editor/LayerVisibilityPanel";
 import { LayerManagerPanel } from "@/features/planner/editor/LayerManagerPanel";
-import { applyLayerVisibility } from "@/features/planner/editor/layerVisibility";
-import { CanvasMeasurementOverlay } from "@/features/planner/editor/CanvasMeasurementOverlay";
-import {
-  configurePlannerCamera,
-  fitPlannerContent,
-  setDefaultPlannerCamera,
-} from "@/features/planner/editor/plannerCamera";
-import { getPageMetrics, type PlanMetrics } from "@/features/planner/editor/planMetrics";
-import { getEditorSelectionStatus } from "@/features/planner/editor/editorSelectionStatus";
 import { PlannerStatusBar } from "@/features/planner/editor/PlannerStatusBar";
 import { PlannerWorkflowPanel } from "@/features/planner/editor/PlannerWorkflowPanel";
-import { SnapIndicatorOverlay } from "@/features/planner/editor/SnapIndicatorOverlay";
 import {
   getStepLeftTab,
   getStepToolBinding,
@@ -92,16 +70,6 @@ import {
 } from "@/features/planner/editor/plannerStep";
 import { ExportModal } from "@/features/planner/editor/ExportModal";
 import {
-  applyShapes,
-  buildCatalogShape,
-  buildTemplateShapes,
-  toPlannerViewerShapes,
-} from "@/features/planner/editor/plannerShapeFactories";
-import {
-  acceptsCatalogDrag,
-  readCatalogDragPayload,
-} from "@/features/planner/catalog/shapeTypeRegistry";
-import {
   plannerUnitSystemToMeasurementUnit,
   type MeasurementUnit,
 } from "@/features/planner/lib/measurements";
@@ -110,7 +78,8 @@ import {
   type PlannerToolBinding,
 } from "@/features/planner/editor/plannerKeyboardShortcuts";
 import { PlannerSessionDialog, type PlannerSavedEntry } from "@/features/planner/ui/PlannerSessionDialog";
-import { buildPlannerDocumentFromEditor, loadPlannerDocumentIntoEditor } from "@/features/planner/lib/documentBridge";
+import { buildPlannerDocumentFromFabric } from "@/features/planner/lib/fabricDocumentBridge";
+import { loadPlannerDocumentIntoFabric } from "@/features/planner/lib/fabricDocumentBridge";
 import {
   LOCAL_CURRENT_DRAFT_ID,
   createPlannerExportPayload,
@@ -128,22 +97,129 @@ import { parsePlannerDocumentImportFile } from "@/features/planner/persistence/p
 import { hydrateCloudPlanIntoIndexedDb } from "@/features/planner/persistence/cloudPlanHydration";
 import { normalizePlannerDocument } from "@/features/planner/model";
 import { resetPlannerChromeLayout } from "@/features/planner/editor/chrome/plannerChromeStorage";
+import {
+  FloorplanProvider,
+  FabricCanvasWorkspace,
+  fabricSerializedToViewerShapes,
+  RoomPresetsOnOpen,
+  setPlannerFabricRuntime,
+  setPlannerFabricRuntimeState,
+  useFloorplan,
+} from "@/features/planner/canvas-fabric";
+
+function isEditableKeyboardTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.tagName === "INPUT"
+    || target.tagName === "TEXTAREA"
+    || target.tagName === "SELECT"
+    || target.isContentEditable
+  );
+}
+
+/** Single source of truth: Fabric canvas grid. Syncs UI store + hotkey G. */
+function FabricGridBridge() {
+  const { gridEnabled, toggleGrid } = useFloorplan();
+
+  useEffect(() => {
+    usePlannerUIStore.getState().setShowGrid(gridEnabled);
+  }, [gridEnabled]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "g" || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (isEditableKeyboardTarget(event.target)) return;
+      event.preventDefault();
+      toggleGrid();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [toggleGrid]);
+
+  return null;
+}
+
+function PlannerStatusBarWithFabricGrid(
+  props: Omit<ComponentProps<typeof PlannerStatusBar>, "showGrid" | "onToggleGrid">,
+) {
+  const { gridEnabled, toggleGrid } = useFloorplan();
+  return (
+    <PlannerStatusBar
+      {...props}
+      showGrid={gridEnabled}
+      onToggleGrid={toggleGrid}
+    />
+  );
+}
+
+// Bridge component: renders the new fabric canvas (replacement) and syncs its state to 3D (r3f combine).
+// Per user: fabric in, tldraw out for canvas/UI. This makes 2D fabric drive the 3D viewer.
+function Fabric2DWith3DSync({
+  viewMode,
+  leftPanel,
+  leftOpen,
+  leftCollapsed,
+  layersCollapsed,
+  onToggleLayersCollapsed,
+}: {
+  viewMode: "2d" | "3d" | "split";
+  leftPanel?: React.ReactNode;
+  leftOpen: boolean;
+  leftCollapsed: boolean;
+  layersCollapsed: boolean;
+  onToggleLayersCollapsed?: () => void;
+}) {
+  const { refitCanvas } = useFloorplan();
+
+  useEffect(() => {
+    if (viewMode !== "2d") return;
+    const timer = window.setTimeout(() => refitCanvas(), 80);
+    return () => window.clearTimeout(timer);
+  }, [viewMode, refitCanvas]);
+
+  return (
+    <div className="relative flex h-full min-h-0 w-full flex-col fabric-canvas-host">
+      <RoomPresetsOnOpen />
+      <FabricCanvasWorkspace
+        leftPanel={leftPanel}
+        leftOpen={leftOpen}
+        leftCollapsed={leftCollapsed}
+        layersCollapsed={layersCollapsed}
+        onToggleLayersCollapsed={onToggleLayersCollapsed}
+      />
+    </div>
+  );
+}
 
 type PlannerWorkspaceProps = {
   guestMode?: boolean;
   planId?: string;
 };
 
-const DOCUMENT_REVISION_DEBOUNCE_MS = 300;
-
-export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspaceProps) {
-  const { resolvedTheme } = useTheme();
+function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspaceProps) {
+  useTheme();
+  const {
+    editRoom,
+    endEditRoom,
+    exportDraft,
+    exportSvg,
+    exportPngBlob,
+    importDraft,
+    insertObject,
+    setLayerVisibility,
+    redoStates,
+    roomEditRedoStates,
+    roomEditStates,
+    selections,
+    states,
+  } = useFloorplan();
   const panels = usePlannerPanels();
   const {
     applyStepLayout,
     closeAll,
     isCompact,
     leftCollapsed,
+    rightCollapsed,
     leftOpen,
     leftOpenRaw,
     rightOpen,
@@ -153,6 +229,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     toggleLeft,
     toggleRight,
     toggleLeftCollapsed,
+    toggleRightCollapsed,
   } = panels;
   const [viewMode, setViewMode] = useState<"2d" | "3d" | "split">("2d");
 
@@ -160,70 +237,104 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const [isBlueprintOpen, setIsBlueprintOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isSessionOpen, setIsSessionOpen] = useState(false);
-  const [editor, setEditor] = useState<Editor | null>(null);
-  const [, setViewerShapes] = useState<PlannerViewerShape[]>([]);
-  const [activeTool, setActiveTool] = useState<PlannerToolId>("select");
-  const [activePlannerTool, setActivePlannerTool] = useState<
-    "select" | "pan" | "wall" | "room" | "door" | "window" | "furniture" | "zone" | "measure" | "eraser"
-  >("select");
-  const [shapeCount, setShapeCount] = useState(0);
+
   const [dragItem, setDragItem] = useState<CatalogItem | null>(null);
   const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(null);
   const [isCatalogOverCanvas, setIsCatalogOverCanvas] = useState(false);
   const [dropFlash, setDropFlash] = useState<{ x: number; y: number } | null>(null);
   const canvasSurfaceRef = useRef<HTMLDivElement | null>(null);
   const chromeLayerRef = useRef<HTMLDivElement | null>(null);
-  const [planMetrics, setPlanMetrics] = useState<PlanMetrics>(getPageMetrics(null));
-  const [documentRevision, setDocumentRevision] = useState(0);
-  const pendingDocumentRevisionRef = useRef(0);
-  const documentRevisionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const seenCatalogShapeIdsRef = useRef<Set<string>>(new Set());
-  const [selectionStatus, setSelectionStatus] = useState<string | null>(null);
-  const [camera, setCamera] = useState<{ x: number; y: number; z: number } | null>(null);
-  const [isCanvasDragging, setIsCanvasDragging] = useState(false);
+  const [isCanvasDragging] = useState(false);
   const [planNameOverride, setPlanNameOverride] = useState<string | null>(null);
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(planId ?? null);
   const [sessionStatusMessage, setSessionStatusMessage] = useState<string | null>(null);
   const [sessionErrorMessage, setSessionErrorMessage] = useState<string | null>(null);
   const [localDraftVersion, setLocalDraftVersion] = useState(0);
   const selectionOpenedRightPanelRef = useRef(false);
-  const [chromeResetToken, setChromeResetToken] = useState(0);
+
   const importInputRef = useRef<HTMLInputElement | null>(null);
-  const blueprint = usePlannerWorkspaceStore((s) => s.blueprint);
-  const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
   const plannerStep = usePlannerWorkspaceStore((s) => s.plannerStep);
   const setPlannerStep = usePlannerWorkspaceStore((s) => s.setPlannerStep);
   const workspaceUnitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
+  const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
   const [leftTab, setLeftTab] = useState<PlannerLeftTab>(getStepLeftTab(plannerStep));
   const [stepIntroVisible, setStepIntroVisible] = useState(false);
-  const [toolVisibilityMode, setToolVisibilityMode] = useState<PlannerToolVisibilityMode>(() =>
-    readPlannerToolVisibilityMode(),
-  );
-  const editorRef = useRef<Editor | null>(null);
-  const editorToolSyncedRef = useRef(false);
-  const showGrid = usePlannerUIStore((s) => s.showGrid);
-  const toggleGrid = usePlannerUIStore((s) => s.toggleGrid);
   const setPlannerTool = usePlannerStore((s) => s.setTool);
   const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
+  const placeCatalogIntoFabric = useCallback((item: CatalogItem) => {
+    const { widthCm, depthCm } = shapePropsToCanvasCm(item.widthMm, item.heightMm);
+    insertObject({
+      type: "GENERIC",
+      object: {
+        title: item.shortName || item.name || "Catalog Item",
+        width: widthCm,
+        height: depthCm,
+      },
+    });
+  }, [insertObject]);
+  const fabricRevisionKey = useMemo(
+    () => `${states.length}:${redoStates.length}:${roomEditStates.length}:${roomEditRedoStates.length}`,
+    [redoStates.length, roomEditRedoStates.length, roomEditStates.length, states.length],
+  );
+  const fabricSerializedDraft = useMemo(() => {
+    void fabricRevisionKey;
+    return exportDraft();
+  }, [exportDraft, fabricRevisionKey]);
+  const exportFabricDraft = useCallback(() => fabricSerializedDraft, [fabricSerializedDraft]);
   const {
     status: saveStatus,
     lastSavedAt,
     restoreSnapshot,
     retrySave,
-  } = usePlannerAutosave(editor, guestMode, planId);
+  } = usePlannerFabricAutosave(exportFabricDraft, guestMode, planId, fabricRevisionKey);
   const measurementUnit = useMemo<MeasurementUnit>(
     () => plannerUnitSystemToMeasurementUnit(workspaceUnitSystem),
     [workspaceUnitSystem],
   );
+  const planMetrics = useFabricPlanMetrics();
   const plannerStepGates = useMemo(
-    () => evaluatePlannerStepGates(editor, planMetrics),
-    [editor, planMetrics],
+    () => evaluatePlannerStepGates(null, planMetrics),
+    [planMetrics],
   );
   const disabledSteps = useMemo(
     () => getDisabledPlannerSteps(plannerStepGates),
     [plannerStepGates],
   );
+  const selectionStatus = useFabricSelectionStatus();
+
+  useEffect(() => {
+    setPlannerFabricRuntime({
+      exportDraft,
+      importDraft,
+      exportSvg,
+      exportPngBlob,
+      placeCatalogItem: placeCatalogIntoFabric,
+      insertObject,
+      setLayerVisibility,
+      editRoom,
+      endEditRoom,
+    });
+    return () => setPlannerFabricRuntime(null);
+  }, [
+    editRoom,
+    endEditRoom,
+    exportDraft,
+    exportPngBlob,
+    exportSvg,
+    importDraft,
+    insertObject,
+    placeCatalogIntoFabric,
+    setLayerVisibility,
+  ]);
+
+  useEffect(() => {
+    setPlannerFabricRuntimeState({
+      serializedDraft: fabricSerializedDraft,
+      selections,
+      layerVisible,
+    });
+  }, [fabricSerializedDraft, layerVisible, selections]);
 
   const currentDraftScope = useMemo<PlannerDraftScope>(
     () => ({ documentId: LOCAL_CURRENT_DRAFT_ID }),
@@ -249,15 +360,11 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
   const planName = planNameOverride ?? draftPlanName;
 
-  const syncViewerShapes = useCallback((instance: Editor) => {
-    setViewerShapes(toPlannerViewerShapes(instance.getCurrentPageShapes()));
-  }, []);
-
-  const applyToolBinding = useCallback((binding: PlannerToolBinding, instance?: Editor | null) => {
-    const railToolId: PlannerToolId =
-      binding.plannerTool === "furniture" ? "planner-furniture" : binding.toolId;
-    const editorToolId =
-      binding.plannerTool === "furniture" ? "planner-furniture" : binding.toolId;
+  const applyToolBinding = useCallback((binding: PlannerToolBinding) => {
+    if (binding.plannerTool === "wall" || binding.plannerTool === "room") {
+      editRoom();
+      return;
+    }
 
     if (binding.plannerTool === "furniture" && !usePlannerStore.getState().activeCatalogId) {
       const defaultCatalogId = getDefaultPlacementCatalogItemId();
@@ -265,17 +372,14 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         setActiveCatalogId(defaultCatalogId);
         recordRecentPlacement(defaultCatalogId);
       }
+      setLeftTab("library");
+      if (!leftOpen) {
+        setLeftOpen(true);
+      }
     }
 
-    setActiveTool(railToolId);
-    setActivePlannerTool(binding.plannerTool);
     setPlannerTool(binding.plannerTool);
-
-    const activeEditor = instance ?? editorRef.current;
-    if (activeEditor && activeEditor.getCurrentToolId() !== editorToolId) {
-      activeEditor.setCurrentTool(editorToolId);
-    }
-  }, [recordRecentPlacement, setActiveCatalogId, setPlannerTool]);
+  }, [editRoom, leftOpen, recordRecentPlacement, setActiveCatalogId, setLeftOpen, setPlannerTool]);
 
   const syncPlannerStep = useCallback((step: PlannerStep) => {
     setPlannerStep(step);
@@ -300,63 +404,19 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     applyStepLayout(plannerStep);
   }, [applyStepLayout, plannerStep]);
 
-  const handleToolSelect = useCallback((
-    tool: PlannerToolId,
-    plannerTool: "select" | "pan" | "wall" | "room" | "door" | "window" | "furniture" | "zone" | "measure" | "eraser",
-  ) => {
-    applyToolBinding({ toolId: tool, plannerTool });
-    if (plannerTool === "furniture") {
-      setLeftTab("library");
-      if (!leftOpen) {
-        setLeftOpen(true);
-      }
-      return;
-    }
-
-    if ((plannerTool === "wall" || plannerTool === "room") && blueprint.dataUrl) {
-      setLeftTab("blueprint");
-      return;
-    }
-
-    if (plannerTool === "measure" && !rightOpen) {
-      selectionOpenedRightPanelRef.current = false;
-    }
-  }, [applyToolBinding, blueprint.dataUrl, leftOpen, rightOpen, setLeftOpen]);
-
-  const placeCatalogItem = useCallback((item: CatalogItem, x: number, y: number) => {
-    if (!editor) return;
-    editor.createShape(
-      buildCatalogShape(item, x, y) as unknown as Parameters<Editor["createShape"]>[0],
-    );
-    recordRecentPlacement(item.id);
-    syncViewerShapes(editor);
-    const count = editor.getCurrentPageShapes().length;
-    setShapeCount(count);
-    if (count === 1) {
-      requestAnimationFrame(() => fitPlannerContent(editor));
-    }
-  }, [editor, recordRecentPlacement, syncViewerShapes]);
-
   const handleCatalogItemClick = useCallback((item: CatalogItem) => {
-    if (!editor) return;
-
     if (isFurniturePlacementCatalogItem(item)) {
-      setActiveCatalogId(item.id);
-      applyToolBinding({ toolId: "planner-furniture", plannerTool: "furniture" });
+      placeCatalogIntoFabric(item);
+      recordRecentPlacement(item.id);
       return;
     }
-
-    const existingCount = editor.getCurrentPageShapes().length;
-    const x = 220 + (existingCount % 5) * 120;
-    const y = 180 + Math.floor(existingCount / 5) * 100;
-    placeCatalogItem(item, x, y);
 
     if (isRoomCatalogShapeType(item.shapeType)) {
       applyToolBinding({ toolId: "planner-room", plannerTool: "room" });
     } else if (isCatalogShapeType(item.shapeType, PlannerCatalogShapeType.zone)) {
       applyToolBinding({ toolId: "planner-zone", plannerTool: "zone" });
     }
-  }, [applyToolBinding, editor, placeCatalogItem, setActiveCatalogId]);
+  }, [applyToolBinding, placeCatalogIntoFabric, recordRecentPlacement]);
 
   useEffect(() => {
     if (isCompact) {
@@ -377,73 +437,37 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     }
   }, [isCompact, rightOpen, selectionStatus, setRightOpen]);
 
-  const handleApplyTemplate = useCallback((template: LayoutTemplate) => {
-    if (!editor) return;
-    applyShapes(editor, buildTemplateShapes(template));
+  const handleApplyTemplate = useCallback((_template: LayoutTemplate) => {
     setIsTemplateOpen(false);
-    syncViewerShapes(editor);
-    setShapeCount(editor.getCurrentPageShapes().length);
-  }, [editor, syncViewerShapes]);
+    setSessionStatusMessage("Templates are not yet available on the fabric canvas.");
+  }, []);
 
   const buildCurrentPlannerDocument = useCallback(() => {
-    if (!editor) {
-      return normalizePlannerDocument({
-        id: activeDocumentId ?? undefined,
-        name: sanitizePlannerPlanName(planName),
-        title: sanitizePlannerPlanName(planName),
-        unitSystem: workspaceUnitSystem,
-      });
-    }
-
-    return buildPlannerDocumentFromEditor(editor, {
+    return buildPlannerDocumentFromFabric(fabricSerializedDraft, {
       documentId: activeDocumentId,
       name: sanitizePlannerPlanName(planName),
       projectName: sanitizePlannerPlanName(planName),
       unitSystem: workspaceUnitSystem === "imperial" ? "ft-in" : "mm",
     });
-  }, [activeDocumentId, editor, planName, workspaceUnitSystem]);
+  }, [activeDocumentId, fabricSerializedDraft, planName, workspaceUnitSystem]);
 
-  const scheduleDocumentRevision = useCallback(() => {
-    pendingDocumentRevisionRef.current += 1;
-    if (documentRevisionTimerRef.current) {
-      clearTimeout(documentRevisionTimerRef.current);
+  const fabric3DShapes = useMemo<PlannerViewerShape[]>(() => {
+    if (!fabricSerializedDraft) return [];
+    return fabricSerializedToViewerShapes(fabricSerializedDraft);
+  }, [fabricSerializedDraft]);
+  const shapeCount = useMemo(() => {
+    if (!fabricSerializedDraft) return 0;
+    try {
+      const state = JSON.parse(fabricSerializedDraft) as { objects?: unknown[] };
+      return state.objects?.length ?? 0;
+    } catch {
+      return 0;
     }
-    documentRevisionTimerRef.current = setTimeout(() => {
-      setDocumentRevision(pendingDocumentRevisionRef.current);
-      documentRevisionTimerRef.current = null;
-    }, DOCUMENT_REVISION_DEBOUNCE_MS);
-  }, []);
-
-  const flushDocumentRevision = useCallback(() => {
-    if (documentRevisionTimerRef.current) {
-      clearTimeout(documentRevisionTimerRef.current);
-      documentRevisionTimerRef.current = null;
-    }
-    pendingDocumentRevisionRef.current += 1;
-    setDocumentRevision(pendingDocumentRevisionRef.current);
-  }, []);
-
-  useEffect(() => () => {
-    if (documentRevisionTimerRef.current) {
-      clearTimeout(documentRevisionTimerRef.current);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (viewMode !== "2d") {
-      flushDocumentRevision();
-    }
-  }, [flushDocumentRevision, viewMode]);
-
-  const viewerDocument = useMemo(() => {
-    void documentRevision;
-    return buildCurrentPlannerDocument();
-  }, [buildCurrentPlannerDocument, documentRevision]);
+  }, [fabricSerializedDraft]);
 
   const applyPlannerDocument = useCallback((document: ReturnType<typeof normalizePlannerDocument>) => {
-    if (!editor) return false;
     const normalized = normalizePlannerDocument(document);
-    const loaded = loadPlannerDocumentIntoEditor(editor, normalized);
+    const loaded = loadPlannerDocumentIntoFabric(importDraft, normalized);
     if (!loaded) {
       setSessionErrorMessage("This planner document could not be loaded into the current workspace.");
       return false;
@@ -453,152 +477,22 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     setSessionErrorMessage(null);
     setSessionStatusMessage(`Loaded ${normalized.title ?? normalized.name}`);
     setLocalDraftVersion((value) => value + 1);
-    editor.selectNone();
     syncPlannerStep("draw");
-    setStepIntroVisible(editor.getCurrentPageShapes().length === 0);
-    flushDocumentRevision();
-    requestAnimationFrame(() => fitPlannerContent(editor));
+    setStepIntroVisible(false);
     return true;
-  }, [editor, flushDocumentRevision, setPlanNameOverride, syncPlannerStep]);
+  }, [importDraft, syncPlannerStep]);
 
-  const handleEditorMount = useCallback((instance: Editor) => {
-    editorRef.current = instance;
-    registerPlannerTldrawEditor(instance);
-    setEditor(instance);
+  useEffect(() => {
     const initialBinding = getStepToolBinding(usePlannerWorkspaceStore.getState().plannerStep);
-    const initialToolId =
-      initialBinding.plannerTool === "furniture" ? "planner-furniture" : initialBinding.toolId;
-    setActiveTool(initialToolId);
-    setActivePlannerTool(initialBinding.plannerTool);
     setPlannerTool(initialBinding.plannerTool);
-    instance.setCurrentTool(initialToolId);
-
-    configurePlannerCamera(instance);
 
     void (async () => {
       if (!guestMode && planId?.trim()) {
         await hydrateCloudPlanIntoIndexedDb(planId, guestMode);
       }
-      await restoreSnapshot(instance);
-      repairPlannerShapeUnits(instance);
-      const count = instance.getCurrentPageShapes().length;
-      setShapeCount(count);
-      syncViewerShapes(instance);
-
-      requestAnimationFrame(() => {
-        setStepIntroVisible(count === 0);
-        if (count === 0) {
-          setPlannerStep("draw");
-          setLeftTab(getStepLeftTab("draw"));
-          applyToolBinding(getStepToolBinding("draw"), instance);
-          applyStepLayout("draw");
-          instance.selectNone();
-          setDefaultPlannerCamera(instance);
-        } else {
-          setPlannerStep("draw");
-          setLeftTab(getStepLeftTab("draw"));
-          applyToolBinding(getStepToolBinding("draw"), instance);
-          applyStepLayout("draw");
-          instance.selectNone();
-          fitPlannerContent(instance);
-        }
-        syncCamera();
-      });
+      await restoreSnapshot(importDraft);
     })();
-
-    const syncDoc = () => {
-      const currentShapes = instance.getCurrentPageShapes();
-      const nextSeenIds = new Set<string>();
-      for (const shape of currentShapes) {
-        nextSeenIds.add(shape.id);
-        const props = shape.props as Record<string, unknown>;
-        const catalogId = typeof props.catalogId === "string" ? props.catalogId : null;
-        if (catalogId && !seenCatalogShapeIdsRef.current.has(shape.id)) {
-          recordRecentPlacement(catalogId);
-        }
-      }
-      seenCatalogShapeIdsRef.current = nextSeenIds;
-
-      syncViewerShapes(instance);
-      const count = currentShapes.length;
-      setShapeCount(count);
-      setPlanMetrics(getPageMetrics(instance));
-      setSelectionStatus(getEditorSelectionStatus(instance));
-      scheduleDocumentRevision();
-    };
-
-    const syncSession = () => {
-      setSelectionStatus(getEditorSelectionStatus(instance));
-    };
-
-    const syncCamera = () => {
-      const cam = instance.getCamera();
-      setCamera({ x: cam.x, y: cam.y, z: cam.z });
-    };
-
-    const syncCanvasDrag = () => {
-      setIsCanvasDragging(isPlannerCanvasDragToolId(instance.getCurrentToolId()));
-    };
-
-    syncDoc();
-    syncCamera();
-    syncSession();
-    syncCanvasDrag();
-    flushDocumentRevision();
-
-    const cleanupDoc = instance.store.listen(syncDoc, { scope: "document" });
-    const cleanupSession = instance.store.listen(syncSession, { scope: "session" });
-    const cleanupCamera = instance.store.listen(syncCamera, { scope: "session" });
-    const cleanupCanvasDrag = instance.store.listen(syncCanvasDrag, { scope: "session" });
-
-    setShapeCount(instance.getCurrentPageShapes().length);
-
-    return () => {
-      cleanupDoc();
-      cleanupSession();
-      cleanupCamera();
-      cleanupCanvasDrag();
-      setIsCanvasDragging(false);
-      unregisterPlannerTldrawEditor(instance);
-      if (editorRef.current === instance) {
-        editorRef.current = null;
-      }
-    };
-  }, [
-    applyToolBinding,
-    applyStepLayout,
-    flushDocumentRevision,
-    guestMode,
-    planId,
-    scheduleDocumentRevision,
-    setPlannerStep,
-    setPlannerTool,
-    syncViewerShapes,
-    restoreSnapshot,
-    recordRecentPlacement,
-  ]);
-
-  const handleToolVisibilityModeChange = useCallback((mode: PlannerToolVisibilityMode) => {
-    setToolVisibilityMode(mode);
-    writePlannerToolVisibilityMode(mode);
-  }, []);
-
-  useEffect(() => {
-    if (!editor) {
-      editorToolSyncedRef.current = false;
-      return;
-    }
-    if (editorToolSyncedRef.current) return;
-    editorToolSyncedRef.current = true;
-    const editorToolId =
-      activePlannerTool === "furniture" ? "planner-furniture" : activeTool;
-    editor.setCurrentTool(editorToolId);
-  }, [activePlannerTool, activeTool, editor]);
-
-  useEffect(() => {
-    if (!editor) return;
-    applyLayerVisibility(editor, layerVisible);
-  }, [editor, layerVisible]);
+  }, [guestMode, importDraft, planId, restoreSnapshot, setPlannerTool]);
 
   const clearCatalogDrag = useCallback(() => {
     setDragItem(null);
@@ -624,7 +518,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       setGhostPos({ x: event.clientX, y: event.clientY });
       const overCanvas = canvasSurfaceRef.current?.contains(event.target as Node) ?? false;
       setIsCatalogOverCanvas(overCanvas);
-      event.dataTransfer.dropEffect = overCanvas && editor ? "copy" : "none";
+      event.dataTransfer.dropEffect = overCanvas ? "copy" : "none";
     };
 
     const onDragEnd = () => {
@@ -637,7 +531,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       window.removeEventListener("dragover", onDragOver);
       window.removeEventListener("dragend", onDragEnd);
     };
-  }, [clearCatalogDrag, dragItem, editor]);
+  }, [clearCatalogDrag, dragItem]);
 
   useEffect(() => {
     if (!dropFlash) return;
@@ -648,17 +542,13 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
   const handleCanvasDragOver = useCallback((e: DragEvent) => {
     if (!acceptsCatalogDrag(e.dataTransfer)) return;
     e.preventDefault();
-    e.dataTransfer.dropEffect = editor ? "copy" : "none";
+    e.dataTransfer.dropEffect = "copy";
     setGhostPos({ x: e.clientX, y: e.clientY });
     setIsCatalogOverCanvas(true);
-  }, [editor]);
+  }, []);
 
   const handleCanvasDrop = useCallback((e: DragEvent) => {
     e.preventDefault();
-    if (!editor) {
-      clearCatalogDrag();
-      return;
-    }
     const raw = readCatalogDragPayload(e.dataTransfer);
     if (!raw) {
       clearCatalogDrag();
@@ -666,21 +556,20 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
     }
     try {
       const item = JSON.parse(raw) as CatalogItem;
-      const pagePoint = centeredCatalogDropPagePoint(editor, e.clientX, e.clientY, item);
-      placeCatalogItem(item, pagePoint.x, pagePoint.y);
+      placeCatalogIntoFabric(item);
+      recordRecentPlacement(item.id);
       setDropFlash({ x: e.clientX, y: e.clientY });
     } catch {
       // Invalid drag payload — ignore.
     } finally {
       clearCatalogDrag();
     }
-  }, [clearCatalogDrag, editor, placeCatalogItem]);
+  }, [clearCatalogDrag, placeCatalogIntoFabric, recordRecentPlacement]);
 
   const ghostFootprint = useMemo(() => {
-    void camera;
-    if (!dragItem || !editor) return null;
-    return catalogDropScreenFootprint(editor, dragItem);
-  }, [camera, dragItem, editor]);
+    if (!dragItem) return null;
+    return { w: 48, h: 32 };
+  }, [dragItem]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -691,60 +580,83 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         return;
       }
 
-      if (e.key === "g" && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        const target = e.target as HTMLElement | null;
-        if (
-          target
-          && target.tagName !== "INPUT"
-          && target.tagName !== "TEXTAREA"
-          && target.tagName !== "SELECT"
-          && !target.isContentEditable
-        ) {
-          e.preventDefault();
-          toggleGrid();
-        }
-        return;
-      }
-
       if (e.key === "Escape") {
         if (isTemplateOpen) setIsTemplateOpen(false);
       }
       if (e.ctrlKey && e.key === "Tab") {
         e.preventDefault();
-        setViewMode((prev) => prev === "2d" ? "3d" : prev === "3d" ? "split" : "2d");
+        setViewMode((prev) => (prev === "2d" ? "3d" : "2d"));
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [applyToolBinding, isTemplateOpen, toggleGrid]);
+  }, [applyToolBinding, isTemplateOpen]);
 
-  const canvas2D = (
-    <Suspense fallback={<PlannerSkeleton />}>
-      <div className="relative w-full h-full">
-        <BlueprintUnderlay camera={camera} />
-        <SharedTldrawEngine
-          onMount={handleEditorMount}
-          shapeUtils={PLANNER_TLDRAW_SHAPE_UTILS}
-          tools={PLANNER_TLDRAW_TOOLS}
-        />
-        <BlueprintMoveCapture editor={editor} />
-        <CalibrationCapture editor={editor} />
-      </div>
-    </Suspense>
+  const plannerLeftPanel = useMemo(
+    () => (
+      <PlannerLeftPanel
+        guestMode={guestMode}
+        plannerStep={plannerStep}
+        panelOpen={leftOpen}
+        panelCollapsed={!isCompact && leftCollapsed}
+        showPanelToggle={leftOpen}
+        onTogglePanel={toggleLeft}
+        onToggleCollapsed={!isCompact ? toggleLeftCollapsed : undefined}
+        activeTab={leftTab}
+        onTabChange={setLeftTab}
+        onItemClick={handleCatalogItemClick}
+        onDragStart={handleCatalogDragStart}
+        onDragEnd={handleCatalogDragEnd}
+        unitSystem={measurementUnit}
+      />
+    ),
+    [
+      guestMode,
+      plannerStep,
+      leftOpen,
+      leftCollapsed,
+      isCompact,
+      leftTab,
+      measurementUnit,
+      handleCatalogItemClick,
+      handleCatalogDragStart,
+      handleCatalogDragEnd,
+      toggleLeft,
+      toggleLeftCollapsed,
+    ],
+  );
+
+  // REPLACEMENT: fabric canvas as the 2D engine (tldraw legacy commented/removed from drive path)
+  // Combined with 3D: fabric state drives viewerDocument for r3f meshes.
+  const canvas2D = useMemo(
+    () => (
+      <Fabric2DWith3DSync
+        viewMode={viewMode}
+        leftPanel={plannerLeftPanel}
+        leftOpen={viewMode === "2d" ? leftOpen : false}
+        leftCollapsed={viewMode === "2d" && !isCompact && leftCollapsed}
+        layersCollapsed={viewMode === "2d" && !isCompact && rightCollapsed}
+        onToggleLayersCollapsed={viewMode === "2d" && !isCompact ? toggleRightCollapsed : undefined}
+      />
+    ),
+    [
+      viewMode,
+      plannerLeftPanel,
+      leftOpen,
+      leftCollapsed,
+      rightCollapsed,
+      isCompact,
+      toggleRightCollapsed,
+    ],
   );
 
   const canvas3D = (
     <Suspense fallback={<PlannerSkeleton />}>
-      <Planner3DViewer document={viewerDocument} className="h-full min-h-0" />
+      <div className="pw-viewer-host h-full min-h-0 w-full">
+        <PlannerViewer viewMode="3d" shapes={fabric3DShapes} />
+      </div>
     </Suspense>
   );
-
-  const handleCanvasReset = useCallback(() => {
-    if (!editor) return;
-    setShapeCount(0);
-    setPlanMetrics(getPageMetrics(editor));
-    syncViewerShapes(editor);
-  }, [editor, syncViewerShapes]);
 
   const localDraft = useMemo(() => {
     void localDraftVersion;
@@ -979,7 +891,6 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
   const handleResetChromeLayout = useCallback(() => {
     resetPlannerChromeLayout();
-    setChromeResetToken((value) => value + 1);
     setSessionStatusMessage("Planner chrome layout reset.");
   }, []);
 
@@ -995,17 +906,32 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
       <PlannerTopBar
         guestMode={guestMode}
         planName={planName}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
+        plannerStep={plannerStep}
+        disabledSteps={disabledSteps}
+        onPlannerStepChange={handlePlannerStepChange}
         saveStatus={saveStatus}
         lastSavedAt={lastSavedAt}
         onRetrySave={retrySave}
         onOpenSession={() => setIsSessionOpen(true)}
+        onSaveDraft={handleSaveDraft}
+        onImport={handleImportRequest}
         onOpenTemplates={() => setIsTemplateOpen(true)}
         onOpenAi={handleOpenAiAssist}
-        editor={editor}
+      />
+
+      <PlannerSubTopBar
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        leftOpen={leftOpen}
+        rightOpen={rightOpen}
+        leftCollapsed={leftCollapsed}
+        rightCollapsed={rightCollapsed}
+        onToggleLeft={handleAccessLeftToggle}
+        onToggleRight={toggleRight}
+        onToggleLeftCollapsed={toggleLeftCollapsed}
+        onToggleRightCollapsed={toggleRightCollapsed}
+        onResetLayout={handleResetChromeLayout}
         onOpenExport={() => setIsExportOpen(true)}
-        onCanvasReset={handleCanvasReset}
       />
 
       <div
@@ -1013,6 +939,7 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         data-step={plannerStep}
         data-left-open={leftOpen || undefined}
         data-left-collapsed={!isCompact && leftCollapsed ? true : undefined}
+        data-right-collapsed={!isCompact && rightCollapsed ? true : undefined}
         data-canvas-dragging={isCanvasDragging || undefined}
       >
         {isCompact && (leftOpenRaw || rightOpenRaw) ? (
@@ -1026,27 +953,10 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
 
         <section className="pw-canvas-stage">
           <main className="pw-canvas-area" aria-label="Workspace canvas">
-            <div className="pw-canvas-body">
+            <div className="pw-canvas-body" data-view-mode={viewMode}>
+              {viewMode !== "2d" ? plannerLeftPanel : null}
               <div ref={chromeLayerRef} className="pw-canvas-chrome-layer">
-                <PlannerChromeHost
-                  layerRef={chromeLayerRef}
-                  isCompact={isCompact}
-                  plannerStep={plannerStep}
-                  disabledSteps={disabledSteps}
-                  activeTool={activeTool}
-                  activePlannerTool={activePlannerTool}
-                  toolVisibilityMode={toolVisibilityMode}
-                  leftOpen={leftOpen}
-                  rightOpen={rightOpen}
-                  leftCollapsed={leftCollapsed}
-                  resetToken={chromeResetToken}
-                  onStepChange={handlePlannerStepChange}
-                  onToolSelect={handleToolSelect}
-                  onToggleLeft={handleAccessLeftToggle}
-                  onToggleRight={toggleRight}
-                  onToggleLeftCollapsed={toggleLeftCollapsed}
-                  onResetLayout={handleResetChromeLayout}
-                />
+                <PlannerChromeHost />
               </div>
 
               <div
@@ -1056,68 +966,34 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
                 onDragOver={handleCanvasDragOver}
                 onDrop={handleCanvasDrop}
               >
-                <div
-                  className={`pw-canvas-engine pw-tldraw-container ${resolvedTheme === "dark" ? "tl-theme__dark" : "tl-theme__light"}`}
-                >
+                <div className="pw-canvas-engine pw-fabric-container flex h-full min-h-0 w-full flex-col">
                   <SplitViewLayout
                     view={viewMode}
                     children2D={canvas2D}
                     children3D={canvas3D}
                   />
                 </div>
-                <PlannerCanvasGrid editor={editor} visible={showGrid} />
-                <BlueprintTraceGuideOverlay
-                  activePlannerTool={activePlannerTool}
-                  blueprintLoaded={Boolean(blueprint.dataUrl)}
-                  underlayVisible={layerVisible.underlay}
-                  calibrated={Boolean(blueprint.mmPerUnit)}
-                  calibrating={blueprint.calibrating}
-                  interactionMode={blueprint.interactionMode}
-                />
-                <SnapIndicatorOverlay editor={editor} />
-                <CanvasMeasurementOverlay editor={editor} unitSystem={measurementUnit} />
-                {shapeCount === 0
-                  && (activePlannerTool === "select" || activePlannerTool === "pan") && (
-                  <PlannerEmptyCanvas
-                    guestMode={guestMode}
-                    onDrawWalls={() => handleToolSelect("planner-wall", "wall")}
-                    onOpenTemplates={() => setIsTemplateOpen(true)}
-                    onImportBlueprint={() => setIsBlueprintOpen(true)}
-                  />
-                )}
               </div>
             </div>
-            <PlannerStatusBar
-              metrics={planMetrics}
-              selectionStatus={selectionStatus}
-              showGrid={showGrid}
-              unitSystem={workspaceUnitSystem}
-              snapStatusLabel="Pending"
-              onToggleGrid={toggleGrid}
-              toolVisibilityMode={toolVisibilityMode}
-              onToolVisibilityModeChange={handleToolVisibilityModeChange}
-            />
+            {viewMode !== "2d" ? (
+              <PlannerStatusBarWithFabricGrid
+                metrics={planMetrics}
+                selectionStatus={selectionStatus}
+                unitSystem={workspaceUnitSystem}
+                snapStatusLabel="Pending"
+              />
+            ) : null}
           </main>
         </section>
 
-        <PlannerLeftPanel
-          guestMode={guestMode}
-          editor={editor}
-          plannerStep={plannerStep}
-          panelOpen={leftOpen}
-          panelCollapsed={!isCompact && leftCollapsed}
-          showPanelToggle={leftOpen}
-          onTogglePanel={toggleLeft}
-          onToggleCollapsed={!isCompact ? toggleLeftCollapsed : undefined}
-          activeTab={leftTab}
-          onTabChange={setLeftTab}
-          onItemClick={handleCatalogItemClick}
-          onDragStart={handleCatalogDragStart}
-          onDragEnd={handleCatalogDragEnd}
-          unitSystem={measurementUnit}
-        />
-
-        <aside className="pw-right-panel" data-open={rightOpen} data-step={plannerStep} data-selection={selectionStatus ? "active" : undefined}>
+        <aside
+          className="pw-right-panel"
+          data-open={viewMode !== "2d" && rightOpen}
+          data-collapsed={!isCompact && rightCollapsed ? true : undefined}
+          data-step={plannerStep}
+          data-selection={selectionStatus ? "active" : undefined}
+          hidden={viewMode === "2d"}
+        >
           {isCompact ? (
             <PlannerStepBar
               current={plannerStep}
@@ -1128,7 +1004,6 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
             />
           ) : null}
           <PlannerWorkflowPanel
-            editor={editor}
             metrics={planMetrics}
             step={plannerStep}
             onStepChange={handlePlannerStepChange}
@@ -1137,9 +1012,9 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
               setIsExportOpen(true);
             }}
           />
-          <PropertiesInspector editor={editor} step={plannerStep} />
-          {plannerStep === "review" ? <LayerVisibilityPanel editor={editor} /> : null}
-          {plannerStep === "review" ? <LayerManagerPanel editor={editor} unitSystem={workspaceUnitSystem} /> : null}
+          <PropertiesInspector step={plannerStep} />
+          {plannerStep === "review" ? <LayerVisibilityPanel /> : null}
+          {plannerStep === "review" ? <LayerManagerPanel unitSystem={workspaceUnitSystem} /> : null}
         </aside>
 
         {isCompact && (
@@ -1188,17 +1063,16 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
           y={ghostPos.y}
           width={ghostFootprint.w}
           height={ghostFootprint.h}
-          valid={isCatalogOverCanvas && Boolean(editor)}
+          valid={isCatalogOverCanvas}
         />
       ) : null}
 
       {dropFlash ? <CatalogDropFlash x={dropFlash.x} y={dropFlash.y} /> : null}
 
-      {editor && isExportOpen && (
+      {isExportOpen && (
         <ExportModal
           isOpen={isExportOpen}
           onClose={() => setIsExportOpen(false)}
-          editor={editor}
         />
       )}
 
@@ -1218,5 +1092,14 @@ export function PlannerWorkspace({ guestMode = false, planId }: PlannerWorkspace
         </div>
       )}
     </div>
+  );
+}
+
+export function PlannerWorkspace(props: PlannerWorkspaceProps) {
+  return (
+    <FloorplanProvider>
+      <FabricGridBridge />
+      <PlannerWorkspaceContent {...props} />
+    </FloorplanProvider>
   );
 }

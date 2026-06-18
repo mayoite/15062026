@@ -1,14 +1,28 @@
 import type { MeshFamily } from "../mesh-contract";
 import type { CatalogItem, CatalogItemDimensions } from "./types";
 
+import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
+
 const PLANNER_CATALOG_JSON_PATH = "/planner-app/data/planner-catalog.v1.json";
+
+function workspaceCatalogFallback(): CatalogItem[] {
+  return normalizeCatalogBatch(
+    PLANNER_CATALOG_ITEMS.map((item) => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      width_mm: item.widthMm,
+      height_mm: item.heightMm,
+      depth_mm: item.depthMm,
+      seat_count: item.seatCount,
+    })),
+  );
+}
 
 export async function loadPlannerCatalog(): Promise<CatalogItem[]> {
   const res = await fetch(PLANNER_CATALOG_JSON_PATH);
   if (!res.ok) {
-    throw new Error(
-      `Failed to load planner catalog (${res.status} ${res.statusText})`,
-    );
+    return workspaceCatalogFallback();
   }
   const json: unknown = await res.json();
   const raw = Array.isArray(json)

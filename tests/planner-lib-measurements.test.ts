@@ -1,4 +1,4 @@
-import { createShapeId, type Editor } from "tldraw";
+import { createShapeId, type Editor } from "@/features/planner/shared/types/legacyEditorStub";
 import { describe, expect, it, vi } from "vitest";
 
 import {

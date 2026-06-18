@@ -1,48 +1,46 @@
-import { describe, expect, it, vi } from "vitest";
-import type { Editor } from "tldraw";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { runPlannerComplianceCheck } from "@/features/planner/lib/compliance";
-
-type Bounds = { minX: number; minY: number; maxX: number; maxY: number };
-
-function makeShape(id: string, isPlannerItem = true) {
-  return { id, meta: { isPlannerItem }, type: "geo" };
-}
-
-function makeEditor(boundsById: Record<string, Bounds | null>): Editor {
-  return {
-    getShapePageBounds: vi.fn((shape: { id: string }) => boundsById[shape.id] ?? null),
-  } as unknown as Editor;
-}
+import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
 
 describe("planner compliance", () => {
-  it("ignores non-planner shapes and missing bounds", () => {
-    const shapes = [makeShape("wall", false), makeShape("desk-1"), makeShape("desk-2")];
-    const editor = makeEditor({ "desk-1": null, "desk-2": { minX: 0, minY: 0, maxX: 100, maxY: 80 } });
+  afterEach(() => {
+    resetFabricRuntimeState();
+  });
 
-    expect(runPlannerComplianceCheck(editor, shapes)).toEqual([]);
+  it("ignores non-furniture objects and empty drafts", () => {
+    seedFabricRuntime({
+      objects: [
+        { name: "WALL:1", left: 0, top: 0, width: 100, height: 4 },
+        { name: "GENERIC:desk-2", left: 0, top: 0, width: 100, height: 80 },
+      ],
+    });
+
+    expect(runPlannerComplianceCheck(null, [])).toEqual([]);
   });
 
   it("reports overlapping workstations as critical warnings", () => {
-    const shapes = [makeShape("desk-1"), makeShape("desk-2")];
-    const editor = makeEditor({
-      "desk-1": { minX: 0, minY: 0, maxX: 100, maxY: 80 },
-      "desk-2": { minX: 50, minY: 20, maxX: 150, maxY: 100 },
+    seedFabricRuntime({
+      objects: [
+        { name: "GENERIC:desk-1", left: 0, top: 0, width: 100, height: 80 },
+        { name: "GENERIC:desk-2", left: 50, top: 20, width: 100, height: 80 },
+      ],
     });
 
-    expect(runPlannerComplianceCheck(editor, shapes)).toEqual([
-      "CRITICAL: 1 workstation(s) are severely overlapping.",
+    expect(runPlannerComplianceCheck(null, [])).toEqual([
+      "CRITICAL: GENERIC:desk-1 overlaps GENERIC:desk-2",
     ]);
   });
 
   it("reports tight ADA clearances between separated modules", () => {
-    const shapes = [makeShape("desk-1"), makeShape("desk-2")];
-    const editor = makeEditor({
-      "desk-1": { minX: 0, minY: 0, maxX: 100, maxY: 80 },
-      "desk-2": { minX: 105, minY: 0, maxX: 205, maxY: 80 },
+    seedFabricRuntime({
+      objects: [
+        { name: "GENERIC:desk-1", left: 0, top: 0, width: 100, height: 80 },
+        { name: "GENERIC:desk-2", left: 105, top: 0, width: 100, height: 80 },
+      ],
     });
 
-    expect(runPlannerComplianceCheck(editor, shapes)).toEqual([
+    expect(runPlannerComplianceCheck(null, [])).toEqual([
       "COMPLIANCE WARNING: 1 module boundary clearances are under the strict 900mm ADA minimum.",
     ]);
   });

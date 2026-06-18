@@ -8,9 +8,8 @@ import {
   PLANNER_TOOL_VISIBILITY_MODES,
   type PlannerToolVisibilityMode,
 } from "@/features/planner/editor/plannerToolVisibility";
-import { PLANNER_TLDRAW_TOOLS } from "@/features/planner/tldraw/plannerTldrawRegistration";
-/** Bumped when planner tldraw registration changes — visible in dev status bar only. */
-const PLANNER_TLDRAW_BUILD_STAMP = "2026-06-16-tools";
+/** Fabric canvas build stamp — visible in dev status bar only. */
+const PLANNER_FABRIC_BUILD_STAMP = "2026-06-18-fabric";
 import type { PlanMetrics } from "./planMetrics";
 
 function fmtSqm(value: number): string {
@@ -83,7 +82,7 @@ export function PlannerStatusBar({
           className="pw-status-dev-build"
           title="Confirms this browser loaded the local planner tool registration bundle"
         >
-          SDK {PLANNER_TLDRAW_BUILD_STAMP} · {PLANNER_TLDRAW_TOOLS.length} tools
+          Fabric {PLANNER_FABRIC_BUILD_STAMP}
         </span>
       ) : null}
 

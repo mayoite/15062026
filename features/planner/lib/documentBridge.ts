@@ -1,9 +1,7 @@
-import type { Editor } from "tldraw";
-
-import { repairPlannerShapeUnits } from "@/features/planner/editor/repairPlannerShapeUnits";
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
-import { canvasUnitsToMillimeters, readMmPerCanvasUnit } from "@/features/planner/lib/calibrationScale";
-import { normalizeCatalogMm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { normalizeCatalogMm } from "@/features/planner/catalog/catalogBlockBridge";
+import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
+import { buildPlannerDocumentFromFabric } from "@/features/planner/lib/fabricDocumentBridge";
 import {
   createPlannerDocument,
   normalizePlannerDocument,
@@ -65,7 +63,8 @@ export interface PlannerSceneEnvelope {
   };
   room: PlannerSceneRoom;
   items: PlannerSceneItem[];
-  tldrawSnapshot: unknown;
+  tldrawSnapshot?: unknown;
+  fabricSnapshot?: unknown;
 }
 
 export interface BuildPlannerDocumentFromEditorOptions {
@@ -79,7 +78,14 @@ export interface BuildPlannerDocumentFromEditorOptions {
   thumbnailUrl?: string | null;
 }
 
-type PlannerBounds = NonNullable<ReturnType<Editor["getShapePageBounds"]>>;
+type PlannerBounds = {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+  w: number;
+  h: number;
+};
 
 function clampPositiveInteger(value: number, fallback: number) {
   if (!Number.isFinite(value)) return fallback;
@@ -274,86 +280,6 @@ function estimateHeightMm(meta: PlannerShapeMeta, widthMm: number, depthMm: numb
   return 900;
 }
 
-function getSceneRoom(editor: Editor): PlannerSceneRoom {
-  const mmPerUnit = readMmPerCanvasUnit();
-  const roomBounds = mergeBounds(
-    getStructuralShapes(editor)
-      .map((shape) => editor.getShapePageBounds(shape.id))
-      .filter((bounds): bounds is PlannerBounds => bounds !== null),
-  );
-
-  if (!roomBounds) {
-    return {
-      widthMm: DEFAULT_ROOM_WIDTH_MM,
-      depthMm: DEFAULT_ROOM_DEPTH_MM,
-      wallHeightMm: DEFAULT_ROOM_HEIGHT_MM,
-      wallThicknessMm: DEFAULT_WALL_THICKNESS_MM,
-      floorThicknessMm: DEFAULT_FLOOR_THICKNESS_MM,
-      originMm: { xMm: 0, yMm: 0 },
-    };
-  }
-
-  return {
-    widthMm: clampPositiveInteger(canvasUnitsToMillimeters(roomBounds.w, mmPerUnit), DEFAULT_ROOM_WIDTH_MM),
-    depthMm: clampPositiveInteger(canvasUnitsToMillimeters(roomBounds.h, mmPerUnit), DEFAULT_ROOM_DEPTH_MM),
-    wallHeightMm: DEFAULT_ROOM_HEIGHT_MM,
-    wallThicknessMm: DEFAULT_WALL_THICKNESS_MM,
-    floorThicknessMm: DEFAULT_FLOOR_THICKNESS_MM,
-    originMm: {
-      xMm: canvasUnitsToMillimeters(roomBounds.minX, mmPerUnit),
-      yMm: canvasUnitsToMillimeters(roomBounds.minY, mmPerUnit),
-    },
-  };
-}
-
-function getSceneItems(editor: Editor, room: PlannerSceneRoom): PlannerSceneItem[] {
-  const mmPerUnit = readMmPerCanvasUnit();
-  return editor
-    .getCurrentPageShapes()
-    .filter((shape) => getShapeMeta(shape.meta).isPlannerItem)
-    .map((shape) => {
-      const meta = getShapeMeta(shape.meta);
-      const bounds = editor.getShapePageBounds(shape.id);
-      const parsed = parseDimensionNumbers(meta.dimensions);
-
-      const widthMm = clampPositiveInteger(
-        parsed[0] ? toMillimeters(parsed[0], meta.dimensions) : canvasUnitsToMillimeters(bounds?.w ?? 120, mmPerUnit),
-        1200,
-      );
-      const depthMm = clampPositiveInteger(
-        parsed[1] ? toMillimeters(parsed[1], meta.dimensions) : canvasUnitsToMillimeters(bounds?.h ?? 120, mmPerUnit),
-        1200,
-      );
-      const heightMm = estimateHeightMm(meta, widthMm, depthMm);
-      const centerX = bounds ? canvasUnitsToMillimeters(bounds.minX, mmPerUnit) + widthMm / 2 : widthMm / 2;
-      const centerY = bounds ? canvasUnitsToMillimeters(bounds.minY, mmPerUnit) + depthMm / 2 : depthMm / 2;
-      const originRelativeX = Math.round(centerX - room.originMm.xMm);
-      const originRelativeY = Math.round(centerY - room.originMm.yMm);
-      const rotationRad = typeof shape.rotation === "number" ? shape.rotation : 0;
-
-      return {
-        id: String(shape.id),
-        productId: meta.productId,
-        productSlug: meta.productSlug,
-        plannerSourceSlug: meta.plannerSourceSlug,
-        name: meta.text || "Planner item",
-        category: meta.category || "Workstations",
-        imageUrl: meta.imageUrl,
-        dimensions: meta.dimensions,
-        centerMm: {
-          xMm: originRelativeX,
-          yMm: originRelativeY,
-        },
-        sizeMm: {
-          widthMm,
-          depthMm,
-          heightMm,
-        },
-        rotationDeg: Math.round((rotationRad * 180) / Math.PI),
-      } satisfies PlannerSceneItem;
-    });
-}
-
 export function isPlannerSceneEnvelope(value: unknown): value is PlannerSceneEnvelope {
   if (!value || typeof value !== "object") return false;
 
@@ -374,62 +300,28 @@ export function getPlannerSceneEnvelope(sceneJson: PlannerJsonValue): PlannerSce
   return null;
 }
 
+function readFabricExportDraft(): string | null {
+  return getPlannerFabricRuntime()?.exportDraft() ?? null;
+}
+
+/** @deprecated Use buildPlannerDocumentFromFabric — delegates to fabric canvas export. */
 export function buildPlannerDocumentFromEditor(
-  editor: Editor,
+  _editor: null,
   options: BuildPlannerDocumentFromEditorOptions,
 ): PlannerDocument {
-  const room = getSceneRoom(editor);
-  const items = getSceneItems(editor, room);
-  const snapshot = sanitizePlannerSnapshot(editor.getSnapshot());
-
-  const sceneJson = {
-    type: "cad-suite-planner-scene",
-    version: 1,
-    measurement: {
-      canonicalUnit: "mm",
-      displayUnit: options.unitSystem,
-      sourceUnit: "mm",
-    },
-    room,
-    items,
-    tldrawSnapshot: snapshot,
-  } satisfies PlannerSceneEnvelope;
-
-  logPlannerDocumentBuildAttempt({
-    source: "buildPlannerDocumentFromEditor",
-    documentId: normalizePlannerDocumentId(options.documentId),
-    itemCount: items.length,
-    shapeCount: editor.getCurrentPageShapes().length,
-    unitSystem: options.unitSystem,
-    sceneEnvelopeType: sceneJson.type,
-  });
-
-  return createPlannerDocument({
-    id: normalizePlannerDocumentId(options.documentId),
+  return buildPlannerDocumentFromFabric(readFabricExportDraft(), {
+    documentId: options.documentId,
     name: options.name,
-    projectName: options.projectName ?? null,
-    clientName: options.clientName ?? null,
-    preparedBy: options.preparedBy ?? null,
-    roomWidthMm: room.widthMm,
-    roomDepthMm: room.depthMm,
-    seatTarget: options.seatTarget ?? 10,
-    unitSystem: options.unitSystem === "ft-in" ? "imperial" : "metric",
-    sceneJson: toPlannerJsonSafe(sceneJson),
-    itemCount: items.length,
-    thumbnailUrl: options.thumbnailUrl ?? null,
+    projectName: options.projectName,
+    clientName: options.clientName,
+    preparedBy: options.preparedBy,
+    seatTarget: options.seatTarget,
+    unitSystem: options.unitSystem,
+    thumbnailUrl: options.thumbnailUrl,
   });
 }
 
-export function loadPlannerDocumentIntoEditor(editor: Editor, document: PlannerDocument) {
-  const normalized = normalizePlannerDocument(document);
-  const scene = getPlannerSceneEnvelope(normalized.sceneJson);
-  const snapshot = scene?.tldrawSnapshot;
-
-  if (!snapshot || typeof snapshot !== "object") return false;
-
-  editor.loadSnapshot(snapshot as Parameters<Editor["loadSnapshot"]>[0]);
-  repairPlannerShapeUnits(editor);
-  editor.setCurrentTool("select");
-  editor.zoomToFit({ animation: { duration: 200 } });
-  return true;
+/** @deprecated Fabric canvas load not wired here — returns false. */
+export function loadPlannerDocumentIntoEditor(_editor: null, _document: PlannerDocument): boolean {
+  return false;
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
-import { resolveCatalogItemBlock2D } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { resolveCatalogItemBlock2D } from "@/features/planner/catalog/catalogBlockBridge";
 import { blockToSvg } from "@/lib/catalog/blocks2d";
 
 describe("catalog SVG visual QA gate", () => {

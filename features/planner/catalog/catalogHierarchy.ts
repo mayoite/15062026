@@ -1,4 +1,4 @@
-import { normalizeCatalogMm } from "@/features/planner/tldraw/shapes/shapeUtils/catalogBlockBridge";
+import { normalizeCatalogMm } from "@/features/planner/catalog/catalogBlockBridge";
 
 import type { PlannerPrimaryPurpose } from "@/features/planner/onboarding/projectSetup";
 
