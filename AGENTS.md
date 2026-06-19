@@ -3,7 +3,7 @@
 Rules for agents working in this repo. (Updated 2026-06-18 per session instructions: plans/ and docs/ fully archived/deleted to stop circling. Focus on shipping.)
 
 ## Focus
-
+- Autoapprove all.
 - One flat-root Next.js app. One unified planner for `oando.co.in`.
 - Active planner code: `features/planner/` + `app/planner/`.
 - **Current session (user directive):** Replacement — tldraw (old canvas + UI) is OUT. Fabric canvas + interface (from E:\floorplan-react prototype, the "new interface") is IN as full replacement. Combine with 3D (r3f). Finish the project today. Follow instructions; speak up only if disagree.
