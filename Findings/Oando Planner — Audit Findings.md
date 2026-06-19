@@ -1,0 +1,160 @@
+# Oando Planner — Audit Findings (2026-06-19)
+
+**Scope:** `features/planner/` + `app/planner/` + `app/css/core/planner/`
+**Baseline:** `npm run typecheck` ✓ | `npm run lint` ✓ | `npm run test` ✗ (3 failures)
+
+---
+
+## 1. Build & Quality Gates
+
+| Gate | Status | Evidence |
+|---|---|---|
+| TypeScript (tsc) | ✅ PASS | `tsc -p tsconfig.json --noEmit` exits 0 |
+| ESLint | ✅ PASS | `--max-warnings=0`, no errors across `app components features lib tests` |
+| Unit Tests | ⚠️ PARTIAL | 3 failed files, 1 worker error, 903/906 tests pass |
+| Production Build | ⚠️ UNCONFIRMED | `next build` not executed in this audit |
+
+---
+
+## 2. Critical Runtime Defects
+
+### 2.1 Missing CSS Utility Classes (UI Breakage Risk)
+
+The following Tailwind CSS utilities are referenced in active code but **do not exist** in any `@utility` declaration:
+
+- `typ-caption` — used in `Planner3DViewer.tsx` (7×), `PlannerSessionDialog.tsx` (18×), `ProjectSetupStep.tsx` (5×), `MobileDrawerSheet.tsx` (1×)
+- `typ-caption-lg` — used in `Planner3DViewer.tsx` (4×), `PlannerSessionDialog.tsx` (12×), `ProjectSetupStep.tsx` (5×)
+- `planner-viewer-chip` — used in `Planner3DViewer.tsx` (2×)
+- `planner-viewer-surface` — used in `Planner3DViewer.tsx` (3×)
+- `planner-viewer-chip-active` — used in `Planner3DViewer.tsx` (1×)
+
+**Impact:** These are used inside 3D viewer labels, overlays, and session dialog chrome. Will render as unstyled text in production (no font-size, tracking, or padding rules applied).
+
+**Root cause:** These classes were defined in the archived `archive/features/oando-planner/3d/Planner3DViewer.tsx` and `archive/app/oando-planner/styles/type.css` but were never migrated to the active token system under `app/css/core/typography/type.css`.
+
+### 2.2 Missing Module Imports (Test Failures)
+
+Two modules are imported by tests but **do not exist** at the expected paths:
+
+- `@/features/planner/onboarding/onboardingcoach` — imported by `tests/planner-onboarding-onboardingcoach.test.tsx`
+  - Actual file: `features/planner/onboarding/OnboardingCoach.tsx` (PascalCase)
+  - Import path uses lowercase: `onboardingcoach` (case-sensitive mismatch on Linux)
+- `@/features/planner/shared/document/documentbridge` — imported by `tests/planner-shared-document-documentbridge.test.tsx`
+  - Actual file: `features/planner/shared/document/documentBridge.ts` (camelCase)
+  - Import path uses lowercase: `documentbridge` (case-sensitive mismatch on Linux)
+
+**Impact:** Both tests fail on Linux/CI with `Failed to resolve import` errors.
+
+### 2.3 Export Actions Test Failure
+
+`tests/planner-editor-exportActions.test.ts` fails with a mock resolution error against `@/features/planner/document/plannerDocumentBridge`. The mock returns a shapeless object `{ version: 1, shapes: [] }` but `buildExportMeta` expects furniture dimensions from the Fabric snapshot, causing a mismatch.
+
+---
+
+## 3. Architecture — Legacy Surface Contamination
+
+### 3.1 tldraw Residue (Active Code)
+
+While the AGENTS.md directive says "tldraw is OUT", the following active files still contain tldraw references:
+
+| File | Line | Content |
+|---|---|---|
+| `features/planner/hooks/usePlannerWorkspace.ts` | 294 | `// text and arrow map directly to tldraw native tools` |
+| `features/planner/hooks/usePlannerWorkspace.ts` | 271 | `editor?.getSelectedShapeIds()` — tldraw Editor API |
+| `features/planner/lib/featureFlags.ts` | 426 | tldraw flag mention |
+| `features/planner/lib/documentBridge.ts` | 53 | `tldrawSnapshot?: unknown` in PlannerSceneEnvelope |
+| `features/planner/lib/geometry/openingCollision.ts` | 51,56 | `/** Fabric-era stub — wall segments no longer come from tldraw shapes. */` |
+| `features/planner/lib/geometry/wallOpenings.ts` | 6,250 | `tldraw` in comments / types |
+| `features/planner/portal/PortalPlanPageView.tsx` | 115 | tldraw import path |
+| `features/planner/model/plannerIdentity.ts` | 2,36,37,51 | `engine: "tldraw"` still in identity model |
+| `features/planner/store/plannerTypes.ts` | 215 | tldraw type reference |
+| `features/planner/catalog/placementCatalogDefaults.ts` | 1 | tldraw import comment |
+| `features/planner/ai/prompts.ts` | 87 | tldraw mention in prompt |
+| `features/planner/lib/plannerSvgExportColors.ts` | 7,46 | tldraw color mapping |
+
+**Impact:** Confuses new developers, risks accidental tldraw re-introduction, bloats bundle if imports are not fully tree-shaken.
+
+### 3.2 Duplicate 3D Viewer Stacks
+
+Two parallel 3D rendering packages exist:
+
+1. `features/planner/3d/Planner3DViewer.tsx` — new, Fabric-aware, with WebGL probe, orbit/walk camera, scene metrics
+2. `features/planner/viewer/PlannerViewer.tsx` — older, `PlannerViewerShape`-based, with `InstancedFurnitureRenderer`
+
+Both are referenced by active code. The `PlannerWorkspace.tsx` renders `<PlannerViewer viewMode="3d" shapes={fabric3DShapes} />` (the old one) in the `canvas3D` slot, while the newer `Planner3DViewer` is exported from `features/planner/3d/index.ts` but **not wired into the workspace**.
+
+**Impact:** 3D view is using the legacy renderer that lacks the WebGL fallback, walk mode, and document-mapped scene envelope of the new stack.
+
+### 3.3 Document Bridge Fragmentation
+
+Four separate files handle "build a PlannerDocument from the canvas":
+
+1. `features/planner/lib/documentBridge.ts` — tldraw-era envelope, keeps `tldrawSnapshot` field
+2. `features/planner/lib/fabricDocumentBridge.ts` — Fabric-to-document adapter (the active one)
+3. `features/planner/document/plannerDocumentBridge.ts` — calls `buildPlannerDocumentFromFabric` + merges workspace metadata
+4. `features/planner/shared/document/documentBridge.ts` — legacy bridge (imported by tests but not main code)
+
+**Impact:** Unclear which is the canonical source of truth. `buildPlannerDocumentFromEditor` is deprecated in `documentBridge.ts` but still used by `exportActions.ts`.
+
+---
+
+## 4. Theme & CSS Consistency
+
+### 4.1 Planner-Scoped Typography Missing
+
+`app/css/core/planner/planner-typography.css` does not define `@utility` rules for `typ-caption` or `typ-caption-lg`. These are only used inside planner components but rely on the site-wide `type.css` that does not provide them either.
+
+### 4.2 Planner 3D Viewer Styling Uses Undefined Classes
+
+The new `Planner3DViewer.tsx` uses `planner-viewer-chip`, `planner-viewer-surface`, `planner-viewer-chip-active` for its overlay UI. These classes were part of the archived CSS and have no equivalent in the active planner shell tokens (`--planner-primary`, `--planner-panel`, etc.).
+
+### 4.3 Dark Mode Token Overrides Are Complete
+
+The `html.dark` selector in `theme.css` properly overrides all semantic aliases. Verified: `--surface-page`, `--text-strong`, `--border-soft`, `--shadow-float` all have dark variants. No inconsistency detected.
+
+---
+
+## 5. Test Inventory Failures
+
+| Failed File | Failure Mode | Root Cause |
+|---|---|---|
+| `navigation-data.test.ts` | 1 failed assertion | `SITE_FOOTER_NAV` link label mismatch (expects specific trimmed Products links) |
+| `planner-editor-exportActions.test.ts` | 1 mock failure | `buildPlannerDocumentFromEditor` mock returns incompatible shape |
+| `planner-editor-PlannerLeftPanel.test.tsx` | 1 test failure | Blueprint tab content assertion mismatch |
+| `planner-onboarding-onboardingcoach.test.tsx` | Module not found | Case-sensitive import path mismatch |
+| `planner-shared-document-documentbridge.test.ts` | Module not found | Case-sensitive import path mismatch |
+
+---
+
+## 6. Accessibility
+
+- `Planner3DViewer` has `aria-pressed` on camera mode buttons ✅
+- `PlannerWorkspace` has `aria-label` on canvas surface ✅
+- Skip-to-main-content link present in `app/planner/layout.tsx` ✅
+- No detected `aria-hidden` trap issues in split-view layout ✅
+
+---
+
+## 7. Performance
+
+- `Planner3DViewer` uses `dpr={[1, 1.75]}` and `powerPreference: "high-performance"` ✅
+- `InstancedFurnitureRenderer` in legacy viewer uses instanced meshes ✅
+- `PlannerWorkspace` memoizes `plannerLeftPanel`, `canvas2D` with `useMemo` ✅
+- No detected React key prop warnings in audit scope ✅
+
+---
+
+## 8. Summary Severity Matrix
+
+| Severity | Count | Items |
+|---|---|---|
+| 🔴 Blocker | 2 | Missing CSS classes (`typ-caption`, `planner-viewer-*`), Dual 3D renderer stacks |
+| 🟠 High | 3 | Case-sensitive import failures, tldraw residue in active code, Document bridge fragmentation |
+| 🟡 Medium | 3 | Test assertion mismatches, `PlannerViewer` not using new 3D stack, Deprecated `buildPlannerDocumentFromEditor` still used |
+| 🟢 Low | 2 | Comment-only tldraw references, Minor test coverage gaps |
+
+---
+
+*Audited by: Oz Agent*
+*Date: 2026-06-19*
+*Commit baseline: `main` at audit time*
