@@ -10,11 +10,13 @@ import * as THREE from "three";
  */
 export function ShadowConfig() {
   const { gl } = useThree();
+  const shadowMap = gl.shadowMap;
+
   useEffect(() => {
-    if (gl?.shadowMap) {
-      gl.shadowMap.type = THREE.PCFShadowMap;
-      gl.shadowMap.enabled = true;
-    }
-  }, [gl]);
+    Object.assign(shadowMap, {
+      enabled: true,
+      type: THREE.PCFShadowMap,
+    });
+  }, [shadowMap]);
   return null;
 }

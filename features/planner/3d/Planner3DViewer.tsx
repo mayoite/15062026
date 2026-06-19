@@ -50,7 +50,7 @@ interface CameraMemory {
   walk?: WalkPose;
 }
 
-interface SceneMetrics {
+export interface SceneMetrics {
   target: [number, number, number];
   defaultOrbitPosition: [number, number, number];
   defaultWalkPosition: [number, number, number];
@@ -149,7 +149,7 @@ function getItemBounds(room: Planner3DSceneDocument["room"], item: Planner3DItem
   };
 }
 
-function getSceneMetrics(sceneDocument: Planner3DSceneDocument): SceneMetrics {
+export function computePlanner3DSceneMetrics(sceneDocument: Planner3DSceneDocument): SceneMetrics {
   const { room, items } = sceneDocument;
   const roomHalfWidthWorld = mmToWorld(room.widthMm) / 2;
   const roomHalfDepthWorld = mmToWorld(room.depthMm) / 2;
@@ -528,7 +528,7 @@ function PlannerScene({
   viewerRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { room, items } = sceneDocument;
-  const metrics = useMemo(() => getSceneMetrics(sceneDocument), [sceneDocument]);
+  const metrics = useMemo(() => computePlanner3DSceneMetrics(sceneDocument), [sceneDocument]);
 
   return (
     <>

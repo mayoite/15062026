@@ -19,7 +19,7 @@ export type TLShape = {
 export type TLLineShape = TLShape & {
   type: "line";
   props: {
-    points: Record<string, { x: number; y: number }>;
+    points: Record<string, { id: string; index: string; x: number; y: number }>;
   };
 };
 
@@ -37,7 +37,12 @@ export function toRichText(text: string): string {
 }
 
 export type Editor = {
+  user: {
+    updateUserPreferences: (preferences: { isSnapMode?: boolean }) => void;
+  };
+  updateInstanceState: (state: { isGridMode?: boolean }) => void;
   getCurrentPageShapes: () => TLShape[];
+  getCurrentPageShapesSorted: () => TLShape[];
   getCurrentPageShapeIds: () => TLShapeId[];
   getSelectedShapeIds: () => TLShapeId[];
   getShape: (id: TLShapeId) => TLShape | undefined;
@@ -49,9 +54,31 @@ export type Editor = {
     w: number;
     h: number;
   } | null;
+  getSelectionPageBounds: () => {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+    w: number;
+    h: number;
+  } | null;
+  getCamera: () => { x: number; y: number; z: number };
+  pageToViewport: (point: { x: number; y: number }) => { x: number; y: number };
+  canUndo: () => boolean;
+  canRedo: () => boolean;
   getCanUndo: () => boolean;
   getCanRedo: () => boolean;
   getCurrentToolId: () => string;
+  createAssets: (assets: unknown[]) => void;
+  createShape: (shape: unknown) => void;
+  updateShapes: (shapes: unknown[]) => void;
+  setStyleForNextShapes: (style: unknown, value: unknown) => void;
+  deleteShapes: (ids: TLShapeId[]) => void;
+  duplicateShapes: (ids: TLShapeId[], offset?: { x: number; y: number }) => void;
+  undo: () => void;
+  redo: () => void;
+  zoomToFit: (opts?: { animation?: { duration: number } }) => void;
+  setCamera: (camera: { x?: number; y?: number; z?: number }, opts?: unknown) => void;
   setCurrentTool: (id: string) => void;
   select: (id: TLShapeId) => void;
   selectAll: () => void;
@@ -67,7 +94,16 @@ export type Editor = {
   alignShapes: (ids: TLShapeId[], operation: string) => void;
   distributeShapes: (ids: TLShapeId[], operation: string) => void;
   store: {
-    listen: (cb: () => void, opts?: { scope?: string }) => () => void;
+    listen: (
+      cb: (history: {
+        changes: {
+          added: Record<string, unknown>;
+          updated: Record<string, unknown>;
+          removed: Record<string, unknown>;
+        };
+      }) => void,
+      opts?: { scope?: string },
+    ) => () => void;
   };
 };
 
@@ -75,7 +111,7 @@ export function createShapeId(id?: string): TLShapeId {
   return id ?? `shape:${crypto.randomUUID()}`;
 }
 
-export const getIndices = (_ids: TLShapeId[]) => [] as string[];
+export const getIndices = (count: number) => Array.from({ length: count }, (_, index) => String(index));
 export const DefaultColorStyle = {} as const;
 export const DefaultDashStyle = {} as const;
 export const DefaultFillStyle = {} as const;

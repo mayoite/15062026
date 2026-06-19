@@ -1,9 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {
-  Canvas as FabricCanvas,
   FabricText,
   Line,
   Path,
@@ -11,11 +6,20 @@ import {
   Point,
   Rect,
 } from "fabric";
+import type { Canvas as FabricCanvas, CanvasEvents, FabricObject, TPointerEventInfo } from "fabric";
 import type { FabricDrawTool } from "../fabricDrawToolTypes";
-import { DEFAULT_FABRIC_DRAW_COLOR, DEFAULT_FABRIC_FILL_COLOR } from "../fabricDrawToolTypes";
+import { DEFAULT_FABRIC_DRAW_COLOR } from "../fabricDrawToolTypes";
 import { applyFabricTransformLocks } from "../fabricObjectUtils";
 
 const ANNOTATION_PREFIX = "DRAW:";
+
+type PlannerFabricObject = FabricObject & {
+  evented?: boolean;
+  hasBorders?: boolean;
+  hasControls?: boolean;
+  name?: string;
+  selectable?: boolean;
+};
 
 function formatMeasureLabel(pixelDistance: number): string {
   const inches = Math.max(0, pixelDistance);
@@ -25,7 +29,7 @@ function formatMeasureLabel(pixelDistance: number): string {
   return `${feet}' ${remInches}" · ${mm.toLocaleString()} mm`;
 }
 
-function isProtectedObject(obj: any): boolean {
+function isProtectedObject(obj: PlannerFabricObject | null | undefined): boolean {
   const name = String(obj?.name ?? "");
   return (
     name === "CORNER" ||
@@ -39,7 +43,7 @@ function isProtectedObject(obj: any): boolean {
 
 export function wireFabricDrawTools(options: {
   getView: () => FabricCanvas | undefined;
-  getScenePointer: (e: any) => Point | null;
+  getScenePointer: (e: TPointerEventInfo) => Point | null;
   getDrawTool: () => FabricDrawTool;
   getDrawColor: () => string;
   getDrawFillColor: () => string;
@@ -47,10 +51,9 @@ export function wireFabricDrawTools(options: {
   saveState: () => void;
 }) {
   let activeTool: FabricDrawTool = "select";
-  let activeColor = DEFAULT_FABRIC_DRAW_COLOR;
-  let activeFillColor = DEFAULT_FABRIC_FILL_COLOR;
+  let activeColor: string = DEFAULT_FABRIC_DRAW_COLOR;
   let drawStart: Point | null = null;
-  let previewObject: any = null;
+  let previewObject: PlannerFabricObject | null = null;
   let curvePoints: Point[] = [];
 
   const getView = () => options.getView();
@@ -115,11 +118,10 @@ export function wireFabricDrawTools(options: {
     applyCanvasMode();
   }
 
-  function setDrawFillColor(color: string) {
-    activeFillColor = color;
+  function setDrawFillColor(_color: string) {
   }
 
-  function commitAnnotation(obj: any) {
+  function commitAnnotation(obj: PlannerFabricObject) {
     const view = getView();
     if (!view || !obj) return;
 
@@ -217,23 +219,23 @@ export function wireFabricDrawTools(options: {
     return { setDrawTool, setDrawColor, applyCanvasMode, dispose: () => {} };
   }
 
-  view.on("path:created", (e: any) => {
-    const path = e.path;
+  view.on("path:created", (event: CanvasEvents["path:created"]) => {
+    const path = event.path as PlannerFabricObject | undefined;
     if (!path || options.getDrawTool() !== "pen") return;
     path.name = `${ANNOTATION_PREFIX}pen`;
     path.stroke = options.getDrawColor();
     options.saveState();
   });
 
-  view.on("mouse:down", (e: any) => {
+  view.on("mouse:down", (event: CanvasEvents["mouse:down"]) => {
     const tool = options.getDrawTool();
     if (options.roomEditActive() || tool === "select" || tool === "pen") return;
 
-    const pointer = options.getScenePointer(e);
+    const pointer = options.getScenePointer(event);
     if (!pointer) return;
 
     if (tool === "eraser") {
-      const target = e.target;
+      const target = (event.target as PlannerFabricObject | undefined) ?? null;
       if (target && !isProtectedObject(target)) {
         view.remove(target);
         view.discardActiveObject();
@@ -254,12 +256,12 @@ export function wireFabricDrawTools(options: {
     drawStart = new Point(pointer.x, pointer.y);
   });
 
-  view.on("mouse:move", (e: any) => {
+  view.on("mouse:move", (event: CanvasEvents["mouse:move"]) => {
     const tool = options.getDrawTool();
     if (!drawStart || options.roomEditActive()) return;
     if (tool !== "line" && tool !== "measure" && tool !== "rectangle") return;
 
-    const pointer = options.getScenePointer(e);
+    const pointer = options.getScenePointer(event);
     if (!pointer) return;
 
     clearPreview();
@@ -296,12 +298,12 @@ export function wireFabricDrawTools(options: {
     }
   });
 
-  view.on("mouse:up", (e: any) => {
+  view.on("mouse:up", (event: CanvasEvents["mouse:up"]) => {
     const tool = options.getDrawTool();
     if (!drawStart || options.roomEditActive()) return;
     if (tool !== "line" && tool !== "measure" && tool !== "rectangle") return;
 
-    const pointer = options.getScenePointer(e);
+    const pointer = options.getScenePointer(event);
     if (!pointer) return;
 
     clearPreview();

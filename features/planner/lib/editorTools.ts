@@ -1,4 +1,3 @@
-// @ts-nocheck — legacy tldraw editor tools; fabric migration in progress.
 "use client";
 
 import {
@@ -10,6 +9,7 @@ import {
   createShapeId,
   getIndices,
   type Editor,
+  type TLLineShape,
 } from "@/features/planner/shared/types/legacyEditorStub";
 
 import type { PlannerShapeMeta } from "@/features/planner/shared/types/planner";
@@ -20,7 +20,7 @@ const DEFAULT_WALL_SEGMENT_MM = 2400;
 const DEFAULT_DOOR_OPENING_MM = { width: 900, depth: 120 };
 
 type PlannerShape = ReturnType<Editor["getCurrentPageShapes"]>[number];
-type PlannerLineShape = Extract<PlannerShape, { type: "line" }>;
+type PlannerLineShape = TLLineShape;
 type PlannerLinePoint = PlannerLineShape["props"]["points"][string];
 type PlannerShapeId = ReturnType<Editor["getSelectedShapeIds"]>[number];
 

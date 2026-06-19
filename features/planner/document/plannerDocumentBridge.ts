@@ -49,6 +49,10 @@ export function buildPlannerDocumentFromEditor(
     projectName: projectMetadata?.projectName,
     unitSystem: workspace.unitSystem === "imperial" ? "ft-in" : "mm",
   });
+  const resolvedRoomWidthMm =
+    fabricDoc.roomWidthMm ?? metricRoomWidth ?? projectFields?.roomWidthMm ?? 6000;
+  const resolvedRoomDepthMm =
+    fabricDoc.roomDepthMm ?? metricRoomDepth ?? projectFields?.roomDepthMm ?? 8000;
   let fabricSnapshot: unknown = null;
 
   if (serializedDraft) {
@@ -64,8 +68,8 @@ export function buildPlannerDocumentFromEditor(
     title: overrides.title ?? projectMetadata?.projectName ?? "Workspace Plan",
     itemCount: fabricDoc.itemCount,
     ...(projectFields ?? {}),
-    roomWidthMm: metricRoomWidth ?? projectFields?.roomWidthMm ?? fabricDoc.roomWidthMm ?? 6000,
-    roomDepthMm: metricRoomDepth ?? projectFields?.roomDepthMm ?? fabricDoc.roomDepthMm ?? 8000,
+    roomWidthMm: resolvedRoomWidthMm,
+    roomDepthMm: resolvedRoomDepthMm,
     sceneJson: mergeFabricSceneMetadata(fabricDoc.sceneJson, {
       projectSetup: projectMetadata,
       workspace,

@@ -61,14 +61,38 @@ export default function AdminPlansPageView() {
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
     let cancelled = false;
-    void loadPlans().finally(() => {
-      if (cancelled) return;
-    });
+
+    const loadInitialPlans = async () => {
+      try {
+        const response = await fetch("/api/admin/plans?limit=50&sortBy=updated_at&sortOrder=desc", {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to load plans (${response.status})`);
+        }
+        const payload = (await response.json()) as PlansResponse;
+        if (cancelled) return;
+        setPlans(payload.plans ?? []);
+        setSource(payload.source ?? null);
+      } catch (loadError) {
+        if (cancelled || controller.signal.aborted) return;
+        setError(loadError instanceof Error ? loadError.message : "Failed to load plans");
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadInitialPlans();
+
     return () => {
       cancelled = true;
+      controller.abort();
     };
-  }, [loadPlans]);
+  }, []);
 
   return (
     <div className="mx-auto max-w-6xl p-6 md:p-8">

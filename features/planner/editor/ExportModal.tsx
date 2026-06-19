@@ -83,7 +83,7 @@ const FORMAT_OPTIONS: {
   { id: "json", label: "JSON", hint: "Full session data", icon: Download },
 ];
 
-export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
+export function ExportModal({ isOpen, onClose }: ExportModalProps) {
   const [selectedPreset, setSelectedPreset] = useState<ExportPresetId>("proposal");
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("pdf");
   const [downloadState, setDownloadState] = useState<DownloadState>("idle");
@@ -159,7 +159,7 @@ export function ExportModal({ isOpen, onClose, editor }: ExportModalProps) {
       setDownloadState("error");
       setStatusMessage(message);
     }
-  }, [editor, selectedFormat, selectedPreset, downloadState]);
+  }, [downloadState, selectedFormat, selectedPreset]);
 
   const handleCopyLink = useCallback(() => {
     const hash = btoa(JSON.stringify({ preset: selectedPreset, format: selectedFormat, ts: Date.now() }));

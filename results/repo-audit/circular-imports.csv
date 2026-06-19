@@ -1,0 +1,3 @@
+"cycle_id","node_count","nodes","internal_edges"
+"1","2","features/planner/catalog/catalogStore.ts; features/planner/onboarding/projectSetup.ts","features/planner/catalog/catalogStore.ts -> features/planner/onboarding/projectSetup.ts; features/planner/onboarding/projectSetup.ts -> features/planner/catalog/catalogStore.ts"
+"2","2","features/planner/lib/documentBridge.ts; features/planner/lib/fabricDocumentBridge.ts","features/planner/lib/documentBridge.ts -> features/planner/lib/fabricDocumentBridge.ts; features/planner/lib/fabricDocumentBridge.ts -> features/planner/lib/documentBridge.ts"

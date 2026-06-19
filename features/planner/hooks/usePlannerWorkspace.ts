@@ -1,4 +1,3 @@
-// @ts-nocheck — legacy hook; fabric canvas migration in progress.
 import { useCallback, useEffect, useState } from "react";
 import {
   AssetRecordType,
@@ -543,7 +542,7 @@ export function usePlannerWorkspace({
 
       setBoqItems(items);
       setHasRoomShellDraft(structuralShapes.length > 0);
-      const geometricWarnings = runPlannerComplianceCheck(editor, shapes);
+      const geometricWarnings = runPlannerComplianceCheck(null, shapes);
       buildAiSuggestions(items, shapes.length, geometricWarnings);
     };
 

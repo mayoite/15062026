@@ -1,4 +1,3 @@
-// @ts-nocheck — legacy tldraw layers panel; fabric migration in progress.
 "use client";
 
 import { useSyncExternalStore } from "react";
@@ -109,7 +108,7 @@ export function LayersPanel({
         stopSession();
       };
     },
-    () => buildLayerEntries(editor, unitSystem),
+    () => buildLayerEntries(editor ?? null, unitSystem),
     () => [],
   );
 

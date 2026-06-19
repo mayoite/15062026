@@ -23,12 +23,8 @@ interface PlannerSubTopBarProps {
 export function PlannerSubTopBar({
   viewMode,
   onViewModeChange,
-  leftOpen,
-  rightOpen,
   leftCollapsed,
   rightCollapsed,
-  onToggleLeft,
-  onToggleRight,
   onToggleLeftCollapsed,
   onToggleRightCollapsed,
   onResetLayout,

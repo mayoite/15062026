@@ -1,4 +1,3 @@
-// @ts-nocheck — legacy tldraw measurements; fabric migration in progress.
 "use client";
 
 import { type Editor, type TLLineShape } from "@/features/planner/shared/types/legacyEditorStub";
@@ -161,7 +160,7 @@ export function getStructuralShapes(editor: Editor) {
 function getLinePoints(shape: PlannerShape): PlannerLinePoint[] {
   if (shape.type !== "line") return [];
 
-  return Object.values(shape.props.points)
+  return Object.values((shape as TLLineShape).props.points)
     .filter((point): point is PlannerLinePoint => {
       return (
         typeof point.id === "string" &&

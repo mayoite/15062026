@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { buildPlanner3DSceneDocument } from "@/features/planner/3d/types";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
 import { getPlannerSceneEnvelope } from "@/features/planner/lib/documentBridge";
 import { getFabricSnapshotFromDocument } from "@/features/planner/lib/fabricDocumentBridge";
@@ -26,12 +27,26 @@ describe("planner document editor bridge", () => {
     });
 
     const scene = getPlannerSceneEnvelope(document.sceneJson);
+    const viewerScene = buildPlanner3DSceneDocument(document);
 
+    expect(document.roomWidthMm).toBe(6040);
+    expect(document.roomDepthMm).toBe(4040);
+    expect(document.itemCount).toBe(1);
     expect(scene?.room).toMatchObject({
       widthMm: 6040,
       depthMm: 4040,
     });
     expect(scene?.items[0]).toMatchObject({
+      id: "fabric-item-0",
+      name: "Desk",
+      category: "Furniture",
+    });
+    expect(viewerScene.room).toMatchObject({
+      widthMm: 6040,
+      depthMm: 4040,
+    });
+    expect(viewerScene.items).toHaveLength(document.itemCount);
+    expect(viewerScene.items[0]).toMatchObject({
       id: "fabric-item-0",
       name: "Desk",
       category: "Furniture",

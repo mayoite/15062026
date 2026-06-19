@@ -246,6 +246,7 @@
 .workflow strong[data-status="Live"],
 .workflow strong[data-status="Started"],
 .workflow strong[data-status="Active"],
+.workflow strong[data-status="Verified"],
 .domainRows strong[data-state="Wired"],
 .domainRows strong[data-state="Organized"] {
   background: var(--green);
@@ -261,6 +262,10 @@
 .domainRows strong[data-state="Stale"],
 .blockers span {
   background: var(--red);
+}
+
+.blockers span[data-state="Verified"] {
+  background: var(--green);
 }
 
 .workflow footer {

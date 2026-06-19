@@ -46,6 +46,10 @@ function fabricObjectsToItems(objects: unknown[]): PlannerSceneItem[] {
   return parseFabricObjects(
     objects.length ? JSON.stringify({ objects }) : null,
   )
+    .filter((object) => {
+      const name = String(object.name ?? "");
+      return fabricObjectCategory(name) === "Furniture";
+    })
     .map((o, index) => {
       const w = (Number(o.width) || 60) * FABRIC_TO_MM;
       const d = (Number(o.height) || 60) * FABRIC_TO_MM;

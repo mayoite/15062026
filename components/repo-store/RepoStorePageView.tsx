@@ -2,9 +2,9 @@ import Link from "next/link";
 import styles from "./RepoStorePageView.module.css";
 
 const metrics = [
-  ["6", "duplication zones", "catalog, persistence, 3D, bridges, copy, docs"],
-  ["27", "lint blockers", "existing planner migration debt"],
-  ["1", "type blocker", "portal persistence import mismatch"],
+  ["6", "responsibility buckets", "validated in the Stage 01 duplicate-responsibility ledger"],
+  ["4", "lint blockers", "current baseline: four planner @ts-nocheck violations"],
+  ["0", "type blockers", "current root TypeScript 6 typecheck passes"],
   ["10", "plan phases", "audit through release"],
 ];
 
@@ -37,6 +37,26 @@ const inventorySummary = [
   ["2,941", "public assets", "The largest file group and a separate asset-governance concern."],
 ];
 
+const classificationSummary = [
+  ["10", "canonical", "Active implementation; migration marker is known debt or terminology."],
+  ["34", "compatibility", "Forwarders and read adapters retained for legacy data or imports."],
+  ["46", "stale", "Migration-era, tldraw, suppressed, or stub surfaces requiring review."],
+  ["2", "generated", "Generated schema/type artifacts; do not edit manually."],
+  ["8", "protected", "Modification requires explicit approval under repository rules."],
+  ["68", "false positive", "Marker does not identify a competing implementation owner."],
+];
+
+const stage01Evidence = [
+  "results/repo-audit/stage01-findings.md",
+  "results/repo-audit/stage01-validation.txt",
+  "results/repo-audit/migration-review-imports.csv",
+  "results/repo-audit/migration-review-classification.md",
+  "results/repo-audit/duplicate-filenames.csv",
+  "results/repo-audit/duplicate-responsibilities.csv",
+  "results/repo-audit/duplicate-content.csv",
+  "results/repo-audit/circular-imports.csv",
+];
+
 const workflow = [
   {
     step: "01",
@@ -50,9 +70,9 @@ const workflow = [
     step: "02",
     title: "Classify",
     owner: "Wiring audit",
-    status: "Needed",
-    action: "Mark files as wired, weakly connected, stale, archived, or generated evidence.",
-    output: "Connection ledger",
+    status: "Verified",
+    action: "All 168 migration-review paths have classification plus direct, type-only, and dynamic import-reference fields.",
+    output: "Validated connection ledger",
   },
   {
     step: "03",
@@ -98,13 +118,13 @@ const domains = [
 ];
 
 const blockers = [
-  ["Typecheck", "Failing before this page", "app/(site)/portal/page.tsx imports renamed planner persistence API."],
-  ["Lint", "Failing before this page", "Planner migration files have hook, unused, and ts-nocheck errors."],
-  ["Agent audit", "Errored", "Wiring agent disconnected before completion; rerun needed."],
+  ["Typecheck", "Verified", "Root TypeScript 6 typecheck passes; evidence: results/repo-audit/baseline-typecheck.txt."],
+  ["Lint", "Failing: 4 errors", "Four planner migration files retain forbidden @ts-nocheck directives; evidence: results/repo-audit/baseline-lint.txt."],
+  ["Stage 01 audit", "Verified", "168/168 migration-review paths classified; validation reports no missing paths or classifications."],
 ];
 
 const nextActions = [
-  "Rerun wiring audit locally and write the connection ledger into this page.",
+  "Review the 46 stale classifications before any ownership move; classification is not deletion approval.",
   "Fix planner typecheck/lint blockers before claiming release health.",
   "Replace stale tldraw wording in planner CONTENTS and runtime comments.",
   "Wire Fabric gaps: templates, blueprint capture, AI layout apply, document import/export proof.",
@@ -120,6 +140,7 @@ export function RepoStorePageView() {
             <a href="#workflow">Workflow</a>
             <a href="#audit">Audit</a>
             <a href="#inventory">Files</a>
+            <a href="#evidence">Evidence</a>
             <a href="#plan">Plan</a>
             <a href="#domains">Domains</a>
             <a href="#blockers">Blockers</a>
@@ -205,6 +226,36 @@ export function RepoStorePageView() {
             </div>
           </section>
 
+          <section className={styles.panel} id="evidence">
+            <div className={styles.panelHead}>
+              <div>
+                <h2>Validated Stage 01 Evidence</h2>
+                <p>168 inventory migration-review paths classified with zero missing paths or classifications.</p>
+              </div>
+              <code className={styles.planLink}>results/repo-audit/stage01-validation.txt</code>
+            </div>
+            <div className={styles.inventoryGrid}>
+              {classificationSummary.map(([value, label, detail]) => (
+                <article key={label}>
+                  <strong>{value}</strong>
+                  <span>{label}</span>
+                  <p>{detail}</p>
+                </article>
+              ))}
+            </div>
+            <div className={styles.inventoryPaths}>
+              <code>36 duplicate filename groups</code>
+              <code>6 duplicate responsibility buckets</code>
+              <code>5 exact-content duplicate groups</code>
+              <code>2 runtime circular-import components</code>
+            </div>
+            <div className={styles.inventoryPaths} aria-label="Stage 01 evidence paths">
+              {stage01Evidence.map((evidencePath) => (
+                <code key={evidencePath}>{evidencePath}</code>
+              ))}
+            </div>
+          </section>
+
           <section className={styles.panel} id="workflow">
             <div className={styles.panelHead}>
               <h2>Actual Workflow</h2>
@@ -257,7 +308,7 @@ export function RepoStorePageView() {
                 {blockers.map(([name, state, detail]) => (
                   <article key={name}>
                     <strong>{name}</strong>
-                    <span>{state}</span>
+                    <span data-state={state}>{state}</span>
                     <p>{detail}</p>
                   </article>
                 ))}
