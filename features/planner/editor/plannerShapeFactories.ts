@@ -1,5 +1,5 @@
 /**
- * plannerShapeFactories — fabric-era stubs (tldraw builders removed).
+ * plannerShapeFactories — fabric-era shape builders.
  */
 
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";

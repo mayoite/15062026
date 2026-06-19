@@ -1,4 +1,4 @@
-import { getPlannerSceneEnvelope } from "@/features/planner/lib/documentBridge";
+import { getPlannerSceneEnvelope } from "@/features/planner/model";
 import type { PlannerDocument } from "@/features/planner/model/plannerDocument";
 import { buildSessionEnvelope } from "@/features/planner/persistence/plannerSession";
 import {
@@ -9,7 +9,7 @@ import {
 
 export function plannerDocumentToAutosaveSnapshot(document: PlannerDocument): string | null {
   const scene = getPlannerSceneEnvelope(document.sceneJson);
-  const store = scene?.tldrawSnapshot;
+  const store = scene?.fabricSnapshot;
   if (!store || typeof store !== "object") return null;
   return JSON.stringify(buildSessionEnvelope(store));
 }

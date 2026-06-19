@@ -1,7 +1,7 @@
 import type { PlannerJsonValue } from "./plannerDocument";
 
 /**
- * Coerce arbitrary runtime data (tldraw snapshots, sparse objects) into a tree
+ * Coerce arbitrary runtime data (snapshots, sparse objects) into a tree
  * that satisfies plannerJsonValueSchema: no undefined keys/values, finite numbers only.
  */
 export function toPlannerJsonSafe(value: unknown): PlannerJsonValue {

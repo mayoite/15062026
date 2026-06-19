@@ -84,7 +84,7 @@ Return ONLY a single JSON object (no markdown fences) matching this schema:
 }
 
 Rules:
-- Positions (x, y, wall anchors, furniture placement): tldraw page space in canvas units.
+- Positions (x, y, wall anchors, furniture placement): canvas page space in canvas units.
 - Room and zone sizes (room.widthMm, room.depthMm, zone widthMm/heightMm): real millimetres.
 - Keep aisle widths practical (≥ 1200 mm real-world).
 - For support / workstation offices, prefer bench rows and shared storage.

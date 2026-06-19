@@ -1,10 +1,8 @@
 /**
  * PlannerWorkspace — unified workspace planner editor shell.
  *
- * **REPLACEMENT IN PROGRESS (2026-06-18 user directive):** tldraw (old canvas + UI) OUT.
- * Fabric canvas + interface (new from E:\floorplan-react prototype) IN as full replacement.
- * Combined with 3D (r3f). Old tldraw code left for reference during swap but no longer driving 2D.
- * Finish today: functional planner with new canvas in shell, catalog placement, 3D sync.
+ * Fabric canvas + interface as the 2D engine.
+ * Combined with 3D (r3f). Fabric drives the 2D canvas and feeds the 3D viewer.
  */
 
 "use client";
@@ -150,8 +148,8 @@ function PlannerStatusBarWithFabricGrid(
   );
 }
 
-// Bridge component: renders the new fabric canvas (replacement) and syncs its state to 3D (r3f combine).
-// Per user: fabric in, tldraw out for canvas/UI. This makes 2D fabric drive the 3D viewer.
+// Bridge component: renders the fabric canvas and syncs its state to 3D (r3f combine).
+// Fabric drives the 2D canvas and feeds the 3D viewer.
 function Fabric2DWith3DSync({
   viewMode,
   leftPanel,
@@ -620,7 +618,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     ],
   );
 
-  // REPLACEMENT: fabric canvas as the 2D engine (tldraw legacy commented/removed from drive path)
+  // Fabric canvas as the 2D engine.
   // Combined with 3D: fabric state drives viewerDocument for r3f meshes.
   const canvas2D = useMemo(
     () => (

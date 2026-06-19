@@ -48,12 +48,12 @@ export function pointAlongWall(wall: WallSegmentSpec, along: number): Point2 {
   };
 }
 
-/** Fabric-era stub — wall segments no longer come from tldraw shapes. */
+/** Stub — wall segments come from the fabric canvas, not editor shapes. */
 export function wallSegmentFromEditorShape(_shape: unknown): WallSegmentSpec | null {
   return null;
 }
 
-/** Fabric-era stub — openings no longer come from tldraw shapes. */
+/** Stub — openings come from the fabric canvas, not editor shapes. */
 export function openingCandidateFromShape(_shape: unknown): OpeningCandidate | null {
   return null;
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { getPlannerSceneEnvelope } from "@/features/planner/lib/documentBridge";
+import { getPlannerSceneEnvelope } from "@/features/planner/model";
 import type { PlannerDocument } from "@/features/planner/model";
 
 interface PortalPlanPageViewProps {
@@ -112,7 +112,7 @@ export default function PortalPlanPageView({ document }: PortalPlanPageViewProps
             <div className="flex items-start justify-between gap-4">
               <dt className="text-muted">Snapshot source</dt>
               <dd className="text-right text-strong">
-                {scene?.fabricSnapshot ? "Fabric" : scene?.tldrawSnapshot ? "tldraw" : "None"}
+                {scene?.fabricSnapshot ? "Fabric" : "None"}
               </dd>
             </div>
           </dl>

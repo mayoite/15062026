@@ -1,4 +1,4 @@
-// Geometry domain types - decoupled from tldraw internals
+// Geometry domain types - canvas-agnostic
 
 /** 2D point */
 export interface Point2D {

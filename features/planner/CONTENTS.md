@@ -2,7 +2,7 @@
 
 ## Why this folder exists
 
-Single source for /planner workspace: tldraw editor, catalog placement, 3D viewer, persistence, AI assist.
+Single source for /planner workspace: Fabric editor, catalog placement, 3D viewer, persistence, AI assist.
 
 ## What is here
 
@@ -13,7 +13,7 @@ Single source for /planner workspace: tldraw editor, catalog placement, 3D viewe
 - landing/, onboarding/ — guest funnel
 - persistence/, document/, model/
 - shared/ — BOQ, export, engine types
-- tldraw/ — custom shapes & tools
+- canvas-fabric/ — Fabric canvas shapes & tools
 
 ## Ownership
 

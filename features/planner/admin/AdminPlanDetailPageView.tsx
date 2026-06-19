@@ -8,8 +8,8 @@ import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import {
   getPlannerSceneEnvelope,
   type PlannerSceneEnvelope,
-} from "@/features/planner/lib/documentBridge";
-import type { PlannerJsonValue } from "@/features/planner/model";
+  type PlannerJsonValue,
+} from "@/features/planner/model";
 
 type AdminPlanDetail = {
   id: string;

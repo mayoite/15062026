@@ -9,14 +9,7 @@ import {
   normalizeColor,
   resolveFurnitureKind,
   type FurnitureKind,
-} from "@/features/planner/viewer/viewerMaterials";
-import {
-  boundsCenter,
-  boundsExtent,
-  computeSceneBounds,
-  frameToContent,
-} from "@/features/planner/viewer/viewerFraming";
-import type { PlannerViewerShape } from "@/features/planner/viewer/PlannerViewer";
+} from "@/features/planner/3d/viewerMaterials";
 
 describe("resolveFurnitureKind", () => {
   it("maps catalog desk names to desk", () => {
@@ -118,47 +111,3 @@ describe("normalizeColor", () => {
   });
 });
 
-function shape(partial: Partial<PlannerViewerShape>): PlannerViewerShape {
-  return {
-    id: "s1",
-    type: "planner-furniture",
-    x: 0,
-    y: 0,
-    rotation: 0,
-    width: 100,
-    height: 100,
-    ...partial,
-  };
-}
-
-describe("scene bounds + framing", () => {
-  it("returns default bounds when empty", () => {
-    const bounds = computeSceneBounds([]);
-    expect(bounds.hasShapes).toBe(false);
-    expect(frameToContent([])).toEqual({ position: [0, 10, 10], target: [0, 0, 0] });
-  });
-
-  it("includes wall segments and furniture footprints", () => {
-    const bounds = computeSceneBounds([
-      shape({ id: "f1", x: 100, y: 200, width: 100, height: 50 }),
-      shape({
-        id: "w1",
-        type: "planner-wall",
-        wall: { startX: -300, startY: 0, endX: 500, endY: 0, thickness: 10 },
-      }),
-    ]);
-    expect(bounds).toMatchObject({ minX: -300, minZ: 0, maxX: 500, maxZ: 250, hasShapes: true });
-  });
-
-  it("frames the content centre from above and to the side", () => {
-    const shapes = [shape({ x: 0, y: 0, width: 1000, height: 1000 })];
-    const bounds = computeSceneBounds(shapes);
-    expect(boundsCenter(bounds)).toEqual({ cx: 5, cz: 5 });
-    expect(boundsExtent(bounds)).toBe(10);
-
-    const framing = frameToContent(shapes);
-    expect(framing.target).toEqual([5, 0, 5]);
-    expect(framing.position[1]).toBeGreaterThan(0);
-    expect(framing.position[0]).toBeGreaterThan(5);
-  });
-});

@@ -1,5 +1,5 @@
 /**
- * Minimal editor/shape stubs after tldraw removal.
+ * Minimal editor/shape stubs.
  * Used by legacy planner modules until fully migrated to fabric.
  */
 

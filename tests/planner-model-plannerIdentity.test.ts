@@ -5,7 +5,7 @@ import {
 } from "@/features/planner/model/plannerIdentity";
 
 describe("planner identity model", () => {
-  it("declares Oando as the canonical /planner route with tldraw and 3D stages", () => {
+  it("declares Oando as the canonical /planner route with Fabric and 3D stages", () => {
     const oando = getPlannerIdentityConfig("oando");
 
     expect(oando).toMatchObject({
@@ -19,8 +19,8 @@ describe("planner identity model", () => {
       },
     });
     expect(getPlannerWorkflowStages("oando")).toEqual([
-      { id: "intake", label: "Sketch / intake", engine: "tldraw" },
-      { id: "refine", label: "Refine / edit", engine: "tldraw" },
+      { id: "intake", label: "Sketch / intake", engine: "fabric" },
+      { id: "refine", label: "Refine / edit", engine: "fabric" },
       { id: "preview", label: "Preview / export", engine: "three3d" },
     ]);
   });
@@ -39,7 +39,7 @@ describe("planner identity model", () => {
       },
     });
     expect(getPlannerWorkflowStages("buddy")).toEqual([
-      { id: "refine", label: "Edit / place", engine: "tldraw" },
+      { id: "refine", label: "Edit / place", engine: "fabric" },
       { id: "preview", label: "Preview / export", engine: "three3d" },
     ]);
   });

@@ -2,10 +2,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import {
   buildPlannerDocumentFromEditor,
-  getPlannerSceneEnvelope,
-  isPlannerSceneEnvelope,
   loadPlannerDocumentIntoEditor,
 } from "@/features/planner/lib/documentBridge";
+import { getPlannerSceneEnvelope, isPlannerSceneEnvelope } from "@/features/planner/model";
 import { createPlannerDocument } from "@/features/planner/model";
 import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
 
@@ -54,7 +53,7 @@ describe("planner document bridge", () => {
     expect(document.roomDepthMm).toBeGreaterThan(0);
   });
 
-  it("does not load documents back into the removed tldraw editor", () => {
+  it("does not load documents back into the removed legacy editor", () => {
     const document = createPlannerDocument({
       name: "Legacy",
       sceneJson: { type: "cad-suite-planner-scene", version: 1 },

@@ -29,7 +29,7 @@ const SENSITIVE_FIELD_NAMES = new Set([
 const LARGE_BLOB_FIELD_NAMES = new Set([
   "scenejson",
   "scene_json",
-  "tldrawsnapshot",
+  "fabricsnapshot",
   "store",
   "workspace",
   "blueprint",
@@ -134,13 +134,13 @@ function summarizeLargeBlobField(value: unknown): Record<string, unknown> {
   if ("type" in value && typeof value.type === "string") summary.type = value.type;
   if ("version" in value) summary.version = value.version;
   if (Array.isArray(value.items)) summary.itemCount = value.items.length;
-  if ("tldrawSnapshot" in value) summary.tldrawSnapshot = summarizeTldrawSnapshot(value.tldrawSnapshot);
-  if ("document" in value) summary.document = summarizeTldrawSnapshot(value);
+  if ("fabricSnapshot" in value) summary.fabricSnapshot = summarizeFabricSnapshot(value.fabricSnapshot);
+  if ("document" in value) summary.document = summarizeFabricSnapshot(value);
 
   return summary;
 }
 
-function summarizeTldrawSnapshot(snapshot: unknown): Record<string, unknown> {
+function summarizeFabricSnapshot(snapshot: unknown): Record<string, unknown> {
   if (!isRecord(snapshot)) {
     return { kind: typeof snapshot, redacted: true };
   }
@@ -187,7 +187,7 @@ export function summarizePlannerSceneJson(sceneJson: unknown): Record<string, un
     version: envelope.version,
     itemCount: Array.isArray(envelope.items) ? envelope.items.length : 0,
     hasRoom: isRecord(envelope.room),
-    tldrawSnapshot: summarizeTldrawSnapshot(envelope.tldrawSnapshot),
+    fabricSnapshot: summarizeFabricSnapshot(envelope.fabricSnapshot),
   };
 }
 

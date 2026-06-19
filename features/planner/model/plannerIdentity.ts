@@ -1,5 +1,5 @@
 export type PlannerIdentityId = "oando" | "buddy" | "oofpl";
-export type PlannerWorkflowEngine = "tldraw" | "konva" | "fabric" | "three3d";
+export type PlannerWorkflowEngine = "fabric" | "three3d";
 export type PlannerRouteStatus = "canonical" | "compatibility" | "unresolved";
 
 export interface PlannerWorkflowStage {
@@ -33,8 +33,8 @@ export const PLANNER_IDENTITY_CONFIGS: Record<PlannerIdentityId, PlannerIdentity
       status: "canonical",
     },
     stages: [
-      { id: "intake", label: "Sketch / intake", engine: "tldraw" },
-      { id: "refine", label: "Refine / edit", engine: "tldraw" },
+      { id: "intake", label: "Sketch / intake", engine: "fabric" },
+      { id: "refine", label: "Refine / edit", engine: "fabric" },
       { id: "preview", label: "Preview / export", engine: "three3d" },
     ],
   },
@@ -48,7 +48,7 @@ export const PLANNER_IDENTITY_CONFIGS: Record<PlannerIdentityId, PlannerIdentity
       status: "compatibility",
     },
     stages: [
-      { id: "refine", label: "Edit / place", engine: "tldraw" },
+      { id: "refine", label: "Edit / place", engine: "fabric" },
       { id: "preview", label: "Preview / export", engine: "three3d" },
     ],
   },
