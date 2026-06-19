@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { ArrowRight, Building2, MapPin, Ruler, Users } from "lucide-react";
 
 import {
@@ -27,6 +27,15 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
     createDefaultProjectSetupDraft({ guestMode }),
   );
   const [error, setError] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    const hydrationTimer = window.setTimeout(() => {
+      setIsHydrated(true);
+    }, 0);
+
+    return () => window.clearTimeout(hydrationTimer);
+  }, []);
 
   const updateDraft = <K extends keyof PlannerProjectSetupDraft>(key: K, value: PlannerProjectSetupDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -35,6 +44,10 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!isHydrated) {
+      return;
+    }
 
     const projectName = draft.projectName.trim();
     if (!projectName) {
@@ -106,7 +119,12 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
           </ul>
         </aside>
 
-        <form className="flex flex-col gap-5 p-8" onSubmit={handleSubmit} aria-label="Project setup">
+        <form
+          className="flex flex-col gap-5 p-8"
+          onSubmit={handleSubmit}
+          aria-label="Project setup"
+          aria-busy={!isHydrated}
+        >
           <div className="pwx-field">
             <label className="pwx-field-label" htmlFor="project-setup-name">
               Project name
@@ -221,8 +239,12 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
             </p>
           ) : null}
 
-          <button type="submit" className="btn-primary typ-cta mt-auto inline-flex items-center justify-center gap-2 px-6 py-3">
-            Start placing furniture
+          <button
+            type="submit"
+            className="btn-primary typ-cta mt-auto inline-flex items-center justify-center gap-2 px-6 py-3"
+            disabled={!isHydrated}
+          >
+            {isHydrated ? "Start placing furniture" : "Preparing workspace..."}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </form>
