@@ -5,6 +5,57 @@
   margin-inline: auto;
 }
 
+@utility contact-teaser__shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 32%, var(--border-soft));
+  background: linear-gradient(
+    128deg,
+    var(--color-ecru-50) 0%,
+    color-mix(in srgb, var(--color-ocean-boat-blue-50) 55%, var(--color-ecru-100)) 58%,
+    var(--color-white-50) 100%
+  );
+  box-shadow:
+    0 28px 72px -48px color-mix(in srgb, var(--color-primary) 22%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 80%, transparent);
+  padding: 1.25rem 1.125rem;
+  &::before {
+    content: "";
+    position: absolute;
+    inset-block: 1rem;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 0 4px 4px 0;
+    background: linear-gradient(
+      180deg,
+      var(--color-accent),
+      var(--color-ocean-boat-blue-500)
+    );
+  }
+  @media (min-width: 768px) {
+    padding: 1.35rem 1.5rem 1.35rem 1.65rem;
+  }
+}
+
+@utility contact-teaser__layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+  grid-template-columns: 1fr;
+  @media (min-width: 768px) {
+    grid-template-columns: minmax(220px, 2fr) minmax(0, 3fr);
+    gap: 1.5rem;
+  }
+}
+
+@utility contact-teaser__intro {
+  max-width: 42rem;
+  @media (min-width: 768px) { max-width: none; }
+}
+
 @utility contact-teaser__stack {
   display: flex;
   width: 100%;
@@ -12,7 +63,10 @@
   gap: 0.75rem;
 }
 
-@utility contact-teaser__intro { max-width: 42rem; }
+@utility contact-teaser__hint {
+  margin-top: 0.35rem;
+  margin-bottom: 0;
+}
 
 @utility contact-teaser__support-kicker {
   margin-bottom: 0.75rem;
@@ -25,21 +79,27 @@
 
 @utility contact-teaser__form {
   width: 100%;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   border-width: 1px;
-  background: var(--surface-panel-strong);
+  background: color-mix(in srgb, var(--color-white-50) 88%, var(--color-ecru-100));
   padding: 0.75rem;
-  border-color: var(--border-soft);
-  @media (min-width: 768px) { padding: 1rem; }
+  border-color: color-mix(in srgb, var(--color-ocean-boat-blue-200) 55%, var(--border-soft));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 90%, transparent);
+  @media (min-width: 768px) { padding: 0.875rem; }
 }
 
 @utility contact-teaser__mini-grid {
   display: grid;
-  gap: 0.625rem;
+  gap: 0.5rem;
+  grid-template-columns: 1fr;
   @media (min-width: 768px) { grid-template-columns: repeat(2, 1fr); }
 }
 
-@utility contact-teaser__field { display: flex; flex-direction: column; gap: 0.25rem; }
+@utility contact-teaser__field { display: flex; flex-direction: column; gap: 0.2rem; }
+
+@utility contact-teaser__field--brief {
+  margin-top: 0.5rem;
+}
 
 @utility contact-teaser__field--span {
   @media (min-width: 768px) {
@@ -56,37 +116,43 @@
 }
 
 .contact-teaser__input {
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   width: 100%;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border-soft);
-  background: var(--surface-panel-strong);
-  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  border: 1px solid color-mix(in srgb, var(--color-ocean-boat-blue-200) 50%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-white-50) 92%, var(--color-ecru-50));
+  padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   color: var(--text-strong);
   outline: none;
-  transition-property: border-color;
+  transition-property: border-color, box-shadow, background-color;
   transition-duration: 150ms;
 }
 .contact-teaser__input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--border-accent);
+  background: var(--color-white-50);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ocean-boat-blue-300) 35%, transparent);
 }
 
-@utility contact-teaser__input--textarea { min-height: 5rem; resize: vertical; }
+@utility contact-teaser__input--textarea { min-height: 4.25rem; resize: vertical; }
 
 .contact-teaser__cta-stack {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.5rem;
   width: 100%;
+  margin-top: 0.625rem;
 }
 
 .contact-teaser__cta-stack .btn-primary {
   align-self: flex-start;
   width: auto;
+  min-height: 2.5rem;
+  padding-block: 0.5rem;
+  padding-inline: 1rem;
+  font-size: 0.875rem;
 }
 
 .contact-teaser__support-row {
@@ -94,7 +160,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.625rem;
+  gap: 0.5rem;
   width: auto;
 }
 
@@ -104,32 +170,51 @@
   gap: 0.75rem;
 }
 
-@utility contact-teaser__support-row { display: flex; flex-wrap: wrap; gap: 0.625rem; }
+@utility contact-teaser__support-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
 .contact-teaser__support-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   border-radius: 9999px;
-  border: 1px solid var(--border-soft);
-  background: var(--surface-panel-strong);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--color-ocean-boat-blue-250) 55%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-white-50) 90%, var(--color-ocean-boat-blue-50));
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8125rem;
   color: var(--text-body);
-  transition-property: color, border-color;
+  transition-property: color, border-color, background-color;
   transition-duration: 150ms;
 }
-.contact-teaser__support-link:hover { border-color: var(--text-strong); color: var(--text-strong); }
+.contact-teaser__support-link:hover {
+  border-color: var(--color-primary);
+  background: var(--color-white-50);
+  color: var(--text-strong);
+}
+
+.contact-teaser__support-link--whatsapp {
+  border-color: color-mix(in srgb, var(--color-whatsapp) 40%, var(--border-soft));
+  background: color-mix(in srgb, var(--color-ocean-boat-blue-50) 70%, white);
+}
+
+.contact-teaser__support-link--whatsapp:hover {
+  border-color: var(--color-whatsapp-hover);
+  color: var(--color-ocean-boat-blue-800);
+}
+
+.contact-teaser__support-link--whatsapp .contact-teaser__support-link-icon {
+  background: color-mix(in srgb, var(--color-whatsapp) 18%, white);
+  color: var(--color-whatsapp-hover);
+}
 
 @utility contact-teaser__support-link-icon {
   display: inline-flex;
-  height: 1.75rem;
-  width: 1.75rem;
+  height: 1.5rem;
+  width: 1.5rem;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--surface-hover);
-  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-ocean-boat-blue-100) 80%, white);
+  color: var(--color-ocean-boat-blue-700);
 }
 
 @utility contact-teaser__footer-chip {
@@ -146,7 +231,7 @@
   color: var(--text-muted);
 }
 
-@utility contact-teaser__status { margin-top: 0.75rem; font-size: 0.875rem; }
+@utility contact-teaser__status { margin-top: 0.5rem; font-size: 0.8125rem; }
 @utility contact-teaser__status--success { color: var(--color-success); }
 @utility contact-teaser__status--error { color: var(--color-danger); }
 

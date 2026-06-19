@@ -55,161 +55,89 @@
   color: color-mix(in srgb, white 82%, transparent);
 }
 
-/* ── PDP additional classes ── */
-@utility pdp-assurance-grid {
+/* Homepage tools band — copy + vector floor plan diagram */
+.home-tools-panel {
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: 1fr;
-  @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-}
-
-@utility pdp-assurance-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  border-radius: 1rem;
-  border: 1px solid var(--border-soft);
-  background: var(--surface-soft);
-  padding: 0.875rem 1rem;
-  font-size: var(--type-body-size);
-  color: var(--text-body);
-}
-
-@utility pdp-copy-link {
-  color: var(--color-primary);
-  font-size: var(--type-body-size);
-  font-weight: 500;
-  transition-property: color;
-  transition-duration: var(--motion-fast);
-  &:hover { color: var(--color-primary-hover); }
-}
-
-@utility pdp-cta-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-@utility pdp-detail-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-@utility pdp-details-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-@utility pdp-disclosure {
-  border-radius: 1rem;
-  border: 1px solid var(--border-soft);
-  overflow: hidden;
-}
-
-@utility pdp-disclosure__summary {
-  display: flex;
+  gap: 2rem;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.875rem 1rem;
-  cursor: pointer;
-  font-size: var(--type-body-size);
-  font-weight: 500;
-  color: var(--text-strong);
-  background: var(--surface-panel-strong);
-  list-style: none;
 }
 
-@utility pdp-disclosure__body {
-  padding: 0.875rem 1rem;
-  font-size: var(--type-body-size);
-  line-height: var(--type-leading-copy);
-  color: var(--text-body);
-  background: var(--surface-soft);
+@media (min-width: 1024px) {
+  .home-tools-panel {
+    grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+    gap: clamp(1.5rem, 3vw, 2.75rem);
+  }
 }
 
-@utility pdp-inline-spec-grid {
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: repeat(2, 1fr);
-  @media (min-width: 640px) { grid-template-columns: repeat(3, 1fr); }
+.home-tools-panel__copy {
+  min-width: 0;
 }
 
-@utility pdp-media-card {
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-soft);
-  background: var(--surface-soft);
+.home-tools-panel__diagram {
+  min-width: 0;
 }
 
-@utility pdp-media-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-@utility pdp-section {
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-top: 1px solid var(--border-soft);
-}
-
-@utility pdp-shell-grid {
-  display: grid;
-  gap: 1.5rem;
-  @media (min-width: 1024px) { grid-template-columns: 1fr 1fr; }
-}
-
-@utility pdp-spec-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--type-body-size);
-}
-
-@utility pdp-summary-card {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-soft);
-  background: var(--surface-panel-strong);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-soft);
-}
-
-@utility pdp-summary-grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(2, 1fr);
-}
-
-@utility pdp-summary-panel {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-soft);
-  background: var(--surface-panel-strong);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-panel);
-}
-
-@utility pdp-variant-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-@utility pdp-viewer-panel {
+.home-tools-floor-demo {
   position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-soft);
-  background: var(--surface-soft);
+  display: block;
+  text-decoration: none;
+  transition: transform var(--motion-base) var(--ease-standard);
 }
 
-@utility pdp-breadcrumb-bar {
-  position: sticky;
-  z-index: 10;
-  border-bottom-width: 1px;
-  backdrop-filter: blur(4px);
-  top: 4rem;
-  border-color: var(--border-soft);
-  background: var(--overlay-panel-88);
+.home-tools-floor-demo:hover {
+  transform: translateY(-4px);
+}
+
+.home-tools-floor-demo:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 1.1rem;
+}
+
+.home-tools-floor-demo .planner-hero-demo {
+  width: 100%;
+  max-width: none;
+  margin-inline: auto;
+  box-shadow:
+    0 50px 110px -36px color-mix(in srgb, black 72%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+
+.home-floorplan-showcase {
+  position: relative;
+  width: 100%;
+}
+
+.home-floorplan-showcase::before {
+  content: "";
+  position: absolute;
+  inset: 8% 4% 14%;
+  border-radius: 1.5rem;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 45%,
+    color-mix(in srgb, var(--color-accent) 28%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
+  filter: blur(18px);
+}
+
+.home-floorplan-showcase .home-tools-floor-demo {
+  position: relative;
+  z-index: 1;
+}
+
+.home-tools-floor-demo__caption {
+  display: block;
+  margin-top: 0.75rem;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-tools-floor-demo:hover {
+    transform: none;
+  }
 }
 

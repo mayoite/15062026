@@ -91,7 +91,7 @@ describe('buildPageMetadata', () => {
 
   it('builds canonical URL from siteUrl and path', () => {
     const meta = buildPageMetadata(TEST_SITE_URL, input);
-    expect(meta.alternates!.canonical).toBe('https://example.com/about');
+    expect(meta.alternates!.canonical).toBe('https://example.com/about/');
   });
 
   it('canonical URL has no double slashes in path', () => {
@@ -104,7 +104,7 @@ describe('buildPageMetadata', () => {
 
   it('openGraph url matches canonical', () => {
     const meta = buildPageMetadata(TEST_SITE_URL, input);
-    expect(meta.openGraph!.url).toBe('https://example.com/about');
+    expect(meta.openGraph!.url).toBe('https://example.com/about/');
   });
 
   it('openGraph images have width 1200 and height 630', () => {
@@ -154,7 +154,7 @@ describe('buildPageJsonLd', () => {
 
   it('builds url from siteUrl and path', () => {
     const ld = buildPageJsonLd(TEST_SITE_URL, input);
-    expect(ld.url).toBe('https://example.com/about');
+    expect(ld.url).toBe('https://example.com/about/');
   });
 
   it('sets name from title', () => {
@@ -169,7 +169,7 @@ describe('buildPageJsonLd', () => {
 
   it('has @id with #webpage suffix', () => {
     const ld = buildPageJsonLd(TEST_SITE_URL, input);
-    expect(ld['@id']).toBe('https://example.com/about#webpage');
+    expect(ld['@id']).toBe('https://example.com/about/#webpage');
   });
 
   it('sets inLanguage to en-IN', () => {
@@ -206,7 +206,7 @@ describe('buildBreadcrumbJsonLd', () => {
   it('builds full URLs for each breadcrumb item', () => {
     const items = [{ name: 'Products', path: '/products' }];
     const ld = buildBreadcrumbJsonLd(TEST_SITE_URL, items);
-    expect(ld.itemListElement[0].item).toBe('https://example.com/products');
+    expect(ld.itemListElement[0].item).toBe('https://example.com/products/');
   });
 
   it('sets name for each breadcrumb item', () => {
@@ -233,6 +233,7 @@ describe('buildGlobalJsonLd', () => {
     const ld = buildGlobalJsonLd(TEST_SITE_URL);
     const org = ld['@graph'].find((node: { '@type': string }) => node['@type'] === 'Organization');
     expect(org.name).toBe(SITE_BRAND.companyName);
+    expect(org.logo).toBe(`${TEST_SITE_URL}/logo-v2.webp`);
     expect(org.email).toBe(SITE_CONTACT.salesEmail);
     expect(org.contactPoint).toHaveLength(2);
     expect(org.sameAs).toContain(TEST_SITE_URL);

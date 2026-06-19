@@ -312,7 +312,7 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
                     </button>
 
                     {isOpen && (
-                      <div className="mt-1 space-y-2 rounded-xl border border-soft bg-hover p-2 animate-in fade-in duration-150">
+                      <div className="mt-1 space-y-2 rounded-xl border border-soft bg-hover p-2 site-header-flyout animate-in fade-in duration-300">
                         <Link
                           href="/products"
                           onClick={handleClose}
@@ -323,9 +323,7 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
 
                         {groupedCategories.map((group) => (
                           <div key={group.groupId}>
-                            <p className={drawerGroupLabelClass}>
-                              {group.groupLabel}
-                            </p>
+                            <p className={drawerGroupLabelClass}>{group.groupLabel}</p>
                             <ul className="space-y-1">
                               {group.items.map((item) => (
                                 <li key={item.id}>
@@ -335,16 +333,13 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
                                       onClick={handleClose}
                                       className={drawerSubtleLinkClass}
                                     >
-                                      <span>{item.name}</span>
-                                      {typeof item.count === "number" && (
-                                        <span className={drawerCountClass}>{item.count}</span>
-                                      )}
+                                      {item.name}
                                     </Link>
                                   )}
 
                                   {Array.isArray(item.subcategories) &&
                                     item.subcategories.length > 0 && (
-                                    <ul className="ml-5 mt-1 space-y-0.5 border-l border-soft pl-3">
+                                    <ul className="mt-1 space-y-0.5">
                                       {item.subcategories.map((subcategory) => (
                                         <li key={`${item.id}-${subcategory.id}`}>
                                           <Link
@@ -352,12 +347,7 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
                                             onClick={handleClose}
                                             className={drawerSubcategoryLinkClass}
                                           >
-                                            <span>{subcategory.name}</span>
-                                            {typeof subcategory.count === "number" && (
-                                              <span className={drawerCountClass}>
-                                                {subcategory.count}
-                                              </span>
-                                            )}
+                                            {subcategory.name}
                                           </Link>
                                         </li>
                                       ))}

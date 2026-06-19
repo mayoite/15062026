@@ -5,6 +5,12 @@ import { SITE_URL } from "@/lib/siteUrl";
 
 const BASE_URL = SITE_URL.replace(/\/+$/, "");
 
+function sitemapUrl(path: string): string {
+  if (path === "/") return `${BASE_URL}/`;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return `${BASE_URL}${normalized.replace(/\/+$/, "")}/`;
+}
+
 const STATIC_PATHS = [
   "/",
   "/about",
@@ -37,7 +43,7 @@ const STATIC_PATHS = [
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const entries: MetadataRoute.Sitemap = STATIC_PATHS.map((path) => ({
-    url: `${BASE_URL}${path}`,
+    url: sitemapUrl(path),
     lastModified: now,
     changeFrequency: path === "/" ? "daily" : "weekly",
     priority: path === "/" ? 1 : 0.7,
@@ -47,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const catalog = buildRequestedCategoryCatalog(await getCatalog());
     for (const category of catalog) {
       entries.push({
-        url: `${BASE_URL}/products/${category.id}`,
+        url: sitemapUrl(`/products/${category.id}`),
         lastModified: now,
         changeFrequency: "weekly",
         priority: 0.8,
@@ -57,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         for (const product of series.products) {
           const slug = product.slug || product.id;
           entries.push({
-            url: `${BASE_URL}/products/${category.id}/${slug}`,
+            url: sitemapUrl(`/products/${category.id}/${slug}`),
             lastModified: now,
             changeFrequency: "monthly",
             priority: 0.6,

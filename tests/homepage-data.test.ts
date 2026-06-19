@@ -12,7 +12,7 @@ import {
 describe("homepage data", () => {
   it("hero leads with products not planner", () => {
     expect(HOMEPAGE_HERO_CONTENT.primaryCta.href).toBe("/products");
-    expect(HOMEPAGE_HERO_CONTENT.secondaryCta.href).toBe("/contact");
+    expect(HOMEPAGE_HERO_CONTENT.secondaryCta.href).toBe("/#contact");
   });
 
   it("hero glass proof links to trusted-by with badge and narrative copy", () => {

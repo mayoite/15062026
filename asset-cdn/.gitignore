@@ -1,6 +1,0 @@
-# Heavy catalog trees — local upload mirror only (see docs/workflow/folders.md)
-images/
-models/
-*
-!README.md
-!.gitignore

@@ -213,3 +213,58 @@
 }
 .group:hover .catalog-card__link { color: var(--color-primary); }
 
+.catalog-card--compact .catalog-card__media {
+  aspect-ratio: 1 / 1;
+}
+
+.catalog-card--compact .catalog-card__body {
+  gap: 0.35rem;
+  padding: 0.875rem 1rem 0.25rem;
+}
+
+.catalog-card--compact .catalog-card__title {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.catalog-card--compact .catalog-card__meta {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.catalog-card--compact .catalog-card__footer {
+  padding: 0 1rem 1rem;
+}
+
+/* Products index — compact category tiles (homepage carousel keeps full size). */
+.home-collection-card--compact {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-lg);
+}
+
+.home-collection-card--compact .home-collection-card__footer {
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .home-collection-card--compact .home-collection-card__footer {
+    padding: 1rem 1.25rem;
+  }
+}
+
+.home-collection-card--compact .typ-overlay-title {
+  font-size: clamp(0.875rem, 0.84rem + 0.18vw, 1rem);
+  line-height: 1.15;
+}
+
+.home-collection-card--compact .home-collection-card__arrow {
+  height: 1.75rem;
+  width: 1.75rem;
+}
+
+.home-collection-card--compact:hover {
+  box-shadow: 0 12px 28px -22px color-mix(in srgb, var(--color-ocean-boat-blue-900) 24%, transparent);
+}
+

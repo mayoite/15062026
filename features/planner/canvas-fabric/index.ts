@@ -2,10 +2,7 @@
 
 /**
  * Custom fabric.js based floorplan canvas ported from the e:\floorplan-react prototype.
- * Per user decision (2026-06-18): we will use this canvas + its nice theme/layout approach.
- *
- * This is experimental integration surface. The main planner continues to use tldraw
- * for 2D + 3D sync + catalog + persistence until W2 exit criteria met and full port evaluated.
+ * Per user decision (2026-06-18): this is the active 2D planner surface and theme/layout base.
  */
 
 export { FloorplanCanvas } from "./FloorplanCanvas";

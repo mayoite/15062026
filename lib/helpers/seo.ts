@@ -1,9 +1,11 @@
 export {
   buildBreadcrumbJsonLd,
+  buildCanonicalUrl,
   buildGlobalJsonLd,
   buildPageJsonLd,
   buildPageMetadata,
   buildSiteMetadata,
+  canonicalPath,
 } from "@/data/site/seo";
 
 export type BreadcrumbItem = {
@@ -43,10 +45,6 @@ export type ProductJsonLdInput = {
   url: string;
   image: string;
 };
-
-export function buildCanonicalUrl(siteUrl: string, path: string): string {
-  return new URL(path, siteUrl).toString();
-}
 
 export function buildFAQJsonLd(items: FaqJsonLdItem[]) {
   return {

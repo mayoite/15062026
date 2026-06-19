@@ -47,7 +47,7 @@ export function HomeFAQ() {
                       </span>
                       <motion.span
                         animate={{ rotate: isOpen ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.38 }}
                       >
                         <CaretDown size={18} weight="bold" className="shrink-0 text-subtle" aria-hidden="true" />
                       </motion.span>
@@ -63,7 +63,7 @@ export function HomeFAQ() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                       >
                         <div className="pb-1">{item.a}</div>
                       </motion.dd>

@@ -1052,32 +1052,10 @@ export const LEGAL_PAGE_COPY = {
 } as const;
 
 export const PRODUCTS_PAGE_COPY = {
-  heroTitle: "Workspace products",
   heroSubtitle:
     "Furniture categories built for real office workflows, long-term durability, and scalable growth.",
-  rangeKicker: "Category entry",
-  rangeTitle: "Browse by workspace need",
-  strategyKicker: "Product strategy",
-  strategyTitle: "Products selected for performance, not just presentation.",
-  strategyDescription:
-    "We help teams choose categories and specifications that support productivity, maintenance, and long-term value across different departments and work modes.",
-  featureBullets: [
-    "Ergonomic seating for task, executive, and visitor zones.",
-    "Modular workstations for scalable team layouts.",
-    "Meeting and collaboration furniture for shared spaces.",
-    "Storage systems and accessories for organized operations.",
-  ],
-  whyKicker: "Selection model",
-  whyTitle: "Category decisions tied to planning, delivery, and support.",
-  consultKicker: "Need category guidance?",
-  consultTitle: "Share your brief and we will suggest the right category mix.",
-  consultDescription:
-    "Tell us your team size, workspace type, and timeline. We will respond with practical product options and implementation guidance.",
-  consultPrimaryCta: "Request product consultation",
-  consultSecondaryCta: "Explore planning service",
-  consultTertiaryCta: "Open Resource Desk",
-  confidenceKicker: "Selected organisations",
-  confidenceCta: "Compare selected products",
+  headlineLead: "Products selected for",
+  headlineAccent: "performance, not just presentation.",
   pillars: [
     {
       title: "Specification-led guidance",
@@ -1097,14 +1075,6 @@ export const PRODUCTS_PAGE_COPY = {
         "Warranty coverage and service support are built into every proposal, not handled as an afterthought.",
       icon: "shield",
     },
-  ],
-  clients: [
-    { name: "HDFC", logo: "/images/client-logos/HDFCLogo.jpg" },
-    { name: "L&T", logo: "/images/client-logos/LandT.png" },
-    { name: "Tata Motors", logo: "/images/client-logos/TataMotors.jpg" },
-    { name: "SAIL", logo: "/images/client-logos/SAIL.png" },
-    { name: "Maruti Suzuki", logo: "/images/client-logos/MarutiSuzuki.png" },
-    { name: "Hyundai", logo: "/images/client-logos/HyundaiLogo.jpg" },
   ],
 } as const;
 

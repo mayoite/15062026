@@ -154,4 +154,22 @@ describe("SITE_FOOTER_NAV", () => {
       }
     }
   });
+
+  it("has no duplicate hrefs across footer sections", () => {
+    const hrefs = SITE_FOOTER_NAV.flatMap((section) =>
+      section.links.map((link) => link.href.replace(/\/$/, "") || "/"),
+    );
+    expect(new Set(hrefs).size).toBe(hrefs.length);
+  });
+
+  it("includes trimmed Products links (categories live in header mega menu)", () => {
+    const products = SITE_FOOTER_NAV.find((section) => section.heading === "Products");
+    expect(products?.links.map((link) => link.label)).toEqual(["All Products", "Solutions"]);
+    expect(SITE_FOOTER_NAV.flatMap((section) => section.links).some((link) => link.href === "/news")).toBe(
+      false,
+    );
+    expect(SITE_FOOTER_NAV.flatMap((section) => section.links).some((link) => link.href === "/showrooms")).toBe(
+      true,
+    );
+  });
 });

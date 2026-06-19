@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ChevronRight, ChevronUp, GitCompareArrows, ShoppingCart, X } from "lucide-react";
+import { ChevronDown, ChevronUp, GitCompareArrows, ShoppingCart, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import clsx from "clsx";
 
@@ -18,10 +18,7 @@ import {
   fallbackAltText,
   type FlatProduct,
   getDisplayDimensions,
-  getDisplayMaterials,
-  getDisplayUseCase,
   getProductRouteKey,
-  getProductSignals,
   toInlineSpec,
 } from "./FilterGrid.helpers";
 
@@ -208,19 +205,9 @@ export function ProductCard({
     fallbackAltText(displayName, categoryName);
   const categoryLabel = toInlineSpec(categoryName, 40);
   const dimensions = getDisplayDimensions(product);
-  const materials = getDisplayMaterials(product);
-  const useCase = getDisplayUseCase(product);
-  const productSignals = getProductSignals(product);
-  const description = sanitizeDisplayText(product.description || "");
-  const factRows = [
-    { label: "Series", value: sanitizeDisplayText(product.seriesName) },
-    { label: "Use", value: useCase },
-    { label: "Dimensions", value: dimensions },
-    { label: "Materials", value: materials },
-  ].filter((row) => row.value);
 
   return (
-    <article className="catalog-card group">
+    <article className="catalog-card catalog-card--compact group">
       <button
         type="button"
         onClick={() => {
@@ -278,47 +265,14 @@ export function ProductCard({
           </div>
         </div>
         <div className="catalog-card__body">
-          <div className="catalog-card__topline">
-            <p className="catalog-card__eyebrow">
-              {categoryLabel}
-            </p>
-          </div>
-          <div className="space-y-2.5">
-            <h3 className="catalog-card__title">
-              {displayName}
-            </h3>
-            {description ? (
-              <p className="catalog-card__description line-clamp-3">
-                {description}
-              </p>
-            ) : null}
-          </div>
-          {productSignals.length > 0 ? (
-            <div className="catalog-card__signal-row" aria-hidden={undefined}>
-              {productSignals.slice(0, 3).map((signal) => (
-                <span key={signal} className="catalog-card__signal">
-                  {signal}
-                </span>
-              ))}
-            </div>
+          <p className="catalog-card__eyebrow">{categoryLabel}</p>
+          <h3 className="catalog-card__title">{displayName}</h3>
+          {dimensions ? (
+            <p className="catalog-card__meta line-clamp-1">{dimensions}</p>
           ) : null}
-          <div className="catalog-card__fact-grid">
-            {factRows.map((row) => (
-              <div key={row.label} className="catalog-card__fact">
-                <span className="catalog-card__fact-label">{row.label}</span>
-                <span className="catalog-card__fact-value">{row.value}</span>
-              </div>
-            ))}
-          </div>
-          <div className="catalog-card__actions">
-            <span className="catalog-card__link">
-              Open specs
-              <ChevronRight className="h-4 w-4" />
-            </span>
-          </div>
         </div>
       </Link>
-      <div className="px-5 pb-5 pt-0">
+      <div className="catalog-card__footer">
         <button
           type="button"
           onClick={() => {

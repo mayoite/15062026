@@ -2,21 +2,19 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "@/app/css/core/site/bundles/footer.css";
 import "@/app/css/core/site/bundles/contact.css";
-import "@/app/css/core/site/bundles/marketing.css";
+import "@/app/css/core/site/bundles/site-surfaces.css";
+import "@/app/css/core/site/bundles/legal.css";
 import "@/app/css/core/site/bundles/error.css";
 import QueryProvider from "@/app/(site)/providers/QueryProvider";
 import { ciscoSans, helveticaNeue } from "@/lib/fonts";
 import { SITE_URL } from "@/lib/siteUrl";
 import { buildGlobalJsonLd, buildSiteMetadata } from "@/lib/analytics/seo";
+import { SITE_VIEWPORT } from "@/lib/siteViewport";
 import { RouteChrome } from "@/components/site/RouteChrome";
 
 export const metadata: Metadata = buildSiteMetadata(SITE_URL);
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  minimumScale: 1,
-};
+export const viewport: Viewport = SITE_VIEWPORT;
 
 const GLOBAL_JSON_LD = buildGlobalJsonLd(SITE_URL);
 

@@ -327,11 +327,11 @@
   --spacing: 0.25rem;
 
   /* ── Motion ── */
-  --motion-fast: 180ms;
-  --motion-base: 240ms;
-  --motion-slow: 320ms;
-  --motion-slower: 480ms;
-  --motion-slowest: 600ms;
+  --motion-fast: 260ms;
+  --motion-base: 360ms;
+  --motion-slow: 480ms;
+  --motion-slower: 640ms;
+  --motion-slowest: 820ms;
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);

@@ -1,5 +1,24 @@
 /* Floating action buttons — explicit viewport anchoring (avoids missing dynamic Tailwind offsets). */
 
+:root {
+  --site-fab-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  --site-fab-bottom-raised: calc(6.25rem + env(safe-area-inset-bottom, 0px));
+  --site-fab-clearance: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  --site-fab-side-left: 0px;
+  --site-fab-side-right: 0px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --site-fab-side-left: 10.5rem;
+    --site-fab-side-right: 4.75rem;
+  }
+}
+
+html:has([data-cookie-consent-bar]) {
+  --site-fab-clearance: calc(10.5rem + env(safe-area-inset-bottom, 0px));
+}
+
 @utility site-fab-anchor {
   position: fixed;
   z-index: 40;
@@ -25,11 +44,11 @@
 }
 
 @utility site-fab-anchor--bottom {
-  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  bottom: var(--site-fab-bottom);
 }
 
 @utility site-fab-anchor--bottom-raised {
-  bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px));
+  bottom: var(--site-fab-bottom-raised);
 }
 
 @utility site-fab-anchor--panel {

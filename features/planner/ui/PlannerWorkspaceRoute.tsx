@@ -3,12 +3,14 @@
 import dynamic from "next/dynamic";
 
 import { Providers } from "@/features/planner/components/Providers";
+import { ProjectSetupGate } from "@/features/planner/onboarding/ProjectSetupGate";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
+import { PlannerCanvasEnhancements } from "./PlannerCanvasEnhancements";
 
-const UnifiedPlannerPage = dynamic(
+const PlannerWorkspace = dynamic(
   () =>
-    import("@/features/planner/ui/UnifiedPlannerPage").then((mod) => ({
-      default: mod.UnifiedPlannerPage,
+    import("@/features/planner/editor/PlannerWorkspace").then((mod) => ({
+      default: mod.PlannerWorkspace,
     })),
   { loading: () => <PlannerSkeleton />, ssr: false },
 );
@@ -22,7 +24,10 @@ export function PlannerWorkspaceRoute({
 }) {
   return (
     <Providers>
-      <UnifiedPlannerPage guestMode={guestMode} planId={planId} />
+      <ProjectSetupGate guestMode={guestMode} planId={planId}>
+        <PlannerWorkspace guestMode={guestMode} planId={planId} />
+        <PlannerCanvasEnhancements guestMode={guestMode} />
+      </ProjectSetupGate>
     </Providers>
   );
 }

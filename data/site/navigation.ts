@@ -1,7 +1,3 @@
-import {
-  Catalog_CATEGORY_ORDER,
-  buildCatalogCategoryNav,
-} from '@/features/catalog/categories';
 import { SITE_CONTACT } from "@/data/site/contact";
 import { PRODUCT_SUITE } from "@/data/site/productSuite";
 
@@ -9,7 +5,6 @@ export const SITE_NAV_LINKS = [
   { label: "Products", href: "/products", hasMega: true },
   { label: "Solutions", href: "/solutions" },
   { label: "Planner", href: PRODUCT_SUITE.planner.routes.landing },
-  { label: "Configurator", href: PRODUCT_SUITE.configurator.routes.landing },
   { label: "Projects", href: "/projects" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Trusted by", href: "/trusted-by" },
@@ -47,20 +42,43 @@ export const SITE_NAV_SEARCH_FALLBACK_LINKS = [
   { href: "/products", label: "All Products" },
   { href: "/solutions", label: "Solutions" },
   { href: PRODUCT_SUITE.planner.routes.landing, label: "Planner" },
-  { href: PRODUCT_SUITE.configurator.routes.landing, label: "Configurator" },
   { href: PRODUCT_SUITE.shared.routes.access, label: "Workspace access" },
   { href: "/projects", label: "Projects" },
 ] as const;
 
-const productLinks = [
-  { href: "/products", label: "All Products" },
-  ...buildCatalogCategoryNav(Catalog_CATEGORY_ORDER),
-];
+type FooterLink = { href: string; label: string };
 
-export const SITE_FOOTER_NAV = [
+function normalizeFooterHref(href: string): string {
+  if (href.length > 1 && href.endsWith("/")) return href.slice(0, -1);
+  return href;
+}
+
+/** Drop duplicate destinations across footer columns (first label wins). */
+function buildFooterNav(
+  sections: { heading: string; links: readonly FooterLink[] }[],
+): { heading: string; links: FooterLink[] }[] {
+  const globalSeen = new Set<string>();
+
+  return sections
+    .map((section) => ({
+      heading: section.heading,
+      links: section.links.filter((link) => {
+        const key = normalizeFooterHref(link.href);
+        if (globalSeen.has(key)) return false;
+        globalSeen.add(key);
+        return true;
+      }),
+    }))
+    .filter((section) => section.links.length > 0);
+}
+
+export const SITE_FOOTER_NAV = buildFooterNav([
   {
     heading: "Products",
-    links: productLinks,
+    links: [
+      { href: "/products", label: "All Products" },
+      { href: "/solutions", label: "Solutions" },
+    ],
   },
   {
     heading: "Company",
@@ -75,12 +93,24 @@ export const SITE_FOOTER_NAV = [
   {
     heading: "Services",
     links: [
+      { href: PRODUCT_SUITE.planner.routes.landing, label: "Workspace Planner" },
+      { href: "/contact", label: "Contact" },
       { href: "/service", label: "After Sales" },
-      { href: "/contact", label: "Contact Us" },
-      { href: "/planning", label: "Planning Service" },
-      { href: PRODUCT_SUITE.planner.routes.landing, label: "Space Planner" },
+      { href: "/showrooms", label: "Showrooms" },
     ],
   },
-] as const;
+  {
+    heading: "Workspace",
+    links: [
+      { href: PRODUCT_SUITE.shared.routes.access, label: "Access" },
+      { href: PRODUCT_SUITE.shared.routes.login, label: "Login" },
+      { href: PRODUCT_SUITE.shared.routes.chooser, label: "Choose Product" },
+      { href: PRODUCT_SUITE.shared.routes.dashboard, label: "Dashboard" },
+      { href: PRODUCT_SUITE.planner.routes.portal, label: "Member Portal" },
+      { href: PRODUCT_SUITE.admin.routes.landing, label: "Admin" },
+      { href: "/ops/customer-queries", label: "Ops" },
+    ],
+  },
+]);
 
 export const SITE_SOCIAL_LINKS = SITE_CONTACT.socialLinks;

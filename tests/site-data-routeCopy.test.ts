@@ -168,10 +168,9 @@ describe("route copy — legal and catalog routes", () => {
     expect(LEGAL_PAGE_COPY.refund.sections).toHaveLength(4);
   });
 
-  it("products page copy includes confidence clients with logos", () => {
+  it("products page copy includes pillar cards", () => {
     expect(PRODUCTS_PAGE_COPY.pillars).toHaveLength(3);
-    expect(PRODUCTS_PAGE_COPY.clients.every((c) => c.logo.startsWith("/"))).toBe(true);
-    expect(PRODUCTS_PAGE_COPY.consultTertiaryCta).toMatch(/Resource Desk/i);
+    expect(PRODUCTS_PAGE_COPY.headlineAccent).toMatch(/presentation/i);
   });
 
   it("category, compare, quote cart, and PDP route copy expose UI labels", () => {

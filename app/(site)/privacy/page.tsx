@@ -1,5 +1,4 @@
 ﻿import Link from "next/link";
-import "@/app/css/core/site/bundles/legal.css";
 import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { LEGAL_PAGE_COPY } from "@/data/site/routeCopy";

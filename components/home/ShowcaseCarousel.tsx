@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { fadeUp, useMotionSafeHover } from "@/lib/helpers/motion";
+import { PartnershipPanel } from "@/components/home/PartnershipBanner";
 
 export interface CarouselItem {
   id: string;
@@ -26,6 +27,7 @@ interface ShowcaseCarouselProps {
   browseLabel?: string;
   className?: string;
   dark?: boolean;
+  showPartnership?: boolean;
 }
 
 export function ShowcaseCarousel({
@@ -37,6 +39,7 @@ export function ShowcaseCarousel({
   browseLabel = "Browse all",
   className = "",
   dark = false,
+  showPartnership = false,
 }: ShowcaseCarouselProps) {
   const navHover = useMotionSafeHover({ scale: 1.04 }, { scale: 0.98 });
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", loop: false });
@@ -92,6 +95,12 @@ export function ShowcaseCarousel({
       aria-label={sectionAriaLabel}
     >
       <div className="home-shell-xl">
+        {showPartnership ? (
+          <div className="mb-10">
+            <PartnershipPanel />
+          </div>
+        ) : null}
+
         <motion.div
           className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"
           {...fadeUp(16, 0.06)}

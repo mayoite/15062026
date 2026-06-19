@@ -445,6 +445,9 @@ export function UnifiedAssistant() {
   const mobilePanelAnchor = consentChosen
     ? "site-fab-anchor site-fab-anchor--inset-x site-fab-anchor--panel"
     : "site-fab-anchor site-fab-anchor--inset-x site-fab-anchor--panel-raised";
+  const desktopFabAnchor = consentChosen
+    ? "site-fab-anchor site-fab-anchor--left site-fab-anchor--bottom"
+    : "site-fab-anchor site-fab-anchor--left site-fab-anchor--bottom-raised";
 
   return (
     <>
@@ -499,7 +502,7 @@ export function UnifiedAssistant() {
             type="button"
             onClick={() => setChatOpen(true)}
             aria-label="Open AI chatbot"
-            className={`site-fab-anchor site-fab-anchor--left site-fab-anchor--bottom inline-flex items-center gap-2 rounded-full bg-primary px-3.5 py-3 text-white shadow-xl transition-colors hover:bg-primary-hover ${FOCUS_RING}`}
+            className={`${desktopFabAnchor} inline-flex items-center gap-2 rounded-full bg-primary px-3.5 py-3 text-white shadow-xl transition-colors hover:bg-primary-hover ${FOCUS_RING}`}
           >
             <Sparkles className="h-4 w-4" />
             <span className="hidden xl:inline text-xs font-semibold uppercase tracking-[0.14em]">

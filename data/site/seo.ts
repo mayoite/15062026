@@ -23,6 +23,17 @@ type BreadcrumbItem = {
   path: string;
 };
 
+/** Paths for trailingSlash routes — homepage stays `/`, others end with `/`. */
+export function canonicalPath(path: string): string {
+  if (!path || path === "/") return "/";
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return normalized.endsWith("/") ? normalized : `${normalized}/`;
+}
+
+export function buildCanonicalUrl(siteUrl: string, path: string): string {
+  return new URL(canonicalPath(path), siteUrl).toString();
+}
+
 export function buildSiteMetadata(siteUrl: string): Metadata {
   return {
     metadataBase: new URL(siteUrl),
@@ -86,7 +97,7 @@ export function buildSiteMetadata(siteUrl: string): Metadata {
 }
 
 export function buildPageMetadata(siteUrl: string, input: PageMetadataInput): Metadata {
-  const canonicalUrl = new URL(input.path, siteUrl).toString();
+  const canonicalUrl = buildCanonicalUrl(siteUrl, input.path);
   const image = input.image || SITE_BRAND.ogImage;
 
   return {
@@ -119,7 +130,7 @@ export function buildPageMetadata(siteUrl: string, input: PageMetadataInput): Me
 }
 
 export function buildPageJsonLd(siteUrl: string, input: PageJsonLdInput) {
-  const pageUrl = new URL(input.path, siteUrl).toString();
+  const pageUrl = buildCanonicalUrl(siteUrl, input.path);
 
   return {
     "@context": "https://schema.org",
@@ -142,7 +153,7 @@ export function buildBreadcrumbJsonLd(siteUrl: string, items: BreadcrumbItem[]) 
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: new URL(item.path, siteUrl).toString(),
+      item: buildCanonicalUrl(siteUrl, item.path),
     })),
   };
 }
@@ -160,7 +171,7 @@ export function buildGlobalJsonLd(siteUrl: string) {
         "@id": organizationId,
         name: SITE_BRAND.companyName,
         url: siteUrl,
-        logo: `${siteUrl}/logo.webp`,
+        logo: `${siteUrl}/logo-v2.webp`,
         description: SITE_BRAND.organizationDescription,
         email: SITE_CONTACT.salesEmail,
         telephone: SITE_CONTACT.salesPhone,

@@ -26,7 +26,7 @@ test.describe("site navigation smoke", () => {
 
     const requestQuote = page.getByRole("link", { name: "Request a quote" });
     await expect(requestQuote).toBeVisible();
-    await expect(requestQuote).toHaveAttribute("href", /\/contact\/?$/);
+    await expect(requestQuote).toHaveAttribute("href", /#contact$/);
 
     const glassProof = page.getByRole("link", { name: /View clients/i });
     await expect(glassProof).toBeVisible();
@@ -44,12 +44,13 @@ test.describe("site navigation smoke", () => {
     await expect(page.getByRole("heading", { name: /Delivered for/i })).toContainText(
       /leading organizations/i,
     );
-    await expect(
-      page.getByRole("heading", { name: /Official Strategic/i }),
-    ).toContainText(/Partner/i);
+    await expect(page.getByTestId("home-partnership")).toContainText(/Official Strategic/i);
+    await expect(page.getByTestId("home-partnership")).toContainText(/Partner/i);
     await expect(page.getByRole("heading", { name: /Design your workspace/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Oando Planner/i })).toBeVisible();
-    await expect(page.locator("a.home-tool-card", { hasText: /Planning service/i })).toBeVisible();
+    await expect(page.locator("a.home-tool-card", { hasText: /Oando Planner/i })).toBeVisible();
+    await expect(page.getByLabel(/example 10 by 8 metre office floor plan/i)).toBeVisible();
+    await expect(page.getByTestId("home-tools-floorplan")).toBeVisible();
     await expect(
       page.getByRole("heading", { name: /We engineer workspaces/i }),
     ).toBeVisible();
@@ -59,7 +60,8 @@ test.describe("site navigation smoke", () => {
     await expect(briefForm.getByRole("button", { name: /Send Brief/i })).toBeVisible();
     await expect(briefForm.getByLabel("Name")).toBeVisible();
     await expect(briefForm.getByLabel("City")).toBeVisible();
-    await expect(briefForm.getByLabel("Phone or Email")).toBeVisible();
+    await expect(briefForm.getByLabel("Phone")).toBeVisible();
+    await expect(briefForm.getByLabel("Email")).toBeVisible();
     await expect(briefForm.locator("#contact-teaser-brief")).toBeVisible();
   });
 
@@ -75,7 +77,7 @@ test.describe("site navigation smoke", () => {
     test.skip(!hasSupabaseEnv, "Requires NEXT_PUBLIC_SUPABASE_URL");
     await page.goto("/products");
 
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(/Workspace products/i);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/Products selected for performance/i);
     await expect(page.getByRole("heading", { level: 2, name: /Browse by workspace need/i })).toBeVisible();
 
     const firstCategoryCard = page.locator('a[href^="/products/"]').first();
@@ -94,7 +96,7 @@ test.describe("site navigation smoke", () => {
     await megaMenu.getByRole("link", { name: "All Products >" }).click();
 
     await expect(page).toHaveURL(/\/products\/?$/);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(/Workspace products/i);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/Products selected for performance/i);
   });
 
   test("mobile drawer opens and All Products closes drawer on /products", async ({ page }) => {

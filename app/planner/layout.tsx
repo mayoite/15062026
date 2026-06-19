@@ -1,18 +1,15 @@
 import type { Viewport } from "next";
 import "@/app/(site)/globals.css";
-import "@/app/css/core/site/bundles/marketing.css";
+import "@/app/css/core/site/bundles/site-surfaces.css";
 import "@/app/css/core/planner/bundles/marketing.css";
 import QueryProvider from "@/app/(site)/providers/QueryProvider";
 import { ciscoSans, helveticaNeue } from "@/lib/fonts";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
+import { SITE_VIEWPORT } from "@/lib/siteViewport";
 import { PlannerBodyTheme } from "@/features/planner/components/PlannerBodyTheme";
 
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  minimumScale: 1,
-};
+export const viewport: Viewport = SITE_VIEWPORT;
 
 export default function PlannerRootLayout({
   children,

@@ -76,6 +76,17 @@ export function toTelHref(phone: string) {
   return `tel:${phone}`;
 }
 
+export function formatSitePostalAddress() {
+  const { streetAddress, addressLocality, postalCode, addressRegion, addressCountry } =
+    SITE_CONTACT.address;
+  const country = addressCountry === "IN" ? "India" : addressCountry;
+  return [
+    streetAddress,
+    `${addressLocality}, ${addressRegion} ${postalCode}`,
+    country,
+  ].join("\n");
+}
+
 export function buildMailtoHref(subject?: string, body?: string) {
   const params = new URLSearchParams();
   if (subject) params.set("subject", subject);

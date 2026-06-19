@@ -358,7 +358,7 @@
    Active contract: docs/plans/04-DESIGN-SYSTEM-AND-THEME.md. */
 @utility text-accent-italic {
   font-style: italic;
-  color: var(--color-bronze-400);
+  color: var(--color-bronze-500);
   font-weight: inherit;
   letter-spacing: inherit;
 }

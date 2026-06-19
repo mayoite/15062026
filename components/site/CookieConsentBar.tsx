@@ -157,6 +157,7 @@ export function CookieConsentBar() {
       aria-live="polite"
       aria-labelledby="cookie-dialog-title"
       aria-describedby="cookie-dialog-desc"
+      data-cookie-consent-bar
       className={consentBarClass}
     >
       <div className="shell-container px-4 py-3 sm:px-6 md:py-4 2xl:px-0">
@@ -166,7 +167,7 @@ export function CookieConsentBar() {
             We use essential cookies and optional analytics & attribution cookies to improve
             discoverability and user journeys. See our{" "}
           <Link href="/privacy" prefetch={false} className="font-semibold text-primary hover:underline">
-            Privacy Policy
+            privacy notice
           </Link>
             .
           </p>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/app/css/core/site/bundles/homepage-only.css";
 import { HomepageHero } from "@/components/home/HomepageHero";
 import { PartnershipBanner } from "@/components/home/PartnershipBanner";
 import { Collections } from "@/components/home/Collections";
@@ -40,6 +41,8 @@ export default async function Home() {
       <PartnershipBanner />
       <Collections />
       <TrustStrip stats={stats} />
+      <InteractiveTools />
+      <WhyChooseUs />
       <ShowcaseCarousel
         sectionLabel={HOMEPAGE_SHOWCASE_CONTENT.sectionLabel}
         sectionAriaLabel={`${HOMEPAGE_SHOWCASE_CONTENT.sectionTitleLead} ${HOMEPAGE_SHOWCASE_CONTENT.sectionTitleAccent}`}
@@ -55,8 +58,6 @@ export default async function Home() {
         browseLink={HOMEPAGE_SHOWCASE_CONTENT.browseCta.href}
         browseLabel={HOMEPAGE_SHOWCASE_CONTENT.browseCta.label}
       />
-      <InteractiveTools />
-      <WhyChooseUs />
       <ContactTeaser />
     </div>
   );

@@ -46,9 +46,6 @@ export function RouteChrome({
     pathname === "/portal" || pathname?.startsWith("/portal/") ||
     pathname === "/admin" || pathname?.startsWith("/admin/") ||
     isBackendArchitectureRoute ||
-    pathname?.startsWith("/crm/clients") ||
-    pathname?.startsWith("/crm/projects") ||
-    pathname?.startsWith("/crm/quotes") ||
     false;
 
   if (position === "top") {

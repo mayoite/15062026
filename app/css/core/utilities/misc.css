@@ -79,24 +79,23 @@
 @utility site-footer__columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 2.5rem;
+  gap: 2rem;
   align-items: start;
-  @media (min-width: 1024px) {
+  @media (min-width: 640px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(2rem, 3vw, 3rem) clamp(2rem, 4vw, 3.5rem);
+  }
+  @media (min-width: 1024px) {
+    grid-template-columns: minmax(220px, 1.15fr) repeat(4, minmax(0, 1fr));
+    gap: clamp(1.5rem, 2.5vw, 2.5rem);
   }
 }
 
 @utility site-footer__brand-col {
-  @media (min-width: 1024px) {
-    grid-column: 1 / -1;
-  }
+  min-width: 0;
 }
 
 @utility site-footer__nav-col--products {
-  @media (min-width: 1024px) {
-    grid-column: 1 / -1;
-  }
+  min-width: 0;
 }
 
 @utility site-footer__nav-col {

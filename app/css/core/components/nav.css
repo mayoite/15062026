@@ -85,6 +85,29 @@
   z-index: 10;
 }
 
+/* Invisible bridge so pointer can travel from nav trigger to the mega panel */
+.mega-menu-panel::before {
+  content: '';
+  position: absolute;
+  top: -0.75rem;
+  left: 0;
+  right: 0;
+  height: 0.75rem;
+}
+
+.mega-menu-panel {
+  position: relative;
+}
+
+.site-header .shell-nav-link--desktop {
+  transition-duration: var(--motion-base);
+}
+
+.site-header-flyout {
+  --tw-enter-duration: var(--motion-slow);
+  --tw-exit-duration: var(--motion-base);
+}
+
 .site-header__mega-heading {
   position: relative;
   padding-left: 0.75rem;

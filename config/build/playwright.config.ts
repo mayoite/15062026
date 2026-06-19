@@ -11,6 +11,7 @@ export default defineConfig({
   testDir: "../../tests",
   testMatch: ["**/*.spec.ts", "**/*.spec.tsx"],
   testIgnore: ["**/*.test.ts", "**/*.test.tsx"],
+  outputDir: "../../results/test-results",
   fullyParallel: true,
 
   // DYNAMIC CI FIX: 0 retries locally for fast feedback, 2 retries in CI to prevent flaky pipeline failures.
@@ -18,7 +19,9 @@ export default defineConfig({
 
   // DYNAMIC REPORTER: 'list' for terminals, 'html' for CI UI, and ALWAYS 'json' for the Ops Portal telemetry.
   reporter: [
-    [isCI ? "html" : "list"],
+    isCI
+      ? ["html", { outputFolder: "../../results/playwright-report" }]
+      : ["list"],
     ["json", { outputFile: "../../results/audits/raw-playwright.json" }]
   ],
 

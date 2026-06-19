@@ -48,7 +48,7 @@
 }
 
 .pdp-media-card {
-  min-height: min(62rem, calc(100vh - 12rem));
+  min-height: min(28rem, calc(100vh - 14rem));
 }
 
 .pdp-viewer-panel {
@@ -81,8 +81,7 @@
   .pdp-detail-pane {
     position: sticky;
     top: 7rem;
-    max-height: calc(100vh - 8.5rem);
-    overflow-y: auto;
+    align-self: start;
   }
 }
 

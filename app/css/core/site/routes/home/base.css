@@ -19,9 +19,28 @@
 /* Section layout + backgrounds */
 @utility home-section { width: 100%; }
 
-@utility home-section--sand { background: var(--surface-muted); }
-@utility home-section--soft { background: var(--surface-soft); }
-@utility home-section--white { background: var(--surface-page); }
+@utility home-section--sand {
+  background: linear-gradient(
+    180deg,
+    var(--color-ecru-100) 0%,
+    var(--color-ecru-200) 100%
+  );
+}
+@utility home-section--soft {
+  background: linear-gradient(
+    165deg,
+    var(--color-ecru-50) 0%,
+    var(--color-ecru-100) 52%,
+    color-mix(in srgb, var(--color-ocean-boat-blue-50) 42%, var(--color-ecru-100)) 100%
+  );
+}
+@utility home-section--white {
+  background: linear-gradient(
+    180deg,
+    var(--surface-page) 0%,
+    color-mix(in srgb, var(--color-ecru-50) 70%, var(--surface-page)) 100%
+  );
+}
 @utility home-section--dark {
   background: var(--surface-inverse);
   color: var(--text-inverse);
@@ -30,6 +49,49 @@
   background: var(--surface-inverse);
   color: var(--text-inverse);
   border-top: 2px solid var(--color-accent);
+}
+
+/* Dark tools band — ambient depth on homepage */
+.home-tools-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.home-tools-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 85% 65% at 100% 0%,
+      color-mix(in srgb, var(--color-accent) 28%, transparent),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 0% 100%,
+      color-mix(in srgb, var(--color-ocean-boat-blue-500) 18%, transparent),
+      transparent 52%
+    );
+}
+
+.home-tools-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 5%, transparent) 0%,
+    transparent 42%,
+    color-mix(in srgb, black 22%, transparent) 100%
+  );
+}
+
+.home-tools-band > .home-shell-xl {
+  position: relative;
+  z-index: 1;
 }
 
 /* Layout shells */
@@ -52,9 +114,15 @@
   overflow: hidden;
   border-width: 1px;
   border-radius: var(--radius-xl);
-  background: var(--surface-panel-strong);
-  border-color: var(--border-soft);
-  box-shadow: var(--shadow-panel);
+  background: linear-gradient(
+    145deg,
+    var(--color-white-50) 0%,
+    color-mix(in srgb, var(--color-ecru-100) 55%, var(--color-white-50)) 100%
+  );
+  border-color: color-mix(in srgb, var(--color-accent) 24%, var(--border-soft));
+  box-shadow:
+    0 28px 76px -52px color-mix(in srgb, var(--color-primary) 16%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-ocean-boat-blue-100) 40%, transparent);
 }
 
 @utility home-frame--standard {
@@ -317,9 +385,15 @@
 
 @utility home-partnership-panel {
   border-radius: var(--radius-giant);
-  border: 1px solid var(--border-soft);
-  background: var(--surface-panel-strong);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, var(--border-soft));
+  background: linear-gradient(
+    118deg,
+    var(--color-ecru-50) 0%,
+    color-mix(in srgb, var(--color-ocean-boat-blue-50) 65%, var(--color-ecru-100)) 100%
+  );
+  box-shadow:
+    0 24px 64px -40px color-mix(in srgb, var(--color-primary) 20%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 70%, transparent);
 }
 
 @utility home-chip {
@@ -542,9 +616,11 @@
   transition-timing-function: var(--ease-standard);
   &:hover {
     transform: translateY(-0.25rem);
-    border-color: var(--color-primary);
-    background: var(--surface-glass-strong);
-    box-shadow: 0 24px 60px -28px var(--overlay-inverse-18);
+    border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-primary));
+    background: color-mix(in srgb, var(--color-ecru-50) 40%, var(--surface-glass-strong));
+    box-shadow:
+      0 24px 60px -28px color-mix(in srgb, var(--color-primary) 20%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--color-ocean-boat-blue-200) 35%, transparent);
   }
 }
 
@@ -562,6 +638,52 @@
   text-transform: uppercase;
 }
 
+@utility home-tool-badge--dark {
+  border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent);
+}
+
+@utility home-tool-badge--inline {
+  position: static;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.62rem;
+}
+
+@utility home-tool-card--row {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1.25rem;
+  min-height: 168px;
+  padding-top: 1.5rem;
+}
+
+@utility home-tool-card__body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+@utility home-tool-icon--dark-lg {
+  display: flex;
+  height: 3.25rem;
+  width: 3.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, white 16%, transparent);
+  background: color-mix(in srgb, white 8%, transparent);
+  color: var(--color-accent);
+}
+
+.home-tool-icon--dark-lg svg {
+  color: var(--color-accent);
+  stroke: currentColor;
+}
+
 @utility home-tool-icon {
   display: flex;
   height: 2.75rem;
@@ -575,6 +697,30 @@
   color: var(--text-brand);
   transition: border-color var(--motion-fast) var(--ease-standard),
               background-color var(--motion-fast) var(--ease-standard);
+}
+
+@utility home-feature-icon--ocean {
+  border-color: color-mix(in srgb, var(--color-ocean-boat-blue-400) 45%, transparent);
+  background: color-mix(in srgb, var(--color-ocean-boat-blue-100) 75%, white);
+  color: var(--color-ocean-boat-blue-700);
+}
+
+@utility home-feature-icon--bronze {
+  border-color: color-mix(in srgb, var(--color-bronze-400) 45%, transparent);
+  background: color-mix(in srgb, var(--color-bronze-100) 55%, var(--color-ecru-100));
+  color: var(--color-bronze-600);
+}
+
+@utility home-feature-icon--sustain {
+  border-color: color-mix(in srgb, var(--color-sustain-400) 45%, transparent);
+  background: var(--surface-sustain-soft-strong);
+  color: var(--color-sustain-500);
+}
+
+@utility home-feature-icon--midnight {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  background: color-mix(in srgb, var(--color-ocean-boat-blue-100) 50%, var(--color-ecru-50));
+  color: var(--color-primary);
 }
 
 @utility home-tool-title {
@@ -593,13 +739,42 @@
 }
 
 @utility home-tool-card--dark {
+  min-height: 168px;
+  padding-top: 1.5rem;
   border: 1px solid color-mix(in srgb, white 14%, transparent);
   background: color-mix(in srgb, white 6%, transparent);
   box-shadow: 0 24px 60px -32px color-mix(in srgb, black 55%, transparent);
+  &::before {
+    content: "";
+    position: absolute;
+    inset-inline: 1.25rem;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-accent) 55%, transparent),
+      transparent
+    );
+    opacity: 0.55;
+    transition: opacity var(--motion-base) var(--ease-standard);
+  }
   &:hover {
     border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
     background: color-mix(in srgb, white 10%, transparent);
-    box-shadow: 0 28px 64px -28px color-mix(in srgb, black 45%, transparent);
+    box-shadow:
+      0 28px 64px -28px color-mix(in srgb, black 45%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--color-accent) 12%, transparent);
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+@utility home-tool-card--animated {
+  transition-property: box-shadow, border-color, background-color;
+  &:hover {
+    transform: none;
   }
 }
 

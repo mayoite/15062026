@@ -13,7 +13,7 @@ const DROP_IN: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.3, ease: "easeOut" },
+    transition: { duration: 0.5, ease: "easeOut" },
   },
 };
 

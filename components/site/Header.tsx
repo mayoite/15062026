@@ -85,6 +85,10 @@ const headerSearchKindClass = "shell-search-kind";
 const OTHERS_SUBCATEGORY_NAMES = new Set(["Cafe chairs", "Cafe Tables"]);
 const OTHERS_SUBCATEGORY_ORDER = ["Cafe Tables", "Cafe chairs"] as const;
 
+function megaMenuParentMatchesGroup(itemName: string, groupLabel: string) {
+  return itemName.trim().toLowerCase() === groupLabel.trim().toLowerCase();
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
   const router = useRouter();
@@ -102,7 +106,32 @@ export function SiteHeader() {
 
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const searchPanelRef = useRef<HTMLDivElement>(null);
-  const closeMegaMenu = () => setActiveMega(null);
+  const megaCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearMegaCloseTimer = () => {
+    if (megaCloseTimerRef.current) {
+      clearTimeout(megaCloseTimerRef.current);
+      megaCloseTimerRef.current = null;
+    }
+  };
+
+  const closeMegaMenu = () => {
+    clearMegaCloseTimer();
+    setActiveMega(null);
+  };
+
+  const openMegaMenu = (label: string) => {
+    clearMegaCloseTimer();
+    setActiveMega(label);
+  };
+
+  const scheduleMegaClose = () => {
+    clearMegaCloseTimer();
+    megaCloseTimerRef.current = setTimeout(() => {
+      setActiveMega(null);
+      megaCloseTimerRef.current = null;
+    }, 320);
+  };
 
   const isMegaPointerTarget = (target: EventTarget | null) => {
     if (!(target instanceof Element)) return false;
@@ -129,16 +158,17 @@ export function SiteHeader() {
       .catch(() => {});
   }, []);
 
-  // Scroll shadow + close flyouts
+  // Scroll shadow — do not close mega menu on scroll (users need time to reach the panel)
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 16);
-      setActiveMega(null);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => () => clearMegaCloseTimer(), []);
 
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -346,10 +376,10 @@ export function SiteHeader() {
                       key={link.label}
                       data-mega-zone
                       className="relative flex h-full items-stretch"
-                      onMouseEnter={() => setActiveMega(link.label)}
+                      onMouseEnter={() => openMegaMenu(link.label)}
                       onMouseLeave={(event) => {
                         if (isMegaPointerTarget(event.relatedTarget)) return;
-                        closeMegaMenu();
+                        scheduleMegaClose();
                       }}
                     >
                       <button
@@ -357,7 +387,7 @@ export function SiteHeader() {
                         data-mega-trigger
                         aria-expanded={activeMega === link.label}
                         aria-controls="products-mega-menu"
-                        onFocus={() => setActiveMega(link.label)}
+                        onFocus={() => openMegaMenu(link.label)}
                         className={cn(
                           "typ-nav shell-nav-link shell-nav-link--desktop relative inline-flex items-center gap-1 whitespace-nowrap px-2 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary xl:px-2.5",
                           isActive
@@ -372,7 +402,7 @@ export function SiteHeader() {
                           size={14}
                           weight="bold"
                           className={cn(
-                            "transition-transform",
+                            "transition-transform duration-300 ease-out",
                             activeMega === link.label && "rotate-180",
                           )}
                         />
@@ -432,7 +462,7 @@ export function SiteHeader() {
 
                   {showSearchPanel && (
                     <div
-                      className={`${headerSearchPanelClass} animate-in fade-in slide-in-from-top-2 duration-150`}
+                      className={`${headerSearchPanelClass} site-header-flyout animate-in fade-in slide-in-from-top-2 duration-300`}
                     >
                       <div className={headerSearchMetaClass}>
                         <span>{searchSectionTitle}</span>
@@ -529,64 +559,57 @@ export function SiteHeader() {
           {activeMega === "Products" && (
             <div
               id="products-mega-menu"
-              onMouseEnter={() => setActiveMega("Products")}
+              onMouseEnter={() => openMegaMenu("Products")}
               onMouseLeave={(event) => {
                 if (isMegaPointerTarget(event.relatedTarget)) return;
-                closeMegaMenu();
+                scheduleMegaClose();
               }}
-              className="mega-menu-panel hidden lg:block border-t border-soft bg-panel shadow-theme-soft animate-in fade-in slide-in-from-top-2 duration-150"
+              className="mega-menu-panel site-header-flyout hidden lg:block border-t border-soft bg-panel shadow-theme-soft animate-in fade-in slide-in-from-top-2 duration-300"
             >
-              <div className="shell-container-wide px-6 py-8">
-                <div className={cn("grid gap-5", megaMenuOthers.length > 0 ? "grid-cols-7" : "grid-cols-6")}>
-                  {megaMenuGroups.map((group, groupIndex) => (
+              <div className="shell-container-wide px-5 py-5">
+                <div className={cn("grid gap-x-3 gap-y-4", megaMenuOthers.length > 0 ? "grid-cols-7" : "grid-cols-6")}>
+                  {megaMenuGroups.map((group) => {
+                    const primaryItem = group.items[0];
+                    const hideParentRow = primaryItem
+                      ? megaMenuParentMatchesGroup(primaryItem.name, group.groupLabel)
+                      : false;
+
+                    return (
                     <div
                       key={group.groupId}
-                      className={cn(
-                        "min-w-0 px-3",
-                        groupIndex > 0 && "border-l border-soft",
-                      )}
+                      className="min-w-0"
                     >
                       <Link
-                        href={group.items[0]?.href || `/products/${group.groupId}`}
+                        href={primaryItem?.href || `/products/${group.groupId}`}
                         onClick={() => setActiveMega(null)}
-                        className="typ-overline inline-flex mb-2 text-strong transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="typ-overline mb-2 inline-flex text-strong transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       >
                         {group.groupLabel}
                       </Link>
-                      <ul className="space-y-1.5">
+                      <ul className="space-y-1">
                         {group.items.map((item) => (
                           <li key={item.id}>
-                            {item.name.trim().toLowerCase() !== group.groupLabel.trim().toLowerCase() && (
+                            {!megaMenuParentMatchesGroup(item.name, group.groupLabel) && (
                               <Link
                                 href={item.href}
                                 onClick={() => setActiveMega(null)}
-                                className="shell-list-link shell-list-link--mega flex items-center justify-between rounded-lg px-2 py-1.5 text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                className="shell-list-link shell-list-link--mega block rounded-lg px-1.5 py-1 text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                               >
-                                <span>{item.name}</span>
-                                {typeof item.count === "number" && (
-                                  <span className="typ-body-sm font-medium text-muted">
-                                    {item.count}
-                                  </span>
-                                )}
+                                {item.name}
                               </Link>
                             )}
 
                             {Array.isArray(item.subcategories) &&
                               item.subcategories.length > 0 && (
-                              <ul className="ml-2 mt-1.5 space-y-1 border-l border-soft pl-2.5">
+                              <ul className={cn("space-y-0.5", hideParentRow ? "" : "mt-1")}>
                                 {item.subcategories.map((subcategory) => (
                                   <li key={`${item.id}-${subcategory.id}`}>
                                     <Link
                                       href={subcategory.href}
                                       onClick={() => setActiveMega(null)}
-                                      className="shell-list-link shell-list-link--mega-sub flex items-center justify-between rounded-md px-2 py-1 text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                      className="shell-list-link shell-list-link--mega-sub block rounded-md px-1.5 py-0.5 text-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                                     >
-                                      <span>{subcategory.name}</span>
-                                      {typeof subcategory.count === "number" && (
-                                        <span className="typ-body-sm text-subtle">
-                                          {subcategory.count}
-                                        </span>
-                                      )}
+                                      {subcategory.name}
                                     </Link>
                                   </li>
                                 ))}
@@ -596,10 +619,11 @@ export function SiteHeader() {
                         ))}
                       </ul>
                     </div>
-                  ))}
+                    );
+                  })}
 
                   {megaMenuOthers.length > 0 && (
-                    <div className="min-w-0 border-l border-soft px-3">
+                    <div className="min-w-0">
                       <Link
                         href="/products"
                         onClick={() => setActiveMega(null)}
@@ -607,20 +631,15 @@ export function SiteHeader() {
                       >
                         Others
                       </Link>
-                      <ul className="space-y-1.5">
+                      <ul className="space-y-1">
                         {megaMenuOthers.map((subcategory) => (
                           <li key={subcategory.name}>
                             <Link
                               href={subcategory.href}
                               onClick={() => setActiveMega(null)}
-                              className="shell-list-link shell-list-link--mega flex items-center justify-between rounded-lg px-2 py-1.5 text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                              className="shell-list-link shell-list-link--mega block rounded-lg px-1.5 py-1 text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                             >
-                              <span>{subcategory.name}</span>
-                              {typeof subcategory.count === "number" && (
-                                <span className="typ-body-sm font-medium text-muted">
-                                  {subcategory.count}
-                                </span>
-                              )}
+                              {subcategory.name}
                             </Link>
                           </li>
                         ))}
@@ -629,7 +648,7 @@ export function SiteHeader() {
                   )}
 
                 </div>
-                <div className="mt-4 border-t border-soft pt-3">
+                <div className="mt-3 border-t border-soft pt-2.5">
                   <Link
                     href="/products"
                     onClick={() => setActiveMega(null)}

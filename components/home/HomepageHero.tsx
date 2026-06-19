@@ -18,7 +18,7 @@ import {
 
 const containerVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.18, delayChildren: 0.32 } },
+  visible: { transition: { staggerChildren: 0.26, delayChildren: 0.45 } },
 };
 
 const wordVariants: Variants = {

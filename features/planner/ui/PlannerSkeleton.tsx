@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * PlannerSkeleton — Premium shimmer loading state while Tldraw lazy-loads.
+ * PlannerSkeleton — Premium shimmer loading state while the Fabric workspace lazy-loads.
  * Shows a skeleton mimicking: top toolbar + left sidebar + canvas + right panel.
  */
 

@@ -1,6 +1,7 @@
 import {
   createEmptyPlannerDocument,
   type PlannerDocument,
+  type PlannerJsonValue,
 } from "@/features/planner/model/plannerDocument";
 import { toPlannerJsonSafe } from "@/features/planner/model/plannerJsonSafe";
 import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
@@ -11,6 +12,20 @@ import { serializeWorkspaceState, usePlannerWorkspaceStore } from "../store/work
 
 function readFabricExportDraft(): string | null {
   return getPlannerFabricRuntime()?.exportDraft() ?? null;
+}
+
+function mergeFabricSceneMetadata(
+  sceneJson: PlannerJsonValue,
+  metadata: Record<string, unknown>,
+): PlannerJsonValue {
+  if (!sceneJson || typeof sceneJson !== "object" || Array.isArray(sceneJson)) {
+    return toPlannerJsonSafe(metadata);
+  }
+
+  return toPlannerJsonSafe({
+    ...sceneJson,
+    ...metadata,
+  });
 }
 
 /** Build canonical PlannerDocument from fabric canvas + workspace state. */
@@ -27,13 +42,22 @@ export function buildPlannerDocumentFromEditor(
     metrics.totalFloorAreaSqm > 0 ? Math.round(Math.sqrt(metrics.totalFloorAreaSqm) * 1000) : undefined;
   const metricRoomDepth =
     metrics.totalFloorAreaSqm > 0 ? Math.round(Math.sqrt(metrics.totalFloorAreaSqm) * 1000) : undefined;
+  const serializedDraft = readFabricExportDraft();
 
-  const fabricDoc = buildPlannerDocumentFromFabric(readFabricExportDraft(), {
+  const fabricDoc = buildPlannerDocumentFromFabric(serializedDraft, {
     name: overrides.title ?? projectMetadata?.projectName ?? "Workspace Plan",
     projectName: projectMetadata?.projectName,
     unitSystem: workspace.unitSystem === "imperial" ? "ft-in" : "mm",
   });
-  const serializedDraft = readFabricExportDraft();
+  let fabricSnapshot: unknown = null;
+
+  if (serializedDraft) {
+    try {
+      fabricSnapshot = JSON.parse(serializedDraft);
+    } catch {
+      fabricSnapshot = null;
+    }
+  }
 
   return createEmptyPlannerDocument({
     ...fabricDoc,
@@ -42,16 +66,10 @@ export function buildPlannerDocumentFromEditor(
     ...(projectFields ?? {}),
     roomWidthMm: metricRoomWidth ?? projectFields?.roomWidthMm ?? fabricDoc.roomWidthMm ?? 6000,
     roomDepthMm: metricRoomDepth ?? projectFields?.roomDepthMm ?? fabricDoc.roomDepthMm ?? 8000,
-    sceneJson: toPlannerJsonSafe({
-      type: "cad-suite-planner-scene",
-      version: 1,
-      measurement: {
-        canonicalUnit: "mm",
-        displayUnit: workspace.unitSystem === "imperial" ? "ft-in" : "mm",
-      },
+    sceneJson: mergeFabricSceneMetadata(fabricDoc.sceneJson, {
       projectSetup: projectMetadata,
       workspace,
-      fabricSnapshot: serializedDraft ? JSON.parse(serializedDraft) : null,
+      fabricSnapshot,
     }),
     updatedAt: new Date().toISOString(),
     ...overrides,

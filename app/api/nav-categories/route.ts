@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       const subcategories = ordered.map((name) => ({
           id: getCanonicalSubcategoryId(categoryId, name),
           name,
-          count: counts.get(name),
+          count: counts.get(name) ?? 0,
           href: `/products/${categoryId}?sub=${encodeURIComponent(name)}`,
         }));
 

@@ -38,14 +38,12 @@ import {
 
 const FILTER_GRID_COPY = {
   ...CATEGORY_ROUTE_COPY,
-  filterTitle: CATEGORY_ROUTE_COPY.filterSummaryTitle,
-  filterSubtitle: CATEGORY_ROUTE_COPY.filterSummaryDescription,
   searchLabel: "Search",
   searchPlaceholder: "Search products, materials, or series",
   clearSearchLabel: "Clear search",
-  resultsTitle: "Products",
   resultsSummary: CATEGORY_ROUTE_COPY.resultsSummaryLabel,
   closeFiltersLabel: "Close filters",
+  filtersLabel: "Filters",
 } as const;
 
 export function AdvancedFilterGridInner({
@@ -271,15 +269,6 @@ export function AdvancedFilterGridInner({
 
   const sidebar = (
     <aside className="space-y-0">
-          <div className="border-b border-[color:var(--border-soft)] px-4 py-4">
-        <h2 className="filter-ui-title">
-          {FILTER_GRID_COPY.filterTitle}
-        </h2>
-        <p className="filter-ui-subtitle mt-1">
-          {FILTER_GRID_COPY.filterSubtitle}
-        </p>
-      </div>
-
       <ActiveChips
         filters={effectiveFilters}
         onRemove={removeChip}
@@ -287,7 +276,7 @@ export function AdvancedFilterGridInner({
         total={activeCount}
       />
 
-      <AccordionSection title={FILTER_GRID_COPY.searchLabel} defaultOpen>
+      <AccordionSection title={FILTER_GRID_COPY.searchLabel}>
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
@@ -326,7 +315,7 @@ export function AdvancedFilterGridInner({
         </AccordionSection>
       ) : null}
 
-      <AccordionSection title="Subcategory" count={options.subcategory.length} defaultOpen>
+      <AccordionSection title="Subcategory" count={options.subcategory.length}>
         <CheckList
           options={options.subcategory}
           selected={filters.subcategory}
@@ -395,8 +384,27 @@ export function AdvancedFilterGridInner({
   );
 
   return (
-    <section className="container-wide pb-8 pt-6">
-      <div className="grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[18.5rem_minmax(0,1fr)]">
+    <section className="home-shell-xl pb-12 pt-5 md:pt-6">
+      <header className="mb-5 border-b border-theme-soft pb-4 md:mb-6">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted"
+        >
+          <Link href="/products" className="transition-colors hover:text-primary">
+            Products
+          </Link>
+          <span aria-hidden="true">/</span>
+          <span className="text-strong">{category.name}</span>
+        </nav>
+        <h1 className="text-2xl font-display tracking-tight text-strong md:text-[1.75rem]">
+          {category.name}
+        </h1>
+        {category.description ? (
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">{category.description}</p>
+        ) : null}
+      </header>
+
+      <div className="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[16.5rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
           <div className="sticky top-24 rounded-sm border border-[color:var(--border-soft)] bg-white shadow-[0_12px_32px_rgba(15,23,42,0.06)]">
             {sidebar}
@@ -404,17 +412,12 @@ export function AdvancedFilterGridInner({
         </div>
 
         <div className="min-w-0 space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border-soft)] pb-4">
-            <div>
-              <p className="filter-ui-title">
-                {FILTER_GRID_COPY.resultsTitle}
-              </p>
-              <p className="filter-ui-subtitle mt-1">
-                {FILTER_GRID_COPY.resultsSummary
-                  .replace("{shown}", String(navigableProducts.length))
-                  .replace("{total}", String(allProducts))}
-              </p>
-            </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-theme-soft pb-4">
+            <p className="typ-label text-muted">
+              {FILTER_GRID_COPY.resultsSummary
+                .replace("{shown}", String(navigableProducts.length))
+                .replace("{total}", String(allProducts))}
+            </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 ref={drawerOpenButtonRef}
@@ -451,9 +454,9 @@ export function AdvancedFilterGridInner({
           </div>
 
           {isInitialFilteredLoad ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="animate-pulse rounded-sm border border-[color:var(--border-soft)] bg-[color:var(--surface-soft)] aspect-[4/5]" />
+                <div key={index} className="aspect-[4/5] animate-pulse rounded-lg border border-theme-soft bg-muted" />
               ))}
             </div>
           ) : navigableProducts.length === 0 ? (
@@ -476,7 +479,7 @@ export function AdvancedFilterGridInner({
             </div>
           ) : (
             <div
-              className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+              className="grid grid-cols-2 gap-4 sm:gap-5 xl:grid-cols-3"
               style={
                 shouldUseContentVisibility
                   ? {
@@ -519,17 +522,10 @@ export function AdvancedFilterGridInner({
             className="fixed inset-y-0 right-0 z-50 w-full max-w-sm overflow-y-auto bg-white shadow-[0_20px_80px_rgba(15,23,42,0.24)] lg:hidden"
             role="dialog"
             aria-modal="true"
-            aria-label={FILTER_GRID_COPY.filterTitle}
+            aria-label={FILTER_GRID_COPY.filtersLabel}
           >
-            <div className="flex items-center justify-between border-b border-[color:var(--border-soft)] px-4 py-4">
-              <div>
-                <p className="filter-ui-title">
-                  {FILTER_GRID_COPY.filterTitle}
-                </p>
-                <p className="filter-ui-subtitle mt-1">
-                  {FILTER_GRID_COPY.filterSubtitle}
-                </p>
-              </div>
+            <div className="flex items-center justify-between border-b border-theme-soft px-4 py-4">
+              <p className="filter-ui-title">{FILTER_GRID_COPY.filtersLabel}</p>
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}

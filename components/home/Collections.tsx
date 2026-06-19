@@ -7,13 +7,14 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { HOMEPAGE_COLLECTIONS_CONTENT } from "@/data/site/homepage";
+import { CollectionsSectionHeading } from "@/components/home/CollectionsSectionHeading";
 import { fadeUp, useMotionSafeHover } from "@/lib/helpers/motion";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
 export function Collections() {
-  const { titleLead, titleAccent, catalogCta, items } = HOMEPAGE_COLLECTIONS_CONTENT;
+  const { catalogCta, items } = HOMEPAGE_COLLECTIONS_CONTENT;
   const navHover = useMotionSafeHover({ y: -1 }, { y: 0 });
 
   return (
@@ -27,10 +28,7 @@ export function Collections() {
             className="mb-8 flex flex-wrap items-center justify-between gap-6"
             {...fadeUp(14, 0.06)}
           >
-            <h2 className="home-heading max-w-2xl">
-              {titleLead}{" "}
-              <span className="text-accent-italic">{titleAccent}</span>
-            </h2>
+            <CollectionsSectionHeading />
 
             <div className="flex shrink-0 items-center gap-4">
               <div className="hidden items-center gap-4 sm:flex">

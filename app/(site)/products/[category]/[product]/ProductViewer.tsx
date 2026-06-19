@@ -472,10 +472,10 @@ export function ProductViewer({
   };
 
   return (
-    <section className="pdp-page min-h-screen pt-24 pb-24 sm:pb-28">
+    <section className="pdp-page scheme-page min-h-screen pb-24 pt-24 sm:pb-28">
       {/* Breadcrumb bar */}
-      <div className="border-b border-soft/80 bg-panel/88 backdrop-blur-xl">
-        <div className="pdp-breadcrumb container flex min-h-11 items-center gap-1.5 px-6 py-2 2xl:px-0">
+      <div className="border-b border-theme-soft bg-panel/88 backdrop-blur-xl">
+        <div className="pdp-breadcrumb home-shell-xl flex min-h-11 items-center gap-1.5 py-2">
           <Link
             href="/products"
             className="hover:text-strong transition-colors"
@@ -496,7 +496,7 @@ export function ProductViewer({
         </div>
       </div>
 
-      <div className="container px-4 pt-6 2xl:px-0 lg:pt-8">
+      <div className="home-shell-xl pt-6 lg:pt-8">
         <div className="pdp-shell-grid">
         {/* Left: image gallery */}
           <div className="pdp-media-pane">
@@ -604,7 +604,7 @@ export function ProductViewer({
           </div>
 
         {/* Right: details panel */}
-          <div className="pdp-detail-pane scrollbar-hide">
+          <div className="pdp-detail-pane">
           <div className="pdp-detail-shell">
             {/* Title block */}
             <div className="pdp-section">
@@ -1025,16 +1025,10 @@ export function ProductViewer({
         </div>
       </div>
 
-      <div className="container-wide px-6 pt-12 2xl:px-0 pb-24">
+      <div className="home-shell-xl pb-24 pt-12">
         <Reviews productId={product.id} />
       </div>
       <CompareDock />
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `.scrollbar-hide::-webkit-scrollbar{display:none}.scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none}`,
-        }}
-      />
     </section>
   );
 }

@@ -1,0 +1,7 @@
+/* Homepage-specific sections — load on / only */
+@import "../routes/home/layout-fallback.css";
+@import "../routes/home/sections.css";
+@import "../routes/home/showcase.css";
+@import "../routes/home/projects.css";
+@import "../routes/home/extras.css";
+@import "../../planner/landing/planner-landing.css";

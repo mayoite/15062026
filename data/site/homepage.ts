@@ -14,7 +14,7 @@ export const HOMEPAGE_HERO_CONTENT = {
   title: ["Spaces that work", "as hard as", "your team"],
   kicker: "Pan-India · Since 2011",
   primaryCta: { label: "Explore Products", href: "/products" },
-  secondaryCta: { label: "Request a quote", href: "/contact" },
+  secondaryCta: { label: "Request a quote", href: "/#contact" },
   glassProof: {
     badge: "Trusted by",
     lead: "Executed over 400+ workplace projects since 2011 — Fortune 500 and growing teams.",
@@ -148,6 +148,7 @@ export const HOMEPAGE_SHOWCASE_CONTENT = {
 export const HOMEPAGE_CONTACT_CONTENT = {
   titleLead: "Share your",
   titleAccent: "requirement",
+  subtitle: "A short brief is enough — we will follow up by phone or email.",
   directActions: [
     {
       type: "whatsapp",
