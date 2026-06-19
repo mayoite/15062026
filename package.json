@@ -84,7 +84,6 @@
     "recovery:chat-snapshot": "node scripts/chat-snapshot.mjs",
     "recovery:handover": "node scripts/recovery-handover.mjs",
     "scan:secrets": "node scripts/scan_secrets.mjs",
-    "planner:render": "node scripts/render_project_docs.mjs --source archive/docs/plans-retired-2026-06-14 --output results/docs-rendered/planner --label \"Planner Docs (archived)\"",
     "tree:csv": "node scripts/generate-tree.js",
     "tree:xlsx": "node scripts/generate-tree.js && node scripts/format-dir-tree-xlsx.mjs",
     "// docs:* scripts removed 2026-06-18 (plans/ + docs/ archived per user 'delete all plans and docs' + 'archive it'). Focus on canvas replacement dev.": ""
