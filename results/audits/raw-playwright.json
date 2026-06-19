@@ -1,7 +1,18 @@
 {
   "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "E:\\16062026\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-c",
+      "config/build/playwright.config.ts",
+      "tests/planner-guest-workspace.spec.ts",
+      "--output",
+      "findingsnew/planner-svg-playwright-2026-06-20/playwright-output"
+    ],
     "configFile": "E:\\16062026\\config\\build\\playwright.config.ts",
     "rootDir": "E:/16062026/tests",
+    "failOnFlakyTests": false,
     "forbidOnly": false,
     "fullyParallel": true,
     "globalSetup": null,
@@ -10,14 +21,18 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "projects": [
       {
-        "outputDir": "E:/16062026/results/test-results",
+        "outputDir": "E:/16062026/findingsnew/planner-svg-playwright-2026-06-20/playwright-output",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "E:/16062026/tests",
@@ -53,702 +68,11 @@
     "tags": [],
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
-    "version": "1.60.0",
+    "version": "1.61.0",
     "workers": 8,
-    "webServer": {
-      "command": "npm run build && npm run start",
-      "url": "http://localhost:3000",
-      "timeout": 120000,
-      "reuseExistingServer": true
-    }
+    "webServer": null
   },
   "suites": [
-    {
-      "title": "accessibility.spec.ts",
-      "file": "accessibility.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "planner landing has no critical accessibility violations",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "ddd864604af8a6a0198f-564bd6c982d934bf7140",
-          "file": "accessibility.spec.ts",
-          "line": 4,
-          "column": 5
-        }
-      ]
-    },
-    {
-      "title": "navigation-smoke.spec.ts",
-      "file": "navigation-smoke.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "planner landing opens the planner canvas",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "1f03eb608b415a079af8-067fee08a2049ccb46f0",
-          "file": "navigation-smoke.spec.ts",
-          "line": 5,
-          "column": 5
-        }
-      ]
-    },
-    {
-      "title": "planner-catalog.spec.ts",
-      "file": "planner-catalog.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "planner catalog route redirects unauthenticated visitors to access",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "3649a17fc048b8c06914-e8945696ed796b2f0723",
-          "file": "planner-catalog.spec.ts",
-          "line": 3,
-          "column": 5
-        }
-      ]
-    },
-    {
-      "title": "planner-chrome.spec.ts",
-      "file": "planner-chrome.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Planner chrome v1",
-          "file": "planner-chrome.spec.ts",
-          "line": 33,
-          "column": 6,
-          "specs": [
-            {
-              "title": "closed left panel opens from AccessChrome",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-af571b2b85a57cc413f8",
-              "file": "planner-chrome.spec.ts",
-              "line": 34,
-              "column": 7
-            },
-            {
-              "title": "closed right panel opens from AccessChrome",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-be695bf088cf37a0dc30",
-              "file": "planner-chrome.spec.ts",
-              "line": 44,
-              "column": 7
-            },
-            {
-              "title": "legacy v1 storage does not break v2 access defaults",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-ffc70fa450d0830ae632",
-              "file": "planner-chrome.spec.ts",
-              "line": 54,
-              "column": 7
-            },
-            {
-              "title": "access strip drag persists into v2 storage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-081680965443bd07b9ad",
-              "file": "planner-chrome.spec.ts",
-              "line": 73,
-              "column": 7
-            },
-            {
-              "title": "reset layout restores defaults after a moved widget",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-2658f62c7d0ab89cba46",
-              "file": "planner-chrome.spec.ts",
-              "line": 86,
-              "column": 7
-            },
-            {
-              "title": "keyboard nudge updates access placement",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-e49da7ab0114d7a4f61e",
-              "file": "planner-chrome.spec.ts",
-              "line": 98,
-              "column": 7
-            },
-            {
-              "title": "left rail collapse preserves icon shortcuts and expand action",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-8bbfa3758fc31780f9c5",
-              "file": "planner-chrome.spec.ts",
-              "line": 112,
-              "column": 7
-            },
-            {
-              "title": "furniture tool opens the library and placed item appears in recents",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-76605be761625a724868",
-              "file": "planner-chrome.spec.ts",
-              "line": 125,
-              "column": 7
-            },
-            {
-              "title": "selecting a planner shape opens the inspector outside Review",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-493fedfe5f300ec10299",
-              "file": "planner-chrome.spec.ts",
-              "line": 140,
-              "column": 7
-            },
-            {
-              "title": "view switching keeps chrome and renders a nonblank 3D scene",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-95795abc89828c94523e",
-              "file": "planner-chrome.spec.ts",
-              "line": 154,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "Planner chrome WebGL fallback",
-          "file": "planner-chrome.spec.ts",
-          "line": 181,
-          "column": 6,
-          "specs": [
-            {
-              "title": "3D fallback keeps 2D planner usable when WebGL is unavailable",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "80f813062f57e2c6c223-251abe6e598984cb5145",
-              "file": "planner-chrome.spec.ts",
-              "line": 182,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "planner-custom-tools.spec.ts",
-      "file": "planner-custom-tools.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Planner custom tools — Playwright",
-          "file": "planner-custom-tools.spec.ts",
-          "line": 31,
-          "column": 6,
-          "specs": [
-            {
-              "title": "tool rail exposes every custom tool",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-ea01e1897293db6253a0",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 37,
-              "column": 7
-            },
-            {
-              "title": "Draw step defaults to Wall tool",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-f014a211246bed5e3dcf",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 44,
-              "column": 7
-            },
-            {
-              "title": "Wall tool creates a wall shape",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-f1845ca2449e57ac61a6",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 52,
-              "column": 7
-            },
-            {
-              "title": "Wall tool supports dragging up and left",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-10d6ca84a5c835aed342",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 59,
-              "column": 7
-            },
-            {
-              "title": "Room tool supports dragging up and left",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-78c78355ab5640ade913",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 66,
-              "column": 7
-            },
-            {
-              "title": "Room tool creates a room shape",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-6557c0cc6c4119370dcf",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 73,
-              "column": 7
-            },
-            {
-              "title": "Furniture tool places catalog item on canvas",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-f9ae620b6608939a5dbf",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 80,
-              "column": 7
-            },
-            {
-              "title": "Place step defaults to Furniture and placement works",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-64e5a388a0dc1801a3c0",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 87,
-              "column": 7
-            },
-            {
-              "title": "catalog item click activates furniture placement",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-c9f7dd51be1b0e0be555",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 99,
-              "column": 7
-            },
-            {
-              "title": "Door tool places on an existing wall",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-ff551c9074029f3cc96a",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 113,
-              "column": 7
-            },
-            {
-              "title": "Window tool places on an existing wall",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-863743c747b634c500cd",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 125,
-              "column": 7
-            },
-            {
-              "title": "Zone tool creates a zone shape",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-ef289c7718e8c5de2713",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 137,
-              "column": 7
-            },
-            {
-              "title": "Review step defaults to Measure and measurement works",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-41be3f3dc2ad7021f7d4",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 144,
-              "column": 7
-            },
-            {
-              "title": "Select tool selects a placed shape",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-a099f5f8b43693fd40f6",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 156,
-              "column": 7
-            },
-            {
-              "title": "Pan tool activates without breaking the canvas",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-9434f9ed5c377c0df74d",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 168,
-              "column": 7
-            },
-            {
-              "title": "tool visibility dropdown filters the rail in step-focused mode",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-447c12274a6b04514c1e",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 179,
-              "column": 7
-            },
-            {
-              "title": "Erase tool removes a shape",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "eda0178565df46e9e8ca-e4e53ee78d29e7a700b6",
-              "file": "planner-custom-tools.spec.ts",
-              "line": 191,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
     {
       "title": "planner-guest-workspace.spec.ts",
       "file": "planner-guest-workspace.spec.ts",
@@ -766,7 +90,21 @@
               "expectedStatus": "passed",
               "projectId": "chromium",
               "projectName": "chromium",
-              "results": [],
+              "results": [
+                {
+                  "workerIndex": -1,
+                  "parallelIndex": -1,
+                  "status": "skipped",
+                  "duration": 0,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-06-19T18:44:17.265Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
               "status": "skipped"
             }
           ],
@@ -785,7 +123,7 @@
           "specs": [
             {
               "title": "loads canvas chrome with history, view modes, and catalog",
-              "ok": true,
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -794,8 +132,52 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 25571,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n    at enterGuestPlannerWorkspace (E:\\16062026\\tests\\guestProjectSetup.ts:25:24)\n    at E:\\16062026\\tests\\planner-guest-workspace.spec.ts:9:5",
+                        "location": {
+                          "file": "E:\\16062026\\tests\\guestProjectSetup.ts",
+                          "column": 24,
+                          "line": 25
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mguestProjectSetup.ts:25\n\n\u001b[0m \u001b[90m 23 |\u001b[39m   }\n \u001b[90m 24 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 25 |\u001b[39m   \u001b[36mawait\u001b[39m expect(topbar)\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m25\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 26 |\u001b[39m }\n \u001b[90m 27 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "E:\\16062026\\tests\\guestProjectSetup.ts",
+                            "column": 24,
+                            "line": 25
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n\n   at guestProjectSetup.ts:25\n\n  23 |   }\n  24 |\n> 25 |   await expect(topbar).toBeVisible({ timeout: 25_000 });\n     |                        ^\n  26 | }\n  27 |\n    at enterGuestPlannerWorkspace (E:\\16062026\\tests\\guestProjectSetup.ts:25:24)\n    at E:\\16062026\\tests\\planner-guest-workspace.spec.ts:9:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-19T18:43:51.473Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "E:\\16062026\\findingsnew\\planner-svg-playwright-2026-06-20\\playwright-output\\planner-guest-workspace-Pl-6e436-tory-view-modes-and-catalog-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "E:\\16062026\\tests\\guestProjectSetup.ts",
+                        "column": 24,
+                        "line": 25
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
                 }
               ],
               "id": "a0931bee25e167e7c32a-feea4f1c33e5660c0194",
@@ -814,7 +196,21 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-19T18:44:17.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -834,7 +230,21 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-19T18:44:17.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -854,7 +264,21 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-19T18:44:17.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -874,7 +298,21 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-19T18:44:17.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
                   "status": "skipped"
                 }
               ],
@@ -886,877 +324,15 @@
           ]
         }
       ]
-    },
-    {
-      "title": "planner-landing-screenshots.spec.ts",
-      "file": "planner-landing-screenshots.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "planner landing screenshot 390x844",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "5c9c2f082de3c5f4ed3c-d8ebc036394be5a6ac1e",
-          "file": "planner-landing-screenshots.spec.ts",
-          "line": 17,
-          "column": 7
-        },
-        {
-          "title": "planner landing screenshot 768x1024",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "5c9c2f082de3c5f4ed3c-56d90cab850db25e9794",
-          "file": "planner-landing-screenshots.spec.ts",
-          "line": 17,
-          "column": 7
-        },
-        {
-          "title": "planner landing screenshot 1280x800",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "5c9c2f082de3c5f4ed3c-e272901e965ba7f3c4ab",
-          "file": "planner-landing-screenshots.spec.ts",
-          "line": 17,
-          "column": 7
-        }
-      ]
-    },
-    {
-      "title": "planner-marketing-a11y.spec.ts",
-      "file": "planner-marketing-a11y.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "/planner/features/ has no critical or serious accessibility violations",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "a4dc11b9fba7d4f6e031-0187a5912f80768df320",
-          "file": "planner-marketing-a11y.spec.ts",
-          "line": 12,
-          "column": 7
-        },
-        {
-          "title": "/planner/features/measure/ has no critical or serious accessibility violations",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "a4dc11b9fba7d4f6e031-8d517f97d36c1c879743",
-          "file": "planner-marketing-a11y.spec.ts",
-          "line": 12,
-          "column": 7
-        },
-        {
-          "title": "/planner/features/blueprint/ has no critical or serious accessibility violations",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "a4dc11b9fba7d4f6e031-eecad0ea9cfa35232675",
-          "file": "planner-marketing-a11y.spec.ts",
-          "line": 12,
-          "column": 7
-        },
-        {
-          "title": "/planner/help/ has no critical or serious accessibility violations",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "a4dc11b9fba7d4f6e031-bc5eb944697b49539198",
-          "file": "planner-marketing-a11y.spec.ts",
-          "line": 12,
-          "column": 7
-        }
-      ]
-    },
-    {
-      "title": "site-navigation-screenshots.spec.ts",
-      "file": "site-navigation-screenshots.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "site nav screenshots — iPhone 14",
-          "file": "site-navigation-screenshots.spec.ts",
-          "line": 27,
-          "column": 8,
-          "specs": [
-            {
-              "title": "01 homepage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-8a10de531e2c7bb93929",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 30,
-              "column": 9
-            },
-            {
-              "title": "02 products catalog",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-09b980e1f6c81469e4ad",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 38,
-              "column": 9
-            },
-            {
-              "title": "03 planner landing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-786a75392487c6017a3f",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 44,
-              "column": 9
-            },
-            {
-              "title": "04 mobile drawer open",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-112c95761df0414a8eb8",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 51,
-              "column": 11
-            },
-            {
-              "title": "05 products via mobile nav",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-80d05f2814f62c016bdd",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 63,
-              "column": 11
-            }
-          ]
-        },
-        {
-          "title": "site nav screenshots — Pixel 7",
-          "file": "site-navigation-screenshots.spec.ts",
-          "line": 27,
-          "column": 8,
-          "specs": [
-            {
-              "title": "01 homepage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-fadc8f87a4bf4d99da70",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 30,
-              "column": 9
-            },
-            {
-              "title": "02 products catalog",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-4cf10d7251b949de04ac",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 38,
-              "column": 9
-            },
-            {
-              "title": "03 planner landing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-6da1bd164657877599b0",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 44,
-              "column": 9
-            },
-            {
-              "title": "04 mobile drawer open",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-a1f3aa6cfb8c0be7de9a",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 51,
-              "column": 11
-            },
-            {
-              "title": "05 products via mobile nav",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-ff8cbff918918d15c534",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 63,
-              "column": 11
-            }
-          ]
-        },
-        {
-          "title": "site nav screenshots — iPad portrait",
-          "file": "site-navigation-screenshots.spec.ts",
-          "line": 27,
-          "column": 8,
-          "specs": [
-            {
-              "title": "01 homepage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-e7927ff68455c57b63cc",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 30,
-              "column": 9
-            },
-            {
-              "title": "02 products catalog",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-56dd0a5e1e2d937cfa25",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 38,
-              "column": 9
-            },
-            {
-              "title": "03 planner landing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-47060622ffbfc48e8136",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 44,
-              "column": 9
-            },
-            {
-              "title": "04 tablet header",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-76f578ad3bd9914248e9",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 103,
-              "column": 11
-            },
-            {
-              "title": "05 tablet products fold",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-ea5346cb286accb74173",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 112,
-              "column": 11
-            }
-          ]
-        },
-        {
-          "title": "site nav screenshots — iPad landscape",
-          "file": "site-navigation-screenshots.spec.ts",
-          "line": 27,
-          "column": 8,
-          "specs": [
-            {
-              "title": "01 homepage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-4f9e0154570a32b1e8bb",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 30,
-              "column": 9
-            },
-            {
-              "title": "02 products catalog",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-ee0a167ba2b093254d5c",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 38,
-              "column": 9
-            },
-            {
-              "title": "03 planner landing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-dc508515a5238616ea16",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 44,
-              "column": 9
-            },
-            {
-              "title": "04 desktop mega menu open",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-a00057efadb9022b82d7",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 78,
-              "column": 11
-            },
-            {
-              "title": "05 products via mega menu",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-46f24e30bc8123de759a",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 88,
-              "column": 11
-            }
-          ]
-        },
-        {
-          "title": "site nav screenshots — Desktop",
-          "file": "site-navigation-screenshots.spec.ts",
-          "line": 27,
-          "column": 8,
-          "specs": [
-            {
-              "title": "01 homepage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-c175f5e7a188851180ca",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 30,
-              "column": 9
-            },
-            {
-              "title": "02 products catalog",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-9d2be2a9356b3ba00d22",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 38,
-              "column": 9
-            },
-            {
-              "title": "03 planner landing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-c64294fcc01cdf04d793",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 44,
-              "column": 9
-            },
-            {
-              "title": "04 desktop mega menu open",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-72537bd86666b239c85d",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 78,
-              "column": 11
-            },
-            {
-              "title": "05 products via mega menu",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bb166b83393db9974375-137d09cc7335d8784fb9",
-              "file": "site-navigation-screenshots.spec.ts",
-              "line": 88,
-              "column": 11
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "site-navigation-smoke.spec.ts",
-      "file": "site-navigation-smoke.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "site navigation smoke",
-          "file": "site-navigation-smoke.spec.ts",
-          "line": 5,
-          "column": 6,
-          "specs": [
-            {
-              "title": "homepage loads with hero and progress dots",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bfb257b62d9f445a3654-2fa61f567b4aacdf2449",
-              "file": "site-navigation-smoke.spec.ts",
-              "line": 6,
-              "column": 7
-            },
-            {
-              "title": "homepage hero exposes product and quote CTAs plus trusted-by glass proof",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bfb257b62d9f445a3654-ef7ff4a9e65adec3aa98",
-              "file": "site-navigation-smoke.spec.ts",
-              "line": 18,
-              "column": 7
-            },
-            {
-              "title": "homepage shows Final0704-inspired sections",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bfb257b62d9f445a3654-4dd24ed52029696434ea",
-              "file": "site-navigation-smoke.spec.ts",
-              "line": 38,
-              "column": 7
-            },
-            {
-              "title": "/planning service page loads with workflow section",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bfb257b62d9f445a3654-eaa47997a7e0b47ef4ac",
-              "file": "site-navigation-smoke.spec.ts",
-              "line": 68,
-              "column": 7
-            },
-            {
-              "title": "/products catalog loads with first category card visible",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bfb257b62d9f445a3654-85aee14c190ee18b063d",
-              "file": "site-navigation-smoke.spec.ts",
-              "line": 76,
-              "column": 7
-            },
-            {
-              "title": "desktop header All Products link reaches /products",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bfb257b62d9f445a3654-d2bcbbb97ecd3f033f6a",
-              "file": "site-navigation-smoke.spec.ts",
-              "line": 88,
-              "column": 7
-            },
-            {
-              "title": "mobile drawer opens and All Products closes drawer on /products",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "bfb257b62d9f445a3654-311bcbafc3589bf7e509",
-              "file": "site-navigation-smoke.spec.ts",
-              "line": 102,
-              "column": 7
-            }
-          ]
-        }
-      ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-19T05:15:33.185Z",
-    "duration": 433.975,
+    "startTime": "2026-06-19T18:43:51.045Z",
+    "duration": 26246.416,
     "expected": 0,
-    "skipped": 76,
-    "unexpected": 0,
+    "skipped": 5,
+    "unexpected": 1,
     "flaky": 0
   }
 }
