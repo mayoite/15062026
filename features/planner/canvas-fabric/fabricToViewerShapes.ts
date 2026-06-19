@@ -1,4 +1,23 @@
-import type { PlannerViewerShape } from "@/features/planner/viewer/PlannerViewer";
+/** @deprecated Legacy viewer shape type — kept only for test compatibility. New 3D viewer uses PlannerDocument. */
+export interface PlannerViewerShape {
+  id: string;
+  type: "planner-wall" | "planner-room" | "planner-furniture" | "planner-zone" | "planner-door" | "planner-window";
+  x: number;
+  y: number;
+  rotation: number;
+  width: number;
+  height: number;
+  label?: string;
+  color?: string;
+  catalogId?: string;
+  wall?: {
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    thickness: number;
+  };
+}
 
 type FabricObjectJson = {
   name?: string;

@@ -19,7 +19,7 @@ import {
   type Planner3DSceneDocument,
   type PlannerDocument,
 } from "./types";
-import { FOCSS_3D_COLORS } from "@/features/planner/viewer/viewerMaterials";
+import { FOCSS_3D_COLORS } from "./viewerMaterials";
 
 interface Planner3DViewerProps {
   document: PlannerDocument;

@@ -4,7 +4,7 @@
 
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import type { LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
-import type { PlannerViewerShape } from "@/features/planner/viewer/PlannerViewer";
+import type { PlannerViewerShape } from "@/features/planner/canvas-fabric/fabricToViewerShapes";
 
 export type PlannerCanvasShape = {
   id: string;

@@ -5,7 +5,7 @@ import {
   restoreDocument,
   importFromOtherEngine,
   validateDocument,
-} from "@/features/planner/shared/document/documentbridge";
+} from "@/features/planner/shared/document/documentBridge";
 
 describe("documentbridge", () => {
   it("captureDocument returns basic structure from input", () => {

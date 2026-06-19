@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { OnboardingCoach, OANDO_ONBOARDING_STEPS } from "@/features/planner/onboarding/onboardingcoach";
+import { OnboardingCoach, OANDO_ONBOARDING_STEPS } from "@/features/planner/onboarding/OnboardingCoach";
 
 describe("OnboardingCoach", () => {
   beforeEach(() => {
