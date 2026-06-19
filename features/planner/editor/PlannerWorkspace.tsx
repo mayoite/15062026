@@ -13,10 +13,9 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type Chang
 import { X } from "lucide-react";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
-import { PlannerViewer } from "@/features/planner/viewer/PlannerViewer";
+import { Planner3DViewer } from "@/features/planner/3d/Planner3DViewer";
 import { SplitViewLayout } from "@/features/planner/shared/components/SplitViewLayout";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
-import type { PlannerViewerShape } from "@/features/planner/viewer/PlannerViewer";
 import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
 import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
@@ -100,7 +99,6 @@ import { resetPlannerChromeLayout } from "@/features/planner/editor/chrome/plann
 import {
   FloorplanProvider,
   FabricCanvasWorkspace,
-  fabricSerializedToViewerShapes,
   RoomPresetsOnOpen,
   setPlannerFabricRuntime,
   setPlannerFabricRuntimeState,
@@ -451,10 +449,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     });
   }, [activeDocumentId, fabricSerializedDraft, planName, workspaceUnitSystem]);
 
-  const fabric3DShapes = useMemo<PlannerViewerShape[]>(() => {
-    if (!fabricSerializedDraft) return [];
-    return fabricSerializedToViewerShapes(fabricSerializedDraft);
-  }, [fabricSerializedDraft]);
   const shapeCount = useMemo(() => {
     if (!fabricSerializedDraft) return 0;
     try {
@@ -653,7 +647,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const canvas3D = (
     <Suspense fallback={<PlannerSkeleton />}>
       <div className="pw-viewer-host h-full min-h-0 w-full">
-        <PlannerViewer viewMode="3d" shapes={fabric3DShapes} />
+        <Planner3DViewer document={buildCurrentPlannerDocument()} />
       </div>
     </Suspense>
   );

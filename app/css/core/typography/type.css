@@ -383,6 +383,23 @@
   text-wrap: balance;
 }
 
+/* ── Caption ── */
+@utility typ-caption {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-copy-medium);
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+@utility typ-caption-lg {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-copy-regular);
+  letter-spacing: var(--type-letter-copy);
+  line-height: var(--type-leading-copy-sm);
+}
+
 /* ── Tracking helpers ── */
 @utility tracking-ultra { letter-spacing: 0.18em; }
 @utility tracking-max { letter-spacing: 0.2em; }
