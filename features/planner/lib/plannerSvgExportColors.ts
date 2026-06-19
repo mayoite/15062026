@@ -4,7 +4,7 @@ import {
   type BlockColorResolver,
 } from "@/lib/catalog/resolveBlockColors";
 
-/** Theme fallbacks when stylesheet rules are unreadable (tldraw SVG attrs need concrete colors). */
+/** Theme fallbacks when stylesheet rules are unreadable (SVG attrs need concrete colors). */
 const PLANNER_CANVAS_TOKEN_FALLBACKS = `
   --surface-page: #fafaf8;
   --surface-panel: #ffffff;
@@ -43,7 +43,7 @@ export function createPlannerSvgColorResolver(css = collectPlannerExportCss()): 
   return createBlockColorResolver(`${PLANNER_CANVAS_TOKEN_FALLBACKS}\n${css}`);
 }
 
-/** Cached resolver for live tldraw canvas SVG (CSS vars do not paint reliably on <svg> attrs). */
+/** Cached resolver for live canvas SVG (CSS vars do not paint reliably on <svg> attrs). */
 export function getPlannerCanvasColorResolver(): BlockColorResolver {
   if (!plannerCanvasColorResolver) {
     plannerCanvasColorResolver = createPlannerSvgColorResolver();

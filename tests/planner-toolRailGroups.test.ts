@@ -39,7 +39,7 @@ describe("PlannerToolRail TOOL_GROUPS", () => {
     }
   });
 
-  it("maps door and window to the shared door-window tldraw tool", () => {
+  it("maps door and window to the shared door-window canvas tool", () => {
     const door = allTools.find((tool) => tool.id === "door");
     const window = allTools.find((tool) => tool.id === "window");
     expect(door?.toolId).toBe("planner-door-window");

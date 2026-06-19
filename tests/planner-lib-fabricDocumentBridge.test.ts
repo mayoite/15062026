@@ -5,7 +5,7 @@ import {
   getFabricSnapshotFromDocument,
   loadPlannerDocumentIntoFabric,
 } from "@/features/planner/lib/fabricDocumentBridge";
-import { getPlannerSceneEnvelope } from "@/features/planner/lib/documentBridge";
+import { getPlannerSceneEnvelope } from "@/features/planner/model";
 import { createPlannerDocument } from "@/features/planner/model";
 
 describe("planner lib fabricDocumentBridge", () => {

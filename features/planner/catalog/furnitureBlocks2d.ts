@@ -11,7 +11,7 @@ export type FurnitureCategory =
   | "partition"
   | "custom";
 
-/** Planner furniture shape props for catalog block resolution (no tldraw dependency). */
+/** Planner furniture shape props for catalog block resolution. */
 export interface FurnitureShapeProps {
   furnitureCategory: FurnitureCategory;
   furnitureType: string;

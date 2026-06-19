@@ -19,6 +19,8 @@ export {
   validatePlannerDocumentSafe,
   validatePlannerDocumentImport,
   normalizePlannerDocumentId,
+  getPlannerSceneEnvelope,
+  isPlannerSceneEnvelope,
 } from "./plannerDocument";
 
 export { toPlannerJsonSafe } from "./plannerJsonSafe";
@@ -38,6 +40,9 @@ export type {
   PlannerSaveSummary,
   PlannerSaveWrite,
   PlannerUnitSystem,
+  PlannerSceneEnvelope,
+  PlannerSceneItem,
+  PlannerSceneRoom,
 } from "./plannerDocument";
 
 export {

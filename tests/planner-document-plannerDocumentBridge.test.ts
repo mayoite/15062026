@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { buildPlanner3DSceneDocument } from "@/features/planner/3d/types";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
-import { getPlannerSceneEnvelope } from "@/features/planner/lib/documentBridge";
+import { getPlannerSceneEnvelope } from "@/features/planner/model";
 import { getFabricSnapshotFromDocument } from "@/features/planner/lib/fabricDocumentBridge";
 import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
 

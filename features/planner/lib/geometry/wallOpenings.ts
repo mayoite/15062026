@@ -3,7 +3,7 @@
  *
  * Doors and windows are independent shapes; walls discover which of them sit
  * on their axis and cut real openings (2D plan gaps, 3D voids). All functions
- * are pure so both the tldraw shape utils and the 3D viewer share one
+ * are pure so both the canvas and the 3D viewer share one
  * implementation, and everything is unit-testable.
  *
  * Units: planner canvas units are centimetres (1 unit = 10 mm). Shape props
@@ -247,7 +247,7 @@ export function windowPlanSize(props: { widthMm: number; frameThicknessMm?: numb
 
 /**
  * Center of a rectangle whose local origin is (0, 0), placed at page position
- * (x, y) with rotation in radians — matches tldraw shape transforms.
+ * (x, y) with rotation in radians — matches canvas shape transforms.
  */
 export function rectCenterAt(
   x: number,

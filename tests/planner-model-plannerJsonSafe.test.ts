@@ -9,7 +9,7 @@ describe("toPlannerJsonSafe", () => {
       type: "cad-suite-planner-scene",
       version: 1,
       items: [{ id: "shape:1", productId: undefined, name: "Desk" }],
-      tldrawSnapshot: {
+      fabricSnapshot: {
         document: {
           store: {
             "shape:1": { props: { widthMm: 120, depthMm: undefined }, meta: { price: 1 } },

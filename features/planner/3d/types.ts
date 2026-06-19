@@ -1,8 +1,8 @@
 import {
   normalizePlannerDocument,
   type PlannerDocument as CanonicalPlannerDocument,
+  getPlannerSceneEnvelope,
 } from "../model";
-import { getPlannerSceneEnvelope } from "../lib/documentBridge";
 
 export type PlannerDocument = CanonicalPlannerDocument;
 

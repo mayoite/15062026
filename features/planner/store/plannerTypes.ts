@@ -212,7 +212,7 @@ export type SnapDistance = 5 | 10 | 20;
 /**
  * Planner view modes — strictly 2d, 3d, and split.
  * "fabric" is a configurator engine mode and must NEVER appear here.
- * Architecture rule: features/oando-planner owns tldraw + Three/R3F only.
+ * Architecture rule: features/oando-planner owns Fabric + Three/R3F only.
  */
 export type ViewMode = "2d" | "3d" | "split";
 

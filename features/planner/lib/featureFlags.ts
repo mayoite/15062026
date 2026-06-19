@@ -423,7 +423,7 @@ export function getFlagMetadata(flag: FeatureFlagName): {
     { group: string; description: string }
   > = {
     // Core
-    planner2D: { group: "Core", description: "2D Planner (tldraw)" },
+    planner2D: { group: "Core", description: "2D Planner (Fabric)" },
     planner3D: { group: "Core", description: "3D Viewer (R3F)" },
     // Editor
     catalogSidebar: { group: "Editor", description: "Furniture catalog panel" },

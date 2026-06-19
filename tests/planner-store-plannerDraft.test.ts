@@ -9,7 +9,7 @@ import {
   PLANNER_DRAFT_TTL_MS,
   resolvePlannerDraftDocument,
   savePlannerDraftDocument,
-} from "@/features/planner/store/plannerDraft";
+} from "@/features/planner/persistence";
 
 function createMemoryStorage(): Storage {
   const store = new Map<string, string>();

@@ -20,7 +20,7 @@ describe("plannerDocumentLogging", () => {
         type: "cad-suite-planner-scene",
         version: 1,
         items: [{ id: "shape:1", name: "Desk", meta: { text: "Secret label" } }],
-        tldrawSnapshot: {
+        fabricSnapshot: {
           document: {
             store: {
               "shape:desk": { id: "shape:desk", type: "geo", props: { w: 120 } },
@@ -38,7 +38,7 @@ describe("plannerDocumentLogging", () => {
     expect(summary.sceneJson).toMatchObject({
       type: "cad-suite-planner-scene",
       itemCount: 1,
-      tldrawSnapshot: {
+      fabricSnapshot: {
         storeRecordCount: 1,
         storeShapeTypes: ["geo"],
         redacted: true,
@@ -82,7 +82,7 @@ describe("plannerDocumentLogging", () => {
       sceneJson: {
         type: "cad-suite-planner-scene",
         version: 1,
-        tldrawSnapshot: {
+        fabricSnapshot: {
           document: {
             store: {
               "shape:1": { props: { widthMm: undefined } },

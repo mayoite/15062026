@@ -169,7 +169,7 @@ describe("planner document model", () => {
             rotationDeg: 0,
           },
         ],
-        tldrawSnapshot: {},
+        fabricSnapshot: {},
       },
     });
 
@@ -243,7 +243,7 @@ describe("planner document model", () => {
             rotationDeg: 0,
           },
         ],
-        tldrawSnapshot: {},
+        fabricSnapshot: {},
       },
     });
 

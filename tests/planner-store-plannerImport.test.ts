@@ -7,7 +7,7 @@ import {
   parsePlannerDocumentImportValue,
   validatePlannerDocumentImportText,
   validatePlannerDocumentImportValue,
-} from "@/features/planner/store/plannerImport";
+} from "@/features/planner/persistence";
 import {
   computePlannerPortalItemCount,
   buildPlannerDocumentFromPortalPublishData,

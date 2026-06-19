@@ -11,7 +11,7 @@ async function canvasBox(page: Page) {
   const canvas = await primaryCanvas(page);
   await expect(canvas).toBeVisible({ timeout: 25_000 });
   const box = await canvas.boundingBox();
-  if (!box) throw new Error("Planner tldraw canvas bounding box not found");
+  if (!box) throw new Error("Planner canvas bounding box not found");
   return { canvas, box };
 }
 
@@ -56,7 +56,7 @@ export async function placeOpeningOnCanvas(
   await page.mouse.up();
 }
 
-/** Pointer down → slight move → up so tldraw receives move + down/up (furniture needs this). */
+/** Pointer down → slight move → up so canvas receives move + down/up (furniture needs this). */
 export async function clickOnCanvas(page: Page, relX: number, relY: number): Promise<void> {
   const point = await canvasPoint(page, relX, relY);
   await page.mouse.move(point.x, point.y);

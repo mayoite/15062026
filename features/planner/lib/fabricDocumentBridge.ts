@@ -5,15 +5,13 @@ import {
   toPlannerJsonSafe,
   type PlannerDocument,
   type PlannerMeasurementSourceUnit,
-} from "../model";
-import { logPlannerDocumentBuildAttempt } from "../model/plannerDocumentLogging";
-import type { MeasurementUnit } from "./measurements";
-import {
   type PlannerSceneEnvelope,
   type PlannerSceneItem,
   type PlannerSceneRoom,
   getPlannerSceneEnvelope,
-} from "./documentBridge";
+} from "../model";
+import { logPlannerDocumentBuildAttempt } from "../model/plannerDocumentLogging";
+import type { MeasurementUnit } from "./measurements";
 import {
   fabricObjectCategory,
   parseFabricObjects,
