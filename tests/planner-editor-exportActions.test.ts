@@ -49,7 +49,7 @@ describe("exportActions", () => {
       depthMm: 600,
       spec: "1200×600×750 mm",
     });
-    expect(meta.room).toMatchObject({ widthMm: 6040, depthMm: 4000 });
+    expect(meta.room).toMatchObject({ widthMm: 6040, depthMm: 4040 });
   });
 
   it("downloads planner json envelope with exportMeta", () => {

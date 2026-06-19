@@ -206,7 +206,8 @@ export function readPlannerSelectionDimensions(
   if (meta.isRoomDimension) return null;
 
   if (shape.type === "line") {
-    const points = getSortedLinePoints(shape);
+    const lineShape = shape as PlannerLineShape;
+    const points = getSortedLinePoints(lineShape);
     if (points.length !== 2) return null;
     const totalLength = points.slice(1).reduce((total, point, index) => {
       const previous = points[index];
@@ -252,7 +253,8 @@ export function updatePlannerSelectionDimensions(
   if (meta.isRoomDimension) return false;
 
   if (selection.mode === "line" && shape.type === "line") {
-    const points = getSortedLinePoints(shape);
+    const lineShape = shape as PlannerLineShape;
+    const points = getSortedLinePoints(lineShape);
     const widthMm = normalizePositiveMillimeters(next.widthMm);
     if (points.length !== 2 || widthMm === null) return false;
     const first = points[0];
@@ -299,8 +301,7 @@ export function updatePlannerSelectionDimensions(
 
     editor.updateShapes([
       {
-        id: shape.id,
-        type: shape.type,
+        ...shape,
         props: {
           ...shape.props,
           w: toPageUnits(widthMm),

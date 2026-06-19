@@ -129,12 +129,13 @@ describe("SITE_NAV_SEARCH_FALLBACK_LINKS", () => {
 });
 
 describe("SITE_FOOTER_NAV", () => {
-  it("has Products, Company, and Services sections", () => {
-    expect(SITE_FOOTER_NAV).toHaveLength(3);
+  it("has Products, Company, Services, and Workspace sections", () => {
+    expect(SITE_FOOTER_NAV).toHaveLength(4);
     expect(SITE_FOOTER_NAV.map((section) => section.heading)).toEqual([
       "Products",
       "Company",
       "Services",
+      "Workspace",
     ]);
   });
 

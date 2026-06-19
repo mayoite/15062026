@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
 
-vi.mock("@/features/planner/catalog/CatalogSidebar", () => ({
-  CatalogSidebar: () => <div>Catalog sidebar</div>,
+vi.mock("@/features/planner/catalog/CatalogPanel", () => ({
+  CatalogPanel: () => <div>Browse Oando SVG symbols — click or drag desks, seating, and storage onto the canvas.</div>,
 }));
 
 vi.mock("@/features/planner/editor/BlueprintPanel", () => ({
@@ -21,16 +21,18 @@ describe("PlannerLeftPanel", () => {
       <PlannerLeftPanel
         guestMode={false}
         plannerStep="draw"
-        activeTab="blueprint"
         onItemClick={vi.fn()}
         onDragStart={vi.fn()}
       />,
     );
 
-    expect(screen.getByText(/Start by tracing a blueprint or pick a room preset/i)).toBeInTheDocument();
-    expect(screen.getAllByRole("tab")[0]).toHaveTextContent("Blueprint");
+    // Default tab for "draw" step is "library"
+    expect(screen.getByText(/Browse Oando SVG symbols/i)).toBeInTheDocument();
+    // Switch to Blueprint tab
     fireEvent.click(screen.getByRole("tab", { name: /Blueprint/i }));
+    expect(screen.getByText(/Start by tracing a blueprint or pick a room preset/i)).toBeInTheDocument();
     expect(screen.getByText("Blueprint panel")).toBeInTheDocument();
+    // Switch to AI Assist tab
     fireEvent.click(screen.getByRole("tab", { name: /AI Assist/i }));
     expect(screen.getByText("AI assist drawer")).toBeInTheDocument();
   });
