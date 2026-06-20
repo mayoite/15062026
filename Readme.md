@@ -4,9 +4,18 @@ Flat-root Next.js app. Furniture company site at `oando.co.in` with one workspac
 
 **Canonical repo:** `E:\16062026` (commit/push here).
 
-**2026-06-18 session focus (per user):** Finish the project today. Old tldraw canvas + UI fully replaced by the new fabric canvas/interface from the prototype (`E:\floorplan-react`). Combined with 3D (`r3f`). No more circling on plans/docs.
+**Current status (2026-06-20):** Production readiness 8.0/10. All critical security, legacy auth, and i18n infrastructure work complete.
 
-Active code: `features/planner/` + `app/planner/`. Focus on making the swap work: new canvas as replacement, 3D integration, functional planner.
+### Completed (2026-06-20)
+- ✅ Security hardening (XSS sanitization, CSRF protection)
+- ✅ Appwrite fully removed, auth migrated to Supabase
+- ✅ i18n infrastructure (next-intl, 5 locales: en, hi, fr, de, es)
+- ✅ Architecture documentation + OpenAPI spec
+- ✅ Tech stack documentation site (`tech-stack-docs/`)
+- ✅ Planner runtime fixes (wall drag, SVG export, Three.js)
+
+### Active code
+`features/planner/` + `app/planner/`. Fabric canvas + 3D (r3f) integration.
 
 ## Root markdown
 
@@ -73,8 +82,9 @@ npm.cmd run release:gate
 
 ## Docs
 
-**Reference:** `docs/` (`docs/DOC-MAP.md`). **Plans:** `plans/` (`plans/CONTENTS.md`).
-
-After test changes: `npm run docs:sync`.
+- **Architecture:** `docs/architecture/` (system overview, component architecture, data flow, deployment)
+- **API:** `docs/api/openapi.yaml` (OpenAPI 3.0 spec)
+- **Tech Stack Site:** `tech-stack-docs/` (Vite + React mini-site, run with `npm.cmd run dev` in that dir)
+- **Audit:** `comprehensive-audit-2026-06-20/` (8 audit reports + executive summary)
 
 Everything else is code or generated evidence under `results/`.
