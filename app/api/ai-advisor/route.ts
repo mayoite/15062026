@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { getProductsFresh } from '@/features/catalog/getProducts';
 import { createSupabaseAuthAdminClient } from '@/platform/supabase/auth-admin';
 import { normalizeRequestedCategoryId } from '@/features/catalog/categories';
-import { rateLimit } from "@/lib/rateLimit";
 import {
   requestProviderText,
   resolveProviderChain,
@@ -20,6 +19,10 @@ import {
   type AdvisorStreamEvent,
   type ConfiguratorAdvisorContext,
 } from '@/features/ai/aiAdvisor';
+import { withAuth } from "@/lib/api/withAuth";
+import { ApiError, API_ERROR_CODES } from "@/lib/api/ApiError";
+import { success, error, validationError } from "@/lib/api/apiResponse";
+import { CatalogAdvisorRequestSchema } from "@/lib/api/schemas";
 
 type ProductLite = Awaited<ReturnType<typeof getProductsFresh>>[number];
 type AdvisorClientConfig = {
@@ -93,16 +96,14 @@ function normalizeContext(value: unknown): ConfiguratorAdvisorContext | undefine
 }
 
 function parsePayload(value: unknown): ParsedAdvisorPayload | null {
-  if (!value || typeof value !== "object") return null;
-  const source = value as AdvisorRequest & Record<string, unknown>;
-  const query = typeof source.query === "string" ? source.query.trim().slice(0, 2000) : "";
-  const userId = typeof source.userId === "string" ? source.userId.trim().slice(0, 120) : "";
-  if (!query) return null;
+  const parsed = CatalogAdvisorRequestSchema.safeParse(value);
+  if (!parsed.success) return null;
+  const { query, userId, stream, context: rawContext } = parsed.data;
   return {
     query,
-    userId,
-    context: normalizeContext(source.context),
-    stream: source.stream === true,
+    userId: userId ?? "",
+    context: normalizeContext(rawContext),
+    stream: stream === true,
   };
 }
 
@@ -541,142 +542,147 @@ Respond ONLY with valid JSON in this exact key order:
 }`;
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const ip = req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-    const limitRes = await rateLimit(`ai-advisor:${ip}`, 10, 60 * 1000);
-    if (!limitRes.success) {
-      return NextResponse.json(
-        { error: "Too many requests. Please slow down." },
-        { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
+/**
+ * Core catalog-advisor logic, invoked after auth + rate-limit. The streaming
+ * path returns a raw NDJSON `Response` (bypassing the JSON envelope); the
+ * non-stream path uses the standard {@link success} envelope while preserving
+ * the legacy top-level fields (`recommendations`, `summary`, etc.) that the
+ * `UnifiedAssistant` client reads.
+ */
+async function handleCatalogAdvisor(req: NextRequest): Promise<NextResponse | Response> {
+  const parsedBody = parsePayload(await req.json().catch(() => null));
+  if (!parsedBody) {
+    return error(
+      new ApiError(400, API_ERROR_CODES.VALIDATION_ERROR, "Query is required"),
+    );
+  }
+
+  const { query, userId, context, stream } = parsedBody;
+  const products = await getProductsFresh();
+  if (!products || products.length === 0) {
+    const unavailable = buildUnavailableCatalogResponse(context);
+    return stream
+      ? createStreamResponse((controller) => streamResolvedResult(controller, unavailable))
+      : success(unavailable);
+  }
+
+  const productsByUrlKey = new Map(products.map((product) => [product.slug, product]));
+  const advisorClients = resolveAdvisorClients();
+  const fallbackResult = buildFallbackAdvisorResponse(query, products, context);
+
+  if (advisorClients.length === 0) {
+    return stream
+      ? createStreamResponse((controller) => streamResolvedResult(controller, fallbackResult))
+      : success(fallbackResult);
+  }
+
+  const historyContext = await buildHistoryContext(userId);
+  const productList = products
+    .slice(0, 80)
+    .map(
+      (p) =>
+        `- Product URL Key: ${p.slug} | Name: ${p.name} | Category: ${p.category_id} | ${p.description?.slice(0, 80)}`,
+    )
+    .join("\n");
+
+  const contextSummary = buildConfiguratorContextSummary(context);
+  const systemPrompt = buildSystemPrompt(historyContext, contextSummary, productList);
+  const fallbackBudget = context?.estimatedBudget || inferBudgetFromQuery(query);
+
+  if (stream) {
+    return createStreamResponse(async (controller) => {
+      for (const advisorClient of advisorClients) {
+        let streamedAnyData = false;
+        emitStreamEvent(controller, {
+          type: "status",
+          message: `Consulting ${advisorClient.provider}`,
+        });
+
+        try {
+          const raw = await requestAdvisorRawResponse(
+            advisorClient,
+            systemPrompt,
+            query,
+            true,
+            (delta) => {
+              streamedAnyData = true;
+              emitStreamEvent(controller, { type: "delta", text: delta });
+            },
+          );
+
+          const parsed = parseAdvisorJson(raw);
+          const result = parsed
+            ? buildAdvisorSuccessResponse(parsed, productsByUrlKey, context, fallbackBudget)
+            : null;
+
+          if (result) {
+            emitStreamEvent(controller, { type: "result", result });
+            return;
+          }
+        } catch (providerError) {
+          const isTimeout = isAbortLikeError(providerError);
+          // eslint-disable-next-line no-console
+          console.error(
+            `[ai-advisor] ${advisorClient.provider} stream error${
+              isTimeout ? " (timeout)" : ""
+            }:`,
+            providerError,
+          );
+        }
+
+        if (streamedAnyData) {
+          break;
+        }
+      }
+
+      await streamResolvedResult(controller, fallbackResult);
+    });
+  }
+
+  for (const advisorClient of advisorClients) {
+    try {
+      const raw = await requestAdvisorRawResponse(
+        advisorClient,
+        systemPrompt,
+        query,
+        false,
+      );
+      const parsed = parseAdvisorJson(raw);
+      const result = parsed
+        ? buildAdvisorSuccessResponse(parsed, productsByUrlKey, context, fallbackBudget)
+        : null;
+
+      if (result) {
+        return success(result);
+      }
+    } catch (providerError) {
+      const isTimeout = isAbortLikeError(providerError);
+      // eslint-disable-next-line no-console
+      console.error(
+        `[ai-advisor] ${advisorClient.provider} provider error${
+          isTimeout ? " (timeout)" : ""
+        }:`,
+        providerError,
       );
     }
-
-    const parsedBody = parsePayload(await req.json());
-    if (!parsedBody) {
-      return NextResponse.json({ error: "Query is required" }, { status: 400 });
-    }
-
-    const { query, userId, context, stream } = parsedBody;
-    const products = await getProductsFresh();
-    if (!products || products.length === 0) {
-      const unavailable = buildUnavailableCatalogResponse(context);
-      return stream
-        ? createStreamResponse((controller) => streamResolvedResult(controller, unavailable))
-        : NextResponse.json(unavailable, { status: 200 });
-    }
-
-    const productsByUrlKey = new Map(products.map((product) => [product.slug, product]));
-    const advisorClients = resolveAdvisorClients();
-    const fallbackResult = buildFallbackAdvisorResponse(query, products, context);
-
-    if (advisorClients.length === 0) {
-      return stream
-        ? createStreamResponse((controller) => streamResolvedResult(controller, fallbackResult))
-        : NextResponse.json(fallbackResult, { status: 200 });
-    }
-
-    const historyContext = await buildHistoryContext(userId);
-    const productList = products
-      .slice(0, 80)
-      .map(
-        (p) =>
-          `- Product URL Key: ${p.slug} | Name: ${p.name} | Category: ${p.category_id} | ${p.description?.slice(0, 80)}`,
-      )
-      .join("\n");
-
-    const contextSummary = buildConfiguratorContextSummary(context);
-    const systemPrompt = buildSystemPrompt(historyContext, contextSummary, productList);
-    const fallbackBudget = context?.estimatedBudget || inferBudgetFromQuery(query);
-
-    if (stream) {
-      return createStreamResponse(async (controller) => {
-        for (const advisorClient of advisorClients) {
-          let streamedAnyData = false;
-          emitStreamEvent(controller, {
-            type: "status",
-            message: `Consulting ${advisorClient.provider}`,
-          });
-
-          try {
-            const raw = await requestAdvisorRawResponse(
-              advisorClient,
-              systemPrompt,
-              query,
-              true,
-              (delta) => {
-                streamedAnyData = true;
-                emitStreamEvent(controller, { type: "delta", text: delta });
-              },
-            );
-
-            const parsed = parseAdvisorJson(raw);
-            const result = parsed
-              ? buildAdvisorSuccessResponse(parsed, productsByUrlKey, context, fallbackBudget)
-              : null;
-
-            if (result) {
-              emitStreamEvent(controller, { type: "result", result });
-              return;
-            }
-          } catch (providerError) {
-            const isTimeout = isAbortLikeError(providerError);
-            console.error(
-              `[ai-advisor] ${advisorClient.provider} stream error${
-                isTimeout ? " (timeout)" : ""
-              }:`,
-              providerError,
-            );
-          }
-
-          if (streamedAnyData) {
-            break;
-          }
-        }
-
-        await streamResolvedResult(controller, fallbackResult);
-      });
-    }
-
-    for (const advisorClient of advisorClients) {
-      try {
-        const raw = await requestAdvisorRawResponse(
-          advisorClient,
-          systemPrompt,
-          query,
-          false,
-        );
-        const parsed = parseAdvisorJson(raw);
-        const result = parsed
-          ? buildAdvisorSuccessResponse(parsed, productsByUrlKey, context, fallbackBudget)
-          : null;
-
-        if (result) {
-          return NextResponse.json(result, { status: 200 });
-        }
-      } catch (providerError) {
-        const isTimeout = isAbortLikeError(providerError);
-        console.error(
-          `[ai-advisor] ${advisorClient.provider} provider error${
-            isTimeout ? " (timeout)" : ""
-          }:`,
-          providerError,
-        );
-      }
-    }
-
-    return NextResponse.json(fallbackResult, { status: 200 });
-  } catch (err) {
-    console.error("[ai-advisor] Error:", err);
-    const errorPayload = {
-      recommendations: [],
-      totalBudget: "On request",
-      summary: "Unable to process advisor request right now.",
-      nextActions: buildContextualNextActions(undefined),
-      warnings: [],
-      pricingMode: "on-request" as const,
-      fallbackUsed: true,
-    };
-    return NextResponse.json(errorPayload, { status: 200 });
   }
+
+  return success(fallbackResult);
 }
+
+/**
+ * POST /api/ai-advisor — Catalog AI advisor (canonical).
+ *
+ * Accepts a natural-language `query` plus optional `context` and returns a
+ * shortlist of catalog recommendations with budget bands and next actions.
+ * Supports NDJSON streaming when `stream: true`. Guest auth; rate-limited.
+ *
+ * Response (200, non-stream): `{ success: true, recommendations, summary,
+ *   totalBudget, nextActions, warnings, pricingMode, fallbackUsed }`.
+ * Response (200, stream): `application/x-ndjson` of `{ type, ... }` events.
+ * Errors: 400 (validation), 429 (rate limit), 500.
+ */
+export const POST = withAuth(
+  async (req) => handleCatalogAdvisor(req as NextRequest),
+  { role: "guest", rateLimitScope: "ai-advisor", rateLimit: 10 },
+);

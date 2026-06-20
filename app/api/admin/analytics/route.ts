@@ -1,9 +1,25 @@
-import type { NextRequest} from "next/server";
+/**
+ * GET /api/admin/analytics — Planner analytics dashboard data (admin only).
+ *
+ * Returns aggregated planner usage metrics: plan counts over time, top
+ * furniture, export breakdown, and an active-user series. Falls back to
+ * local catalog-derived heuristics when the planner database is unavailable.
+ *
+ * Auth: `admin` role required (enforced by `withAuth`). Rate-limited per IP.
+ *
+ * Query params:
+ *   - `period`: `7d` | `90d` | (default 30d)
+ *
+ * Response (200): `{ success: true, summary, topFurniture, exports,
+ *   plansCreated, activeUsers, source }`.
+ * Errors: 401 (auth), 403 (forbidden), 429 (rate limit), 500.
+ */
+
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import {
-  enforceAdminRateLimit,
-  requireAdminSession,
-} from "@/app/api/admin/_lib/server";
+import { withAuth } from "@/lib/api/withAuth";
+import { success, error } from "@/lib/api/apiResponse";
+import { ApiError, API_ERROR_CODES } from "@/lib/api/ApiError";
 import { furnitureCatalog } from "@/features/planner/store/catalogData";
 import {
   isPlannerDatabaseConfigured,
@@ -75,13 +91,7 @@ function buildExportBreakdown(totalPlans: number) {
   ];
 }
 
-export async function GET(req: NextRequest) {
-  const rateError = await enforceAdminRateLimit(req, "analytics:get");
-  if (rateError) return rateError;
-
-  const authError = await requireAdminSession();
-  if (authError) return authError;
-
+async function handleAnalytics(req: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(req.url);
   const period = searchParams.get("period");
   const days = parsePeriodDays(period);
@@ -91,7 +101,9 @@ export async function GET(req: NextRequest) {
   if (isPlannerDatabaseConfigured()) {
     const result = await listPlannerAnalyticsRows(days);
     if (!result.success) {
-      return NextResponse.json({ error: "Failed to fetch analytics" }, { status: 500 });
+      return error(
+        new ApiError(500, API_ERROR_CODES.DATABASE_ERROR, "Failed to fetch analytics"),
+      );
     }
     rows = result.rows;
   }
@@ -109,7 +121,7 @@ export async function GET(req: NextRequest) {
     totalPlans,
   };
 
-  return NextResponse.json({
+  return success({
     summary,
     topFurniture: buildTopFurniture(),
     exports: buildExportBreakdown(totalPlans),
@@ -118,3 +130,9 @@ export async function GET(req: NextRequest) {
     source: rows.length > 0 ? "drizzle_plans+local-fallbacks" : "local-fallbacks",
   });
 }
+
+/** Admin analytics. Admin role; rate-limited. */
+export const GET = withAuth(
+  async (req) => handleAnalytics(req as NextRequest),
+  { role: "admin", rateLimitScope: "admin-analytics:get", rateLimit: 30 },
+);
