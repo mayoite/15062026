@@ -119,6 +119,7 @@ export function wireFabricDrawTools(options: {
   }
 
   function setDrawFillColor(_color: string) {
+    applyCanvasMode();
   }
 
   function commitAnnotation(obj: PlannerFabricObject) {
@@ -195,6 +196,8 @@ export function wireFabricDrawTools(options: {
       stroke: activeColor,
       strokeWidth: 2,
     });
+    rect.set('originX', 'left');
+    rect.set('originY', 'top');
     commitAnnotation(rect);
     resetDraft();
   }
@@ -277,14 +280,13 @@ export function wireFabricDrawTools(options: {
     } else if (tool === "rectangle") {
       const left = Math.min(drawStart.x, pointer.x);
       const top = Math.min(drawStart.y, pointer.y);
+      const fillColor = options.getDrawFillColor();
       previewObject = new Rect({
         left,
         top,
         width: Math.abs(pointer.x - drawStart.x),
         height: Math.abs(pointer.y - drawStart.y),
-        fill: options.getDrawFillColor() === "transparent"
-          ? "rgba(0,0,0,0.04)"
-          : options.getDrawFillColor(),
+        fill: fillColor === "transparent" ? "rgba(0,0,0,0.02)" : fillColor,
         stroke: activeColor,
         strokeWidth: 2,
         selectable: false,

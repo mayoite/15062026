@@ -198,10 +198,10 @@ export function wireFabricWalls(options: FabricWallsOptions) {
       const start = corner;
       const end = (i === corners.length - 1) ? corners[0] : corners[i + 1];
 
-      if (corner.top < LT.x && corner.left < LT.y)
+      if (corner.left < LT.x && corner.top < LT.y)
         LT = new Point(corner.left, corner.top);
 
-      if (corner.top > RB.y && corner.left > RB.y)
+      if (corner.left > RB.x && corner.top > RB.y)
         RB = new Point(corner.left, corner.top);
 
       const w = wall([start.left, start.top, end.left, end.top] as [number, number, number, number], i);

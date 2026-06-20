@@ -130,7 +130,7 @@
   }
 
   .planner-workspace .pw-left-panel[data-step="draw"][data-open="true"] {
-    width: calc(var(--pw-left-w) - var(--space-4));
+    width: calc(var(--pw-left-w) + var(--space-6));
   }
 
   .planner-workspace .pw-left-panel[data-step="place"] {
@@ -161,6 +161,33 @@
   .planner-workspace .pw-right-panel[data-collapsed="true"]:not([data-open="true"]) {
     width: 4.5rem;
     pointer-events: auto;
+  }
+
+  .planner-workspace .pw-panel-collapse-handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 3rem;
+    border-radius: 0 0.375rem 0.375rem 0;
+    border: 1px solid var(--border-soft);
+    border-left: none;
+    background: var(--surface-panel);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition:
+      background-color var(--motion-fast) var(--ease-standard),
+      color var(--motion-fast) var(--ease-standard);
+    z-index: 2;
+  }
+
+  .planner-workspace .pw-panel-collapse-handle:hover {
+    background: var(--surface-hover);
+    color: var(--text-strong);
   }
 
   .planner-workspace .pw-right-panel:not([data-open="true"]) {

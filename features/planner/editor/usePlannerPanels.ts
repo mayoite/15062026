@@ -25,9 +25,9 @@ export function getStepLeftEmphasis(step: PlannerStep): "muted" | "prominent" {
 export function usePlannerPanels() {
   const [isCompact, setIsCompact] = useState(false);
   const [leftOpen, setLeftOpenState] = useState(true);
-  const [rightOpen, setRightOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(true);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
-  const [rightCollapsed, setRightCollapsed] = useState(true);
+  const [rightCollapsed, setRightCollapsed] = useState(false);
   const [leftManualOverride, setLeftManualOverride] = useState(false);
   const [rightManualOverride, setRightManualOverride] = useState(false);
 

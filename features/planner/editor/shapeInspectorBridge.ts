@@ -1,4 +1,5 @@
 import {
+  getPlannerFabricRuntime,
   getPlannerFabricRuntimeState,
   subscribePlannerFabricRuntimeState,
 } from "@/features/planner/canvas-fabric";
@@ -40,10 +41,14 @@ export function syncSelectionFromEditor(
 
 export function applyInspectorChanges(
   _editor: null,
-  _shapeId: string,
-  _changes: Partial<InspectorData>,
+  shapeId: string,
+  changes: Partial<InspectorData>,
 ): void {
-  // Editing not wired yet for Fabric selection.
+  const runtime = getPlannerFabricRuntime();
+  if (!runtime) return;
+  if (changes.widthMm !== undefined && changes.heightMm !== undefined) {
+    runtime.resizeObject(shapeId, changes.widthMm, changes.heightMm);
+  }
 }
 
 export function deleteInspectorShape(_editor: null, _shapeId: string): void {
