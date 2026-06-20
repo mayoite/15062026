@@ -9,7 +9,7 @@ import type { SuggestedLayoutJson } from "@/features/planner/ai/types";
 import {
   resetFabricRuntimeState,
   seedFabricRuntime,
-} from "./planner-fabric-mockRuntime";
+} from "../integration/planner-fabric-mockRuntime";
 import { setPlannerFabricRuntimeState } from "@/features/planner/canvas-fabric";
 import { catalogMmToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";

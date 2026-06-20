@@ -5,7 +5,7 @@ import {
   isShapeLayerHidden,
 } from "@/features/planner/editor/layerVisibility";
 import type { PlannerLayerCategory } from "@/features/planner/store/workspaceStore";
-import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
 
 const allVisible: Record<PlannerLayerCategory, boolean> = {
   walls: true,

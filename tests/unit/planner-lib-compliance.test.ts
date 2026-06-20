@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { runPlannerComplianceCheck } from "@/features/planner/lib/compliance";
-import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
 
 describe("planner compliance", () => {
   afterEach(() => {

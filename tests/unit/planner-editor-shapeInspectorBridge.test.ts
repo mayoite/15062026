@@ -8,7 +8,7 @@ import {
   shapeToInspectorData,
   syncSelectionFromEditor,
 } from "@/features/planner/editor/shapeInspectorBridge";
-import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
 
 describe("shapeInspectorBridge", () => {
   afterEach(() => {

@@ -433,10 +433,38 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     }
   }, [isCompact, rightOpen, selectionStatus, setRightOpen]);
 
-  const handleApplyTemplate = useCallback((_template: LayoutTemplate) => {
+  const handleApplyTemplate = useCallback((template: LayoutTemplate) => {
+    // Insert the room shell using the template's recommended dimensions (mm → cm).
+    const roomWidthCm = template.recommendedRoomSize.minWidth / 10;
+    const roomHeightCm = template.recommendedRoomSize.minHeight / 10;
+    insertObject({
+      type: "ROOM",
+      object: {
+        title: template.name,
+        width: roomWidthCm,
+        height: roomHeightCm,
+      },
+    });
+
+    // Place each template shape as a generic furniture item on the canvas.
+    for (const shape of template.shapes) {
+      placeCatalogIntoFabric({
+        id: `template-${template.id}-${shape.label}`,
+        name: shape.label,
+        shortName: shape.label,
+        category: "equipment",
+        shapeType: shape.type,
+        widthMm: shape.widthMm,
+        heightMm: shape.heightMm,
+        depthMm: shape.heightMm,
+        description: `${template.name} — ${shape.label}`,
+        tags: [],
+      });
+    }
+
     setIsTemplateOpen(false);
-    setSessionStatusMessage("Templates are not yet available on the fabric canvas.");
-  }, []);
+    setSessionStatusMessage(`Applied template: ${template.name}`);
+  }, [insertObject, placeCatalogIntoFabric]);
 
   const buildCurrentPlannerDocument = useCallback(() => {
     return buildPlannerDocumentFromFabric(fabricSerializedDraft, {

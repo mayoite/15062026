@@ -1,0 +1,25 @@
+# Agent D — Task 06 Evidence
+# Collected: 2026-06-20T02:51Z
+
+## Typecheck
+
+Command: npm.cmd run typecheck
+Script: tsc -p tsconfig.json --noEmit
+Exit code: 0
+Output:
+  > oando-platform@0.1.0 typecheck
+  > tsc -p tsconfig.json --noEmit
+
+## Lint
+
+Command: npm.cmd run lint
+Script: eslint -c config/build/eslint.config.mjs app components features lib tests --max-warnings=0
+Exit code: 0
+Output:
+  > oando-platform@0.1.0 lint
+  > eslint -c config/build/eslint.config.mjs app components features lib tests --max-warnings=0
+
+## Summary
+
+- typecheck: PASS (exit 0)
+- lint: PASS (exit 0, zero warnings)
