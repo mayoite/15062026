@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-950 text-gray-100 font-sans antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+}
+
+@layer components {
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .card {
+    @apply bg-gray-900 border border-gray-800 rounded-xl p-5;
+  }
+
+  .section-heading {
+    @apply text-2xl font-bold text-white mb-1;
+  }
+
+  .section-subheading {
+    @apply text-gray-400 mb-6;
+  }
+}
+
+/* Highlight.js theme override - One Dark Pro style */
+.hljs {
+  @apply bg-gray-950 text-gray-200 rounded-lg p-4 text-sm leading-relaxed;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+.hljs-keyword { @apply text-violet-400; }
+.hljs-built_in { @apply text-cyan-400; }
+.hljs-type { @apply text-yellow-300; }
+.hljs-literal { @apply text-orange-400; }
+.hljs-number { @apply text-orange-300; }
+.hljs-string { @apply text-green-400; }
+.hljs-comment { @apply text-gray-500 italic; }
+.hljs-doctag { @apply text-gray-400; }
+.hljs-meta { @apply text-gray-400; }
+.hljs-title { @apply text-blue-400 font-medium; }
+.hljs-attr { @apply text-pink-400; }
+.hljs-attribute { @apply text-sky-300; }
+.hljs-variable { @apply text-red-400; }
+.hljs-params { @apply text-orange-300; }
+.hljs-function .hljs-keyword { @apply text-violet-400; }
+.hljs-punctuation { @apply text-gray-300; }
+.hljs-operator { @apply text-gray-300; }
+.hljs-section { @apply text-brand-400 font-bold; }
+.hljs-tag { @apply text-red-400; }
+.hljs-name { @apply text-red-400; }
+.hljs-selector-tag { @apply text-red-400; }
+.hljs-selector-id { @apply text-yellow-300; }
+.hljs-selector-class { @apply text-green-400; }
+.hljs-selector-attr { @apply text-pink-400; }
+.hljs-property { @apply text-sky-300; }
+.hljs-regexp { @apply text-orange-300; }
+.hljs-symbol { @apply text-orange-300; }
+.hljs-bullet { @apply text-orange-300; }
+.hljs-link { @apply text-blue-400 underline; }
+.hljs-addition { @apply text-green-400; }
+.hljs-deletion { @apply text-red-400; }
+.hljs-emphasis { @apply italic; }
+.hljs-strong { @apply font-bold; }
