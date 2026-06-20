@@ -14,7 +14,7 @@ describe("PlannerToolRail", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Wall" }));
+    fireEvent.click(screen.getByRole("button", { name: "Wall (W)" }));
     expect(onSelect).toHaveBeenCalledWith("planner-wall", "wall");
   });
 
@@ -29,8 +29,8 @@ describe("PlannerToolRail", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Furniture" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Measure" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Furniture (F)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Measure (M)" })).toBeInTheDocument();
   });
 
   it("hides off-step tools when step-focused visibility is enabled", () => {
@@ -44,10 +44,10 @@ describe("PlannerToolRail", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Wall" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Zone" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Furniture" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Measure" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Wall (W)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Zone (Z)" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Furniture (F)" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Measure (M)" })).not.toBeInTheDocument();
   });
 
   it("disambiguates door and window shared tool id", () => {
@@ -61,7 +61,7 @@ describe("PlannerToolRail", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Door" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Door (D)" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Window" })).toHaveAttribute("aria-pressed", "false");
 
     rerender(

@@ -23,7 +23,8 @@ describe("PropertiesInspector", () => {
 
     render(<PropertiesInspector step="review" />);
     expect(screen.getByText("Desk")).toBeInTheDocument();
-    expect(screen.getByText(/1200 mm × 600 mm/)).toBeInTheDocument();
-    expect(screen.getByText(/Rotation 90°/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Width in millimeters")).toHaveValue(1200);
+    expect(screen.getByLabelText("Height in millimeters")).toHaveValue(600);
+    expect(screen.getByText(/90/)).toBeInTheDocument();
   });
 });

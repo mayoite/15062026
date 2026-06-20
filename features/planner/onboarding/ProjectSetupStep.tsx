@@ -55,6 +55,11 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
       return;
     }
 
+    if (projectName.length > 255) {
+      setError("Project name must be 255 characters or fewer.");
+      return;
+    }
+
     if (!Number.isFinite(draft.floorAreaSqFt) || draft.floorAreaSqFt < 100) {
       setError("Enter a floor area of at least 100 sq ft.");
       return;
@@ -73,8 +78,18 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
       completedAt: new Date().toISOString(),
     };
 
-    applyProjectSetup(metadata);
-    markProjectSetupCompleteInStorage(guestMode, planId);
+    try {
+      applyProjectSetup(metadata);
+      markProjectSetupCompleteInStorage(guestMode, planId);
+    } catch (storageErr) {
+      const message =
+        storageErr instanceof DOMException && storageErr.name === "QuotaExceededError"
+          ? "Your browser storage is full. Clear some space and try again."
+          : "Unable to save setup. Please try again.";
+      setError(message);
+      return;
+    }
+
     onComplete(metadata);
   };
 
@@ -136,6 +151,9 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
               value={draft.projectName}
               onChange={(event) => updateDraft("projectName", event.target.value)}
               autoComplete="organization"
+              autoFocus
+              maxLength={255}
+              aria-describedby={error ? "project-setup-error" : undefined}
             />
           </div>
 
@@ -182,8 +200,12 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
           </div>
 
           <fieldset className="pwx-field">
-            <legend className="pwx-field-label mb-2">Primary purpose</legend>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <legend id="project-setup-purpose-label" className="pwx-field-label mb-2">Primary purpose</legend>
+            <div
+              className="grid gap-2 sm:grid-cols-2"
+              role="radiogroup"
+              aria-labelledby="project-setup-purpose-label"
+            >
               {PLANNER_PRIMARY_PURPOSE_OPTIONS.map((option) => {
                 const selected = draft.primaryPurpose === option.value;
                 return (
@@ -234,7 +256,12 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
           </div>
 
           {error ? (
-            <p className="typ-caption-lg text-[color:var(--color-danger,#dc2626)]" role="alert">
+            <p
+              id="project-setup-error"
+              className="typ-caption-lg text-[color:var(--color-danger,#dc2626)]"
+              role="alert"
+              aria-live="assertive"
+            >
               {error}
             </p>
           ) : null}

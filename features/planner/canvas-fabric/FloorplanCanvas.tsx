@@ -87,7 +87,7 @@ export function FloorplanCanvas() {
   }, [ctx, layerVisible]);
 
   return (
-    <div className="canvas-wrap">
+    <div className="canvas-wrap" tabIndex={0}>
       <canvas id="main" ref={canvasHostRef} />
     </div>
   );

@@ -34,6 +34,11 @@ const DEFAULT_LAYER_VISIBLE: Record<PlannerLayerCategory, boolean> = {
   measurements: true,
 };
 
+// BUG-05 fix: generation counter prevents React strict-mode double-mount from
+// wiping the second mount's runtime when the first mount's cleanup fires.
+// Each setPlannerFabricRuntime() increments the generation; cleanup only clears
+// if the captured generation is still current.
+let runtimeGeneration = 0;
 let currentRuntime: PlannerFabricRuntime | null = null;
 let currentState: PlannerFabricRuntimeState = {
   serializedDraft: null,
@@ -48,7 +53,26 @@ function emit() {
 }
 
 export function setPlannerFabricRuntime(runtime: PlannerFabricRuntime | null) {
-  currentRuntime = runtime;
+  if (runtime !== null) {
+    // New mount: claim this generation.
+    runtimeGeneration += 1;
+    currentRuntime = runtime;
+    return runtimeGeneration;
+  }
+  // Cleanup: only clear if the caller's generation is still active.
+  // Callers that pass null without a generation (legacy) always clear.
+  currentRuntime = null;
+  return runtimeGeneration;
+}
+
+/** Creates a cleanup function scoped to the current mount generation. */
+export function createPlannerFabricRuntimeCleanup(): () => void {
+  const generation = runtimeGeneration;
+  return () => {
+    if (runtimeGeneration === generation) {
+      currentRuntime = null;
+    }
+  };
 }
 
 export function getPlannerFabricRuntime() {

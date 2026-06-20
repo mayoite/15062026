@@ -150,7 +150,10 @@ export function filterCatalogItemsByPurpose(
   });
 }
 
-/** Apply setup answers to workspace store, catalog filter, and grid calibration. */
+/** Apply setup answers to workspace store, catalog filter, and grid calibration.
+ * All three mutations must succeed before any caller writes the completion flag.
+ * Throws if any store write fails so the caller can handle the error.
+ */
 export function applyProjectSetup(metadata: PlannerProjectMetadata): void {
   const mmPerUnit = resolveGridMmPerUnit(metadata.floorAreaSqFt);
   const { setBlueprint, setProjectMetadata } = usePlannerWorkspaceStore.getState();

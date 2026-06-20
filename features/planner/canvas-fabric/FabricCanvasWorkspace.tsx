@@ -28,8 +28,30 @@ export function FabricCanvasWorkspace({
 
   const formatDim = (value: number) => formatLength(Math.round(value * FABRIC_TO_MM), measurementUnit);
 
+  // P7-04: describe canvas state for screen readers.
+  const objectCount = app.selections.length > 0
+    ? app.selections.length
+    : undefined;
+  const canvasLabel = objectCount !== undefined
+    ? `Floor plan: ${objectCount} object${objectCount !== 1 ? "s" : ""} selected`
+    : "Floor plan canvas";
+
+  // P7-04: announce selection changes to aria-live region.
+  const selectionAnnouncement = app.selections.length > 0
+    ? app.selections.map((s) => String(s.name ?? "Object").split(":")[1] || String(s.name ?? "Object")).join(", ")
+    : "";
+
   return (
-    <div className="fcw-workspace" aria-label="Fabric canvas workspace">
+    <div className="fcw-workspace">
+      {/* P7-04: visually-hidden live region for selection announcements */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {selectionAnnouncement ? `Selected: ${selectionAnnouncement}` : ""}
+      </div>
       <FabricCanvasContextMenu />
       <div
         className="fcw-workspace-grid"
@@ -37,7 +59,13 @@ export function FabricCanvasWorkspace({
         data-left-collapsed={leftCollapsed || undefined}
       >
         {leftPanel}
-        <section className="fcw-stage-card">
+        {/* P7-04: role="application" marks the canvas as a complex interactive widget. */}
+        <section
+          className="fcw-stage-card"
+          role="application"
+          aria-label={canvasLabel}
+          data-testid="planner-fabric-ready"
+        >
           <FloorplanCanvas />
         </section>
       </div>
@@ -80,4 +108,4 @@ export function FabricCanvasWorkspace({
       </table>
     </div>
   );
-}
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useSyncExternalStore, useState } from "react";
+import { useCallback, useRef, useSyncExternalStore, useState } from "react";
 import { ChevronDown, Loader2, MessageSquare, Sparkles, Wand2 } from "lucide-react";
 
 
@@ -260,35 +260,52 @@ function SuggestLayoutPane({
   const [layoutError, setLayoutError] = useState<string | null>(null);
   const [previewLayout, setPreviewLayout] = useState<SuggestedLayoutJson | null>(null);
 
+  // P6-06: track in-flight AI request so it can be aborted on cancel.
+  const abortRef = useRef<AbortController | null>(null);
+
+  const handleCancelLayout = useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
+
   const handleSuggestLayout = useCallback(async () => {
     if (!Number.isFinite(seatCount) || seatCount < 1) {
       setLayoutError("Enter how many people you need to seat.");
       return;
     }
 
+    const controller = new AbortController();
+    abortRef.current = controller;
     setLayoutBusy(true);
     setLayoutError(null);
 
     try {
-      const { layout, usedFallback } = await suggestLayout({
-        seatCount: Math.round(seatCount),
-        purpose,
-        floorAreaSqFt: floorAreaSqFt > 0 ? Math.round(floorAreaSqFt) : undefined,
-      });
+      const { layout, usedFallback } = await suggestLayout(
+        {
+          seatCount: Math.round(seatCount),
+          purpose,
+          floorAreaSqFt: floorAreaSqFt > 0 ? Math.round(floorAreaSqFt) : undefined,
+        },
+        controller.signal,
+      );
       setPreviewLayout(layout);
       if (usedFallback) {
         setLayoutError("AI was unavailable — showing a grid-packed starter layout instead.");
       }
-    } catch {
-      setPreviewLayout(
-        suggestLayoutGridPack({
-          seatCount: Math.round(seatCount),
-          purpose,
-          floorAreaSqFt: floorAreaSqFt > 0 ? Math.round(floorAreaSqFt) : undefined,
-        }),
-      );
-      setLayoutError("AI was unavailable — showing a grid-packed starter layout instead.");
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setLayoutError("Cancelled.");
+      } else {
+        setPreviewLayout(
+          suggestLayoutGridPack({
+            seatCount: Math.round(seatCount),
+            purpose,
+            floorAreaSqFt: floorAreaSqFt > 0 ? Math.round(floorAreaSqFt) : undefined,
+          }),
+        );
+        setLayoutError("AI was unavailable — showing a grid-packed starter layout instead.");
+      }
     } finally {
+      abortRef.current = null;
       setLayoutBusy(false);
     }
   }, [floorAreaSqFt, purpose, seatCount]);
@@ -358,15 +375,16 @@ function SuggestLayoutPane({
       <button
         type="button"
         className="pw-ai-drawer-primary"
-        disabled={layoutBusy}
-        onClick={() => void handleSuggestLayout()}
+        disabled={false}
+        onClick={() => layoutBusy ? handleCancelLayout() : void handleSuggestLayout()}
+        aria-busy={layoutBusy}
       >
         {layoutBusy ? (
           <Loader2 size={14} className="pw-ai-spin" aria-hidden />
         ) : (
           <Wand2 size={14} aria-hidden />
         )}
-        {layoutBusy ? "Planning…" : "Suggest layout"}
+        {layoutBusy ? "Cancel" : "Suggest layout"}
       </button>
 
       {previewLayout ? (

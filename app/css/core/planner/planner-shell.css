@@ -623,3 +623,22 @@
   color: var(--text-body);
 }
 
+
+/* --- Reduced motion (P7-05) ----------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .planner-workspace .pw-tool-rail-btn,
+  .planner-workspace .pw-tool-rail-btn::before,
+  .planner-workspace .pw-tool-rail-btn::after,
+  .planner-workspace .pw-panel-tab,
+  .planner-workspace .pw-panel-tab::before,
+  .planner-workspace .pw-panel-tab::after,
+  .planner-workspace .pw-menu-item,
+  .planner-workspace .pw-icon-btn,
+  .planner-workspace .pw-save-pill,
+  .planner-workspace .pw-dock-btn::after,
+  .planner-workspace .pw-badge {
+    transition: none;
+    animation: none;
+  }
+}

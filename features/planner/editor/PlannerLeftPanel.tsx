@@ -111,6 +111,7 @@ export function PlannerLeftPanel({
       data-collapsed={panelCollapsed ? true : undefined}
       data-emphasis={emphasis}
       className="pw-left-panel"
+      aria-label="Planner Sidebar"
     >
       <div className="pw-panel-tabs" role="tablist" aria-label="Left panel">
         {tabs.map((tabId) => {

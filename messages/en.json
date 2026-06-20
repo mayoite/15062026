@@ -14,6 +14,33 @@
   "planner": {
     "title": "Space Planner",
     "newProject": "New Project",
-    "roomPresets": "Room Presets"
+    "roomPresets": "Room Presets",
+    "export": {
+      "title": "Export your plan",
+      "subtitle": "Choose a format, then download or share a link.",
+      "formatLabel": "Format",
+      "pdfStyleLabel": "PDF style",
+      "downloadPrefix": "Download",
+      "exporting": "Exporting…",
+      "downloaded": "Downloaded!",
+      "copyLink": "Copy link",
+      "linkCopied": "Copied!",
+      "ready": "Your {format} file is ready.",
+      "failed": "Export failed. Please try again."
+    },
+    "session": {
+      "title": "Plan Sessions",
+      "description": "Save into the shared planner workspace, keep a local draft close at hand, import a canonical planner document, or reopen the same plan in 3D.",
+      "saveCloud": "Save to Cloud",
+      "saveDraft": "Save Local Draft",
+      "saveAsNew": "Save as New Session",
+      "open3d": "Open in 3D Viewer",
+      "importJson": "Import Plan JSON",
+      "exportJson": "Export Plan JSON",
+      "savedPlans": "Saved Plans",
+      "noPlans": "No local draft or cloud plan yet.",
+      "delete": "Delete",
+      "rename": "Rename"
+    }
   }
 }

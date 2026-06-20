@@ -17,6 +17,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { PlannerManagedProductRow, PlannerManagedProductWrite } from "../model";
 
@@ -196,6 +197,7 @@ export function PlannerSessionDialog({
   const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const adminCloudPlans = useMemo(() => adminPlans.filter((plan) => plan.source === "cloud"), [adminPlans]);
+  const t = useTranslations("planner.session");
   const primary = "flex items-center justify-center gap-2 rounded-[1rem] px-4 py-3 typ-cta transition disabled:cursor-not-allowed disabled:opacity-60";
   const secondary = "flex items-center justify-center gap-2 rounded-[1rem] border border-theme-soft bg-[color:var(--planner-panel-strong)] px-4 py-3 typ-cta text-body transition hover:border-[color:var(--planner-border-hover)] hover:bg-[color:var(--planner-primary-soft)] disabled:cursor-not-allowed disabled:opacity-60";
   const accent = "flex items-center justify-center gap-2 rounded-[1rem] border border-[color:var(--planner-accent-soft)] bg-[color:var(--planner-accent-soft)]/45 px-4 py-3 typ-cta text-[color:var(--planner-accent-strong)] transition hover:bg-[color:var(--planner-accent-soft)]/75 disabled:cursor-not-allowed disabled:opacity-60";
@@ -240,9 +242,9 @@ export function PlannerSessionDialog({
                     </span>
                   ) : null}
                 </div>
-                <Dialog.Title className="mt-3 typ-h3 text-[color:var(--planner-text-strong)]">Plan Sessions</Dialog.Title>
+                <Dialog.Title className="mt-3 typ-h3 text-[color:var(--planner-text-strong)]">{t("title")}</Dialog.Title>
                 <Dialog.Description className="mt-2 max-w-3xl typ-caption-lg leading-6 text-muted">
-                  Save into the shared planner workspace, keep a local draft close at hand, import a canonical planner document, or reopen the same plan in 3D.
+                  {t("description")}
                 </Dialog.Description>
               </div>
               <Dialog.Close asChild>
@@ -258,8 +260,8 @@ export function PlannerSessionDialog({
               <section className="rounded-[1.45rem] border border-theme-soft bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(250,251,252,0.96)_100%)] p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h2 className="typ-caption-lg font-semibold uppercase tracking-[0.14em] text-muted">Saved Plans</h2>
-                    <p className="mt-1 typ-caption-lg text-subtle">{plans.length === 0 ? "No local draft or cloud plan yet." : `${plans.length} session${plans.length === 1 ? "" : "s"} available.`}</p>
+                    <h2 className="typ-caption-lg font-semibold uppercase tracking-[0.14em] text-muted">{t("savedPlans")}</h2>
+                    <p className="mt-1 typ-caption-lg text-subtle">{plans.length === 0 ? t("noPlans") : `${plans.length} session${plans.length === 1 ? "" : "s"} available.`}</p>
                   </div>
                   {isBusy ? <Loader2 className="h-4 w-4 animate-spin text-[color:var(--planner-primary)]" /> : null}
                 </div>
@@ -356,12 +358,12 @@ export function PlannerSessionDialog({
                   <input id="planner-plan-name" value={planName} onChange={(event) => onPlanNameChange(event.target.value)} placeholder="Untitled plan" className="mt-2 w-full rounded-[1rem] border border-theme-soft bg-[color:var(--planner-panel-strong)] px-4 py-3 typ-caption-lg text-body outline-none transition focus:border-[color:var(--planner-primary)]" />
                 </div>
                 <div className="grid gap-3">
-                  <button type="button" onClick={onSaveCloud} disabled={!isAuthenticated || isBusy} className={`${primary} bg-[color:var(--planner-primary)] text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-surface-muted)] disabled:text-[color:var(--planner-text-subtle)]`}><Save className="h-4 w-4" /> Save to Cloud</button>
-                  <button type="button" onClick={onSaveDraft} disabled={isBusy} className={accent}><Download className="h-4 w-4" /> Save Local Draft</button>
-                  {onSaveAsNewSession ? <button type="button" onClick={onSaveAsNewSession} disabled={isBusy} className={secondary}><CopyPlus className="h-4 w-4" /> Save as New Session</button> : null}
-                  <button type="button" onClick={onImport} disabled={isBusy} className={secondary}><Import className="h-4 w-4" /> Import Plan JSON</button>
-                  {onExportJson ? <button type="button" onClick={onExportJson} disabled={isBusy} className={secondary}><Upload className="h-4 w-4" /> Export Plan JSON</button> : null}
-                  {onOpen3d ? <button type="button" onClick={onOpen3d} disabled={!canOpen3d || isBusy} className={secondary}><FolderOpen className="h-4 w-4" /> Open in 3D Viewer</button> : null}
+                  <button type="button" onClick={onSaveCloud} disabled={!isAuthenticated || isBusy} className={`${primary} bg-[color:var(--planner-primary)] text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-surface-muted)] disabled:text-[color:var(--planner-text-subtle)]`}><Save className="h-4 w-4" /> {t("saveCloud")}</button>
+                  <button type="button" onClick={onSaveDraft} disabled={isBusy} className={accent}><Download className="h-4 w-4" /> {t("saveDraft")}</button>
+                  {onSaveAsNewSession ? <button type="button" onClick={onSaveAsNewSession} disabled={isBusy} className={secondary}><CopyPlus className="h-4 w-4" /> {t("saveAsNew")}</button> : null}
+                  <button type="button" onClick={onImport} disabled={isBusy} className={secondary}><Import className="h-4 w-4" /> {t("importJson")}</button>
+                  {onExportJson ? <button type="button" onClick={onExportJson} disabled={isBusy} className={secondary}><Upload className="h-4 w-4" /> {t("exportJson")}</button> : null}
+                  {onOpen3d ? <button type="button" onClick={onOpen3d} disabled={!canOpen3d || isBusy} className={secondary}><FolderOpen className="h-4 w-4" /> {t("open3d")}</button> : null}
                 </div>
                 <div className="rounded-[1.1rem] border border-theme-soft bg-[color:var(--planner-surface-soft)] px-4 py-3 typ-caption-lg text-body">
                   {isAuthenticated ? isAdmin ? "Authenticated admin session detected. Admin oversight uses the shared browser Supabase client plus RLS." : "Authenticated session detected. Cloud save/load follow the shared Supabase identity model." : "No authenticated session detected. Cloud save is disabled, but local draft and import still work."}

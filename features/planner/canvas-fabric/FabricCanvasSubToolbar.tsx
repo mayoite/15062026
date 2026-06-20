@@ -158,13 +158,16 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
     <div className="pw-subtopbar pw-subtopbar--fabric fcw-toolbar" role="toolbar" aria-label="Canvas tools">
       <FabricDrawToolsBar disabled={app.roomEdit} />
       <div className="fcw-toolbar-separator" />
-      <div className="fcw-toolbar-group">
+      <div className="fcw-toolbar-group" role="group" aria-label="Canvas history">
         <IconButton title="Undo" disabled={undoDisabled} onClick={app.undo}>
           <Undo2 size={16} strokeWidth={1.9} />
         </IconButton>
         <IconButton title="Redo" disabled={redoDisabled} onClick={app.redo}>
           <Redo2 size={16} strokeWidth={1.9} />
         </IconButton>
+      </div>
+      <div className="fcw-toolbar-separator" />
+      <div className="fcw-toolbar-group">
         <IconButton title="Clone" disabled={app.roomEdit || !app.selections.length} onClick={app.clone}>
           <Copy size={16} strokeWidth={1.9} />
         </IconButton>

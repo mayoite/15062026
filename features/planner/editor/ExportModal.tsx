@@ -22,7 +22,7 @@ import {
   FileCode,
   AlertCircle,
 } from "lucide-react";
-
+import { useTranslations } from "next-intl";
 
 import type { ExportPresetId } from "@/features/planner/lib/exportPresets";
 import {
@@ -90,6 +90,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations("planner.export");
   const scopeLabel = describeExportScope(null);
   const canExportVectors = getVectorExportShapeIds(null).length > 0;
 
@@ -146,7 +147,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
         await downloadPlannerPng(null);
       }
       setDownloadState("success");
-      setStatusMessage(`Your ${selectedFormat.toUpperCase()} file is ready.`);
+      setStatusMessage(t("ready", { format: selectedFormat.toUpperCase() }));
       setTimeout(() => {
         setDownloadState("idle");
         setStatusMessage(null);
@@ -155,7 +156,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
       const message =
         error instanceof PlannerExportError
           ? error.message
-          : "Export failed. Please try again.";
+          : t("failed");
       setDownloadState("error");
       setStatusMessage(message);
     }
@@ -173,10 +174,10 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
 
   const downloadLabel =
     downloadState === "loading"
-      ? "Exporting…"
+      ? t("exporting")
       : downloadState === "success"
-        ? "Downloaded!"
-        : `Download ${selectedFormat.toUpperCase()}`;
+        ? t("downloaded")
+        : `${t("downloadPrefix")} ${selectedFormat.toUpperCase()}`;
 
   const vectorExportBlocked =
     (selectedFormat === "svg" || selectedFormat === "png") && !canExportVectors;
@@ -186,7 +187,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
       className="pwx-modal-root"
       role="dialog"
       aria-modal="true"
-      aria-label="Export your plan"
+      aria-label={t("title")}
       ref={modalRef}
     >
       <button
@@ -202,9 +203,9 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
           <div>
             <h2 className="pwx-modal-title">
               <Download size={16} aria-hidden />
-              Export your plan
+              {t("title")}
             </h2>
-            <p className="pwx-modal-sub">Choose a format, then download or share a link.</p>
+            <p className="pwx-modal-sub">{t("subtitle")}</p>
           </div>
           <button type="button" onClick={onClose} className="pw-icon-btn" aria-label="Close">
             <X size={15} aria-hidden />
@@ -214,7 +215,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
         <div className="pwx-modal-body custom-scrollbar">
           <section className="pwx-export-section" aria-labelledby="export-format-label">
             <div className="pwx-export-section-head">
-              <span id="export-format-label" className="typ-label text-muted">Format</span>
+              <span id="export-format-label" className="typ-label text-muted">{t("formatLabel")}</span>
               <span className="pwx-export-scope">{scopeLabel}</span>
             </div>
             <div className="pwx-format-row" role="group" aria-label="File format">
@@ -242,7 +243,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
 
           {selectedFormat === "pdf" && (
             <section className="pwx-export-section" aria-labelledby="export-preset-label">
-              <span id="export-preset-label" className="typ-label text-muted">PDF style</span>
+              <span id="export-preset-label" className="typ-label text-muted">{t("pdfStyleLabel")}</span>
               <div className="pwx-preset-row" role="group" aria-label="Export preset">
                 {PRESET_CARDS.map(({ id, label, description, icon: Icon }) => (
                   <button
@@ -301,7 +302,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
             className="btn-outline flex items-center gap-1.5 px-4 py-2.5 text-sm"
           >
             {linkCopied ? <Check size={14} aria-hidden /> : <Link2 size={14} aria-hidden />}
-            {linkCopied ? "Copied!" : "Copy link"}
+            {linkCopied ? t("linkCopied") : t("copyLink")}
           </button>
         </div>
       </div>

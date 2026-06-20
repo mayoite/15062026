@@ -11,7 +11,12 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type Chang
 import { X, PanelRightOpen } from "lucide-react";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
-import { Planner3DViewer } from "@/features/planner/3d/Planner3DViewer";
+import dynamic from "next/dynamic";
+// P7-10: three.js must NOT be in the initial bundle — load async only when 3D view mounts.
+const Planner3DViewer = dynamic(
+  () => import("@/features/planner/3d/Planner3DViewer").then((m) => ({ default: m.Planner3DViewer })),
+  { ssr: false },
+);
 import { SplitViewLayout } from "@/features/planner/shared/components/SplitViewLayout";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
 import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
@@ -105,6 +110,7 @@ import {
   RoomPresetsOnOpen,
   setPlannerFabricRuntime,
   setPlannerFabricRuntimeState,
+  createPlannerFabricRuntimeCleanup,
   useFloorplan,
 } from "@/features/planner/canvas-fabric";
 import { applyLayerVisibility } from "@/features/planner/editor/layerVisibility";
@@ -119,7 +125,10 @@ function isEditableKeyboardTarget(target: EventTarget | null): boolean {
   );
 }
 
-/** Single source of truth: Fabric canvas grid. Syncs UI store + hotkey G. */
+/** Single source of truth: Fabric canvas grid. Syncs UI store + hotkey G.
+ * BUG-03 fix: skips the keydown listener registration in full-3D mode where
+ * the Fabric canvas is inactive or disposed.
+ */
 function FabricGridBridge() {
   const { gridEnabled, toggleGrid } = useFloorplan();
 
@@ -131,6 +140,10 @@ function FabricGridBridge() {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "g" || event.metaKey || event.ctrlKey || event.altKey) return;
       if (isEditableKeyboardTarget(event.target)) return;
+      // BUG-03: do not toggle grid when Fabric canvas is not active (3D-only mode).
+      const shell = document.querySelector(".pw-shell");
+      const activeViewMode = shell?.querySelector("[data-view-mode]")?.getAttribute("data-view-mode");
+      if (activeViewMode === "3d") return;
       event.preventDefault();
       toggleGrid();
     };
@@ -332,7 +345,9 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       editRoom,
       endEditRoom,
     });
-    return () => setPlannerFabricRuntime(null);
+    // BUG-05: use generation-scoped cleanup so strict-mode double-mount does
+    // not let the first mount's cleanup wipe the second mount's runtime.
+    return createPlannerFabricRuntimeCleanup();
   }, [
     editRoom,
     endEditRoom,
@@ -456,7 +471,25 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     }
   }, [isCompact, rightOpen, selectionStatus, setRightOpen]);
 
+  const shapeCount = useMemo(() => {
+    if (!fabricSerializedDraft) return 0;
+    try {
+      const state = JSON.parse(fabricSerializedDraft) as { objects?: unknown[] };
+      return state.objects?.length ?? 0;
+    } catch {
+      return 0;
+    }
+  }, [fabricSerializedDraft]);
+
   const handleApplyTemplate = useCallback((template: LayoutTemplate) => {
+    // P4-09: confirm before replacing an existing non-empty canvas.
+    if (shapeCount > 0) {
+      const confirmed = window.confirm(
+        `Applying "${template.name}" will replace your current ${shapeCount} object${shapeCount !== 1 ? "s" : ""}. Continue?`,
+      );
+      if (!confirmed) return;
+    }
+
     // Insert the room shell using the template's recommended dimensions (mm → cm).
     const roomWidthCm = template.recommendedRoomSize.minWidth / 10;
     const roomHeightCm = template.recommendedRoomSize.minHeight / 10;
@@ -487,7 +520,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
 
     setIsTemplateOpen(false);
     setSessionStatusMessage(`Applied template: ${template.name}`);
-  }, [insertObject, placeCatalogIntoFabric]);
+  }, [insertObject, placeCatalogIntoFabric, shapeCount]);
 
   const buildCurrentPlannerDocument = useCallback(() => {
     return buildPlannerDocumentFromFabric(fabricSerializedDraft, {
@@ -498,15 +531,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     });
   }, [activeDocumentId, fabricSerializedDraft, planName, workspaceUnitSystem]);
 
-  const shapeCount = useMemo(() => {
-    if (!fabricSerializedDraft) return 0;
-    try {
-      const state = JSON.parse(fabricSerializedDraft) as { objects?: unknown[] };
-      return state.objects?.length ?? 0;
-    } catch {
-      return 0;
-    }
-  }, [fabricSerializedDraft]);
+
 
   const applyPlannerDocument = useCallback((document: ReturnType<typeof normalizePlannerDocument>) => {
     const normalized = normalizePlannerDocument(document);
@@ -751,7 +776,8 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   );
 
   const handleSaveDraft = useCallback(() => {
-    const draftDocument = buildCurrentPlannerDocument();
+    // BUG-04 fix: use the already-memoised document; do not re-serialise the canvas.
+    const draftDocument = currentPlannerDocument;
     const namedDocumentId = activeDocumentId ?? draftDocument.id ?? crypto.randomUUID();
     const normalizedName = sanitizePlannerPlanName(planName);
     const normalizedDraft = normalizePlannerDocument({
@@ -771,10 +797,11 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     }
     setSessionErrorMessage(null);
     setSessionStatusMessage(`Local session saved ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`);
-  }, [activeDocumentId, buildCurrentPlannerDocument, currentDraftScope, planName]);
+  }, [activeDocumentId, currentPlannerDocument, currentDraftScope, planName]);
 
   const handleSaveAsNewSession = useCallback(() => {
-    const draftDocument = buildCurrentPlannerDocument();
+    // BUG-04 fix: use the already-memoised document; do not re-serialise the canvas.
+    const draftDocument = currentPlannerDocument;
     const newDocumentId = crypto.randomUUID();
     const normalizedName = sanitizePlannerPlanName(
       activeDocumentId ? `${planName} Copy` : planName,
@@ -797,12 +824,19 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     }
     setSessionErrorMessage(null);
     setSessionStatusMessage(`New local session created ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`);
-  }, [activeDocumentId, buildCurrentPlannerDocument, currentDraftScope, planName, setPlanNameOverride]);
+  }, [activeDocumentId, currentPlannerDocument, currentDraftScope, planName, setPlanNameOverride]);
 
   const handleLoadPlan = useCallback((plan: PlannerSavedEntry) => {
     if (plan.source !== "local") {
       setSessionErrorMessage("Only local draft loading is enabled in this planner session.");
       return;
+    }
+    // P5-09: confirm before replacing an unsaved canvas.
+    if (shapeCount > 0 && saveStatus !== "saved") {
+      const confirmed = window.confirm(
+        `You have unsaved changes (${shapeCount} object${shapeCount !== 1 ? "s" : ""}). Load "${plan.name}" and discard?`,
+      );
+      if (!confirmed) return;
     }
     const scope = plan.id === LOCAL_CURRENT_DRAFT_ID ? currentDraftScope : { documentId: plan.id };
     const draft = loadPlannerDraftDocument(scope);
@@ -811,7 +845,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       return;
     }
     applyPlannerDocument(draft);
-  }, [applyPlannerDocument, currentDraftScope]);
+  }, [applyPlannerDocument, currentDraftScope, saveStatus, shapeCount]);
 
   const handleDeletePlan = useCallback((plan: PlannerSavedEntry) => {
     if (plan.source !== "local" || plan.id === LOCAL_CURRENT_DRAFT_ID) {
@@ -876,6 +910,17 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // P5-09: confirm before replacing an unsaved canvas.
+    if (shapeCount > 0 && saveStatus !== "saved") {
+      const confirmed = window.confirm(
+        `You have unsaved changes (${shapeCount} object${shapeCount !== 1 ? "s" : ""}). Import this file and discard?`,
+      );
+      if (!confirmed) {
+        event.currentTarget.value = "";
+        return;
+      }
+    }
+
     const parsed = await parsePlannerDocumentImportFile(file);
     if (!parsed.ok || !parsed.document) {
       setSessionErrorMessage(parsed.errors.join(" | "));
@@ -900,7 +945,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       setSessionStatusMessage(`Imported planner JSON: ${normalizedName}`);
     }
     event.currentTarget.value = "";
-  }, [applyPlannerDocument, currentDraftScope]);
+  }, [applyPlannerDocument, currentDraftScope, saveStatus, shapeCount]);
 
   const handleExportJson = useCallback(() => {
     const plannerDocument = buildCurrentPlannerDocument();
@@ -991,7 +1036,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         ) : null}
 
         <section className="pw-canvas-stage">
-          <main className="pw-canvas-area" aria-label="Workspace canvas">
+          <section className="pw-canvas-area" aria-label="Workspace canvas">
             <div className="pw-canvas-body" data-view-mode={viewMode}>
               {viewMode !== "2d" ? plannerLeftPanel : null}
               <div ref={chromeLayerRef} className="pw-canvas-chrome-layer">
@@ -1023,7 +1068,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
               unitSystem={workspaceUnitSystem}
               snapStatusLabel="Pending"
             />
-          </main>
+          </section>
         </section>
 
         <aside

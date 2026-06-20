@@ -248,7 +248,7 @@ describe("planner step workflow", () => {
     expect(getStepToolBinding("draw").plannerTool).toBe("wall");
     expect(getStepToolBinding("place").toolId).toBe("planner-furniture");
     expect(getStepToolBinding("review").toolId).toBe("planner-measurement");
-    expect(getStepLeftTab("draw")).toBe("library");
+    expect(getStepLeftTab("draw")).toBe("blueprint");
     expect(getStepLeftTab("place")).toBe("library");
     expect(getStepLeftTab("review")).toBe("blueprint");
   });

@@ -9,6 +9,20 @@ export type PlannerWorkspacePreferences = {
 
 export const PLANNER_WORKSPACE_PREFERENCES_KEY = "planner-workspace-preferences-v1";
 
+/**
+ * Intended chrome defaults — update tests when these change, not the other way around.
+ *
+ *  leftOpen:  true  — left panel (library/blueprint) opens immediately on fresh load.
+ *                     Rationale: canvas-first design; catalog must be reachable without a click.
+ *                     Step-based override applies after manual override is cleared.
+ *
+ *  rightOpen: false — properties panel is closed by default.
+ *                     Rationale: nothing is selected on load; an empty inspector adds noise.
+ *
+ *  viewMode:  "2d"  — 2D Fabric canvas is the primary editing surface.
+ *
+ * Tests that assert a panel is CLOSED must close it explicitly first when leftOpen=true.
+ */
 export const PLANNER_WORKSPACE_DEFAULTS: PlannerWorkspacePreferences = {
   leftOpen: true,
   rightOpen: false,
