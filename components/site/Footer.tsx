@@ -119,6 +119,14 @@ export function SiteFooter() {
             <Link href="/imprint" prefetch={false} className={`site-footer__legal ${footerInteractiveClass}`}>
               Imprint
             </Link>
+            <a
+              href={process.env.NEXT_PUBLIC_TECH_STACK_URL || "/tech-stack/"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`site-footer__legal ${footerInteractiveClass}`}
+            >
+              Tech Stack
+            </a>
           </div>
           <p className="site-footer__legal-copy mt-3">&copy; {currentYear} One&Only. All rights reserved.</p>
         </div>
