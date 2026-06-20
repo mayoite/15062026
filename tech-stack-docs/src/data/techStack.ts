@@ -196,13 +196,13 @@ export const techStack: TechItem[] = [
     color: 'bg-orange-600 text-white',
   },
   {
-    name: 'Appwrite',
-    version: '^25.2.0',
-    category: 'Backend & DB',
-    description: 'Open-source backend-as-a-service for additional service needs.',
-    role: 'Supplemental backend services where Supabase is not used.',
-    docs: 'https://appwrite.io/docs',
-    color: 'bg-pink-600 text-white',
+    name: 'next-intl',
+    version: '^4.13.0',
+    category: 'Frontend',
+    description: 'Internationalization framework for Next.js with type-safe translations and locale routing.',
+    role: 'i18n infrastructure — 5 locales (en, hi, fr, de, es), middleware-based locale routing, server and client translation hooks.',
+    docs: 'https://next-intl-docs.vercel.app',
+    color: 'bg-indigo-400 text-white',
   },
 
   // AI & Integrations
