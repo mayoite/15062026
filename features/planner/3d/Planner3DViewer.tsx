@@ -590,6 +590,23 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
     viewerRef.current?.removeAttribute("data-render-luma");
   }, [sceneSignature, webglProbe.ok]);
 
+  // Dispose WebGL context and release GPU memory when the viewer unmounts.
+  // R3f's <Canvas> handles scene graph disposal, but the underlying WebGLRenderer
+  // context must be explicitly lost to free GPU resources on unmount.
+  useEffect(() => {
+    const container = viewerRef.current;
+    if (!container) return;
+    const canvas = container.querySelector<HTMLCanvasElement>("canvas[data-testid='planner-3d-canvas']");
+    return () => {
+      if (!canvas) return;
+      const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+      if (gl && "getExtension" in gl) {
+        const loseContext = (gl as WebGLRenderingContext).getExtension("WEBGL_lose_context");
+        loseContext?.loseContext();
+      }
+    };
+  }, []);
+
   return (
     <div
       ref={viewerRef}
