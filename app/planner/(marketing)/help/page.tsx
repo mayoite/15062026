@@ -1,6 +1,7 @@
 import { PlannerHelpPage } from "@/features/planner/help/PlannerHelpPage";
 import { SITE_URL } from "@/lib/siteUrl";
 import { buildPageJsonLd, buildPageMetadata } from "@/lib/helpers/seo";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 export const metadata = buildPageMetadata(SITE_URL, {
   title: "Planner Help — Workspace Layout Guide",
@@ -22,7 +23,7 @@ export default function PlannerHelpRoute() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(PAGE_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(PAGE_JSON_LD) }}
       />
       <PlannerHelpPage />
     </>

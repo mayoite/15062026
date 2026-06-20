@@ -4,6 +4,7 @@ import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { buildPageMetadata, buildPageJsonLd } from "@/data/site/seo";
 import { SITE_URL } from "@/lib/siteUrl";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 export const metadata: Metadata = buildPageMetadata(SITE_URL, {
   title: "Workspace Templates",
@@ -25,7 +26,7 @@ export default function TemplatesPage() {
     <section className="scheme-page flex min-h-screen flex-col items-center">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
       />
       <Hero
         variant="small"

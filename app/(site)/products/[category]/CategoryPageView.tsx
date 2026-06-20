@@ -10,6 +10,7 @@ import {
 import type { CompatCategory } from "@/features/catalog/getProducts";
 import { getCatalog } from "@/features/catalog/getProducts";
 import { SITE_URL } from "@/lib/siteUrl";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 import { FilterGrid } from "./FilterGrid";
 
@@ -67,11 +68,11 @@ export async function CategoryPageView({ categoryId }: { categoryId: string }) {
     <div className="scheme-page flex min-h-screen flex-col pt-24 md:pt-28">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(categoryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(categoryJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(breadcrumbJsonLd) }}
       />
 
       <Suspense fallback={<GridSkeleton />}>

@@ -8,6 +8,7 @@ import {
 } from "@/features/planner/landing/plannerFeaturePages";
 import { SITE_URL } from "@/lib/siteUrl";
 import { buildPageJsonLd, buildPageMetadata } from "@/lib/helpers/seo";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -48,7 +49,7 @@ export default async function PlannerFeatureRoute({ params }: PageProps) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
       />
       <PlannerFeaturePageView slug={slug} />
     </>

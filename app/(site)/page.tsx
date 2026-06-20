@@ -14,6 +14,7 @@ import { buildPageJsonLd, buildPageMetadata } from "@/lib/analytics/seo";
 import { HOMEPAGE_SHOWCASE_CONTENT } from "@/data/site/homepage";
 import { getBusinessStats } from "@/features/crm/businessStats";
 import { SITE_URL } from "@/lib/siteUrl";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 export const metadata: Metadata = buildPageMetadata(SITE_URL, {
   title: SITE_BRAND.defaultTitle,
@@ -34,7 +35,7 @@ export default async function Home() {
     <div className="min-h-screen overflow-x-hidden">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(homeJsonLd) }}
       />
 
       <HomepageHero />

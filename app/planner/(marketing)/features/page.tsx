@@ -1,6 +1,7 @@
 import { PlannerFeaturesHubPage } from "@/features/planner/landing/PlannerFeaturesHubPage";
 import { SITE_URL } from "@/lib/siteUrl";
 import { buildPageJsonLd, buildPageMetadata } from "@/lib/helpers/seo";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 export const metadata = buildPageMetadata(SITE_URL, {
   title: "Planner Features — Blueprint, 3D, AI & Export",
@@ -27,7 +28,7 @@ export default function PlannerFeaturesHubRoute() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(PAGE_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(PAGE_JSON_LD) }}
       />
       <PlannerFeaturesHubPage />
     </>
