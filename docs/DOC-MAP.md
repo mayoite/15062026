@@ -10,6 +10,10 @@
 
 ## API
 - `docs/api/openapi.yaml` — OpenAPI 3.0 specification for key API routes
+## Database
+- `docs/database/SCHEMA.md` — Schema reference with ERDs + RLS matrix
+- `docs/database/SEEDING.md` — Seeding workflow
+- `docs/database/ADVISORS.md` — Database advisors (security + performance)
 
 ## Audit Reports
 - `docs/audit/SEO_AUDIT.md` — SEO audit (7.5 → 9.5/10)
