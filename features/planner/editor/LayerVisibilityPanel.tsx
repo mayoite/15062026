@@ -136,10 +136,10 @@ export function LayerVisibilityPanel({ editor = null }: LayerVisibilityPanelProp
               onClick={() => toggleLayer(category)}
             >
               <span className="pwx-layer-eye" aria-hidden>
-                {visible ? <Eye size={14} strokeWidth={1.75} /> : <EyeOff size={14} strokeWidth={1.75} />}
+                {visible ? <Eye size={14} strokeWidth={2} /> : <EyeOff size={14} strokeWidth={2} />}
               </span>
               <span className="pwx-layer-icon" aria-hidden>
-                <Icon size={13} strokeWidth={1.75} />
+                <Icon size={14} strokeWidth={2} />
               </span>
               <span className="pwx-layer-name">{LABELS[category]}</span>
               {count !== undefined && count > 0 && (

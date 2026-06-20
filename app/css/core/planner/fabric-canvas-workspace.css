@@ -200,20 +200,21 @@
 .fcw-workspace .zoom-control {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.45rem;
   margin-left: auto;
-  padding: 0.06rem 0.16rem;
+  padding: 0.06rem 0.25rem;
   border: 1px solid var(--border-soft);
   background: color-mix(in srgb, var(--surface-panel) 98%, var(--color-white));
   flex: 0 0 auto;
 }
 
 .fcw-workspace .zoom-control span {
-  min-width: 2.9rem;
+  min-width: 3.2rem;
   text-align: center;
   color: var(--text-heading);
   font-weight: var(--font-weight-copy-medium);
   font-size: 0.78rem;
+  letter-spacing: 0.02em;
 }
 
 .fcw-workspace .zoom-control .icon-btn {

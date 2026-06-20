@@ -9,6 +9,7 @@ import { MousePointer2 } from "lucide-react";
 
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
 import {
+  applyInspectorChanges,
   readInspectorSelection,
   syncSelectionFromEditor,
 } from "@/features/planner/editor/shapeInspectorBridge";
@@ -38,6 +39,13 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
     return syncSelectionFromEditor(editor ?? null, setData);
   }, [editor]);
 
+  const handleDimensionChange = (field: "widthMm" | "heightMm", value: string) => {
+    const num = parseInt(value, 10);
+    if (!data || isNaN(num) || num <= 0) return;
+    const changes = { [field]: num };
+    applyInspectorChanges(null, data.id, changes);
+  };
+
   return (
     <aside className="pwx-inspector" data-emphasis={emphasis} data-step={step}>
       <div className="pwx-inspector-header">
@@ -45,12 +53,57 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
         <p className="mt-1 text-xs text-soft">{data ? data.label : "Nothing selected"}</p>
       </div>
       {data ? (
-        <div className="pwx-empty custom-scrollbar">
-          <div className="pwx-tip-list">
-            <div className="pwx-tip"><span className="pwx-tip-num">1</span>{data.type}</div>
-            <div className="pwx-tip"><span className="pwx-tip-num">2</span>{data.widthMm} mm × {data.heightMm} mm</div>
-            <div className="pwx-tip"><span className="pwx-tip-num">3</span>Rotation {data.rotation}°</div>
-            <div className="pwx-tip"><span className="pwx-tip-num">4</span>{data.isLocked ? "Locked" : "Editable"}</div>
+        <div className="pwx-inspector-body custom-scrollbar">
+          <div className="pwx-inspector-section">
+            <p className="typ-label text-muted mb-2">Type</p>
+            <p className="text-sm text-strong">{data.type}</p>
+          </div>
+          <div className="pwx-inspector-section">
+            <p className="typ-label text-muted mb-2">Dimensions</p>
+            <div className="pwx-grid-2">
+              <div className="pwx-field">
+                <span className="pwx-field-label">W</span>
+                <input
+                  type="number"
+                  className="pwx-field-input"
+                  defaultValue={data.widthMm}
+                  onBlur={(e) => handleDimensionChange("widthMm", e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  min="1"
+                  aria-label="Width in millimeters"
+                />
+                <span className="pwx-field-unit">mm</span>
+              </div>
+              <div className="pwx-field">
+                <span className="pwx-field-label">H</span>
+                <input
+                  type="number"
+                  className="pwx-field-input"
+                  defaultValue={data.heightMm}
+                  onBlur={(e) => handleDimensionChange("heightMm", e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  min="1"
+                  aria-label="Height in millimeters"
+                />
+                <span className="pwx-field-unit">mm</span>
+              </div>
+            </div>
+          </div>
+          <div className="pwx-inspector-section">
+            <p className="typ-label text-muted mb-2">Rotation</p>
+            <p className="text-sm text-strong">{data.rotation}°</p>
+          </div>
+          <div className="pwx-inspector-section">
+            <p className="typ-label text-muted mb-2">Status</p>
+            <p className="text-sm text-strong">{data.isLocked ? "Locked" : "Editable"}</p>
           </div>
         </div>
       ) : (

@@ -548,33 +548,24 @@ export function createFloorplanCanvasApi(
     group.top = newTB + (group.height / 2) + roomOrigin();
 
     if (lastObject) {
-      // retrieve spacing from object, use rlAisleGap if not specified
       const lastLR = lastObjectDefinition.lrSpacing || RL_AISLEGAP;
       const lastTB = lastObjectDefinition.tbSpacing || RL_AISLEGAP;
+      const useLR = Math.max(newLR, lastLR);
+      const useTB = Math.max(newTB, lastTB);
 
-      // calculate maximum gap required by last and this object
-      // Note: this isn't smart enough to get new row gap right when
-      // object above had a much bigger gap, etc. We aren't fitting yet.
-      const useLR = Math.max(newLR, lastLR), useTB = Math.max(newTB, lastTB);
+      const lastHalfWidth = (lastObject.width || lastObjectDefinition.width || 100) / 2;
+      const lastHalfHeight = (lastObject.height || lastObjectDefinition.height || 40) / 2;
 
-      // using left/top vocab, though all objects are now centered
-      const lastWidth = lastObjectDefinition.width || 100;
-      const lastHeight = lastObjectDefinition.height || 40;
+      let newLeft = lastObject.left + lastHalfWidth + useLR + group.width / 2;
+      let newTop = lastObject.top - lastHalfHeight + useTB + group.height / 2;
 
-      let newLeft = lastObject.left + lastWidth + useLR;
-      let newTop = lastObject.top;
-
-      // make sure we fit left to right, including our required right spacing
-      if (newLeft + group.width + newLR > ROOM_SIZE.width) {
-        newLeft = newLR + (group.width / 2);
-        newTop += lastHeight + useTB;
+      if (newLeft + group.width / 2 + newLR > ROOM_SIZE.width) {
+        newLeft = roomOrigin() + newLR + group.width / 2;
+        newTop = lastObject.top + lastHalfHeight + useTB + group.height / 2;
       }
 
-      group.left = newLeft;
-      group.top = newTop;
-
-      if ((group.left - group.width / 2) < roomOrigin()) { group.left += roomOrigin(); }
-      if ((group.top - group.height / 2) < roomOrigin()) { group.top += roomOrigin(); }
+      group.left = Math.max(newLeft, roomOrigin() + newLR + group.width / 2);
+      group.top = Math.max(newTop, roomOrigin() + newTB + group.height / 2);
     }
 
     view.add(group);
@@ -922,6 +913,23 @@ export function createFloorplanCanvasApi(
     view.requestRenderAll();
   }
 
+  const FABRIC_TO_MM = 10;
+
+  function resizeObject(shapeId: string, widthMm: number, heightMm: number) {
+    if (!view) return;
+    const target = view.getObjects().find((obj) => String(obj.id ?? obj.name ?? '') === shapeId);
+    if (!target) return;
+    const newWidth = widthMm / FABRIC_TO_MM;
+    const newHeight = heightMm / FABRIC_TO_MM;
+    target.set({
+      width: newWidth,
+      height: newHeight,
+    });
+    target.setCoords();
+    view.requestRenderAll();
+    saveState();
+  }
+
   function fitToStage() {
     if (!view || !canvasEl) return ctxRef.current.zoom;
     const wrap = canvasEl.closest('.canvas-wrap') as HTMLElement | null;
@@ -1160,6 +1168,7 @@ export function createFloorplanCanvasApi(
     fitToStage,
     recalcOffset: () => view?.calcOffset(),
     setLayerVisibility,
+    resizeObject,
   };
   return api;
 }

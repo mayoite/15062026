@@ -66,6 +66,7 @@ export type FloorplanCanvasApi = {
   fitToStage: () => number;
   recalcOffset: () => void;
   setLayerVisibility: (layerVisible: Record<PlannerLayerCategory, boolean>) => void;
+  resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
 };
 
 type FloorplanContextValue = {
@@ -123,6 +124,7 @@ type FloorplanContextValue = {
   registerCanvasApi: (api: FloorplanCanvasApi | null) => void;
   refitCanvas: () => void;
   setLayerVisibility: (layerVisible: Record<PlannerLayerCategory, boolean>) => void;
+  resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
 };
 
 const FloorplanContext = createContext<FloorplanContextValue | null>(null);
@@ -328,6 +330,10 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
     apiRef.current?.setLayerVisibility(layerVisible);
   }, []);
 
+  const resizeObject = useCallback((shapeId: string, widthMm: number, heightMm: number) => {
+    apiRef.current?.resizeObject(shapeId, widthMm, heightMm);
+  }, []);
+
   const zoomIn = useCallback(() => {
     setZoomState((z) => {
       if (z >= 150) return z;
@@ -407,6 +413,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       registerCanvasApi,
       refitCanvas,
       setLayerVisibility,
+      resizeObject,
     }),
     [
       roomEdit,
@@ -445,6 +452,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       registerCanvasApi,
       refitCanvas,
       setLayerVisibility,
+      resizeObject,
     ],
   );
 
