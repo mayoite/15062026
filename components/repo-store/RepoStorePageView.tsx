@@ -2,9 +2,9 @@ import Link from "next/link";
 import styles from "./RepoStorePageView.module.css";
 
 const metrics = [
-  ["6", "responsibility buckets", "validated in the Stage 01 duplicate-responsibility ledger"],
-  ["4", "lint blockers", "current baseline: four planner @ts-nocheck violations"],
-  ["0", "type blockers", "current root TypeScript 6 typecheck passes"],
+  ["0", "type blockers", "typecheck exit 0 verified 2026-06-20"],
+  ["0", "lint blockers", "lint exit 0 verified 2026-06-20"],
+  ["31/31", "deterministic tests pass", "navigation-data, exportActions, PlannerLeftPanel"],
   ["10", "plan phases", "audit through release"],
 ];
 
@@ -118,15 +118,16 @@ const domains = [
 ];
 
 const blockers = [
-  ["Typecheck", "Verified", "Root TypeScript 6 typecheck passes; evidence: results/repo-audit/baseline-typecheck.txt."],
-  ["Lint", "Failing: 4 errors", "Four planner migration files retain forbidden @ts-nocheck directives; evidence: results/repo-audit/baseline-lint.txt."],
+  ["Typecheck", "Verified", "Root TypeScript 6 typecheck passes exit 0; evidence: results/repo-audit/agent-d-06-evidence.txt."],
+  ["Lint", "Verified", "ESLint passes exit 0 with zero warnings; evidence: results/repo-audit/agent-d-06-evidence.txt."],
+  ["Runtime bugs", "Fixed", "wall drag hang (floorplanCanvas.ts:410-477), room bbox math (floorplanCanvas.ts:614-646), duplicate three.js instance (SharedR3FEngine.tsx deleted)."],
   ["Stage 01 audit", "Verified", "168/168 migration-review paths classified; validation reports no missing paths or classifications."],
 ];
 
 const nextActions = [
-  "Review the 46 stale classifications before any ownership move; classification is not deletion approval.",
-  "Fix planner typecheck/lint blockers before claiming release health.",
-  "Replace stale tldraw wording in planner CONTENTS and runtime comments.",
+  "Resolve full planner suite OOM worker error (predates this session).",
+  "Complete tldraw residue cleanup in progress.",
+  "Complete persistence barrel migration in progress.",
   "Wire Fabric gaps: templates, blueprint capture, AI layout apply, document import/export proof.",
 ];
 

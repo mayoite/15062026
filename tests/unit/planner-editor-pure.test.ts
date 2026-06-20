@@ -47,7 +47,7 @@ import {
 import {
   confirmResetPlannerCanvas,
 } from "@/features/planner/editor/resetPlannerCanvas";
-import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
 
 describe("blueprint pure helpers", () => {
   it("clamps scale and opacity", () => {

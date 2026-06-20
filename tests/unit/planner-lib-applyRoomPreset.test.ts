@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { ROOM_PRESETS } from "@/features/planner/catalog/roomPresets";
 import { applyRoomPreset } from "@/features/planner/lib/applyRoomPreset";
-import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
 
 describe("planner apply room preset", () => {
   afterEach(() => {

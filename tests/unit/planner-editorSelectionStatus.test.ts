@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { getEditorSelectionStatus } from "@/features/planner/editor/editorSelectionStatus";
-import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
 
 describe("getEditorSelectionStatus", () => {
   afterEach(() => {
