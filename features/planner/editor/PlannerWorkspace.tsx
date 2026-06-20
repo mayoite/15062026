@@ -22,6 +22,10 @@ import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
 import { PlannerSubTopBar } from "@/features/planner/editor/PlannerSubTopBar";
 
 import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
+import {
+  readPlannerWorkspacePreferences,
+  writePlannerWorkspacePreferences,
+} from "@/features/planner/editor/plannerWorkspacePreferences";
 import { PlannerChromeHost } from "@/features/planner/editor/chrome/PlannerChromeHost";
 import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
@@ -225,6 +229,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     toggleRightCollapsed,
   } = panels;
   const [viewMode, setViewMode] = useState<"2d" | "3d" | "split">("2d");
+  const [preferencesHydrated, setPreferencesHydrated] = useState(false);
 
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
   const [isBlueprintOpen, setIsBlueprintOpen] = useState(false);
@@ -255,6 +260,22 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const setPlannerTool = usePlannerStore((s) => s.setTool);
   const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
+
+  useEffect(() => {
+    const saved = readPlannerWorkspacePreferences();
+    setViewMode(saved.viewMode);
+    usePlannerCatalogStore.getState().setQuery(saved.catalogQuery);
+    setPreferencesHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!preferencesHydrated) return;
+    writePlannerWorkspacePreferences({ viewMode });
+  }, [preferencesHydrated, viewMode]);
+
+  useEffect(() => usePlannerCatalogStore.subscribe((state) => {
+    writePlannerWorkspacePreferences({ catalogQuery: state.query });
+  }), []);
   const placeCatalogIntoFabric = useCallback((item: CatalogItem) => {
     const { widthCm, depthCm } = shapePropsToCanvasCm(item.widthMm, item.heightMm);
     const block = resolveCatalogItemBlock2D(item);
@@ -984,7 +1005,10 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
                 onDragOver={handleCanvasDragOver}
                 onDrop={handleCanvasDrop}
               >
-                <div className="pw-canvas-engine pw-fabric-container flex h-full min-h-0 w-full flex-col">
+                <div
+                  className="pw-canvas-engine pw-fabric-container flex h-full min-h-0 w-full flex-col"
+                  data-testid="planner-2d-canvas"
+                >
                   <SplitViewLayout
                     view={viewMode}
                     children2D={canvas2D}

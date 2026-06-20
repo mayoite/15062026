@@ -238,6 +238,10 @@ export function PlannerToolRail({
                     aria-label={tool.label}
                     aria-pressed={isActive}
                     aria-keyshortcuts={tool.shortcut}
+                    data-command-id={`tool.select.${tool.id}`}
+                    data-command-handler="onSelect"
+                    data-command-mutation="activeTool"
+                    data-command-feedback="aria-pressed"
                     onClick={() => onSelect(tool.toolId, tool.plannerTool)}
                   >
                     <Icon size={19} strokeWidth={1.75} aria-hidden />

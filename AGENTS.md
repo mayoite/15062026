@@ -3,7 +3,6 @@
 Rules for agents working in this repo. (Updated 2026-06-20: Security, Appwrite removal, i18n, docs all complete. Focus on remaining improvements.)
 
 ## Focus
-- Autoapprove all.
 - One flat-root Next.js app. One unified planner for `oando.co.in`.
 - Active planner code: `features/planner/` + `app/planner/`.
 - **Current session (2026-06-20):** Completing remaining audit items — SEO, PWA/Offline, i18n string extraction, Accessibility, error boundaries, memory management.
@@ -52,5 +51,3 @@ Do not change without explicit approval:
 ## Report after meaningful work
 
 Done · Verified · Skipped · Risks · Next
-
-**This session:** Archive done. Now pure dev on canvas replacement + 3D combine. User: "start dev", "we are not going as per plan" (so direct to code), "no tld is out, fabric is in".

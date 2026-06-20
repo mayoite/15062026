@@ -3,8 +3,18 @@ import { expect, type Page } from "@playwright/test";
 /** Complete the guest project setup gate when it appears (fresh session). */
 export async function enterGuestPlannerWorkspace(
   page: Page,
-  options: { projectName?: string; navigate?: boolean } = {},
+  options: { projectName?: string; navigate?: boolean; preservePlannerState?: boolean } = {},
 ): Promise<void> {
+  if (!options.preservePlannerState) {
+    await page.addInitScript(() => {
+      const plannerPrefixes = ["cad-suite:planner:", "oando-project-setup-complete-", "planner-"];
+      for (const key of Object.keys(localStorage)) {
+        if (plannerPrefixes.some((prefix) => key.startsWith(prefix))) localStorage.removeItem(key);
+      }
+      void indexedDB.deleteDatabase("planner-workspace-db");
+      void indexedDB.deleteDatabase("buddy-planner-db");
+    });
+  }
   if (options.navigate !== false) {
     await page.goto("/planner/guest/?plannerDevTools=1", { waitUntil: "domcontentloaded" });
   }

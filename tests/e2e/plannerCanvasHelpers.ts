@@ -1,10 +1,9 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
-const CANVAS_SURFACE = ".pw-canvas-engine";
-const TLDRAW_CANVAS = `${CANVAS_SURFACE} canvas`;
+const PLANNER_CANVAS = '[data-testid="planner-2d-canvas"] canvas';
 
 async function primaryCanvas(page: Page): Promise<Locator> {
-  return page.locator(TLDRAW_CANVAS).first();
+  return page.locator(PLANNER_CANVAS);
 }
 
 async function canvasBox(page: Page) {
@@ -16,7 +15,7 @@ async function canvasBox(page: Page) {
 }
 
 export async function waitForPlannerCanvas(page: Page): Promise<void> {
-  await expect(page.locator(TLDRAW_CANVAS).first()).toBeVisible({ timeout: 25_000 });
+  await expect(page.locator(PLANNER_CANVAS)).toBeVisible({ timeout: 25_000 });
 }
 
 export async function canvasPoint(

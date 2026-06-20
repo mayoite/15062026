@@ -337,6 +337,7 @@ function CatalogItemCard({
         className="pw-catalog-card-body"
         onClick={() => onItemClick(enriched)}
         aria-label={`Add ${enriched.shortName} to canvas`}
+        data-command-id="catalog.place-item"
       >
         <p className="pw-catalog-card-sku">{enriched.sku}</p>
         <p className="pw-catalog-card-name" title={enriched.name}>
@@ -348,7 +349,8 @@ function CatalogItemCard({
       <button
         type="button"
         className="pw-catalog-card-add"
-        aria-label={`Add ${enriched.shortName} to canvas`}
+        aria-label={`Quick place ${enriched.shortName}`}
+        data-command-id="catalog.quick-place-item"
         onClick={() => onItemClick(enriched)}
       >
         <Plus size={14} strokeWidth={2.5} aria-hidden />

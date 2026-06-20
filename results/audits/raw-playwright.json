@@ -6,9 +6,10 @@
       "test",
       "-c",
       "config/build/playwright.config.ts",
-      "tests/e2e/planner-guest-workspace.spec.ts",
+      "tests/e2e/planner-chrome.spec.ts",
+      "--project=chromium",
       "--grep",
-      "loads canvas chrome"
+      "furniture tool opens"
     ],
     "configFile": "E:\\16062026\\config\\build\\playwright.config.ts",
     "rootDir": "E:/16062026/tests",
@@ -74,25 +75,25 @@
   },
   "suites": [
     {
-      "title": "e2e\\planner-guest-workspace.spec.ts",
-      "file": "e2e/planner-guest-workspace.spec.ts",
+      "title": "e2e\\planner-chrome.spec.ts",
+      "file": "e2e/planner-chrome.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Planner guest workspace — plan 06 UI bar",
-          "file": "e2e/planner-guest-workspace.spec.ts",
-          "line": 7,
+          "title": "Planner chrome v1",
+          "file": "e2e/planner-chrome.spec.ts",
+          "line": 33,
           "column": 6,
           "specs": [
             {
-              "title": "loads canvas chrome with history, view modes, and catalog",
+              "title": "furniture tool opens the library and placed item appears in recents",
               "ok": false,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -101,53 +102,45 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 26633,
+                      "status": "timedOut",
+                      "duration": 60048,
                       "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n    at enterGuestPlannerWorkspace (E:\\16062026\\tests\\e2e\\guestProjectSetup.ts:25:24)\n    at E:\\16062026\\tests\\e2e\\planner-guest-workspace.spec.ts:9:5",
-                        "location": {
-                          "file": "E:\\16062026\\tests\\e2e\\guestProjectSetup.ts",
-                          "column": 24,
-                          "line": 25
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39me2e\\guestProjectSetup.ts:25\n\n\u001b[0m \u001b[90m 23 |\u001b[39m   }\n \u001b[90m 24 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 25 |\u001b[39m   \u001b[36mawait\u001b[39m expect(topbar)\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m25\u001b[39m_000 })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 26 |\u001b[39m }\n \u001b[90m 27 |\u001b[39m\u001b[0m"
+                        "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
                       },
                       "errors": [
                         {
+                          "message": "\u001b[31mTest timeout of 60000ms exceeded.\u001b[39m"
+                        },
+                        {
                           "location": {
-                            "file": "E:\\16062026\\tests\\e2e\\guestProjectSetup.ts",
-                            "column": 24,
-                            "line": 25
+                            "file": "E:\\16062026\\tests\\e2e\\plannerCanvasHelpers.ts",
+                            "column": 16,
+                            "line": 85
                           },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n\n   at e2e\\guestProjectSetup.ts:25\n\n  23 |   }\n  24 |\n> 25 |   await expect(topbar).toBeVisible({ timeout: 25_000 });\n     |                        ^\n  26 | }\n  27 |\n    at enterGuestPlannerWorkspace (E:\\16062026\\tests\\e2e\\guestProjectSetup.ts:25:24)\n    at E:\\16062026\\tests\\e2e\\planner-guest-workspace.spec.ts:9:5"
+                          "message": "Error: locator.click: Test timeout of 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('navigation', { name: 'Drawing tools' }).getByRole('button', { name: 'Furniture', exact: true })\u001b[22m\n\n\n   at e2e\\plannerCanvasHelpers.ts:85\n\n  83 |     .getByRole(\"navigation\", { name: \"Drawing tools\" })\n  84 |     .getByRole(\"button\", { name: toolName, exact: true });\n> 85 |   await button.click();\n     |                ^\n  86 |   await expect(button).toHaveAttribute(\"aria-pressed\", \"true\", { timeout: 5_000 });\n  87 |   await waitForPlannerCanvas(page);\n  88 |   await page.waitForTimeout(150);\n    at selectPlannerTool (E:\\16062026\\tests\\e2e\\plannerCanvasHelpers.ts:85:16)\n    at E:\\16062026\\tests\\e2e\\planner-chrome.spec.ts:128:28"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-20T05:40:49.051Z",
+                      "startTime": "2026-06-20T15:18:49.536Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "E:\\16062026\\results\\test-results\\e2e-planner-guest-workspac-7b702-tory-view-modes-and-catalog-chromium\\error-context.md"
+                          "path": "E:\\16062026\\results\\test-results\\e2e-planner-chrome-Planner-e9b1e-ced-item-appears-in-recents-chromium\\error-context.md"
                         }
-                      ],
-                      "errorLocation": {
-                        "file": "E:\\16062026\\tests\\e2e\\guestProjectSetup.ts",
-                        "column": 24,
-                        "line": 25
-                      }
+                      ]
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "2c5b026a0357ab747363-0d959eeff6d26fd03ad6",
-              "file": "e2e/planner-guest-workspace.spec.ts",
-              "line": 12,
+              "id": "fe7b0e5ffbd6446a8d9e-1e5e228a2c67d362fbba",
+              "file": "e2e/planner-chrome.spec.ts",
+              "line": 125,
               "column": 7
             }
           ]
@@ -157,8 +150,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-20T05:40:48.213Z",
-    "duration": 27839.246,
+    "startTime": "2026-06-20T15:18:49.164Z",
+    "duration": 60634.234000000004,
     "expected": 0,
     "skipped": 0,
     "unexpected": 1,
