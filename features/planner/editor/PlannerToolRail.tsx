@@ -235,7 +235,7 @@ export function PlannerToolRail({
                     type="button"
                     className="pw-tool-rail-btn pwx-rail-btn"
                     data-active={isActive}
-                    aria-label={tool.label}
+                    aria-label={tool.shortcut ? `${tool.label} (${tool.shortcut})` : tool.label}
                     aria-pressed={isActive}
                     aria-keyshortcuts={tool.shortcut}
                     data-command-id={`tool.select.${tool.id}`}

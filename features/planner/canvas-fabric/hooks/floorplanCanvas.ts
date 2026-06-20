@@ -999,7 +999,7 @@ export function createFloorplanCanvasApi(
   function getBoundingRect(objects: any[]) {
     let top = 9999, left = 9999, right = 0, bottom = 0;
     objects.forEach(obj => {
-      if (obj.left < top) {
+      if (obj.top < top) {
         top = obj.top;
       }
       if (obj.left < left) {

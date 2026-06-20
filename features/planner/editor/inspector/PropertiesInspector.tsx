@@ -47,7 +47,7 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
   };
 
   return (
-    <aside className="pwx-inspector" data-emphasis={emphasis} data-step={step}>
+    <aside className="pwx-inspector" data-emphasis={emphasis} data-step={step} aria-label="Properties Inspector">
       <div className="pwx-inspector-header">
         <p className="typ-label text-muted">Properties</p>
         <p className="mt-1 text-xs text-soft">{data ? data.label : "Nothing selected"}</p>

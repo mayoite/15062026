@@ -208,8 +208,14 @@ export type SuggestLayoutResult = {
   usedFallback: boolean;
 };
 
-/** Optional LLM pass — falls back to grid pack when provider or parse fails. */
-export async function suggestLayout(input: SpaceSuggestInput): Promise<SuggestLayoutResult> {
+/** Optional LLM pass — falls back to grid pack when provider or parse fails.
+ * Pass an `AbortSignal` to cancel an in-flight request (e.g. from AIAssistDrawer).
+ * P6-06: AbortController support added; previously had no cancellation path.
+ */
+export async function suggestLayout(
+  input: SpaceSuggestInput,
+  signal?: AbortSignal,
+): Promise<SuggestLayoutResult> {
   try {
     const response = await fetch("/api/planner/ai-advisor", {
       method: "POST",
@@ -224,6 +230,7 @@ export async function suggestLayout(input: SpaceSuggestInput): Promise<SuggestLa
           { role: "user", content: buildSpaceSuggestUserPrompt(input) },
         ],
       }),
+      signal,
     });
 
     if (response.ok) {
@@ -234,8 +241,12 @@ export async function suggestLayout(input: SpaceSuggestInput): Promise<SuggestLa
         if (parsed) return { layout: parsed, usedFallback: false };
       }
     }
-  } catch {
-    /* fall through to grid pack */
+  } catch (err) {
+    // AbortError is intentional — propagate it so callers can distinguish cancel from failure.
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw err;
+    }
+    /* fall through to grid pack for any other network / parse error */
   }
 
   return { layout: suggestLayoutGridPack(input), usedFallback: true };

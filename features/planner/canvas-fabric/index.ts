@@ -29,6 +29,7 @@ export {
   setPlannerFabricRuntime,
   setPlannerFabricRuntimeState,
   subscribePlannerFabricRuntimeState,
+  createPlannerFabricRuntimeCleanup,
   type PlannerFabricRuntime,
   type PlannerFabricRuntimeState,
   type PlannerFabricSelection,

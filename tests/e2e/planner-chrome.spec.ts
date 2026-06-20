@@ -36,7 +36,15 @@ test.describe("Planner chrome v1", () => {
     const leftPanel = page.locator(".pw-left-panel");
     const accessButton = page.getByRole("button", { name: "Open library and blueprint panel" });
 
-    await expect(leftPanel).not.toHaveAttribute("data-open", "true");
+    // Default is leftOpen:true — close first so we can test the open action.
+    await page.getByRole("button", { name: "Collapse left panel rail" }).click();
+    await page.getByRole("button", { name: "Collapse left panel rail" }).waitFor({ state: "hidden", timeout: 3_000 }).catch(() => {});
+    // Use the panel toggle button to fully close it
+    if (await leftPanel.getAttribute("data-open") === "true") {
+      await page.getByRole("button", { name: "Open library and blueprint panel" }).click();
+      await expect(leftPanel).not.toHaveAttribute("data-open", "true");
+    }
+
     await accessButton.click();
     await expect(leftPanel).toHaveAttribute("data-open", "true");
   });
