@@ -1,0 +1,19 @@
+{
+  "common": {
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "guest": "Continuar como invitado",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error"
+  },
+  "home": {
+    "title": "Plataforma Oando",
+    "subtitle": "Herramientas profesionales de planificación y diseño de espacios",
+    "getStarted": "Comenzar"
+  },
+  "planner": {
+    "title": "Planificador de espacios",
+    "newProject": "Nuevo proyecto",
+    "roomPresets": "Preajustes de habitación"
+  }
+}

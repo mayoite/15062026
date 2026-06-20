@@ -1,0 +1,19 @@
+{
+  "common": {
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "guest": "Als Gast fortfahren",
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten"
+  },
+  "home": {
+    "title": "Oando Plattform",
+    "subtitle": "Professionelle Werkzeuge für Raumplanung und Design",
+    "getStarted": "Loslegen"
+  },
+  "planner": {
+    "title": "Raumplaner",
+    "newProject": "Neues Projekt",
+    "roomPresets": "Raum-Voreinstellungen"
+  }
+}

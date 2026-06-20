@@ -1,0 +1,19 @@
+{
+  "common": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "guest": "Continue as Guest",
+    "loading": "Loading...",
+    "error": "An error occurred"
+  },
+  "home": {
+    "title": "Oando Platform",
+    "subtitle": "Professional space planning and design tools",
+    "getStarted": "Get Started"
+  },
+  "planner": {
+    "title": "Space Planner",
+    "newProject": "New Project",
+    "roomPresets": "Room Presets"
+  }
+}

@@ -5,6 +5,8 @@ import "@/app/css/core/site/bundles/contact.css";
 import "@/app/css/core/site/bundles/site-surfaces.css";
 import "@/app/css/core/site/bundles/legal.css";
 import "@/app/css/core/site/bundles/error.css";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 import QueryProvider from "@/app/(site)/providers/QueryProvider";
 import { ciscoSans, helveticaNeue } from "@/lib/fonts";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -19,11 +21,12 @@ export const viewport: Viewport = SITE_VIEWPORT;
 
 const GLOBAL_JSON_LD = buildGlobalJsonLd(SITE_URL);
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages();
   return (
     <html
       lang="en-IN"
@@ -45,11 +48,13 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <QueryProvider>
-          <RouteChrome position="top" />
-          <main id="main-content">{children}</main>
-          <RouteChrome position="bottom" />
-        </QueryProvider>
+        <NextIntlClientProvider messages={messages}>
+          <QueryProvider>
+            <RouteChrome position="top" />
+            <main id="main-content">{children}</main>
+            <RouteChrome position="bottom" />
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
