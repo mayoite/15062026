@@ -82,12 +82,21 @@ export function plannerManagedProductRowToCatalogProduct(
     legacyProductId: row.legacy_product_id,
   } satisfies Record<string, unknown>;
 
+  const priceRange = String(row.metadata?.priceRange ?? "").toLowerCase();
+  const price =
+    priceRange === "budget" ? 18000
+    : priceRange === "mid" ? 25000
+    : priceRange === "premium" ? 45000
+    : priceRange === "luxury" ? 65000
+    : 25000;
+
   return {
     id: row.id,
     slug: row.slug,
     plannerSourceSlug: row.planner_source_slug,
     name: row.name,
     category: row.category,
+    price,
     categoryId: row.category_id,
     categoryName: row.category_name,
     seriesId: row.series_id,

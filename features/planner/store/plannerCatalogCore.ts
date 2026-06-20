@@ -6,6 +6,7 @@ export interface PlannerCatalogProduct extends CatalogProduct {
   id: string;
   slug: string;
   category: string;
+  price: number;
   flagship_image: string;
   images: string[];
   specs: ProductSpecs;
@@ -162,6 +163,19 @@ function collectPlannerCatalogMergeKeys(product: PlannerCatalogProduct): {
   };
 }
 
+function pickFallbackPriceRange(product: CompatProduct) {
+  return String(product.metadata?.priceRange ?? "").toLowerCase();
+}
+
+function resolvePlannerProductPrice(product: CompatProduct): number {
+  const priceRange = pickFallbackPriceRange(product);
+  if (priceRange === "budget") return 18000;
+  if (priceRange === "mid") return 25000;
+  if (priceRange === "premium") return 45000;
+  if (priceRange === "luxury") return 65000;
+  return 25000;
+}
+
 function resolvePlannerSourceSlug(product: CompatProduct): string {
   const slug =
     normalizeLookupKey(product.slug) ??
@@ -228,6 +242,7 @@ export function normalizePlannerCatalogProduct(
     slug: resolvedSlug,
     name: product.name,
     category: resolvedCategory,
+    price: resolvePlannerProductPrice(product),
     flagship_image: flagshipImage,
     images,
     specs: resolvePlannerSpecs(product),
@@ -380,6 +395,7 @@ function mergePlannerCatalogProductRecords(
   merged.seriesName =
     readTrimmedString(preferred.seriesName) ?? fallback.seriesName;
   merged.name = readTrimmedString(preferred.name) ?? fallback.name;
+  merged.price = typeof preferred.price === "number" ? preferred.price : fallback.price;
   merged.metadata = buildPlannerCatalogLookupMetadata(merged);
 
   return merged;
