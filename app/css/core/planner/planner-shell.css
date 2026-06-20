@@ -9,7 +9,7 @@
   --finish-natural: var(--color-ecru-300);
   color-scheme: light dark;
   --pw-rail-w: 3.25rem;
-  --pw-left-w: 17rem;
+  --pw-left-w: 18.75rem;
   --pw-right-w: 17.5rem;
   --pw-topbar-h: 3.5rem;
   --pw-subtopbar-h: 2.75rem;
@@ -461,8 +461,9 @@
 .planner-workspace .pw-panel-tabs {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--pw-panel-pad-lg);
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1);
+  overflow: hidden;
   border-bottom: 1px solid var(--border-soft);
   background: color-mix(in srgb, var(--surface-soft) 92%, var(--surface-panel));
 }
@@ -477,13 +478,14 @@
 
 
 .planner-workspace .pw-panel-tab {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
   min-height: var(--control-height-xs);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-1);
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: transparent;

@@ -610,7 +610,7 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
   return (
     <div
       ref={viewerRef}
-      className={`surface-inverse relative overflow-hidden rounded-[2rem] border border-theme-soft shadow-theme-float ${className ?? ""}`}
+      className={`pw-viewer-canvas surface-inverse relative h-full min-h-0 w-full overflow-hidden rounded-[2rem] border border-theme-soft shadow-theme-float ${className ?? ""}`}
       data-testid="planner-3d-viewer"
       data-webgl-status={webglProbe.ok ? "ready" : "fallback"}
     >
@@ -625,7 +625,7 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
           }
         >
           <Canvas
-            shadows
+            shadows="basic"
             dpr={[1, 1.75]}
             gl={{
               antialias: true,
@@ -633,7 +633,7 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
               powerPreference: "high-performance",
               preserveDrawingBuffer: true,
             }}
-            className="h-full min-h-[420px] w-full"
+            className="h-full min-h-0 w-full"
             data-testid="planner-3d-canvas"
           >
             <PlannerScene

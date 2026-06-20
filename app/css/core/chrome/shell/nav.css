@@ -29,6 +29,7 @@
   background: color-mix(in srgb, white 8%, transparent);
   padding: 0.625rem 1.25rem;
   color: color-mix(in srgb, white 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 

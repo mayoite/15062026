@@ -23,6 +23,8 @@ export const viewport: Viewport = {
   themeColor: "#0b1f3a",
 };
 
+export const dynamic = "force-dynamic";
+
 const GLOBAL_JSON_LD = buildGlobalJsonLd(SITE_URL);
 
 export default async function RootLayout({

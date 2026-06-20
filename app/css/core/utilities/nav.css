@@ -55,6 +55,7 @@
   border: 1px solid var(--border-soft);
   background: var(--surface-glass-strong);
   box-shadow: var(--shadow-soft);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
@@ -75,6 +76,7 @@
   overflow: hidden;
   border-radius: var(--radius-xl);
   padding: 1rem;
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
 }
 
@@ -166,6 +168,7 @@
 
 @utility shell-overlay {
   background-color: color-mix(in srgb, var(--surface-inverse) 30%, transparent);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 

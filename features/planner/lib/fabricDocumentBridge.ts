@@ -49,10 +49,10 @@ function fabricObjectsToItems(objects: unknown[]): PlannerSceneItem[] {
       return fabricObjectCategory(name) === "Furniture";
     })
     .map((o, index) => {
-      const w = (Number(o.width) || 60) * FABRIC_TO_MM;
-      const d = (Number(o.height) || 60) * FABRIC_TO_MM;
-      const cx = (Number(o.left) || 0) * FABRIC_TO_MM + w / 2;
-      const cy = (Number(o.top) || 0) * FABRIC_TO_MM + d / 2;
+      const w = (Number(o.width) || 60) * (Number(o.scaleX) || 1) * FABRIC_TO_MM;
+      const d = (Number(o.height) || 60) * (Number(o.scaleY) || 1) * FABRIC_TO_MM;
+      const cx = (Number(o.left) || 0) * FABRIC_TO_MM;
+      const cy = (Number(o.top) || 0) * FABRIC_TO_MM;
       const name = String(o.name ?? "Item");
       const label = name.includes(":") ? name.split(":").slice(1).join(":") : name;
       return {

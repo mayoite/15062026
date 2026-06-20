@@ -92,6 +92,7 @@
     border-radius: 0;
     background: color-mix(in srgb, var(--surface-panel) 92%, transparent);
     box-shadow: none;
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     scrollbar-width: none;
   }
@@ -128,6 +129,7 @@
     padding: 0.25rem 0.5rem calc(0.25rem + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--border-soft);
     background: color-mix(in srgb, var(--surface-panel) 92%, transparent);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 

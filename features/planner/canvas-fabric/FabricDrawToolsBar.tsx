@@ -110,7 +110,7 @@ export function FabricDrawToolsBar({ disabled = false }: { disabled?: boolean })
         No fill
       </button>
 
-      <div className="fcw-color-swatches" role="list" aria-label="Color presets">
+      <div className="fcw-color-swatches" role="group" aria-label="Color presets">
         {FABRIC_DRAW_TOOL_COLORS.map((color) => (
           <button
             key={color}

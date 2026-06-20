@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
-import { PLANNER_GUEST_COOKIE } from "./lib/auth/constants.ts"
+import { PLANNER_GUEST_COOKIE } from "./lib/auth/constants"
 
 /** Canonical planner paths only — legacy /oando-planner/* and /buddy-planner/* 301 in next.config.js */
 const PLANNER_GUEST_PATHS = ["/planner", "/planner/guest", "/planner/canvas"];
@@ -57,7 +57,7 @@ export async function proxy(request: NextRequest) {
   // Run next-intl locale negotiation first. If it rewrites/redirects (e.g. to
   // add a locale prefix or honor the NEXT_LOCALE cookie), return that response
   // and skip the security/auth logic below. A plain `next()` falls through.
-  const intlResponse = await intlMiddleware(request);
+  const intlResponse = undefined; // Bypassed: locales resolved in request.ts via cookies/headers to support prefixless dynamic translations
   if (intlResponse && !(intlResponse as NextResponse).headers.get("x-middleware-next")) {
     return intlResponse;
   }

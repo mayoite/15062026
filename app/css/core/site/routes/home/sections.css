@@ -244,6 +244,7 @@
   border: 1px solid color-mix(in srgb, white 7%, transparent);
   background: color-mix(in srgb, white 6%, transparent);
   padding: 1.75rem;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   transition: border-color var(--motion-base) var(--ease-standard),
               background-color var(--motion-base) var(--ease-standard),
@@ -366,6 +367,7 @@
   border: 1px solid color-mix(in srgb, white 10%, transparent);
   background: color-mix(in srgb, white 4%, transparent);
   padding: 1.25rem;
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 

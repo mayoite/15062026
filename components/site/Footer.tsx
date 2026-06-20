@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { OneAndOnlyLogo } from "@/components/ui/Logo";
+import { LanguageSwitcher } from "@/components/site/LanguageSwitcher";
 import {
   buildMailtoHref,
   formatSitePostalAddress,
@@ -77,6 +78,7 @@ export function SiteFooter() {
                 );
               })}
               </div>
+              <LanguageSwitcher />
             </div>
           </div>
 

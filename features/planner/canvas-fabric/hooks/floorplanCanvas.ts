@@ -5,17 +5,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable prefer-const */
 import {
   Canvas as FabricCanvas,
   Group,
-  Rect,
   Line,
   Point,
   ActiveSelection,
   FabricText,
   Pattern,
+  loadSVGFromString,
+  util as fabricUtil,
 } from 'fabric';
+import type { Rect } from 'fabric';
 import { saveAs as saveFile } from 'file-saver';
 import { formatDate } from '../lib/formatDate';
 import * as _ from '../lib/helpers';
@@ -24,6 +25,7 @@ import type { FabricContextMenuState, FabricDrawTool } from '../fabricDrawToolTy
 import { DEFAULT_FABRIC_DRAW_COLOR, DEFAULT_FABRIC_FILL_COLOR } from '../fabricDrawToolTypes';
 import { applyFabricTransformLocks, canEditFabricFill } from '../fabricObjectUtils';
 import { wireFabricDrawTools } from './fabricDrawTools';
+import { wireFabricWalls } from './fabricWalls';
 import type { PlannerLayerCategory } from '@/features/planner/store/workspaceStore';
 
 import type { Dispatch, SetStateAction } from 'react';
@@ -65,7 +67,6 @@ export function createFloorplanCanvasApi(
   let copied: any = null;
   let selections: any[] = [];
   let CTRL_KEY_DOWN = false;
-  let MOVE_WALL_ID = -1;
   /** Sync flag — React ctxRef.roomEdit lags one frame after editRoom(). */
   let roomEditMode = false;
   let ROOM_SIZE = { width: 960, height: 480 };
@@ -77,52 +78,63 @@ export function createFloorplanCanvasApi(
   let drawFillColor = DEFAULT_FABRIC_FILL_COLOR;
   let contextMenuListener: ((state: FabricContextMenuState | null) => void) | null = null;
   let drawToolsController: ReturnType<typeof wireFabricDrawTools> | null = null;
-const {
-  RL_VIEW_WIDTH,
-  RL_VIEW_HEIGHT,
-  RL_FOOT,
-  RL_AISLEGAP,
-  RL_ROOM_OUTER_SPACING,
-  RL_ROOM_INNER_SPACING,
-  RL_ROOM_STROKE,
-  RL_CORNER_FILL,
-  RL_UNGROUPABLES,
-  RL_CREDIT_TEXT,
-  RL_CREDIT_TEXT_PARAMS
-} = _;
+  let wc: ReturnType<typeof wireFabricWalls> | null = null;
 
-const
-  HORIZONTAL = 'HORIZONTAL',
-  VERTICAL = 'VERTICAL',
-  OFFSET = RL_ROOM_INNER_SPACING / 2;
+  const {
+    RL_VIEW_WIDTH,
+    RL_VIEW_HEIGHT,
+    RL_FOOT,
+    RL_AISLEGAP,
+    RL_ROOM_OUTER_SPACING,
+    RL_ROOM_INNER_SPACING,
+    RL_ROOM_STROKE,
+    RL_CORNER_FILL,
+    RL_UNGROUPABLES,
+    RL_CREDIT_TEXT,
+    RL_CREDIT_TEXT_PARAMS
+  } = _;
 
-const Left = (wall) => wall.x1 < wall.x2 ? wall.x1 : wall.x2;
-const Top = (wall) => wall.y1 < wall.y2 ? wall.y1 : wall.y2;
-const Right = (wall) => wall.x1 > wall.x2 ? wall.x1 : wall.x2;
-const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
+  // ─── convenience aliases that delegate to wc (available after setCanvasView) ─
 
+  function isWallLine(obj: any): obj is Line {
+    return wc ? wc.isWallLine(obj) : Boolean(obj && obj instanceof Line && String(obj.name ?? '').includes('WALL'));
+  }
 
+  function drawRoom() { wc?.drawRoom(); }
+  function setRoom(size: { width: number; height: number }) { wc?.setRoom(size); }
 
+  function isRoomEditActive() { return roomEditMode; }
 
-
-
-
+  /** Scene coordinates (zoom-aware). Never use legacy e.pointer — it can be viewport space in Fabric v7. */
+  function getScenePointer(e: any): Point | null {
+    if (!view) return null;
+    const native = e?.e;
+    if (native) {
+      try {
+        view.calcOffset();
+        return view.getScenePoint(native);
+      } catch {
+        /* fall through */
+      }
+    }
+    const scene = e?.scenePoint;
+    if (scene && typeof scene.x === 'number' && typeof scene.y === 'number') {
+      return scene instanceof Point ? scene : new Point(scene.x, scene.y);
+    }
+    return null;
+  }
 
   function init() {
     DEFAULT_CHAIR = ctxRef.current.defaultChair;
     setCanvasView();
     syncGrid();
-    setRoom(ROOM_SIZE);
+    wc!.setRoom(ROOM_SIZE);
     saveState();
   }
-
-
 
   function roomOrigin() {
     return RL_ROOM_OUTER_SPACING + RL_ROOM_INNER_SPACING;
   }
-
-
 
   function onKeyDown(event: KeyboardEvent) {
     const code = event.key || event.keyCode;
@@ -161,17 +173,13 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     }
   }
 
-
-
   function onKeyUp(event: KeyboardEvent) {
     if (event.key === 'Control') {
       CTRL_KEY_DOWN = false;
     }
   }
 
-
   function onScroll(event) { }
-
 
   function setGroupableState() {
     if (selections.length > 1) {
@@ -188,7 +196,6 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
       ctxRef.current.setUngroupable(true);
     }
   }
-
 
   function onSelected() {
     const active = view.getActiveObject();
@@ -217,78 +224,6 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     setGroupableState();
   }
 
-
-  /**********************************************************************************************************
-   * init the canvas view & bind events
-   * -------------------------------------------------------------------------------------------------------
-   */
-  function isWallLine(obj: any): obj is Line {
-    return Boolean(obj && obj instanceof Line && String(obj.name ?? '').includes('WALL'));
-  }
-
-  function isRoomEditActive() {
-    return roomEditMode;
-  }
-
-  /** Scene coordinates (zoom-aware). Never use legacy e.pointer — it can be viewport space in Fabric v7. */
-  function getScenePointer(e: any): Point | null {
-    if (!view) return null;
-    const native = e?.e;
-    if (native) {
-      try {
-        view.calcOffset();
-        return view.getScenePoint(native);
-      } catch {
-        /* fall through */
-      }
-    }
-    const scene = e?.scenePoint;
-    if (scene && typeof scene.x === 'number' && typeof scene.y === 'number') {
-      return scene instanceof Point ? scene : new Point(scene.x, scene.y);
-    }
-    return null;
-  }
-
-  function moveWallCornersToPointer(p: Point) {
-    const v1 = corners[MOVE_WALL_ID];
-    const v2 = corners[(MOVE_WALL_ID + 1) % corners.length];
-    if (!v1 || !v2) return;
-
-    const direction = v1.left === v2.left ? 'HORIZONTAL' : 'VERTICAL';
-    const x = Math.max(RL_ROOM_OUTER_SPACING, p.x);
-    const y = Math.max(RL_ROOM_OUTER_SPACING, p.y);
-
-    if (direction === 'VERTICAL') {
-      v1.top = v2.top = y;
-    } else {
-      v1.left = v2.left = x;
-    }
-    drawRoom();
-  }
-
-  function refreshRoomEditObjectModes(inRoomEdit: boolean) {
-    corners.forEach((corner) => setCornerStyle(corner));
-    view.getObjects().forEach((obj) => {
-      const name = String(obj.name ?? '');
-      if (name.includes('WALL')) {
-        obj.selectable = inRoomEdit;
-        obj.evented = true;
-        obj.hoverCursor = inRoomEdit ? view.moveCursor : 'pointer';
-        obj.hasBorders = inRoomEdit;
-        obj.perPixelTargetFind = true;
-        obj.padding = 8;
-      } else if (name === 'CORNER') {
-        obj.selectable = false;
-        obj.evented = inRoomEdit;
-        setCornerStyle(obj as Rect);
-      } else {
-        obj.selectable = !inRoomEdit;
-        obj.evented = !inRoomEdit;
-      }
-    });
-    view.requestRenderAll();
-  }
-
   function handleSelectionChange() {
     if (isRoomEditActive()) {
       const active = view.getActiveObject();
@@ -302,6 +237,10 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     onSelected();
   }
 
+  /**********************************************************************************************************
+   * init the canvas view & bind events
+   * -------------------------------------------------------------------------------------------------------
+   */
   function setCanvasView() {
     const canvas = new FabricCanvas(canvasEl, {
       targetFindTolerance: 12,
@@ -315,14 +254,20 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     syncGrid();
     view.calcOffset();
 
-    const cornersOfWall = (obj: Line) => {
-      const id = Number(String(obj.name ?? '').split(':')[1]);
-      const v1Id = id;
-      const v1 = corners[v1Id];
-      const v2Id = (id + 1) % walls.length;
-      const v2 = corners[v2Id];
-      return { v1, v1Id, v2, v2Id };
-    };
+    // Initialize walls controller — must come before any event wiring
+    wc = wireFabricWalls({
+      getView: () => view,
+      getCorners: () => corners,
+      setCorners: (c) => { corners = c; },
+      getWalls: () => walls,
+      setWalls: (w) => { walls = w; },
+      isRoomEditActive: () => roomEditMode,
+      enterRoomEdit: () => ctxRef.current.enterRoomEdit(),
+      saveState,
+      getScenePointer,
+      getRoomSize: () => ROOM_SIZE,
+      setRoomSize: (size) => { ROOM_SIZE = size; },
+    });
 
     view.on('selection:created', () => {
       handleSelectionChange();
@@ -341,9 +286,7 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     });
 
     view.on('object:moved', () => {
-      if (MOVE_WALL_ID !== -1) {
-        MOVE_WALL_ID = -1;
-      }
+      wc!.handleObjectMoved();
       saveState();
     });
 
@@ -376,44 +319,15 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     });
 
     view.on('mouse:down:before', (e: any) => {
-      const obj = e.target;
-
-      if (isWallLine(obj)) {
-        if (!isRoomEditActive()) {
-          ctxRef.current.enterRoomEdit();
-        }
-        if (!isRoomEditActive()) return;
-
-        let { v1, v2, v1Id, v2Id } = cornersOfWall(obj);
-        const v0Id = (v1Id === 0) ? corners.length - 1 : v1Id - 1;
-        const v3Id = (v2Id === corners.length - 1) ? 0 : v2Id + 1;
-        const v0 = corners[v0Id];
-        const v3 = corners[v3Id];
-
-        MOVE_WALL_ID = v1Id;
-
-        if ((v0.top === v1.top && v1.top === v2.top) || (v0.left === v1.left && v1.left === v2.left)) {
-          corners.splice(v1Id, 0, drawCorner(new Point(v1.left, v1.top)));
-          MOVE_WALL_ID = v1Id + 1;
-          v2Id += 1;
-        }
-
-        if ((v1.top === v2.top && v2.top === v3.top) || (v1.left === v2.left && v2.left === v3.left)) {
-          corners.splice(v2Id + 1, 0, drawCorner(new Point(v2.left, v2.top)));
-        }
-
-        drawRoom();
-        saveState();
-      }
+      wc!.handleMouseDownBefore(e);
     });
 
     view.on('object:moving', (e: any) => {
-      if (MOVE_WALL_ID !== -1) {
-        const p = getScenePointer(e);
-        if (p) moveWallCornersToPointer(p);
-      }
-
       const obj = e.target;
+      // Wall/corner moving — delegate entirely to wc
+      wc!.handleObjectMoving(e);
+
+      // Door/window snapping to nearest wall
       const point = getScenePointer(e);
       if (!point) return;
 
@@ -449,12 +363,12 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
           REMOVE_DW = true;
         } else {
           REMOVE_DW = false;
-          const direction = directionOfWall(wall);
+          const direction = wc!.directionOfWall(wall);
 
-          if (direction === HORIZONTAL) {
-            locateDW(obj, wall, point.x, Top(wall));
+          if (direction === wc!.HORIZONTAL) {
+            locateDW(obj, wall, point.x, wc!.Top(wall));
           } else {
-            locateDW(obj, wall, Left(wall), point.y);
+            locateDW(obj, wall, wc!.Left(wall), point.y);
           }
         }
       }
@@ -462,13 +376,7 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
 
     view.on('mouse:up', (e: any) => {
       const obj = e.target;
-
-      if (MOVE_WALL_ID !== -1) {
-        // Commit the move: rebuild walls from final corners, persist state.
-        drawRoom();
-        MOVE_WALL_ID = -1;
-        saveState();
-      }
+      wc!.handleMouseUp(e);
 
       if (REMOVE_DW) {
         view.remove(obj);
@@ -477,41 +385,9 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     });
 
     view.on('mouse:dblclick', (e: any) => {
-      const obj = e.target;
-
-      if (!isRoomEditActive() && isWallLine(obj)) {
-        ctxRef.current.enterRoomEdit();
-        return;
-      }
-
-      if (isRoomEditActive() && !obj) {
+      const shouldExitRoomEdit = wc!.handleDoubleClick(e);
+      if (shouldExitRoomEdit === true) {
         ctxRef.current.exitRoomEdit();
-        return;
-      }
-
-      if (isRoomEditActive() && isWallLine(obj)) {
-        const p = getScenePointer(e);
-        if (!p) return;
-
-        const { v1, v1Id, v2, v2Id } = cornersOfWall(obj);
-        const ind = v1Id < v2Id ? v1Id : v2Id;
-
-        if (v1.left === v2.left) {
-          p.x = v1.left;
-        } else if (v1.top === v2.top) {
-          p.y = v1.top;
-        }
-
-        const newCorner = drawCorner(new Point(p.x, p.y));
-
-        if (Math.abs(v1Id - v2Id) != 1) {
-          corners.push(newCorner);
-        } else {
-          corners.splice(ind + 1, 0, newCorner);
-        }
-
-        drawRoom();
-        saveState();
       }
     });
 
@@ -527,117 +403,9 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
   }
 
 
-
-
-  /**********************************************************************************************************
-   * draw Rooms defined in Model
-   * -------------------------------------------------------------------------------------------------------
-   */
-  function setRoom({ width, height }) {
-    if (walls.length) {
-      view.remove(...walls);
-      view.renderAll();
-    }
-
-    const LT = new Point(RL_ROOM_OUTER_SPACING, RL_ROOM_OUTER_SPACING);
-    const RT = new Point(LT.x + width, LT.y);
-    const LB = new Point(LT.x, LT.y + height);
-    const RB = new Point(RT.x, LB.y);
-
-    corners = [LT, RT, RB, LB].map(p => drawCorner(p));
-    drawRoom();
-  }
-
-
-  /**********************************************************************************************************
-   * set corner according to current edition status
-   * -------------------------------------------------------------------------------------------------------
-   */
-  function setCornerStyle(c: Rect) {
-    c.moveCursor = view.freeDrawingCursor;
-    c.hoverCursor = view.freeDrawingCursor;
-    c.selectable = false;
-    c.evented = false;
-    c.width = c.height = (RL_ROOM_INNER_SPACING / (isRoomEditActive() ? 1.5 : 2)) * 2;
-    c.set('fill', isRoomEditActive() ? RL_CORNER_FILL : RL_ROOM_STROKE);
-  }
-
-
-
-  /**********************************************************************************************************
-   * draw corner
-   * -------------------------------------------------------------------------------------------------------
-   */
-  function drawCorner(p: Point) {
-    const c = new Rect({
-      left: p.x,
-      top: p.y,
-      strokeWidth: 0,
-      hasControls: false,
-      originX: 'center',
-      originY: 'center',
-      name: 'CORNER'
-    });
-    setCornerStyle(c);
-    return c;
-  }
-
-
-  /**********************************************************************************************************
-   * draw room
-   * -------------------------------------------------------------------------------------------------------
-   */
-  function drawRoom() {
-
-    const exists = view.getObjects().filter((obj) => {
-      const name = String(obj.name ?? '');
-      return name.includes('WALL') || name === 'CORNER';
-    });
-    view.remove(...exists);
-
-    view.add(...corners);
-
-    const wall = (coords: number[], index: number) => new Line(coords, {
-      stroke: RL_ROOM_STROKE,
-      strokeWidth: RL_ROOM_INNER_SPACING,
-      name: `WALL:${index}`,
-      originX: 'center',
-      originY: 'center',
-      hoverCursor: isRoomEditActive() ? view.moveCursor : 'pointer',
-      hasControls: false,
-      hasBorders: isRoomEditActive(),
-      selectable: isRoomEditActive(),
-      evented: true,
-      perPixelTargetFind: true,
-      padding: 8,
-      cornerStyle: 'rect',
-    });
-
-    let LT = new Point(9999, 9999), RB = new Point(0, 0);
-
-    walls = corners.map((corner, i) => {
-      const start = corner;
-      const end = (i === corners.length - 1) ? corners[0] : corners[i + 1];
-
-      if (corner.top < LT.x && corner.left < LT.y)
-        LT = new Point(corner.left, corner.top);
-
-      if (corner.top > RB.y && corner.left > RB.y)
-        RB = new Point(corner.left, corner.top);
-
-      const w = wall([start.left, start.top, end.left, end.top], i);
-      return w;
-    });
-
-    view.add(...walls);
-    walls.forEach((w) => view.sendObjectToBack(w));
-    ROOM_SIZE = { width: RB.x - LT.x, height: RB.y - LT.y };
-  }
-
-
   function locateDW(dw: Group, wall: Line, x: number, y: number) {
-    const dWall = directionOfWall(wall);
-    const dDW = dw.angle % 180 === 0 ? HORIZONTAL : VERTICAL;
+    const dWall = wc!.directionOfWall(wall);
+    const dDW = dw.angle % 180 === 0 ? wc!.HORIZONTAL : wc!.VERTICAL;
 
     if (dWall != dDW) {
       dw.angle = (dw.angle + 90) % 360;
@@ -646,10 +414,10 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     dw.top = y, dw.left = x;
     const center = dw.getCenterPoint();
 
-    if (dWall === HORIZONTAL)
-      center.y < dw.top ? dw.top += OFFSET : dw.top -= OFFSET;
+    if (dWall === wc!.HORIZONTAL)
+      center.y < dw.top ? dw.top += wc!.OFFSET : dw.top -= wc!.OFFSET;
     else
-      center.x < dw.left ? dw.left += OFFSET : dw.left -= OFFSET;
+      center.x < dw.left ? dw.left += wc!.OFFSET : dw.left -= wc!.OFFSET;
 
     return dw;
   }
@@ -666,14 +434,12 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     return dw;
   }
 
-
-
   /**********************************************************************************************************/
 
   function editRoom() {
     roomEditMode = true;
     drawToolsController?.applyCanvasMode();
-    refreshRoomEditObjectModes(true);
+    wc!.refreshRoomEditObjectModes(true);
 
     if (ctxRef.current.roomEditStates.length === 0)
       saveState();
@@ -682,21 +448,40 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
   function cancelRoomEdition() {
     roomEditMode = false;
     drawToolsController?.applyCanvasMode();
-    refreshRoomEditObjectModes(false);
+    wc!.refreshRoomEditObjectModes(false);
     selections = [];
     ctxRef.current.setSelections(selections);
     ctxRef.current.setUngroupable(false);
     view.discardActiveObject();
   }
 
-  function handleObjectInsertion({ type, object }) {
+  async function handleObjectInsertion({ type, object }) {
 
     if (type === 'ROOM') {
-      setRoom(object);
+      wc!.setRoom(object);
+      saveState();
       return;
     }
 
-    const group = _.createFurniture(type, object, DEFAULT_CHAIR);
+    let group = _.createFurniture(type, object, DEFAULT_CHAIR);
+    if (type === 'GENERIC' && object.svg) {
+      try {
+        const parsed = await loadSVGFromString(object.svg);
+        const objects = parsed.objects.filter(Boolean);
+        if (objects.length) {
+          group = fabricUtil.groupSVGElements(objects, parsed.options);
+          group.set({
+            name: `GENERIC:${object.title || 'Item'}`,
+            originX: 'center',
+            originY: 'center',
+          });
+          group.scaleX = object.width / Math.max(1, group.width);
+          group.scaleY = object.height / Math.max(1, group.height);
+        }
+      } catch {
+        // Keep the generic footprint as a safe fallback for malformed symbols.
+      }
+    }
 
     if (type === 'DOOR' || type === 'WINDOW') {
       group.originX = 'center';
@@ -709,36 +494,36 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
       let wall, x, y;
       if (!dw) {
         wall = walls[0];
-        x = Left(wall) + RL_AISLEGAP;
-        y = Top(wall);
+        x = wc!.Left(wall) + RL_AISLEGAP;
+        y = wc!.Top(wall);
       } else {
-        const od = dw.angle % 180 === 0 ? HORIZONTAL : VERTICAL;
+        const od = dw.angle % 180 === 0 ? wc!.HORIZONTAL : wc!.VERTICAL;
 
         let placeOnNextWall = false;
-        wall = wallOfDW(dw);
+        wall = wc!.wallOfDW(dw);
 
-        if (od === HORIZONTAL) {
+        if (od === wc!.HORIZONTAL) {
           x = dw.left + dw.width + RL_AISLEGAP;
-          y = Top(wall);
-          if (x + group.width > Right(wall)) {
+          y = wc!.Top(wall);
+          if (x + group.width > wc!.Right(wall)) {
             placeOnNextWall = true;
           }
         } else {
           y = dw.top + dw.width + RL_AISLEGAP;
-          x = Left(wall);
-          if (y + group.width > Bottom(wall)) {
+          x = wc!.Left(wall);
+          if (y + group.width > wc!.Bottom(wall)) {
             placeOnNextWall = true;
           }
         }
 
         if (placeOnNextWall) {
           wall = walls[(Number(wall.name.split(':')[1]) + 1) % walls.length];
-          const nd = directionOfWall(wall);
+          const nd = wc!.directionOfWall(wall);
 
-          if (nd === HORIZONTAL) {
-            x = Left(wall) + RL_AISLEGAP, y = Top(wall);
+          if (nd === wc!.HORIZONTAL) {
+            x = wc!.Left(wall) + RL_AISLEGAP, y = wc!.Top(wall);
           } else {
-            x = Left(wall), y = Top(wall) + RL_AISLEGAP;
+            x = wc!.Left(wall), y = wc!.Top(wall) + RL_AISLEGAP;
           }
         }
       }
@@ -747,6 +532,7 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
 
       group.hasBorders = false;
       view.add(group);
+      saveState();
 
       return;
     }
@@ -796,6 +582,7 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
 
     lastObject = group;
     lastObjectDefinition = object;
+    saveState();
   }
 
 
@@ -805,8 +592,8 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
     await view.loadFromJSON(current);
     view.discardActiveObject();
     view.renderAll();
-    corners = view.getObjects().filter((obj) => obj.name === 'CORNER');
-    drawRoom();
+    corners = view.getObjects().filter((obj) => obj.name === 'CORNER') as Rect[];
+    wc!.drawRoom();
     ctxRef.current.setSelections([]);
     ctxRef.current.setUngroupable(false);
     syncGrid();
@@ -1194,20 +981,6 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
       const name = String(obj.name ?? '');
       return names.some((n) => name.includes(n));
     });
-  }
-
-
-  function wallOfDW(dw: Group | any) {
-    const d = dw.angle % 180 === 0 ? HORIZONTAL : VERTICAL;
-    return walls.find(w => Math.abs(d === HORIZONTAL ? w.top - dw.top : w.left - dw.left) === OFFSET);
-  }
-
-  function directionOfWall(wall: Line) {
-    if (wall.x1 === wall.x2) {
-      return VERTICAL;
-    } else {
-      return HORIZONTAL;
-    }
   }
 
   function isDW(object) {

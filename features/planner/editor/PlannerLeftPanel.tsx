@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutGrid, Map, PanelLeftClose, PanelLeftOpen, Sparkles, type LucideIcon } from "lucide-react";
+import { LayoutGrid, Map, PanelLeftClose, Sparkles, type LucideIcon } from "lucide-react";
 
 
 import { AIAssistDrawer } from "@/features/planner/ai/AIAssistDrawer";
@@ -62,7 +62,6 @@ interface PlannerLeftPanelProps {
   panelCollapsed?: boolean;
   showPanelToggle?: boolean;
   onTogglePanel?: () => void;
-  onToggleCollapsed?: () => void;
   activeTab?: PlannerLeftTab;
   onTabChange?: (tab: PlannerLeftTab) => void;
   onItemClick: (item: CatalogItem) => void;
@@ -79,7 +78,6 @@ export function PlannerLeftPanel({
   panelCollapsed = false,
   showPanelToggle = false,
   onTogglePanel,
-  onToggleCollapsed,
   activeTab,
   onTabChange,
   onItemClick,
@@ -104,17 +102,6 @@ export function PlannerLeftPanel({
     if (onTabChange) onTabChange(next);
     else setPickedTab(next);
   };
-
-  const panelCollapseControl = onToggleCollapsed ? (
-    <button
-      type="button"
-      className="pw-panel-collapse pw-icon-btn"
-      onClick={onToggleCollapsed}
-      aria-label={panelCollapsed ? "Expand left panel" : "Collapse left panel"}
-    >
-      {panelCollapsed ? <PanelLeftOpen size={14} strokeWidth={2} aria-hidden /> : <PanelLeftClose size={14} strokeWidth={2} aria-hidden />}
-    </button>
-  ) : null;
 
   return (
     <aside
@@ -146,7 +133,6 @@ export function PlannerLeftPanel({
             </button>
           );
         })}
-        {panelCollapseControl}
         {showPanelToggle && onTogglePanel ? (
           <button
             type="button"

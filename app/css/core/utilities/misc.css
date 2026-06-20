@@ -143,10 +143,12 @@
 /* ── Swiper custom nav buttons ── */
 @utility swiper-button-prev-custom {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 @utility swiper-button-next-custom {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 
