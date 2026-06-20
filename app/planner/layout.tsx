@@ -7,6 +7,8 @@ import { ciscoSans, helveticaNeue } from "@/lib/fonts";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { SITE_VIEWPORT } from "@/lib/siteViewport";
 import { PlannerBodyTheme } from "@/features/planner/components/PlannerBodyTheme";
+import { PlannerErrorBoundary } from "@/features/planner/editor/PlannerErrorBoundary";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 
 
 export const viewport: Viewport = SITE_VIEWPORT;
@@ -25,10 +27,13 @@ export default function PlannerRootLayout({
         >
           Skip to main content
         </a>
+        <ServiceWorkerRegister />
         <QueryProvider>
           <ThemeProvider>
             <PlannerBodyTheme />
-            <main id="main-content">{children}</main>
+            <main id="main-content">
+              <PlannerErrorBoundary label="Planner">{children}</PlannerErrorBoundary>
+            </main>
           </ThemeProvider>
         </QueryProvider>
       </body>
