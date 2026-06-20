@@ -11,6 +11,7 @@ import { ContactTeaser } from "@/components/shared/ContactTeaser";
 
 import { SITE_BRAND } from "@/lib/analytics/seo";
 import { buildPageJsonLd, buildPageMetadata } from "@/lib/analytics/seo";
+import { buildLocalBusinessJsonLd } from "@/data/site/seo";
 import { HOMEPAGE_SHOWCASE_CONTENT } from "@/data/site/homepage";
 import { getBusinessStats } from "@/features/crm/businessStats";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -30,12 +31,17 @@ export default async function Home() {
     description: SITE_BRAND.description,
     pageType: "WebPage",
   });
+  const localBusinessJsonLd = buildLocalBusinessJsonLd(SITE_URL);
 
   return (
     <div className="min-h-screen overflow-x-hidden">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(homeJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(localBusinessJsonLd) }}
       />
 
       <HomepageHero />

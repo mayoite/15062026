@@ -3,6 +3,9 @@ import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { GALLERY_PAGE_COPY, GALLERY_PROJECTS } from "@/data/site/routeCopy";
 import { Masonry, MasonryItem } from "@/components/ui/Masonry";
+import { GALLERY_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = GALLERY_PAGE_METADATA;
 
 export default function GalleryPage() {
   return (

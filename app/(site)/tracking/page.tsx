@@ -3,6 +3,9 @@ import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { RouteCtaBand } from "@/components/shared/RouteCtaBand";
 import { SectionIntro } from "@/components/shared/SectionIntro";
 import { TRACKING_PAGE_COPY } from "@/data/site/routeCopy";
+import { TRACKING_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = TRACKING_PAGE_METADATA;
 
 export default function TrackingPage() {
   return (

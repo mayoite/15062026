@@ -7,12 +7,9 @@ import { RouteCtaBand } from "@/components/shared/RouteCtaBand";
 import { SectionIntro } from "@/components/shared/SectionIntro";
 import { getProducts } from '@/features/catalog/getProducts';
 import { SOCIAL_PAGE_COPY, SOCIAL_PAGE_POSTS } from "@/data/site/routeCopy";
+import { SOCIAL_PAGE_METADATA } from "@/data/site/routeMetadata";
 
-export const metadata = {
-  title: "Social Highlights",
-  description:
-    "Project inspiration and product-linked social highlights grounded in the live catalog and planning routes.",
-};
+export const metadata = SOCIAL_PAGE_METADATA;
 
 export default async function SocialPage() {
   const products = await getProducts();

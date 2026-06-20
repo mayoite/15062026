@@ -4,6 +4,9 @@ import { Newsletter } from "@/components/shared/Newsletter";
 import { RouteActionCard } from "@/components/shared/RouteActionCard";
 import { SectionIntro } from "@/components/shared/SectionIntro";
 import { SUSTAINABILITY_PAGE_COPY } from "@/data/site/routeCopy";
+import { SUSTAINABILITY_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = SUSTAINABILITY_PAGE_METADATA;
 
 export default function SustainabilityPage() {
   return (

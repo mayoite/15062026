@@ -4,6 +4,9 @@ import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { TRUSTED_BY_CLIENTS, TRUSTED_BY_STATS } from "@/data/site/proof";
 import { TRUSTED_BY_PAGE_COPY } from "@/data/site/routeCopy";
+import { TRUSTED_BY_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = TRUSTED_BY_PAGE_METADATA;
 
 export default function TrustedByPage() {
   const sectors = Array.from(new Set(TRUSTED_BY_CLIENTS.map((client) => client.sector)));

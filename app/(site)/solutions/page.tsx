@@ -1,15 +1,12 @@
-﻿import type { Metadata } from "next";
-import Image from "next/image";
+﻿import Image from "next/image";
 import Link from "next/link";
 import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { DEFAULT_HERO_FALLBACK } from "@/data/site/homepage";
 import { SOLUTIONS_DELIVERY_STEPS, SOLUTIONS_PAGE_COPY } from "@/data/site/routeCopy";
+import { SOLUTIONS_PAGE_METADATA } from "@/data/site/routeMetadata";
 
-export const metadata: Metadata = {
-  title: SOLUTIONS_PAGE_COPY.metadataTitle,
-  description: SOLUTIONS_PAGE_COPY.metadataDescription,
-};
+export const metadata = SOLUTIONS_PAGE_METADATA;
 
 export default function SolutionsPage() {
   return (

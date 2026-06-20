@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SITE_BRAND } from "@/data/site/brand";
 import { SITE_CONTACT } from "@/data/site/contact";
+import { locales, defaultLocale, type Locale } from "@/i18n/config";
 
 type PageMetadataInput = {
   title: string;
@@ -9,7 +10,40 @@ type PageMetadataInput = {
   image?: string;
   keywords?: string[];
   type?: "website" | "article";
+  /** Set false to skip hreflang alternates (e.g. legal/utility pages). */
+  alternates?: boolean;
 };
+
+/** Locale → BCP 47 language tag used for OG / hreflang. */
+export const LOCALE_HREFLANG: Record<Locale, string> = {
+  en: "en-IN",
+  hi: "hi-IN",
+  fr: "fr-FR",
+  de: "de-DE",
+  es: "es-ES",
+};
+
+/**
+ * Build hreflang alternates for a canonical path. The default locale (en)
+ * maps to the bare path; other locales are prefixed with the locale segment.
+ */
+export function buildLocaleAlternates(siteUrl: string, path: string) {
+  const canonical = canonicalPath(path);
+  const languages: Record<string, string> = {};
+  for (const locale of locales) {
+    if (locale === defaultLocale) {
+      languages[LOCALE_HREFLANG[locale]] = new URL(canonical, siteUrl).toString();
+    } else {
+      languages[LOCALE_HREFLANG[locale]] = new URL(
+        `/${locale}${canonical === "/" ? "" : canonical}`,
+        siteUrl,
+      ).toString();
+    }
+  }
+  // x-default points to the default-locale URL.
+  languages["x-default"] = new URL(canonical, siteUrl).toString();
+  return languages;
+}
 
 type PageJsonLdInput = {
   path: string;
@@ -70,10 +104,14 @@ export function buildSiteMetadata(siteUrl: string): Metadata {
       icon: "/catalog-logo-sharp.webp",
       shortcut: "/catalog-logo-sharp.webp",
     },
-    alternates: { canonical: "/" },
+    alternates: {
+      canonical: "/",
+      languages: buildLocaleAlternates(siteUrl, "/"),
+    },
     openGraph: {
       type: "website",
       locale: "en_IN",
+      alternateLocale: ["hi_IN", "fr_FR", "de_DE", "es_ES"],
       url: siteUrl,
       siteName: SITE_BRAND.siteName,
       title: SITE_BRAND.defaultTitle,
@@ -99,18 +137,25 @@ export function buildSiteMetadata(siteUrl: string): Metadata {
 export function buildPageMetadata(siteUrl: string, input: PageMetadataInput): Metadata {
   const canonicalUrl = buildCanonicalUrl(siteUrl, input.path);
   const image = input.image || SITE_BRAND.ogImage;
+  const includeAlternates = input.alternates !== false;
 
   return {
     metadataBase: new URL(siteUrl),
     title: input.title,
     description: input.description,
     keywords: input.keywords,
-    alternates: { canonical: canonicalUrl },
+    alternates: {
+      canonical: canonicalUrl,
+      ...(includeAlternates ? { languages: buildLocaleAlternates(siteUrl, input.path) } : {}),
+    },
     openGraph: {
       title: input.title,
       description: input.description,
       url: canonicalUrl,
       type: input.type || "website",
+      locale: "en_IN",
+      alternateLocale: ["hi_IN", "fr_FR", "de_DE", "es_ES"],
+      siteName: SITE_BRAND.siteName,
       images: [
         {
           url: image,
@@ -183,14 +228,14 @@ export function buildGlobalJsonLd(siteUrl: string) {
             telephone: SITE_CONTACT.salesPhone,
             contactType: "sales",
             areaServed: "IN",
-            availableLanguage: ["en", "hi"],
+            availableLanguage: [...locales],
           },
           {
             "@type": "ContactPoint",
             telephone: SITE_CONTACT.supportPhone,
             contactType: "customer support",
             areaServed: "IN",
-            availableLanguage: ["en", "hi"],
+            availableLanguage: [...locales],
           },
         ],
       },
@@ -222,5 +267,34 @@ export function buildGlobalJsonLd(siteUrl: string) {
         areaServed: SITE_CONTACT.areaServed,
       },
     ],
+  };
+}
+
+/**
+ * Standalone LocalBusiness (FurnitureStore) JSON-LD for the homepage.
+ * Mirrors the entry in `buildGlobalJsonLd` but returns a single node so it
+ * can be embedded alongside a WebPage node on the homepage.
+ */
+export function buildLocalBusinessJsonLd(siteUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FurnitureStore",
+    "@id": `${siteUrl}#localbusiness`,
+    name: SITE_BRAND.companyName,
+    url: siteUrl,
+    description: SITE_BRAND.localBusinessDescription,
+    image: `${siteUrl}${SITE_BRAND.ogImage}`,
+    logo: `${siteUrl}/logo-v2.webp`,
+    address: {
+      "@type": "PostalAddress",
+      ...SITE_CONTACT.address,
+    },
+    geo: { "@type": "GeoCoordinates", ...SITE_CONTACT.geo },
+    telephone: SITE_CONTACT.salesPhone,
+    email: SITE_CONTACT.salesEmail,
+    openingHours: SITE_CONTACT.openingHours,
+    priceRange: SITE_CONTACT.priceRange,
+    areaServed: SITE_CONTACT.areaServed,
+    sameAs: SITE_CONTACT.socialLinks.map((link) => link.href),
   };
 }

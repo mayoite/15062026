@@ -6,6 +6,9 @@ import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { PROJECTS_PAGE_CLIENTS, PROJECTS_PAGE_COPY } from "@/data/site/routeCopy";
 import { getBusinessStats } from '@/features/crm/businessStats';
 import { formatKpiAsOf, formatKpiValuePlus } from "@/lib/kpiFormat";
+import { PROJECTS_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = PROJECTS_PAGE_METADATA;
 
 export default async function ProjectsPage() {
   const { stats, source } = await getBusinessStats();
