@@ -1,38 +1,30 @@
 /**
- * /api/planner/ai-advisor - AI Layout Advisor API route
+ * POST /api/planner/ai-advisor — AI Layout Advisor (canonical planner route).
  *
- * Multi-turn chat endpoint using the provider chain.
- * Accepts messages + planner context, returns assistant response
- * with optional structured suggestion for one-click apply.
+ * Multi-turn chat endpoint using the provider chain. Accepts `messages` plus
+ * optional planner `context` and returns an assistant response with an
+ * optional structured `suggestion` for one-click apply. Also supports a
+ * `space-suggest` mode that returns a parsed layout JSON object.
+ *
+ * Auth: guest (anonymous allowed). Rate-limited per IP via `withAuth`.
+ *
+ * Request body: {@link PlannerAdvisorRequestSchema} —
+ *   `{ mode?: "chat"|"space-suggest", messages: [{role, content}], context? }`.
+ *
+ * Response (200):
+ *   - chat mode: `{ success: true, content, suggestion? }`
+ *   - space-suggest mode: `{ success: true, layout, content }`
+ *
+ * Errors: 400 (validation), 429 (rate limit), 503 (AI unavailable), 500.
  */
 
 import { type NextRequest, NextResponse } from "next/server";
 import { AI_ADVISOR_PLANNER_ID } from "@/features/planner/ai/aiAdvisorConfig";
 import { CHAT_ADVISOR_SYSTEM_PROMPT } from "@/features/planner/ai/prompts";
-import { rateLimit } from "@/lib/rateLimit";
-
-interface AiAdvisorRequest {
-  mode?: "chat" | "space-suggest";
-  messages: Array<{ role: string; content: string }>;
-  seatCount?: number;
-  purpose?: string;
-  floorAreaSqFt?: number;
-  context?: {
-    planner?: "oando" | "buddy" | "unified";
-    roomWidth?: number;
-    roomHeight?: number;
-    currentShapeCount?: number;
-    seatCount?: number;
-    purpose?: string;
-    floorAreaSqFt?: number;
-    projectName?: string;
-  };
-}
-
-type NormalizedMessage = {
-  role: "system" | "user" | "assistant";
-  content: string;
-};
+import { withAuth } from "@/lib/api/withAuth";
+import { ApiError, API_ERROR_CODES } from "@/lib/api/ApiError";
+import { success, error, validationError } from "@/lib/api/apiResponse";
+import { PlannerAdvisorRequestSchema } from "@/lib/api/schemas";
 
 type NormalizedContext = {
   planner?: "oando" | "buddy" | "unified";
@@ -44,22 +36,6 @@ type NormalizedContext = {
   floorAreaSqFt?: number;
   projectName?: string;
 };
-
-function normalizeMessages(value: unknown): NormalizedMessage[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((item) => {
-      if (!item || typeof item !== "object") return null;
-      const candidate = item as Record<string, unknown>;
-      const role = candidate.role;
-      const content = typeof candidate.content === "string" ? candidate.content.trim().slice(0, 2000) : "";
-      if (!content) return null;
-      if (role !== "system" && role !== "user" && role !== "assistant") return null;
-      return { role, content } as NormalizedMessage;
-    })
-    .filter((item): item is NormalizedMessage => item !== null)
-    .slice(0, 20);
-}
 
 function normalizeContext(value: unknown): NormalizedContext | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
@@ -126,131 +102,7 @@ function parseSuggestedLayoutJson(raw: string): Record<string, unknown> | null {
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const ip =
-      request.headers.get("cf-connecting-ip") ??
-      request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-      "127.0.0.1";
-    const limitRes = await rateLimit(`planner-ai-advisor:${ip}`, 10, 60 * 1000);
-    if (!limitRes.success) {
-      return NextResponse.json(
-        { error: "Too many requests. Please slow down." },
-        { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
-      );
-    }
-
-    const body = (await request.json().catch(() => null)) as Partial<AiAdvisorRequest> | null;
-    const mode = body?.mode === "space-suggest" ? "space-suggest" : "chat";
-    const messages = normalizeMessages(body?.messages);
-    const context = normalizeContext(body?.context);
-
-    if (messages.length === 0) {
-      return NextResponse.json(
-        { error: "Messages array is required" },
-        { status: 400 },
-      );
-    }
-
-    const fullMessages =
-      mode === "space-suggest"
-        ? messages
-        : [
-            {
-              role: "system" as const,
-              content: `${CHAT_ADVISOR_SYSTEM_PROMPT}${formatChatContextBlock(context)}`,
-            },
-            ...messages,
-          ];
-
-    // Try provider chain: primary AI provider
-    let aiResponse: string | undefined;
-    let suggestion: { type: string; description: string; actionLabel: string } | undefined;
-
-    try {
-      const { resolveProviderChain, requestProviderText } = await import(
-        "@/lib/ai/providerChain"
-      );
-      const providers = resolveProviderChain();
-      if (providers.length === 0) {
-        throw new Error("No AI provider configured");
-      }
-
-      const chatMessages = fullMessages.map((m) => ({
-        role: m.role as "system" | "user" | "assistant",
-        content: m.content,
-      }));
-
-      let lastError: unknown;
-      for (const provider of providers) {
-        try {
-          aiResponse = await requestProviderText(provider, chatMessages, {
-            temperature: mode === "space-suggest" ? 0.2 : 0.7,
-          });
-          lastError = undefined;
-          break;
-        } catch (error) {
-          lastError = error;
-        }
-      }
-
-      if (!aiResponse) {
-        throw lastError ?? new Error("All AI providers failed");
-      }
-
-      if (mode === "space-suggest") {
-        const layout = parseSuggestedLayoutJson(aiResponse);
-        if (layout) {
-          return NextResponse.json({
-            layout,
-            content: typeof layout.summary === "string" ? layout.summary : "Layout suggested.",
-          });
-        }
-        return NextResponse.json(
-          { error: "Space suggest response was not valid layout JSON." },
-          { status: 503 },
-        );
-      }
-
-      if (aiResponse.includes("[APPLY:")) {
-        const match = aiResponse.match(/\[APPLY:\s*(.+?)\]/);
-        if (match) {
-          suggestion = {
-            type: "placement",
-            description: match[1],
-            actionLabel: `Apply: ${match[1].slice(0, 30)}...`,
-          };
-          aiResponse = aiResponse.replace(/\[APPLY:.*?\]/, "").trim();
-        }
-      }
-    } catch {
-      if (mode === "space-suggest") {
-        return NextResponse.json(
-          { error: "Space suggest unavailable — use client grid pack fallback." },
-          { status: 503 },
-        );
-      }
-      // Fallback: return a helpful static response when AI is unavailable
-      const lastUserMsg = messages.filter((m) => m.role === "user").pop();
-      aiResponse = generateFallbackResponse(lastUserMsg?.content || "");
-    }
-
-    return NextResponse.json({
-      content: aiResponse,
-      suggestion,
-    });
-  } catch (error) {
-    console.error("[ai-advisor] Error:", error);
-    return NextResponse.json(
-      { error: "Failed to process request" },
-      { status: 500 },
-    );
-  }
-}
-
-/**
- * Generate a helpful response when the AI provider is unavailable.
- */
+/** Generate a helpful response when the AI provider is unavailable. */
 function generateFallbackResponse(userMessage: string): string {
   const lower = userMessage.toLowerCase();
 
@@ -270,3 +122,112 @@ function generateFallbackResponse(userMessage: string): string {
 
   return `I can help you plan your workspace! Try asking things like:\n• "Place 6 workstations near the window"\n• "Team of 20, collaborative style"\n• "Add meeting rooms for 50 people"\n\nYou can also use the Templates button to start with a pre-built layout.`;
 }
+
+/** Core advisor logic, invoked after auth + validation. */
+async function handlePlannerAdvisor(req: NextRequest): Promise<NextResponse> {
+  const rawBody = await req.json().catch(() => null);
+  const parsed = PlannerAdvisorRequestSchema.safeParse(rawBody);
+  if (!parsed.success) return validationError(parsed.error.issues);
+  const { mode: rawMode, messages, context: rawContext } = parsed.data;
+  const mode = rawMode === "space-suggest" ? "space-suggest" : "chat";
+  const context = normalizeContext(rawContext);
+
+  const fullMessages =
+    mode === "space-suggest"
+      ? messages
+      : [
+          {
+            role: "system" as const,
+            content: `${CHAT_ADVISOR_SYSTEM_PROMPT}${formatChatContextBlock(context)}`,
+          },
+          ...messages,
+        ];
+
+  let aiResponse: string | undefined;
+  let suggestion: { type: string; description: string; actionLabel: string } | undefined;
+
+  try {
+    const { resolveProviderChain, requestProviderText } = await import(
+      "@/lib/ai/providerChain"
+    );
+    const providers = resolveProviderChain();
+    if (providers.length === 0) {
+      throw new Error("No AI provider configured");
+    }
+
+    const chatMessages = fullMessages.map((m) => ({
+      role: m.role as "system" | "user" | "assistant",
+      content: m.content,
+    }));
+
+    let lastError: unknown;
+    for (const provider of providers) {
+      try {
+        aiResponse = await requestProviderText(provider, chatMessages, {
+          temperature: mode === "space-suggest" ? 0.2 : 0.7,
+        });
+        lastError = undefined;
+        break;
+      } catch (providerError) {
+        lastError = providerError;
+      }
+    }
+
+    if (!aiResponse) {
+      throw lastError ?? new Error("All AI providers failed");
+    }
+
+    if (mode === "space-suggest") {
+      const layout = parseSuggestedLayoutJson(aiResponse);
+      if (layout) {
+        return success({
+          layout,
+          content: typeof layout.summary === "string" ? layout.summary : "Layout suggested.",
+        });
+      }
+      return error(
+        new ApiError(
+          503,
+          API_ERROR_CODES.SERVICE_UNAVAILABLE,
+          "Space suggest response was not valid layout JSON.",
+        ),
+      );
+    }
+
+    if (aiResponse.includes("[APPLY:")) {
+      const match = aiResponse.match(/\[APPLY:\s*(.+?)\]/);
+      if (match) {
+        suggestion = {
+          type: "placement",
+          description: match[1],
+          actionLabel: `Apply: ${match[1].slice(0, 30)}...`,
+        };
+        aiResponse = aiResponse.replace(/\[APPLY:.*?]/, "").trim();
+      }
+    }
+  } catch (err) {
+    if (mode === "space-suggest") {
+      // eslint-disable-next-line no-console
+      console.error("[planner/ai-advisor] space-suggest error:", err);
+      return error(
+        new ApiError(
+          503,
+          API_ERROR_CODES.SERVICE_UNAVAILABLE,
+          "Space suggest unavailable — use client grid pack fallback.",
+        ),
+      );
+    }
+    // eslint-disable-next-line no-console
+    console.error("[planner/ai-advisor] provider error:", err);
+    const lastUserMsg = messages.filter((m) => m.role === "user").pop();
+    aiResponse = generateFallbackResponse(lastUserMsg?.content || "");
+  }
+
+  return success({ content: aiResponse, suggestion });
+}
+
+/** AI Layout Advisor. Guest auth; rate-limited. */
+export const POST = withAuth(
+  async (req) => handlePlannerAdvisor(req as NextRequest),
+  { role: "guest", rateLimitScope: "planner-ai-advisor", rateLimit: 10 },
+);

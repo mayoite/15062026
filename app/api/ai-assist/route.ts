@@ -1,91 +1,72 @@
+/**
+ * @deprecated Use `POST /api/planner/ai-advisor` instead.
+ *
+ * Legacy generic chat-completion proxy. Forwards a `messages` array through the
+ * provider chain and returns the first successful provider's text. No active UI
+ * callers remain; kept as a thin shim for backwards compatibility. Prefer the
+ * canonical planner advisor for new integrations.
+ *
+ * Auth: guest (anonymous allowed). Rate-limited per IP.
+ *
+ * Request body: {@link AiAssistRequestSchema} —
+ *   `{ messages: [{role, content}] }`.
+ *
+ * Response (200): `{ success: true, content, provider, model }`.
+ * Errors: 400 (validation), 429 (rate limit), 500 (no provider / all failed).
+ */
+
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
-import { rateLimit } from "@/lib/rateLimit";
+import { withAuth } from "@/lib/api/withAuth";
+import { ApiError, API_ERROR_CODES } from "@/lib/api/ApiError";
+import { success, error, validationError } from "@/lib/api/apiResponse";
+import { AiAssistRequestSchema } from "@/lib/api/schemas";
 import {
   requestProviderText,
   resolveProviderChain,
   type ServerChatMessage,
 } from "@/lib/ai/providerChain";
 
-type AiAssistMessage = {
-  role: "system" | "user" | "assistant";
-  content: string;
-};
+async function handleAiAssist(req: NextRequest): Promise<NextResponse> {
+  const rawBody = await req.json().catch(() => null);
+  const parsed = AiAssistRequestSchema.safeParse(rawBody);
+  if (!parsed.success) return validationError(parsed.error.issues);
+  const { messages } = parsed.data;
 
-function isAiAssistMessage(value: unknown): value is AiAssistMessage {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Record<string, unknown>;
-  return (
-    typeof candidate.content === "string" &&
-    (candidate.role === "system" ||
-      candidate.role === "user" ||
-      candidate.role === "assistant")
-  );
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const ip = req.headers.get("cf-connecting-ip") ?? req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-    const limitRes = await rateLimit(`ai-assist:${ip}`, 15, 60_000);
-    if (!limitRes.success) {
-      return NextResponse.json(
-        { error: "Too many requests. Please slow down." },
-        { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
-      );
-    }
-
-    const providers = resolveProviderChain();
-    if (providers.length === 0) {
-      return NextResponse.json(
-        {
-          error:
-            "Missing AI provider credentials. Configure GOOGLE_API_KEY, NOVA_ACT_API_KEY/AWS_BEARER_TOKEN_BEDROCK, or OPENROUTER_API_KEY.",
-        },
-        { status: 500 },
-      );
-    }
-
-    const payload = (await req.json()) as { messages?: unknown };
-    const messages = Array.isArray(payload.messages)
-      ? payload.messages.filter(isAiAssistMessage)
-      : [];
-
-    if (messages.length === 0) {
-      return NextResponse.json(
-        { error: "Invalid messages format" },
-        { status: 400 },
-      );
-    }
-
-    let lastError: unknown = null;
-    for (const provider of providers) {
-      try {
-        const content = await requestProviderText(
-          provider,
-          messages as ServerChatMessage[],
-          { jsonMode: true },
-        );
-        return NextResponse.json({
-          content,
-          provider: provider.provider,
-          model: provider.model,
-        });
-      } catch (error) {
-        lastError = error;
-        console.error(`[ai-assist] ${provider.provider} error:`, error);
-      }
-    }
-
-    const message =
-      lastError instanceof Error
-        ? lastError.message
-        : "Failed to call AI service";
-    return NextResponse.json({ error: message }, { status: 500 });
-  } catch (error: unknown) {
-    console.error("AI Assist Error:", error);
-    const message =
-      error instanceof Error ? error.message : "Failed to call AI service";
-    return NextResponse.json({ error: message }, { status: 500 });
+  const providers = resolveProviderChain();
+  if (providers.length === 0) {
+    return error(
+      new ApiError(
+        500,
+        API_ERROR_CODES.INTERNAL_ERROR,
+        "Missing AI provider credentials. Configure GOOGLE_API_KEY, NOVA_ACT_API_KEY/AWS_BEARER_TOKEN_BEDROCK, or OPENROUTER_API_KEY.",
+      ),
+    );
   }
+
+  let lastError: unknown = null;
+  for (const provider of providers) {
+    try {
+      const content = await requestProviderText(
+        provider,
+        messages as ServerChatMessage[],
+        { jsonMode: true },
+      );
+      return success({ content, provider: provider.provider, model: provider.model });
+    } catch (providerError) {
+      lastError = providerError;
+      // eslint-disable-next-line no-console
+      console.error(`[ai-assist] ${provider.provider} error:`, providerError);
+    }
+  }
+
+  const message =
+    lastError instanceof Error ? lastError.message : "Failed to call AI service";
+  return error(new ApiError(500, API_ERROR_CODES.INTERNAL_ERROR, message));
 }
+
+/** @deprecated Generic chat proxy. Prefer `POST /api/planner/ai-advisor`. */
+export const POST = withAuth(
+  async (req) => handleAiAssist(req as NextRequest),
+  { role: "guest", rateLimitScope: "ai-assist", rateLimit: 15 },
+);
