@@ -464,6 +464,8 @@ const Bottom = (wall) => wall.y1 > wall.y2 ? wall.y1 : wall.y2;
       const obj = e.target;
 
       if (MOVE_WALL_ID !== -1) {
+        // Commit the move: rebuild walls from final corners, persist state.
+        drawRoom();
         MOVE_WALL_ID = -1;
         saveState();
       }
