@@ -10,7 +10,7 @@ import {
   waitForPlannerCanvas,
 } from "./plannerCanvasHelpers";
 
-test.describe.configure({ mode: "serial", timeout: 60_000 });
+test.describe.configure({ timeout: 60_000 });
 
 async function openWorkspace(page: Page) {
   await enterGuestPlannerWorkspace(page);

@@ -16,7 +16,7 @@ export function PlannerHistoryControls({
   tooltipSide = "bottom",
 }: PlannerHistoryControlsProps) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1" role="group" aria-label="Canvas history">
       <PlannerIconButton
         label="Undo"
         tooltipSide={tooltipSide}

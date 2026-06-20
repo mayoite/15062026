@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
+import {
+  readPlannerWorkspacePreferences,
+  writePlannerWorkspacePreferences,
+} from "@/features/planner/editor/plannerWorkspacePreferences";
 
 const COMPACT_QUERY = "(max-width: 1023px)";
 
@@ -30,6 +34,21 @@ export function usePlannerPanels() {
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const [leftManualOverride, setLeftManualOverride] = useState(false);
   const [rightManualOverride, setRightManualOverride] = useState(false);
+  const [preferencesHydrated, setPreferencesHydrated] = useState(false);
+
+  useEffect(() => {
+    const saved = readPlannerWorkspacePreferences();
+    setLeftOpenState(saved.leftOpen);
+    setRightOpen(saved.rightOpen);
+    setLeftCollapsed(saved.leftCollapsed);
+    setRightCollapsed(saved.rightCollapsed);
+    setPreferencesHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!preferencesHydrated) return;
+    writePlannerWorkspacePreferences({ leftOpen, rightOpen, leftCollapsed, rightCollapsed });
+  }, [leftCollapsed, leftOpen, preferencesHydrated, rightCollapsed, rightOpen]);
 
   const setLeftOpen = useCallback((open: boolean) => {
     setLeftManualOverride(true);

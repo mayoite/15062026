@@ -13,7 +13,7 @@ import {
   waitForPlannerCanvas,
 } from "./plannerCanvasHelpers";
 
-test.describe.configure({ mode: "serial", timeout: 60_000 });
+test.describe.configure({ timeout: 60_000 });
 
 const RAIL_TOOLS = [
   "Select",
@@ -99,7 +99,7 @@ test.describe("Planner custom tools — Playwright", () => {
   test("catalog item click activates furniture placement", async ({ page }) => {
     await switchPlannerStep(page, "Place");
     const before = await getObjectCount(page);
-    const catalogItem = page.getByRole("button", { name: /Add .* to canvas/i }).first();
+    const catalogItem = page.getByRole("button", { name: /Add .* to canvas/i });
     await expect(catalogItem).toBeVisible({ timeout: 15_000 });
     await catalogItem.click();
     await expect(page.getByRole("button", { name: "Furniture", exact: true })).toHaveAttribute(

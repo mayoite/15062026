@@ -2,8 +2,6 @@ import { expect, test } from "@playwright/test";
 
 import { enterGuestPlannerWorkspace } from "./guestProjectSetup";
 
-test.describe.configure({ mode: "serial" });
-
 test.describe("Planner guest workspace — plan 06 UI bar", () => {
   test.beforeEach(async ({ page }) => {
     await enterGuestPlannerWorkspace(page);
@@ -17,7 +15,7 @@ test.describe("Planner guest workspace — plan 06 UI bar", () => {
     await expect(page.getByRole("button", { name: "3D", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Open library and blueprint panel" }).click();
     await expect(page.getByLabel("Search catalog elements")).toBeVisible();
-    await expect(page.locator("canvas").first()).toBeVisible();
+    await expect(page.getByTestId("planner-2d-canvas").locator("canvas")).toBeVisible();
   });
 
   test("empty canvas shows RoomSketcher-style starter actions", async ({ page }) => {
@@ -33,7 +31,7 @@ test.describe("Planner guest workspace — plan 06 UI bar", () => {
     await page.getByRole("button", { name: "Open library and blueprint panel" }).click();
     const search = page.getByLabel("Search catalog elements");
     await search.fill("meeting");
-    await expect(page.getByRole("button", { name: /Add .* to canvas/i }).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: /Add .* to canvas/i })).toBeVisible();
     await search.fill("zzzznotfound");
     await expect(page.getByText(/No elements found/i)).toBeVisible();
   });
@@ -51,10 +49,10 @@ test.describe("Planner guest workspace — plan 06 UI bar", () => {
 
     await page.getByRole("button", { name: "3D", exact: true }).click();
     await expect(page.locator(".pw-split-view")).toHaveCount(0);
-    await expect(page.locator("canvas").first()).toBeVisible();
+    await expect(page.getByTestId("planner-2d-canvas").locator("canvas")).toBeVisible();
 
     await page.getByRole("button", { name: "2D", exact: true }).click();
-    await expect(page.locator("canvas").first()).toBeVisible();
+    await expect(page.getByTestId("planner-2d-canvas").locator("canvas")).toBeVisible();
   });
 });
 
