@@ -27,7 +27,9 @@
     "platform/**/*.tsx",
     "config/database/types/**/*.ts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "i18n/**/*.ts",
+    "proxy.ts"
   ],
   "exclude": [
     "platform/drizzle/drizzle.config.ts",

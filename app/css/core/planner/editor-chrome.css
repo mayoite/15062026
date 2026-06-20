@@ -342,6 +342,7 @@
 
 .planner-workspace .pwx-select {
   width: 100%;
+  -webkit-appearance: none;
   appearance: none;
   padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
   border: 1px solid var(--border-soft);
@@ -631,6 +632,7 @@
   border: none;
   padding: 0;
   background: color-mix(in srgb, var(--surface-inverse) 45%, transparent);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   cursor: pointer;
 }

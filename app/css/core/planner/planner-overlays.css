@@ -285,6 +285,7 @@ html.dark .planner-workspace .pw-canvas-surface {
   border: 1px solid var(--border-soft);
   border-radius: 9999px;
   background: color-mix(in srgb, var(--surface-panel) 85%, transparent);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -307,6 +308,7 @@ html.dark .planner-workspace .pw-canvas-surface {
 
 .planner-viewer-surface {
   background: color-mix(in srgb, var(--surface-panel) 88%, transparent);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-soft);
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);

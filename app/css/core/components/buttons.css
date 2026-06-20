@@ -75,6 +75,7 @@
   color: var(--text-inverse);
   border: 1px solid var(--overlay-panel-14);
   background: var(--overlay-panel-08);
+  -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
 
@@ -88,6 +89,7 @@
   color: var(--text-inverse);
   border: 1px solid var(--overlay-panel-14);
   background: var(--overlay-panel-12);
+  -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
 
@@ -132,6 +134,7 @@
   color: var(--text-inverse);
   border: 1px solid var(--overlay-panel-14);
   background: var(--overlay-panel-12);
+  -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
 

@@ -269,8 +269,8 @@ export type PlannerDocumentBuildContext = {
 };
 
 export function logPlannerDocumentBuildAttempt(context: PlannerDocumentBuildContext): void {
-  if (process.env.NODE_ENV !== "development") return;
-  console.warn(`${LOG_PREFIX} build`, context);
+  // if (process.env.NODE_ENV !== "development") return;
+  // console.warn(`${LOG_PREFIX} build`, context);
 }
 
 export function logPlannerSchemaValidationFailure(

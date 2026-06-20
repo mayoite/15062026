@@ -32,6 +32,7 @@
   z-index: 20;
   width: 100%;
   border-bottom-width: 1px;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   top: 4rem;
   border-color: var(--border-soft);

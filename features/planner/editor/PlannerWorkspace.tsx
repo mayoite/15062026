@@ -25,7 +25,8 @@ import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
 import { PlannerChromeHost } from "@/features/planner/editor/chrome/PlannerChromeHost";
 import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
-import { shapePropsToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
+import { resolveCatalogItemBlock2D, shapePropsToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
+import { blockToSvg } from "@/lib/catalog/blocks2d";
 import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
 import {
   getDefaultPlacementCatalogItemId,
@@ -260,12 +261,14 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
   const placeCatalogIntoFabric = useCallback((item: CatalogItem) => {
     const { widthCm, depthCm } = shapePropsToCanvasCm(item.widthMm, item.heightMm);
+    const block = resolveCatalogItemBlock2D(item);
     insertObject({
       type: "GENERIC",
       object: {
         title: item.shortName || item.name || "Catalog Item",
         width: widthCm,
         height: depthCm,
+        svg: block ? blockToSvg(block) : undefined,
       },
     });
   }, [insertObject]);
@@ -621,7 +624,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         panelCollapsed={!isCompact && leftCollapsed}
         showPanelToggle={leftOpen}
         onTogglePanel={toggleLeft}
-        onToggleCollapsed={!isCompact ? toggleLeftCollapsed : undefined}
         activeTab={leftTab}
         onTabChange={setLeftTab}
         onItemClick={handleCatalogItemClick}
@@ -642,7 +644,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       handleCatalogDragStart,
       handleCatalogDragEnd,
       toggleLeft,
-      toggleLeftCollapsed,
     ],
   );
 
@@ -670,10 +671,12 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     ],
   );
 
+  const currentPlannerDocument = useMemo(() => buildCurrentPlannerDocument(), [buildCurrentPlannerDocument]);
+
   const canvas3D = (
     <Suspense fallback={<PlannerSkeleton />}>
       <div className="pw-viewer-host h-full min-h-0 w-full">
-        <Planner3DViewer document={buildCurrentPlannerDocument()} />
+        <Planner3DViewer document={currentPlannerDocument} />
       </div>
     </Suspense>
   );

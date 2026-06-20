@@ -81,6 +81,7 @@
     border: 1px solid var(--border-soft);
     border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--surface-panel) 92%, transparent);
+    -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
   }
 

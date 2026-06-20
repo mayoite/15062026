@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ReloadButton from "./ReloadButton";
 
 export const metadata: Metadata = {
   title: "Offline — Oando Platform",
@@ -15,13 +16,7 @@ export default function OfflinePage() {
           We cannot reach the network right now. Any cached pages you have
           visited will still be available. Please reconnect to continue.
         </p>
-        <button
-          type="button"
-          onClick={() => window.location.reload()}
-          className="btn-primary"
-        >
-          Try again
-        </button>
+        <ReloadButton />
       </div>
     </div>
   );

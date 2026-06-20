@@ -81,6 +81,7 @@ const InspectorInput = forwardRef<HTMLInputElement, InspectorInputProps>(
           ref={ref}
           type="number"
           step="any"
+          aria-label={label}
           className={`h-7 w-full rounded border border-gray-200 bg-white px-2 py-1 text-xs tabular-nums text-gray-900 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${className}`}
           {...props}
         />

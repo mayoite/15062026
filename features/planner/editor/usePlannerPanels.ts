@@ -100,13 +100,8 @@ export function usePlannerPanels() {
     if (isCompact) return;
     setRightCollapsed((collapsed) => {
       const next = !collapsed;
-      if (!next) {
-        setRightManualOverride(true);
-        setRightOpen(true);
-      } else {
-        setRightManualOverride(true);
-        setRightOpen(false);
-      }
+      setRightManualOverride(true);
+      setRightOpen(true);
       return next;
     });
   }, [isCompact]);
@@ -115,13 +110,8 @@ export function usePlannerPanels() {
     if (isCompact) return;
     setLeftCollapsed((collapsed) => {
       const next = !collapsed;
-      if (!next) {
-        setLeftManualOverride(true);
-        setLeftOpenState(true);
-      } else {
-        setLeftManualOverride(true);
-        setLeftOpenState(false);
-      }
+      setLeftManualOverride(true);
+      setLeftOpenState(true);
       return next;
     });
   }, [isCompact]);

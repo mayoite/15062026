@@ -147,6 +147,7 @@
   letter-spacing: 0.1em;
   color: var(--text-body);
   box-shadow: var(--shadow-soft);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 

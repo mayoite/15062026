@@ -31,6 +31,7 @@
   z-index: 10;
   border-bottom: 1px solid var(--border-soft);
   background: color-mix(in srgb, white 95%, transparent);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 

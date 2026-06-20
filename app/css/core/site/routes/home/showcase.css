@@ -218,6 +218,7 @@
 @utility home-trust-kpi--dark {
   border-color: var(--border-inverse);
   background: var(--overlay-panel-08);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -325,6 +326,7 @@
   border: 1px solid var(--glass-white-18);
   background: var(--overlay-panel-14);
   color: var(--glass-white-90);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 12px 28px -24px var(--hero-btn-secondary-shadow);
 }
