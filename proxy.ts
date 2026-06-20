@@ -1,8 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
 import { PLANNER_GUEST_COOKIE } from "./lib/auth/constants.ts"
 
 /** Canonical planner paths only — legacy /oando-planner/* and /buddy-planner/* 301 in next.config.js */
 const PLANNER_GUEST_PATHS = ["/planner", "/planner/guest", "/planner/canvas"];
+
+/** next-intl locale negotiation/rewrite middleware (i18n layer). */
+const intlMiddleware = createIntlMiddleware(routing);
 
 function normalizePathname(pathname: string): string {
   if (pathname.length > 1 && pathname.endsWith("/")) {
@@ -47,6 +52,16 @@ export function isProtectedPath(pathname: string): boolean {
  */
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
+
+  // ── i18n layer ────────────────────────────────────────────────────────────
+  // Run next-intl locale negotiation first. If it rewrites/redirects (e.g. to
+  // add a locale prefix or honor the NEXT_LOCALE cookie), return that response
+  // and skip the security/auth logic below. A plain `next()` falls through.
+  const intlResponse = await intlMiddleware(request);
+  if (intlResponse && !(intlResponse as NextResponse).headers.get("x-middleware-next")) {
+    return intlResponse;
+  }
+
   const isProtected = isProtectedPath(pathname);
   const hasPlannerGuestPass = request.cookies.has(PLANNER_GUEST_COOKIE);
   const allowPlannerGuest = hasPlannerGuestPass && isPlannerGuestAllowedPath(pathname);
@@ -92,7 +107,10 @@ export async function proxy(request: NextRequest) {
   // The actual session validation is handled by getOptionalUser() in session.ts
   // at the page/layout level. The edge proxy just does a fast cookie existence check.
   
-  const response = NextResponse.next({ request });
+  // If the i18n middleware produced a passthrough `next()` response (e.g. it set
+  // the x-next-intl-locale header without rewriting), reuse it so the header is
+  // preserved; otherwise create a fresh response.
+  const response = intlResponse ?? NextResponse.next({ request });
 
   // ── Security Headers ──────────────────────────────────────────────────────
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -119,14 +137,18 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    // i18n locale-prefixed paths and the root, handled by the next-intl layer.
+    "/",
+    "/(hi|fr|de|es)/:path*",
     /*
      * Match all request paths except:
      * - _next/static (static files)
      * - _next/image (image optimisation)
      * - favicon.ico, sitemap.xml, robots.txt
      * - public folder assets (images, fonts, etc.)
+     * - API routes and internal Vercel paths (handled outside i18n)
      */
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf|eot)$).*)",
+    "/((?!_next|_vercel|api|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf|eot)$).*)",
   ],
 };
 

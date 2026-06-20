@@ -1,0 +1,19 @@
+{
+  "common": {
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "guest": "Continuer en tant qu'invité",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue"
+  },
+  "home": {
+    "title": "Plateforme Oando",
+    "subtitle": "Outils professionnels de planification et de conception d'espaces",
+    "getStarted": "Commencer"
+  },
+  "planner": {
+    "title": "Planificateur d'espace",
+    "newProject": "Nouveau projet",
+    "roomPresets": "Préréglages de pièce"
+  }
+}
