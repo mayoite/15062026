@@ -33,7 +33,18 @@ create index if not exists idx_products_category on products (category);
 -- Enable Row-Level Security (read-only for anon)
 alter table products enable row level security;
 
-create policy "Allow public read access"
-  on products
-  for select
-  using (true);
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'products'
+      and policyname = 'Allow public read access'
+  ) then
+    create policy "Allow public read access"
+      on products
+      for select
+      using (true);
+  end if;
+end
+$$;

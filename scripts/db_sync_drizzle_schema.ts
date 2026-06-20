@@ -1,6 +1,12 @@
 /**
- * Apply missing Drizzle tables on DATABASE_URL (DigitalOcean Postgres).
- * Safe to re-run — uses CREATE TABLE IF NOT EXISTS for planner schema gaps.
+ * Apply missing Drizzle tables and indexes on DATABASE_URL
+ * (DigitalOcean Postgres — the admin/planner DB).
+ *
+ * Safe to re-run:
+ *  - 0000_daffy_longshot.sql is applied only when planner tables are
+ *    missing (its CREATE TABLE statements are not IF NOT EXISTS).
+ *  - 0001_add_missing_indexes.sql is applied every run because every
+ *    statement uses IF NOT EXISTS, so it is fully idempotent.
  */
 import * as dotenv from "dotenv";
 import { readFileSync } from "node:fs";
@@ -26,9 +32,13 @@ async function main() {
   }
 
   const sql = postgres(url, { max: 1 });
-  const migrationPath = resolve(
+  const migration0000 = resolve(
     process.cwd(),
     "platform/drizzle/migrations/0000_daffy_longshot.sql",
+  );
+  const migration0001 = resolve(
+    process.cwd(),
+    "platform/drizzle/migrations/0001_add_missing_indexes.sql",
   );
 
   try {
@@ -40,26 +50,37 @@ async function main() {
       ORDER BY table_name
     `;
     const beforeSet = new Set(before.map((row) => row.table_name));
+// eslint-disable-next-line no-console
     console.log(`Before: ${[...beforeSet].join(", ") || "(none)"}`);
 
+    // 1) Apply base schema only if tables are missing (0000 is not idempotent).
     const missing = EXPECTED_TABLES.filter((name) => !beforeSet.has(name));
-    if (missing.length === 0) {
-      console.log("✅ Drizzle planner schema complete — nothing to apply.");
-      return;
+    if (missing.length > 0) {
+// eslint-disable-next-line no-console
+      console.log(`Applying 0000 for missing tables: ${missing.join(", ")}`);
+      const body = readFileSync(migration0000, "utf-8");
+      await sql.unsafe(body);
+
+      const after = await sql<{ table_name: string }[]>`
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = ANY(${[...EXPECTED_TABLES]})
+        ORDER BY table_name
+      `;
+// eslint-disable-next-line no-console
+      console.log(`After: ${after.map((row) => row.table_name).join(", ")}`);
+    } else {
+// eslint-disable-next-line no-console
+      console.log("✅ Drizzle planner tables present.");
     }
 
-    console.log(`Applying migration for missing tables: ${missing.join(", ")}`);
-    const body = readFileSync(migrationPath, "utf8");
-    await sql.unsafe(body);
-
-    const after = await sql<{ table_name: string }[]>`
-      SELECT table_name
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-        AND table_name = ANY(${[...EXPECTED_TABLES]})
-      ORDER BY table_name
-    `;
-    console.log(`After: ${after.map((row) => row.table_name).join(", ")}`);
+    // 2) Always apply index migration — every statement is IF NOT EXISTS.
+// eslint-disable-next-line no-console
+    console.log("Applying 0001_add_missing_indexes (idempotent)...");
+    const indexBody = readFileSync(migration0001, "utf-8");
+    await sql.unsafe(indexBody);
+// eslint-disable-next-line no-console
     console.log("✅ Drizzle schema sync finished.");
   } catch (error) {
     console.error("❌ Drizzle schema sync failed:");

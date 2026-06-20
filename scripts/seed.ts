@@ -9,11 +9,8 @@ import * as path from 'path';
 
 // Parse the connection string manually to avoid URL-encoding issues
 // with special characters in the password (e.g. @, #, $)
-// eslint-disable-next-line null
-// eslint-disable-next-line null
-// eslint-disable-next-line no-useless-escape
-// eslint-disable-next-line no-useless-escape
-const rawUrl = (process.env.PRODUCTS_DATABASE_URL ?? process.env.DATABASE_URL ?? '').replace(/^\"|\"$/g, '').replace(/^'|'$/g, '');
+// Strip surrounding double or single quotes that some env loaders preserve.
+const rawUrl = (process.env.PRODUCTS_DATABASE_URL ?? process.env.DATABASE_URL ?? '').replace(/^["']|["']$/g, '');
 
 if (!rawUrl) {
     console.error('Neither PRODUCTS_DATABASE_URL nor DATABASE_URL set in .env.local');
@@ -53,10 +50,12 @@ async function seed() {
 // eslint-disable-next-line no-console
     console.log('Connecting to Supabase via direct postgres connection...');
 
-    const seedFile = path.join(process.cwd(), 'tools', 'scripts', 'seed_data.sql');
+    // seed_data.sql lives alongside this script in scripts/.
+    // (Previously pointed at tools/scripts/seed_data.sql which does not exist.)
+    const seedFile = path.join(process.cwd(), 'scripts', 'seed_data.sql');
 
     if (!fs.existsSync(seedFile)) {
-        console.error('seed_data.sql not found.');
+        console.error('seed_data.sql not found at', seedFile);
         process.exit(1);
     }
 
