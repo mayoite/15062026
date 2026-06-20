@@ -1,4 +1,0 @@
-﻿
-> oando-platform@0.1.0 lint
-> eslint -c config/build/eslint.config.mjs app components features lib tests --max-warnings=0
-
