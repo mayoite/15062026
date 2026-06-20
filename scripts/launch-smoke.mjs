@@ -40,7 +40,6 @@ const launchRoutes = [
 ];
 
 const criticalConsolePatterns = [
-  /appwrite project id is missing/i,
   /failed to fetch/i,
   /cors/i,
   /hydration failed/i,

@@ -6,10 +6,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { isAppwriteConfigured } from '@/platform/appwrite/client';
+import { hasPublicSupabaseEnv } from "@/platform/supabase/env";
 import { getCustomerSafeAuthError } from "@/lib/auth/customerSafeAuthError";
 import { PLANNER_GUEST_COOKIE } from "@/lib/auth/constants";
-import { loginWithAppwrite } from "@/lib/auth/appwriteServerActions";
+import { loginWithSupabase } from "@/lib/auth/supabaseServerActions";
 
 interface AccessFormProps {
   nextPath: string;
@@ -28,14 +28,14 @@ export function AccessForm({ nextPath, guestHref }: AccessFormProps) {
     setIsSubmitting(true);
     setError(null);
 
-    if (!isAppwriteConfigured()) {
+    if (!hasPublicSupabaseEnv()) {
       setIsSubmitting(false);
-      setError(getCustomerSafeAuthError(new Error("missing_appwrite_project_id")));
+      setError(getCustomerSafeAuthError(new Error("missing_supabase_env")));
       return;
     }
 
     try {
-      const result = await loginWithAppwrite(email, password);
+      const result = await loginWithSupabase(email, password);
       
       if (!result.success) {
         setIsSubmitting(false);

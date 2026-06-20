@@ -2,39 +2,42 @@
  * Shared server auth helpers used across all product surfaces (Planner, Configurator, CRM).
  * Wraps Supabase auth and provides guest access functionality.
  */
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Client, Account } from "node-appwrite";
-import { getAppwriteRuntimeConfig } from '@/platform/appwrite/client';
+import { createServerClient } from "@/platform/supabase/server";
+import { hasPublicSupabaseEnv } from "@/platform/supabase/env";
 import type { SharedSessionUser, PlannerRole } from "@/features/shared/auth/types";
 import { buildAccessRedirect } from "@/lib/auth/plannerRedirect";
 
 export async function getOptionalUser(): Promise<SharedSessionUser | null> {
-  const config = getAppwriteRuntimeConfig();
-  if (!config.isConfigured) return null;
-
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get(`a_session_${config.projectId}`);
-
-  if (!sessionCookie || !sessionCookie.value) {
+  // If Supabase env vars are not configured, there is no auth surface to query.
+  if (!hasPublicSupabaseEnv()) {
     return null;
   }
 
   try {
-    const client = new Client()
-      .setEndpoint(config.endpoint)
-      .setProject(config.projectId)
-      .setSession(sessionCookie.value);
+    const supabase = await createServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    const account = new Account(client);
-    const user = await account.get();
+    if (!user) {
+      return null;
+    }
+
+    const roleValue = user.app_metadata?.role ?? user.user_metadata?.role;
+    const isAdmin =
+      roleValue === "admin" ||
+      Array.isArray(user.app_metadata?.roles) &&
+        (user.app_metadata.roles as unknown[]).includes("admin");
 
     return {
-      id: user.$id,
+      id: user.id,
       email: user.email || "",
-      name: user.name,
-      avatarUrl: user.prefs?.avatarUrl,
-      role: (user.labels?.includes("admin") ? "owner" : "member") as PlannerRole,
+      name:
+        (user.user_metadata?.name as string | undefined) ??
+        (user.email ? user.email.split("@")[0] : undefined),
+      avatarUrl: user.user_metadata?.avatarUrl as string | undefined,
+      role: (isAdmin ? "owner" : "member") as PlannerRole,
     };
   } catch (error) {
     // Session is invalid or expired
