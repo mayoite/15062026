@@ -13,6 +13,9 @@ import {
 } from "@/data/site/routeCopy";
 import { getBusinessStats } from '@/features/crm/businessStats';
 import { formatKpiAsOf, formatKpiValuePlus } from "@/lib/kpiFormat";
+import { SHOWROOMS_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = SHOWROOMS_PAGE_METADATA;
 
 export default async function ShowroomsPage() {
   const { stats } = await getBusinessStats();

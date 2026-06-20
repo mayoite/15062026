@@ -9,6 +9,9 @@ import {
   SERVICE_PAGE_COPY,
   SERVICE_PAGE_PILLARS,
 } from "@/data/site/routeCopy";
+import { SERVICE_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = SERVICE_PAGE_METADATA;
 
 export default function ServicePage() {
   return (

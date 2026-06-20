@@ -28,7 +28,16 @@ const STATIC_PATHS = [
   "/refund-and-return-policy",
   "/privacy",
   "/terms",
+  "/imprint",
   "/quote-cart",
+  "/planning",
+  "/downloads",
+  "/career",
+  "/news",
+  "/social",
+  "/tracking",
+  "/support-ivr",
+  "/templates",
   "/planner",
   "/planner/help",
   "/planner/features",
@@ -40,14 +49,34 @@ const STATIC_PATHS = [
   "/planner/features/export",
 ];
 
+/** Solution category slugs mirrored from `app/(site)/solutions/[category]/page.tsx`. */
+const SOLUTION_CATEGORY_PATHS = [
+  "/solutions/seating",
+  "/solutions/workstations",
+  "/solutions/tables",
+  "/solutions/storages",
+  "/solutions/soft-seating",
+  "/solutions/education",
+];
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const entries: MetadataRoute.Sitemap = STATIC_PATHS.map((path) => ({
     url: sitemapUrl(path),
     lastModified: now,
     changeFrequency: path === "/" ? "daily" : "weekly",
-    priority: path === "/" ? 1 : 0.7,
+    priority: path === "/" ? 1 : path.startsWith("/planner") ? 0.8 : 0.7,
   }));
+
+  // Solution category landing pages.
+  for (const path of SOLUTION_CATEGORY_PATHS) {
+    entries.push({
+      url: sitemapUrl(path),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    });
+  }
 
   try {
     const catalog = buildRequestedCategoryCatalog(await getCatalog());

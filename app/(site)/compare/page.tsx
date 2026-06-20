@@ -14,6 +14,9 @@ import {
 } from "@/lib/displayText";
 import { normalizeAssetPath } from "@/lib/assetPaths";
 import { COMPARE_ROUTE_COPY } from "@/data/site/routeCopy";
+import { COMPARE_PAGE_METADATA } from "@/data/site/routeMetadata";
+
+export const metadata = COMPARE_PAGE_METADATA;
 
 type CompareItem = {
   productUrlKey: string;

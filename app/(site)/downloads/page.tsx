@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { RouteActionCard } from "@/components/shared/RouteActionCard";
@@ -6,11 +5,9 @@ import { SectionIntro } from "@/components/shared/SectionIntro";
 import { TrackedLink } from "@/components/ui/TrackedLink";
 import { SITE_CONTACT, buildWhatsAppHref } from "@/data/site/contact";
 import { DOWNLOADS_PAGE_COPY, DOWNLOADS_RESOURCE_CATEGORIES } from "@/data/site/routeCopy";
+import { DOWNLOADS_PAGE_METADATA } from "@/data/site/routeMetadata";
 
-export const metadata: Metadata = {
-  title: DOWNLOADS_PAGE_COPY.metadataTitle,
-  description: DOWNLOADS_PAGE_COPY.metadataDescription,
-};
+export const metadata = DOWNLOADS_PAGE_METADATA;
 
 export default function DownloadsPage() {
   return (
