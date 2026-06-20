@@ -1,6 +1,7 @@
 import { PlannerLandingPage } from "@/features/planner/landing/PlannerLandingPage";
 import { SITE_URL } from "@/lib/siteUrl";
 import { buildPageJsonLd, buildPageMetadata } from "@/lib/helpers/seo";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 export const metadata = buildPageMetadata(SITE_URL, {
   title: "Workspace Planner — Design Your Office Layout",
@@ -31,7 +32,7 @@ export default function PlannerLandingRoute() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(PAGE_JSON_LD) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(PAGE_JSON_LD) }}
       />
       <PlannerLandingPage />
     </>

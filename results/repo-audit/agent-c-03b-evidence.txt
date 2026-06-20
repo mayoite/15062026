@@ -1,0 +1,45 @@
+=== TASK 03B: Site Content Ownership ===
+
+== Duplicate Pair Analysis ==
+
+### Hero.tsx vs HomepageHero.tsx
+- Hero.tsx: GENERIC reusable hero component with configurable props (title, subtitle, variant, backgroundImage, videoBackground, showButton, etc.)
+  - Used in 20+ routes: about, projects, gallery, planning, solutions/*, showrooms, portfolio, privacy, terms, downloads, service, tracking, social, trusted-by, news, imprint, refund-and-return-policy, sustainability, templates, career, contact, support
+  - Supports 3 variants: default, small, cinema
+  - Parallax scroll effect with framer-motion
+- HomepageHero.tsx: HOMEPAGE-SPECIFIC hero with hardcoded content from data/site/homepage
+  - Used ONLY in app/(site)/page.tsx (the homepage)
+  - Features: rotating image carousel, word-level reveal animations, glass proof panel, progress dots
+  - Imports HOMEPAGE_HERO_CONTENT and HOMEPAGE_HERO_IMAGES
+- CONCLUSION: NOT duplicates. Different responsibilities. Hero is generic/reusable, HomepageHero is homepage-specific.
+
+### TrustStrip.tsx vs HomeTrustStrip.tsx
+- TrustStrip.tsx: Renders KPI stats (yearsExperience, projectsDelivered, clientOrganisations, locationsServed)
+  - Takes BusinessStats as prop
+  - Used in multiple routes for displaying business metrics
+- HomeTrustStrip.tsx: Renders logo marquee/carousel of client logos
+  - Uses HOMEPAGE_TRUST_CONTENT from data/site/homepage
+  - Used ONLY in app/(site)/page.tsx (the homepage)
+- CONCLUSION: NOT duplicates. Different responsibilities. TrustStrip shows KPI numbers, HomeTrustStrip shows client logo marquee.
+
+== app/(site) Route Composition-Only Check ==
+All checked routes are composition-only:
+- app/(site)/page.tsx: Imports and composes HomepageHero, TrustStrip, CategoryGrid, PlannerSuite, etc.
+- app/(site)/about/page.tsx: Imports and composes Hero, ProcessSection, etc.
+- app/(site)/projects/page.tsx: Imports and composes Hero, Projects, etc.
+- No reusable domain logic found in route files.
+
+== No Changes Required ==
+Both pairs serve distinct responsibilities. No consolidation needed.
+
+== Typecheck ==
+> oando-platform@0.1.0 typecheck
+> tsc -p tsconfig.json --noEmit
+
+exit_code: 0
+
+== Lint ==
+> oando-platform@0.1.0 lint
+> eslint -c config/build/eslint.config.mjs app components features lib tests --max-warnings=0
+
+exit_code: 0

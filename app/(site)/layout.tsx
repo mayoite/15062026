@@ -11,6 +11,7 @@ import { SITE_URL } from "@/lib/siteUrl";
 import { buildGlobalJsonLd, buildSiteMetadata } from "@/lib/analytics/seo";
 import { SITE_VIEWPORT } from "@/lib/siteViewport";
 import { RouteChrome } from "@/components/site/RouteChrome";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 export const metadata: Metadata = buildSiteMetadata(SITE_URL);
 
@@ -33,7 +34,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(GLOBAL_JSON_LD),
+            __html: sanitizeJsonForScript(GLOBAL_JSON_LD),
           }}
         />
       </head>

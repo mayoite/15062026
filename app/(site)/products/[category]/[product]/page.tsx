@@ -20,6 +20,7 @@ import { resolveProductByUrlKey } from "@/lib/productSlugResolver";
 import { SITE_URL } from "@/lib/siteUrl";
 import { PDP_ROUTE_COPY } from "@/data/site/routeCopy";
 import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/data/site/seo";
+import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 const BASE_URL = SITE_URL;
 
@@ -335,11 +336,11 @@ async function ProductContent({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(breadcrumbJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(productJsonLd) }}
       />
       <ProductViewer
         product={compatProduct}
