@@ -26,24 +26,28 @@ CREATE INDEX IF NOT EXISTS idx_image_assets_created_at ON image_assets(created_a
 ALTER TABLE image_assets ENABLE ROW LEVEL SECURITY;
 
 -- Public read for authenticated users
+DROP POLICY IF EXISTS "Authenticated users can read image_assets" ON image_assets;
 CREATE POLICY "Authenticated users can read image_assets"
   ON image_assets FOR SELECT
   TO authenticated
   USING (true);
 
 -- Insert for authenticated users
+DROP POLICY IF EXISTS "Authenticated users can insert image_assets" ON image_assets;
 CREATE POLICY "Authenticated users can insert image_assets"
   ON image_assets FOR INSERT
   TO authenticated
   WITH CHECK (true);
 
 -- Update for owner only
+DROP POLICY IF EXISTS "Users can update own image_assets" ON image_assets;
 CREATE POLICY "Users can update own image_assets"
   ON image_assets FOR UPDATE
   TO authenticated
   USING (created_by = auth.uid());
 
 -- Delete for owner only
+DROP POLICY IF EXISTS "Users can delete own image_assets" ON image_assets;
 CREATE POLICY "Users can delete own image_assets"
   ON image_assets FOR DELETE
   TO authenticated

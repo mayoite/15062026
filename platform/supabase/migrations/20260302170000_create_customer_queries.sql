@@ -73,4 +73,17 @@ to service_role
 using (true)
 with check (true);
 
-alter publication supabase_realtime add table public.customer_queries;
+-- Add to realtime publication (idempotent — skip if already a member).
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables pub
+    where pub.pubname = 'supabase_realtime'
+      and pub.schemaname = 'public'
+      and pub.tablename = 'customer_queries'
+  ) then
+    alter publication supabase_realtime add table public.customer_queries;
+  end if;
+end
+$$;
