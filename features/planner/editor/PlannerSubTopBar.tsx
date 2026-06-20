@@ -42,7 +42,7 @@ export function PlannerSubTopBar({
           disabled={!onResetLayout}
           onClick={onResetLayout}
         >
-          <RotateCcw size={16} strokeWidth={2} aria-hidden />
+          <RotateCcw size={14} strokeWidth={2} aria-hidden />
         </button>
         <button
           type="button"
@@ -54,9 +54,9 @@ export function PlannerSubTopBar({
           onClick={onToggleLeftCollapsed}
         >
           {leftCollapsed ? (
-            <PanelLeftOpen size={16} strokeWidth={2} aria-hidden />
+            <PanelLeftOpen size={14} strokeWidth={2} aria-hidden />
           ) : (
-            <PanelLeftClose size={16} strokeWidth={2} aria-hidden />
+            <PanelLeftClose size={14} strokeWidth={2} aria-hidden />
           )}
         </button>
         <button
@@ -69,9 +69,9 @@ export function PlannerSubTopBar({
           onClick={onToggleRightCollapsed}
         >
           {rightCollapsed ? (
-            <PanelRightOpen size={16} strokeWidth={2} aria-hidden />
+            <PanelRightOpen size={14} strokeWidth={2} aria-hidden />
           ) : (
-            <PanelRightClose size={16} strokeWidth={2} aria-hidden />
+            <PanelRightClose size={14} strokeWidth={2} aria-hidden />
           )}
         </button>
       </div>

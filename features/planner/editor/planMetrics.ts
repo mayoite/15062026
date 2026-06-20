@@ -100,8 +100,9 @@ export function computePlanMetrics(
 
 export function getPageMetrics(_editor: null): PlanMetrics {
   const serializedDraft = getPlannerFabricRuntimeState().serializedDraft;
-  const mmPerUnit = usePlannerWorkspaceStore.getState().blueprint.mmPerUnit;
-  const calibrationScale = getCalibrationScaleFromBlueprint(mmPerUnit);
+  const blueprint = usePlannerWorkspaceStore.getState().blueprint;
+  // Only apply calibration when a blueprint image is actually loaded
+  const calibrationScale = blueprint.dataUrl ? getCalibrationScaleFromBlueprint(blueprint.mmPerUnit) : 1;
   if (!serializedDraft) return { ...EMPTY_METRICS, calibrated: calibrationScale !== 1 };
 
   try {
@@ -114,5 +115,9 @@ export function getPageMetrics(_editor: null): PlanMetrics {
 
 export function getCalibrationScaleFromBlueprint(mmPerUnit: number | null): number {
   if (!mmPerUnit || !Number.isFinite(mmPerUnit) || mmPerUnit <= 0) return 1;
-  return mmPerUnit / 10;
+  // The canonical value is 10 mm per fabric unit. Values far from that indicate a calibrated blueprint.
+  const ratio = mmPerUnit / 10;
+  // Sanity check: reject values that are too far from reasonable (e.g., > 100x)
+  if (ratio > 100 || ratio < 0.01) return 1;
+  return Math.abs(ratio - 1) < 0.01 ? 1 : ratio;
 }

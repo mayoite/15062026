@@ -14,6 +14,7 @@ export type PlannerFabricRuntime = {
   placeCatalogItem: (item: CatalogItem) => void;
   insertObject: (payload: InsertPayload) => void;
   setLayerVisibility: (layerVisible: Record<PlannerLayerCategory, boolean>) => void;
+  resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
   editRoom: () => void;
   endEditRoom: () => void;
 };

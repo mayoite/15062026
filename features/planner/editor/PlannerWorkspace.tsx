@@ -8,7 +8,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type ComponentProps, type DragEvent } from "react";
-import { X } from "lucide-react";
+import { X, PanelRightOpen } from "lucide-react";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
 import { Planner3DViewer } from "@/features/planner/3d/Planner3DViewer";
@@ -103,6 +103,7 @@ import {
   setPlannerFabricRuntimeState,
   useFloorplan,
 } from "@/features/planner/canvas-fabric";
+import { applyLayerVisibility } from "@/features/planner/editor/layerVisibility";
 
 function isEditableKeyboardTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -156,15 +157,11 @@ function Fabric2DWith3DSync({
   leftPanel,
   leftOpen,
   leftCollapsed,
-  layersCollapsed,
-  onToggleLayersCollapsed,
 }: {
   viewMode: "2d" | "3d" | "split";
   leftPanel?: React.ReactNode;
   leftOpen: boolean;
   leftCollapsed: boolean;
-  layersCollapsed: boolean;
-  onToggleLayersCollapsed?: () => void;
 }) {
   const { refitCanvas } = useFloorplan();
 
@@ -181,8 +178,6 @@ function Fabric2DWith3DSync({
         leftPanel={leftPanel}
         leftOpen={leftOpen}
         leftCollapsed={leftCollapsed}
-        layersCollapsed={layersCollapsed}
-        onToggleLayersCollapsed={onToggleLayersCollapsed}
       />
     </div>
   );
@@ -204,6 +199,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     importDraft,
     insertObject,
     setLayerVisibility,
+    resizeObject,
     redoStates,
     roomEditRedoStates,
     roomEditStates,
@@ -311,6 +307,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       placeCatalogItem: placeCatalogIntoFabric,
       insertObject,
       setLayerVisibility,
+      resizeObject,
       editRoom,
       endEditRoom,
     });
@@ -325,6 +322,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     insertObject,
     placeCatalogIntoFabric,
     setLayerVisibility,
+    resizeObject,
   ]);
 
   useEffect(() => {
@@ -333,6 +331,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       selections,
       layerVisible,
     });
+    applyLayerVisibility(null, layerVisible);
   }, [fabricSerializedDraft, layerVisible, selections]);
 
   const currentDraftScope = useMemo<PlannerDraftScope>(
@@ -656,8 +655,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         leftPanel={plannerLeftPanel}
         leftOpen={viewMode === "2d" ? leftOpen : false}
         leftCollapsed={viewMode === "2d" && !isCompact && leftCollapsed}
-        layersCollapsed={viewMode === "2d" && !isCompact && rightCollapsed}
-        onToggleLayersCollapsed={viewMode === "2d" && !isCompact ? toggleRightCollapsed : undefined}
       />
     ),
     [
@@ -665,9 +662,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       plannerLeftPanel,
       leftOpen,
       leftCollapsed,
-      rightCollapsed,
       isCompact,
-      toggleRightCollapsed,
     ],
   );
 
@@ -998,25 +993,32 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
                 </div>
               </div>
             </div>
-            {viewMode !== "2d" ? (
-              <PlannerStatusBarWithFabricGrid
-                metrics={planMetrics}
-                selectionStatus={selectionStatus}
-                unitSystem={workspaceUnitSystem}
-                snapStatusLabel="Pending"
-              />
-            ) : null}
+            <PlannerStatusBarWithFabricGrid
+              metrics={planMetrics}
+              selectionStatus={selectionStatus}
+              unitSystem={workspaceUnitSystem}
+              snapStatusLabel="Pending"
+            />
           </main>
         </section>
 
         <aside
           className="pw-right-panel"
-          data-open={viewMode !== "2d" && rightOpen}
+          data-open={rightOpen}
           data-collapsed={!isCompact && rightCollapsed ? true : undefined}
           data-step={plannerStep}
           data-selection={selectionStatus ? "active" : undefined}
-          hidden={viewMode === "2d"}
         >
+          {!isCompact && rightCollapsed ? (
+            <button
+              type="button"
+              className="pw-panel-collapse-handle"
+              aria-label="Expand right panel"
+              onClick={toggleRightCollapsed}
+            >
+              <PanelRightOpen size={14} strokeWidth={2} aria-hidden />
+            </button>
+          ) : null}
           {isCompact ? (
             <PlannerStepBar
               current={plannerStep}
