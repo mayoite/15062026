@@ -4,15 +4,25 @@ Flat-root Next.js app. Furniture company site at `oando.co.in` with one workspac
 
 **Canonical repo:** `E:\16062026` (commit/push here).
 
-**Current status (2026-06-20):** Production readiness 8.0/10. All critical security, legacy auth, and i18n infrastructure work complete.
+**Current status (2026-06-20):** Production readiness 8.5/10. Security, legacy auth, i18n, PWA, error boundaries, accessibility, and SEO all complete.
 
 ### Completed (2026-06-20)
 - ✅ Security hardening (XSS sanitization, CSRF protection)
 - ✅ Appwrite fully removed, auth migrated to Supabase
 - ✅ i18n infrastructure (next-intl, 5 locales: en, hi, fr, de, es)
+- ✅ PWA support (manifest, service worker, offline page)
+- ✅ Error boundaries (PlannerErrorBoundary wrapping planner routes)
+- ✅ Accessibility (focus traps in all planner modals, skip links)
+- ✅ SEO improvements (metadata for all routes, OG/Twitter images, sitemap, 404)
 - ✅ Architecture documentation + OpenAPI spec
 - ✅ Tech stack documentation site (`tech-stack-docs/`)
 - ✅ Planner runtime fixes (wall drag, SVG export, Three.js)
+
+### Remaining
+- Memory management cleanup (canvas/3D event listeners)
+- i18n string extraction (infrastructure in, strings still hardcoded)
+- Performance optimization (lazy-load Three.js/Fabric.js)
+- PWA icon assets (icon-192.png, icon-512.png)
 
 ### Active code
 `features/planner/` + `app/planner/`. Fabric canvas + 3D (r3f) integration.
