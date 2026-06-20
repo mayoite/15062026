@@ -6,7 +6,7 @@ import { SITE_URL } from "@/lib/siteUrl";
 export const metadata: Metadata = buildPageMetadata(SITE_URL, {
   title: "Backend Architecture",
   description:
-    "Architecture walkthrough for Appwrite, DigitalOcean Postgres, Drizzle, R2, quote flow, and launch checks.",
+    "Architecture walkthrough for Supabase, DigitalOcean Postgres, Drizzle, R2, quote flow, and launch checks.",
   path: "/backend-architecture",
   image: "/images/backend-architecture/generated-architecture-board.png",
 });

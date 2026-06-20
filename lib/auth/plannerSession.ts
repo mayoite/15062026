@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 import { getOptionalUser } from "@/lib/auth/session";
 import { buildAccessRedirect } from "@/lib/auth/plannerRedirect";
 import { PLANNER_GUEST_COOKIE } from "@/lib/auth/constants";
-import { getAppwriteRuntimeConfig } from '@/platform/appwrite/client';
+import { hasPublicSupabaseEnv } from "@/platform/supabase/env";
 
 export async function getOptionalPlannerUser() {
   return await getOptionalUser();
@@ -52,12 +52,11 @@ export async function requirePlannerUser(nextPath = "/dashboard") {
     };
   }
 
-  // If Appwrite is not configured, return an anonymous user
+  // If Supabase is not configured, return an anonymous user
   // This allows the planner to render in fallback mode without env vars
-  const config = getAppwriteRuntimeConfig();
-  if (!config.isConfigured) {
+  if (!hasPublicSupabaseEnv()) {
     console.warn(
-      "Appwrite not configured. Rendering planner in anonymous mode."
+      "Supabase not configured. Rendering planner in anonymous mode."
     );
     return ANONYMOUS_USER;
   }

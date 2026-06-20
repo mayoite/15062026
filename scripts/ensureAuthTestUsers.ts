@@ -1,7 +1,6 @@
 import { config as loadEnv } from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+import { createSupabaseAdminClient } from "@/platform/supabase/supabaseAdmin";
 import { getE2EAuthEnv, getE2EAuthSeedEnv } from "@/lib/auth/e2eAuthEnv";
-import type { Database } from "@/lib/supabase/types";
 
 loadEnv({ path: ".env.local", override: false, quiet: true });
 loadEnv({ override: false, quiet: true });
@@ -9,74 +8,81 @@ loadEnv({ override: false, quiet: true });
 type ManagedUser = {
   email: string;
   password: string;
-  label: string;
+  role: string;
   reusableEmails?: string[];
 };
 
-import { Client, Users, ID } from "node-appwrite";
-
-async function ensureAppwriteUser(
-  usersClient: Users,
+async function ensureSupabaseUser(
+  admin: ReturnType<typeof createSupabaseAdminClient>,
   user: ManagedUser,
 ) {
   try {
-    const list = await usersClient.list();
-    const existing = list.users.find(u => u.email.toLowerCase() === user.email.toLowerCase());
+    const role = user.role.toLowerCase();
+    const list = await admin.auth.admin.listUsers({ perPage: 1000 });
+    if (list.error) {
+      throw new Error(`Unable to list users: ${list.error.message}`);
+    }
+
+    const existing = list.data.users.find(
+      (u) => u.email?.toLowerCase() === user.email.toLowerCase(),
+    );
 
     if (!existing) {
-      const newUser = await usersClient.create(
-        ID.unique(),
-        user.email,
-        undefined, // phone
-        user.password,
-        user.label // name
-      );
+      const created = await admin.auth.admin.createUser({
+        email: user.email,
+        password: user.password,
+        email_confirm: true,
+        user_metadata: { name: user.role, role },
+        app_metadata: { role },
+      });
 
-      // Map roles to labels or prefs as decided earlier
-      await usersClient.updateLabels(newUser.$id, [user.label.toLowerCase()]);
+      if (created.error) {
+        throw new Error(`Unable to create ${user.role} test user: ${created.error.message}`);
+      }
     } else {
-      await usersClient.updatePassword(existing.$id, user.password);
-      await usersClient.updateLabels(existing.$id, [user.label.toLowerCase()]);
+      const updated = await admin.auth.admin.updateUserById(existing.id, {
+        password: user.password,
+        email_confirm: true,
+        user_metadata: { name: user.role, role },
+        app_metadata: { role },
+      });
+
+      if (updated.error) {
+        throw new Error(`Unable to update ${user.role} test user: ${updated.error.message}`);
+      }
     }
-  } catch (error: any) {
-    throw new Error(`Unable to ensure ${user.label} test user: ${error.message}`);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Unable to ensure ${user.role} test user: ${message}`);
   }
 }
 
 async function main() {
   const authEnv = getE2EAuthEnv();
-  const seedEnv = getE2EAuthSeedEnv();
+  // Ensures SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are present for seeding.
+  getE2EAuthSeedEnv();
 
-  const endpoint = process.env.APPWRITE_URL || process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "";
-  const projectId = process.env.APPWRITE_PROJECT_ID || process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "";
-  const apiKey = process.env.APPWRITE_SECRET_KEY || "";
-
-  const client = new Client()
-    .setEndpoint(endpoint)
-    .setProject(projectId)
-    .setKey(apiKey);
-
-  const usersClient = new Users(client);
+  const admin = createSupabaseAdminClient();
 
   const users: ManagedUser[] = [
     {
       email: authEnv.adminEmail,
       password: authEnv.adminPassword,
-      label: "Admin",
+      role: "Admin",
     },
     {
       email: authEnv.userEmail,
       password: authEnv.userPassword,
-      label: "User",
+      role: "User",
       reusableEmails: ["demo@oando.co.in"],
     },
   ];
 
   for (const user of users) {
-    await ensureAppwriteUser(usersClient, user);
+    await ensureSupabaseUser(admin, user);
   }
 
-  process.stdout.write("Appwrite E2E auth users are provisioned.\n");
+  process.stdout.write("Supabase E2E auth users are provisioned.\n");
 }
 
 void main().catch((error) => {

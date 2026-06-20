@@ -7,8 +7,8 @@ import { useEffect, useMemo, useState } from "react";
 import { PLANNER_GUEST_COOKIE } from "@/lib/auth/constants";
 import { getCustomerSafeAuthError } from "@/lib/auth/customerSafeAuthError";
 import { sanitizeNextPath } from "@/lib/auth/plannerRedirect";
-import { isAppwriteConfigured } from '@/platform/appwrite/client';
-import { loginWithAppwrite, signupWithAppwrite } from "@/lib/auth/appwriteServerActions";
+import { hasPublicSupabaseEnv } from "@/platform/supabase/env";
+import { loginWithSupabase, signupWithSupabase } from "@/lib/auth/supabaseServerActions";
 
 export function LoginForm({
   guestHref = "/choose-product?mode=guest",
@@ -47,14 +47,14 @@ export function LoginForm({
     const submittedEmail = String(formData.get("email") || "");
     const submittedPassword = String(formData.get("password") || "");
 
-    if (!isAppwriteConfigured()) {
+    if (!hasPublicSupabaseEnv()) {
       setIsSubmitting(false);
-      setError(getCustomerSafeAuthError(new Error("missing_appwrite_project_id")));
+      setError(getCustomerSafeAuthError(new Error("missing_supabase_env")));
       return;
     }
 
     try {
-      const result = await loginWithAppwrite(submittedEmail, submittedPassword);
+      const result = await loginWithSupabase(submittedEmail, submittedPassword);
       
       if (!result.success) {
         setIsSubmitting(false);
@@ -76,14 +76,14 @@ export function LoginForm({
     setSignupSubmitting(true);
     setSignupError(null);
 
-    if (!isAppwriteConfigured()) {
+    if (!hasPublicSupabaseEnv()) {
       setSignupSubmitting(false);
-      setSignupError(getCustomerSafeAuthError(new Error("missing_appwrite_project_id")));
+      setSignupError(getCustomerSafeAuthError(new Error("missing_supabase_env")));
       return;
     }
 
     try {
-      const result = await signupWithAppwrite(signupEmail || email, signupPassword);
+      const result = await signupWithSupabase(signupEmail || email, signupPassword);
       
       if (!result.success) {
         setSignupSubmitting(false);
@@ -110,7 +110,7 @@ export function LoginForm({
             Sign in to your workspace
           </h2>
           <p className="shell-workspace-muted mt-3 text-sm leading-6">
-            Use your Appwrite account to continue through the shared product chooser, then launch Planner, Configurator, and downstream member review surfaces.
+            Use your account to continue through the shared product chooser, then launch Planner, Configurator, and downstream member review surfaces.
           </p>
         </div>
 
@@ -244,7 +244,7 @@ export function LoginForm({
 
           {signupDone && (
             <div className="shell-workspace-auth-alert text-sm">
-              Account created! Please check your Appwrite dashboard or sign in above.
+              Account created! Please check your email to confirm, then sign in above.
             </div>
           )}
         </div>
