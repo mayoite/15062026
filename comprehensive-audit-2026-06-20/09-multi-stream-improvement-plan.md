@@ -25,6 +25,9 @@ This plan organizes remediation into **9 parallel streams** that can be worked o
 - **Stream H: Documentation** (5 phases, 1.5 weeks) — Architecture, API, components, onboarding, runbook
 - **Stream I: Legacy Cleanup** (5 phases, 1 week) — Appwrite removal, tldraw, dependencies, dead code, stores
 
+### Progress Update (2026-06-20)
+- **Stream D (Database)** — Indexes added, migrations made idempotent, schema + RLS docs published. Commit: `f2663274`.
+
 ---
 
 ## Stream A: Security & Hardening
