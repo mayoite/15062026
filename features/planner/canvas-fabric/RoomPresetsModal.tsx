@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useFloorplan } from "./context/FloorplanContext";
+import { useEffect, useRef } from "react";
 import { LayoutGrid, X } from "lucide-react";
 import { FURNISHINGS } from "./models/furnishings";
 
@@ -117,58 +116,7 @@ export function RoomPresetsModal({ open, onClose, onApply }: RoomPresetsModalPro
   );
 }
 
-/** Opens room presets once when the fabric canvas is ready and still empty. */
+/** Legacy auto-open shell chooser. Blank canvas now starts directly in workspace guidance. */
 export function RoomPresetsOnOpen() {
-  const { exportDraft, insertObject } = useFloorplan();
-  const promptedRef = useRef(false);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (promptedRef.current) return;
-
-    let intervalId: number | null = null;
-
-    const tryPrompt = () => {
-      if (promptedRef.current) return true;
-      const serialized = exportDraft();
-      if (!serialized) return false;
-
-      try {
-        const state = JSON.parse(serialized) as { objects?: unknown[] };
-        const count = state.objects?.length ?? 0;
-        promptedRef.current = true;
-        if (count === 0) setOpen(true);
-        return true;
-      } catch {
-        return false;
-      }
-    };
-
-    const delayId = window.setTimeout(() => {
-      if (tryPrompt()) return;
-      intervalId = window.setInterval(() => {
-        if (tryPrompt() && intervalId !== null) {
-          window.clearInterval(intervalId);
-        }
-      }, 200);
-      window.setTimeout(() => {
-        if (intervalId !== null) window.clearInterval(intervalId);
-      }, 4000);
-    }, 700);
-
-    return () => {
-      window.clearTimeout(delayId);
-      if (intervalId !== null) window.clearInterval(intervalId);
-    };
-  }, [exportDraft]);
-
-  return (
-    <RoomPresetsModal
-      open={open}
-      onClose={() => setOpen(false)}
-      onApply={(room) => {
-        insertObject({ type: "ROOM", object: room });
-      }}
-    />
-  );
+  return null;
 }

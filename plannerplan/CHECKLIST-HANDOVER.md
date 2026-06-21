@@ -12,7 +12,7 @@
 ## Phase gates
 
 - [~] Phase 1: baseline contract agreed; independent E2E entry is green; test timeout fixed. *(P1-03/04/05/06/07/10 done; P1-01/02/08/09 need dev server)*
-- [~] Phase 2: setup validation, metadata, refresh, keyboard, and mobile are green. *(P2-03/04/05/06/07/08/09 done; P2-01/10/11/12 need browser/E2E)*
+- [~] Phase 2: setup validation, metadata, refresh, keyboard, and mobile are green. *(P2-03/04/05/06/07/08/09/12 done; P2-01/10/11 still need browser/E2E proof)*
 - [!] Phase 3: blocked by reported drawing workflow failure, blank/invisible canvas and background, hidden restored elements, and nonfunctional mouse-wheel zoom. BUG-08/09/10 and P3-17..20 are mandatory.
 - [~] Phase 4: catalog, templates, and blueprint success/failure paths green; BUG-04 fixed; P4-03/14 source-verified. *(BUG-04 + P4-03/09/14/15 done; P4-01/02/04..13 need E2E)*
 - [~] Phase 5: autosave, session CRUD, import/export, offline, and migration green. *(P5-09/10/12/14/16/17 source-verified; P5-01..08/11/13/15/18 need unit/integration/E2E)*
@@ -83,9 +83,16 @@ Update this table for every executed task. Do not mark a phase complete from the
 | P2-07 | `[x]` | QuotaExceededError caught; human error shown; form stays active | ProjectSetupStep.tsx + test | None | Run vitest |
 | P2-08 | `[x]` | Stale flag tests; key format confirmed | Unit test file | None | Run vitest |
 | P2-09 | `[x]` | autoFocus, maxLength, aria-describedby, role=radiogroup, aria-live | ProjectSetupStep.tsx | None | Axe scan with gate open |
+| P2-12 | `[x]` | Workspace document builder now uses canonical project-setup-aware bridge; round-trip regression test passes for export/import + `loadPlannerDocumentIntoFabric` metadata survival | Source + passing unit test | None | Browser proof still via P2-11 |
+| P3-01 | `[x]` | FloorplanCanvas now refits on mount, host resize, window resize, and orientation change; dispose path disconnects observer and unregisters api | Source + passing integration test | None | Verify hidden-pane return in browser |
 | P3-09 | `[x]` | BUG-01 fixed: obj.left→obj.top in getBoundingRect line 1002 | floorplanCanvas.ts | None | Run alignment E2E |
 | P3-15 | `[x]` | BUG-03 fixed: keydown reads data-view-mode attr, skips in 3D | PlannerWorkspace.tsx | None | Run G-key 3D E2E |
+| P3-20 | `[~]` | Empty-canvas guidance is now mounted directly on the live 2D workspace when object count is zero; starter actions open wall draw and templates | PlannerWorkspace.tsx + PlannerWorkspace integration test | Needs browser proof | Verify first-load blank canvas path and mobile Canvas return |
+| P3-17 | `[~]` | Draw toolbar now exposes per-tool guidance text for line, measure, curve, rectangle, pen, and eraser workflows | FabricDrawToolsBar.tsx + planner CSS | Needs browser proof | Verify each tool creates visible persisted results |
+| P3-18 | `[~]` | Restore path now re-fits the Fabric stage after JSON load; canvas host width explicitly fills stage container to reduce blank render states | floorplanCanvas.ts + fabric-canvas-workspace.css | Needs browser proof | Verify desktop/mobile fixture visibility after reload/tab switch |
+| P3-19 | `[~]` | Added Fabric `mouse:wheel` pointer-anchored zoom with clamp 20–150 and React zoom sync; draw-tools dispose now runs on teardown | floorplanCanvas.ts | Needs browser proof | Verify wheel/trackpad zoom and no page scroll |
 | P4-03 | `[x]` | Source-verified: catalog card aria-labels already unique (CatalogPanel.tsx:339/352) | CatalogPanel.tsx | None | Axe scan |
+| P4-08 | `[~]` | Template placement now uses unique ids, explicit room-relative coordinates, and full-size template room units; preview count tests confirm one room + all shapes | PlannerWorkspace.tsx + layoutTemplates.ts + template tests | Needs browser proof | Verify on-canvas positions and undo |
 | P4-09 | `[x]` | Template guard: window.confirm shown when shapeCount > 0 | PlannerWorkspace.tsx | None | Run E2E template confirm test |
 | P4-14 | `[~]` | Blueprint uses base64 data URLs — no URL.createObjectURL, no revocation needed. PDF worker deferred to P6. | BlueprintPanel.tsx | None | PDF worker terminate test |
 | P4-15 | `[x]` | BUG-04: currentPlannerDocument used in both save handlers | PlannerWorkspace.tsx | None | Run spy integration test |
@@ -102,7 +109,7 @@ Update this table for every executed task. Do not mark a phase complete from the
 | P3-17 | `[!]` | BUG-08 drawing workflow reported broken | User report | Fabric owner | Run per-tool workflow matrix |
 | P3-18 | `[!]` | BUG-09 blank background and invisible elements | Mobile reproduction + user report | Canvas/layout owner | Inspect dimensions/transform and repair fit/background |
 | P3-19 | `[!]` | BUG-10 mouse-wheel zoom not working | User report | Fabric interaction owner | Reproduce wheel events and repair pointer zoom |
-| P3-20 | `[!]` | Mobile Canvas tab does not visibly render objects | 390x844 screenshot | Responsive/canvas owner | Test tab/orientation activation |
+| P3-20 | `[~]` | Source path improved: blank canvas guidance is now mounted in the live workspace and 2D refit re-runs on return; mobile browser proof still pending | 390x844 screenshot + source changes | Responsive/canvas owner | Test tab/orientation activation |
 | P6-17 | `[!]` | BUG-11 2D/3D coordinate parity failure | User screenshots | 3D bridge owner | Build known-position fixture and compare bounds |
 | P6-18 | `[!]` | Orbit framing wastes or clips scene | User screenshot | 3D camera owner | Derive camera from scene bounds |
 | P6-19 | `[!]` | Walk camera starts/clips near geometry | User screenshot | 3D camera owner | Add safe start, bounds, and reset |

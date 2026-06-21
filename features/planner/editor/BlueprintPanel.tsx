@@ -20,6 +20,7 @@ import {
 import { usePlannerWorkspaceStore } from "../store/workspaceStore";
 import { getPdfPageCount, pdfPageToDataUrl } from "@/features/planner/lib/blueprintPdf";
 import { validateBlueprintImportFile } from "@/features/planner/editor/blueprintImport";
+import { BLUEPRINT_MAX_BYTES } from "@/features/planner/editor/blueprintImport";
 import { clampBlueprintPdfPage } from "@/features/planner/editor/blueprintPdfSession";
 import {
   clampBlueprintScale,
@@ -54,8 +55,10 @@ export function BlueprintPanel({ guestMode = false, embedded = false }: Blueprin
 
       const validation = validateBlueprintImportFile(file);
       if (!validation.ok) {
-        if (validation.reason === "too-large") {
-          setImportMessage("Blueprint files must be 8 MB or smaller.");
+        if (validation.reason === "missing") {
+          setImportMessage("Choose a PNG, JPG, WebP, or PDF blueprint file to import.");
+        } else if (validation.reason === "too-large") {
+          setImportMessage(`Blueprint files must be ${(BLUEPRINT_MAX_BYTES / (1024 * 1024)).toFixed(0)} MB or smaller.`);
         } else if (validation.reason === "unsupported") {
           setImportMessage("Use PNG, JPG, WebP, or PDF for blueprint underlays.");
         }

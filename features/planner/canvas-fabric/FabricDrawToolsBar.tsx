@@ -60,70 +60,88 @@ const DRAW_TOOLS: Array<{
   { id: "eraser", title: "Eraser", icon: <Eraser size={16} strokeWidth={1.9} /> },
 ];
 
+const DRAW_TOOL_HELP: Record<FabricDrawTool, string> = {
+  select: "Select and move existing items.",
+  line: "Click and drag to place a straight line.",
+  measure: "Click and drag to place a measurement label.",
+  curve: "Click three points to place a curved line.",
+  rectangle: "Click and drag to draw a rectangle.",
+  pen: "Press and drag to free draw.",
+  eraser: "Click an annotation or generic item to remove it.",
+};
+
 export function FabricDrawToolsBar({ disabled = false }: { disabled?: boolean }) {
   const { drawTool, drawColor, drawFillColor, setDrawTool, setDrawColor, setDrawFillColor } = useFloorplan();
   const fillPickerValue = drawFillColor === "transparent" ? "#ffffff" : drawFillColor;
 
   return (
     <div className="fcw-toolbar-group fcw-toolbar-group--draw" role="group" aria-label="Drawing tools">
-      {DRAW_TOOLS.map((tool) => (
-        <DrawToolButton
-          key={tool.id}
-          title={tool.title}
-          active={drawTool === tool.id}
-          disabled={disabled}
-          onClick={() => setDrawTool(tool.id)}
-        >
-          {tool.icon}
-        </DrawToolButton>
-      ))}
-
-      <label className="fcw-color-picker" title="Stroke color">
-        <Palette size={14} strokeWidth={1.9} aria-hidden />
-        <input
-          type="color"
-          value={drawColor}
-          disabled={disabled}
-          aria-label="Stroke color"
-          onChange={(e) => setDrawColor(e.target.value)}
-        />
-      </label>
-
-      <label className="fcw-color-picker" title="Fill color">
-        <PaintBucket size={14} strokeWidth={1.9} aria-hidden />
-        <input
-          type="color"
-          value={fillPickerValue}
-          disabled={disabled}
-          aria-label="Fill color"
-          onChange={(e) => setDrawFillColor(e.target.value)}
-        />
-      </label>
-      <button
-        type="button"
-        className="fcw-btn fcw-btn--compact"
-        title="No fill"
-        disabled={disabled}
-        data-active={drawFillColor === "transparent" || undefined}
-        onClick={() => setDrawFillColor("transparent")}
-      >
-        No fill
-      </button>
-
-      <div className="fcw-color-swatches" role="group" aria-label="Color presets">
-        {FABRIC_DRAW_TOOL_COLORS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            className="fcw-color-swatch"
-            data-active={drawColor === color || undefined}
-            style={{ backgroundColor: color }}
-            aria-label={`Use color ${color}`}
-            aria-pressed={drawColor === color}
+      <div className="fcw-draw-tool-row">
+        {DRAW_TOOLS.map((tool) => (
+          <DrawToolButton
+            key={tool.id}
+            title={tool.title}
+            active={drawTool === tool.id}
             disabled={disabled}
-            onClick={() => setDrawColor(color)}
-          />
+            onClick={() => setDrawTool(tool.id)}
+          >
+            {tool.icon}
+          </DrawToolButton>
         ))}
+      </div>
+
+      <div className="fcw-draw-tool-help" role="status" aria-live="polite">
+        {DRAW_TOOL_HELP[drawTool]}
+      </div>
+
+      <div className="fcw-draw-tool-row">
+        <label className="fcw-color-picker" title="Stroke color">
+          <Palette size={14} strokeWidth={1.9} aria-hidden />
+          <input
+            type="color"
+            value={drawColor}
+            disabled={disabled}
+            aria-label="Stroke color"
+            onChange={(e) => setDrawColor(e.target.value)}
+          />
+        </label>
+
+        <label className="fcw-color-picker" title="Fill color">
+          <PaintBucket size={14} strokeWidth={1.9} aria-hidden />
+          <input
+            type="color"
+            value={fillPickerValue}
+            disabled={disabled}
+            aria-label="Fill color"
+            onChange={(e) => setDrawFillColor(e.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          className="fcw-btn fcw-btn--compact"
+          title="No fill"
+          disabled={disabled}
+          data-active={drawFillColor === "transparent" || undefined}
+          onClick={() => setDrawFillColor("transparent")}
+        >
+          No fill
+        </button>
+
+        <div className="fcw-color-swatches" role="group" aria-label="Color presets">
+          {FABRIC_DRAW_TOOL_COLORS.map((color) => (
+            <button
+              key={color}
+              type="button"
+              className="fcw-color-swatch"
+              data-active={drawColor === color || undefined}
+              style={{ backgroundColor: color }}
+              aria-label={`Use color ${color}`}
+              aria-pressed={drawColor === color}
+              disabled={disabled}
+              onClick={() => setDrawColor(color)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-export const BLUEPRINT_MAX_BYTES = 8 * 1024 * 1024;
+export const BLUEPRINT_MAX_BYTES = 20 * 1024 * 1024;
 
 export type BlueprintImportKind = "image" | "pdf" | "unsupported";
 

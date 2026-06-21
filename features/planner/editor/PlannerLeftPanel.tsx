@@ -40,7 +40,7 @@ function getStepNote(step: PlannerStep, tab: PlannerLeftTab): string {
         ? "Browse Oando SVG symbols — click or drag desks, seating, and storage onto the canvas."
         : tab === "ai-assist"
           ? "Use AI for layout ideas, then return to Library or Blueprint to keep editing."
-          : "Start by tracing a blueprint or pick a room preset when the canvas opens.";
+          : "Start from a blank canvas, trace a blueprint, or open a template before placing products.";
     case "place":
       return tab === "blueprint"
         ? "Keep the shell visible while you place furniture, doors, and windows."

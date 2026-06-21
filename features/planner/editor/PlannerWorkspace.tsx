@@ -19,6 +19,7 @@ const Planner3DViewer = dynamic(
 );
 import { SplitViewLayout } from "@/features/planner/shared/components/SplitViewLayout";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
+import { PlannerEmptyCanvas } from "@/features/planner/ui/PlannerEmptyCanvas";
 import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
 import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
@@ -46,7 +47,7 @@ import {
   isRoomCatalogShapeType,
   PlannerCatalogShapeType,
 } from "@/features/planner/catalog/shapeTypeRegistry";
-import { type LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
+import { buildTemplateCanvasPlacements, type LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
 import {
   acceptsCatalogDrag,
   readCatalogDragPayload,
@@ -85,7 +86,7 @@ import {
   type PlannerToolBinding,
 } from "@/features/planner/editor/plannerKeyboardShortcuts";
 import { PlannerSessionDialog, type PlannerSavedEntry } from "@/features/planner/ui/PlannerSessionDialog";
-import { buildPlannerDocumentFromFabric } from "@/features/planner/lib/fabricDocumentBridge";
+import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
 import { loadPlannerDocumentIntoFabric } from "@/features/planner/lib/fabricDocumentBridge";
 import {
   LOCAL_CURRENT_DRAFT_ID,
@@ -181,12 +182,20 @@ function Fabric2DWith3DSync({
   leftCollapsed: boolean;
 }) {
   const { refitCanvas } = useFloorplan();
+  const refitCanvasSoon = useCallback(() => {
+    const timer = window.setTimeout(() => refitCanvas(), 80);
+    return () => window.clearTimeout(timer);
+  }, [refitCanvas]);
 
   useEffect(() => {
     if (viewMode !== "2d") return;
-    const timer = window.setTimeout(() => refitCanvas(), 80);
-    return () => window.clearTimeout(timer);
-  }, [viewMode, refitCanvas]);
+    return refitCanvasSoon();
+  }, [refitCanvasSoon, viewMode]);
+
+  useEffect(() => {
+    if (viewMode !== "2d") return;
+    return refitCanvasSoon();
+  }, [leftCollapsed, leftOpen, refitCanvasSoon, viewMode]);
 
   return (
     <div className="relative flex h-full min-h-0 w-full flex-col fabric-canvas-host">
@@ -291,13 +300,23 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   useEffect(() => usePlannerCatalogStore.subscribe((state) => {
     writePlannerWorkspacePreferences({ catalogQuery: state.query });
   }), []);
-  const placeCatalogIntoFabric = useCallback((item: CatalogItem) => {
+  const placeCatalogIntoFabric = useCallback((item: CatalogItem & { left?: number; top?: number }) => {
     const { widthCm, depthCm } = shapePropsToCanvasCm(item.widthMm, item.heightMm);
     const block = resolveCatalogItemBlock2D(item);
+    const variant = isRoomCatalogShapeType(item.shapeType)
+      ? "room"
+      : isCatalogShapeType(item.shapeType, PlannerCatalogShapeType.zone)
+        ? "zone"
+        : "furniture";
     insertObject({
       type: "GENERIC",
       object: {
+        id: item.id,
+        left: item.left,
+        top: item.top,
+        name: item.shortName || item.name || "Catalog Item",
         title: item.shortName || item.name || "Catalog Item",
+        variant,
         width: widthCm,
         height: depthCm,
         svg: block ? blockToSvg(block) : undefined,
@@ -492,9 +511,8 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       if (!confirmed) return;
     }
 
-    // Insert the room shell using the template's recommended dimensions (mm → cm).
-    const roomWidthCm = template.recommendedRoomSize.minWidth / 10;
-    const roomHeightCm = template.recommendedRoomSize.minHeight / 10;
+    const roomWidthCm = template.recommendedRoomSize.minWidth;
+    const roomHeightCm = template.recommendedRoomSize.minHeight;
     insertObject({
       type: "ROOM",
       object: {
@@ -504,19 +522,20 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       },
     });
 
-    // Place each template shape as a generic furniture item on the canvas.
-    for (const shape of template.shapes) {
+    for (const shape of buildTemplateCanvasPlacements(template)) {
       placeCatalogIntoFabric({
-        id: `template-${template.id}-${shape.label}`,
+        id: shape.id,
         name: shape.label,
         shortName: shape.label,
         category: "equipment",
         shapeType: shape.type,
-        widthMm: shape.widthMm,
-        heightMm: shape.heightMm,
-        depthMm: shape.heightMm,
+        widthMm: shape.width,
+        heightMm: shape.height,
+        depthMm: shape.height,
         description: `${template.name} — ${shape.label}`,
         tags: [],
+        left: shape.left,
+        top: shape.top,
       });
     }
 
@@ -525,13 +544,11 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   }, [insertObject, placeCatalogIntoFabric, shapeCount]);
 
   const buildCurrentPlannerDocument = useCallback(() => {
-    return buildPlannerDocumentFromFabric(fabricSerializedDraft, {
-      documentId: activeDocumentId,
-      name: sanitizePlannerPlanName(planName),
-      projectName: sanitizePlannerPlanName(planName),
-      unitSystem: workspaceUnitSystem === "imperial" ? "ft-in" : "mm",
+    return buildPlannerDocumentFromEditor(null, {
+      id: activeDocumentId ?? undefined,
+      title: sanitizePlannerPlanName(planName),
     });
-  }, [activeDocumentId, fabricSerializedDraft, planName, workspaceUnitSystem]);
+  }, [activeDocumentId, planName]);
 
 
 
@@ -1062,6 +1079,15 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
                     children3D={canvas3D}
                   />
                 </div>
+                {viewMode === "2d" && shapeCount === 0 ? (
+                  <PlannerEmptyCanvas
+                    guestMode={guestMode}
+                    allowCanvasDragThrough
+                    onDrawWalls={() => applyToolBinding({ toolId: "planner-wall", plannerTool: "wall" })}
+                    onOpenTemplates={() => setIsTemplateOpen(true)}
+                    onImportBlueprint={() => setIsBlueprintOpen(true)}
+                  />
+                ) : null}
               </div>
             </div>
             <PlannerStatusBarWithFabricGrid

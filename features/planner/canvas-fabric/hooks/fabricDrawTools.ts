@@ -12,6 +12,7 @@ import { DEFAULT_FABRIC_DRAW_COLOR } from "../fabricDrawToolTypes";
 import { applyFabricTransformLocks } from "../fabricObjectUtils";
 
 const ANNOTATION_PREFIX = "DRAW:";
+const MIN_DRAW_GESTURE_PX = 5;
 
 type PlannerFabricObject = FabricObject & {
   evented?: boolean;
@@ -161,6 +162,10 @@ export function wireFabricDrawTools(options: {
 
   function finalizeLine(end: Point, asMeasure = false) {
     if (!drawStart) return;
+    if (Math.hypot(end.x - drawStart.x, end.y - drawStart.y) < MIN_DRAW_GESTURE_PX) {
+      resetDraft();
+      return;
+    }
     const line = new Line([drawStart.x, drawStart.y, end.x, end.y], {
       stroke: activeColor,
       strokeWidth: 2,
@@ -181,7 +186,7 @@ export function wireFabricDrawTools(options: {
     const top = Math.min(drawStart.y, end.y);
     const width = Math.abs(end.x - drawStart.x);
     const height = Math.abs(end.y - drawStart.y);
-    if (width < 2 || height < 2) {
+    if (width < MIN_DRAW_GESTURE_PX || height < MIN_DRAW_GESTURE_PX) {
       resetDraft();
       return;
     }

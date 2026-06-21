@@ -54,6 +54,7 @@ Active ownership: `app/planner/` and `features/planner/`. Fabric is the 2D edito
 | `test:planner` exceeds 120 s | Timeout or hanging test worker | Investigate in Phase 1 |
 | Drawing tools visible but workflow/result unreliable | Missing or broken Fabric gesture/completion behavior | Per-tool workflow audit and repair in Phase 3 |
 | Blank canvas/background and invisible restored elements | Sizing, fit, viewport transform, layering, or restore race | Repair and desktop/mobile fixture proof in Phase 3 |
+| Blank start does not visibly land on a usable empty canvas | Starter guidance existed but was not mounted into the live workspace surface | Wire visible blank-canvas guidance into `PlannerWorkspace` and verify starter actions |
 | Mouse-wheel zoom has no effect | Missing/broken Fabric wheel contract | Pointer-anchored wheel/pinch zoom in Phase 3 |
 | 3D nonblank but unusable | Coordinate parity, camera framing, walk bounds, and label scale defects | Fixture-based visual acceptance in Phase 6 |
 

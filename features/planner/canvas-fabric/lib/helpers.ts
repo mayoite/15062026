@@ -117,14 +117,18 @@ const createFurniture = (type: string, object: any, chair: any = {}) => {
 const createGenericFurniture = (object: any) => {
   const w = object.width || 60;
   const h = object.height || 50;
+  const variant = object.variant || "furniture";
+  const isRoom = variant === "room";
+  const isZone = variant === "zone";
   const rect = new Rect({
     left: 0,
     top: 0,
     width: w,
     height: h,
-    fill: '#e8d4b8',
-    stroke: '#5c4630',
-    strokeWidth: 2,
+    fill: isZone ? 'rgba(59, 130, 246, 0.12)' : isRoom ? 'rgba(15, 23, 42, 0.04)' : '#e8d4b8',
+    stroke: isZone ? '#2563eb' : isRoom ? '#475569' : '#5c4630',
+    strokeDashArray: isZone ? [10, 6] : undefined,
+    strokeWidth: isZone ? 3 : 2,
     originX: 'center',
     originY: 'center',
   });
@@ -133,7 +137,11 @@ const createGenericFurniture = (object: any) => {
     originX: 'center',
     originY: 'center',
   }) as Group & { name?: string };
-  (group as any).name = `GENERIC:${object.title || 'Item'}`;
+  (group as any).name = isZone
+    ? `DRAW:rectangle:${object.title || 'Zone'}`
+    : isRoom
+      ? `ROOM:${object.title || 'Room'}`
+      : `GENERIC:${object.title || 'Item'}`;
   return group;
 };
 

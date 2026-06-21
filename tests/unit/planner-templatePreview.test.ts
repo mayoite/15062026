@@ -10,6 +10,7 @@ describe("buildTemplatePreview", () => {
       const preview = buildTemplatePreview(template);
       expect(preview.viewBoxHeight).toBeGreaterThan(0);
       expect(preview.rects.length).toBeGreaterThan(1);
+      expect(preview.rects.length).toBe(template.shapes.length + 1);
     }
   });
 

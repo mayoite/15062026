@@ -25,6 +25,9 @@ const onKeyDown = vi.fn();
 const onKeyUp = vi.fn();
 const fitToStage = vi.fn(() => 96);
 const recalcOffset = vi.fn();
+let resizeObserverCallback: ResizeObserverCallback | null = null;
+const observe = vi.fn();
+const disconnect = vi.fn();
 
 vi.mock("@/features/planner/canvas-fabric/hooks/floorplanCanvas", () => ({
   createFloorplanCanvasApi: vi.fn(() => ({
@@ -134,11 +137,23 @@ import { FloorplanCanvas } from "@/features/planner/canvas-fabric/FloorplanCanva
 describe("FloorplanCanvas", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resizeObserverCallback = null;
+    vi.stubGlobal(
+      "ResizeObserver",
+      class ResizeObserver {
+        constructor(callback: ResizeObserverCallback) {
+          resizeObserverCallback = callback;
+        }
+        observe = observe;
+        disconnect = disconnect;
+      },
+    );
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("initializes the canvas api and registers it on mount, then fits the stage", () => {
@@ -187,6 +202,26 @@ describe("FloorplanCanvas", () => {
     const { container } = render(<FloorplanCanvas />);
     expect(container.querySelector(".canvas-wrap")).not.toBeNull();
     expect(container.querySelector("canvas#main")).not.toBeNull();
+  });
+
+  it("refits again when the canvas host is resized", () => {
+    vi.useFakeTimers();
+    const { container } = render(<FloorplanCanvas />);
+    const renderedWrap = container.querySelector(".canvas-wrap") as HTMLElement;
+    Object.defineProperty(renderedWrap, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(renderedWrap, "clientHeight", { value: 700, configurable: true });
+
+    act(() => {
+      vi.runAllTimers();
+    });
+    expect(observe).toHaveBeenCalledWith(renderedWrap);
+
+    act(() => {
+      resizeObserverCallback?.([], {} as ResizeObserver);
+    });
+
+    expect(fitToStage).toHaveBeenCalledTimes(2);
+    expect(recalcOffset).toHaveBeenCalledTimes(2);
   });
 
   it("does not crash when fitToStage cannot find a wrap (returns early)", () => {
