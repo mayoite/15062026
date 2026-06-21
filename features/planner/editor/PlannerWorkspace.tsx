@@ -3,11 +3,22 @@
  *
  * Fabric canvas + interface as the 2D engine.
  * Combined with 3D (r3f). Fabric drives the 2D canvas and feeds the 3D viewer.
+ *
+ * Session / persistence handlers live in usePlannerSessionHandlers.ts (split for file-size).
  */
 
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type ComponentProps, type DragEvent } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type DragEvent,
+} from "react";
 import { X, PanelRightOpen } from "lucide-react";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
@@ -26,7 +37,6 @@ import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
 import { PlannerMobileDock } from "@/features/planner/editor/PlannerMobileDock";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
 import { PlannerSubTopBar } from "@/features/planner/editor/PlannerSubTopBar";
-
 import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
 import {
   readPlannerWorkspacePreferences,
@@ -85,23 +95,8 @@ import {
   resolvePlannerToolKey,
   type PlannerToolBinding,
 } from "@/features/planner/editor/plannerKeyboardShortcuts";
-import { PlannerSessionDialog, type PlannerSavedEntry } from "@/features/planner/ui/PlannerSessionDialog";
+import { PlannerSessionDialog } from "@/features/planner/ui/PlannerSessionDialog";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
-import { loadPlannerDocumentIntoFabric } from "@/features/planner/lib/fabricDocumentBridge";
-import {
-  LOCAL_CURRENT_DRAFT_ID,
-  createPlannerExportPayload,
-  formatPlannerSavedPlanTimestamp,
-  sanitizePlannerPlanName,
-} from "@/features/planner/lib/sessionState";
-import {
-  deletePlannerDraftDocument,
-  listPlannerDraftDocuments,
-  loadPlannerDraftDocument,
-  savePlannerDraftDocument,
-  type PlannerDraftScope,
-} from "@/features/planner/persistence/plannerDraft";
-import { parsePlannerDocumentImportFile } from "@/features/planner/persistence/plannerImport";
 import { hydrateCloudPlanIntoIndexedDb } from "@/features/planner/persistence/cloudPlanHydration";
 import { normalizePlannerDocument } from "@/features/planner/model";
 import { resetPlannerChromeLayout } from "@/features/planner/editor/chrome/plannerChromeStorage";
@@ -115,6 +110,8 @@ import {
   useFloorplan,
 } from "@/features/planner/canvas-fabric";
 import { applyLayerVisibility } from "@/features/planner/editor/layerVisibility";
+import { sanitizePlannerPlanName } from "@/features/planner/lib/sessionState";
+import { usePlannerSessionHandlers } from "@/features/planner/editor/usePlannerSessionHandlers";
 
 function isEditableKeyboardTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -168,8 +165,6 @@ function PlannerStatusBarWithFabricGrid(
   );
 }
 
-// Bridge component: renders the fabric canvas and syncs its state to 3D (r3f combine).
-// Fabric drives the 2D canvas and feeds the 3D viewer.
 function Fabric2DWith3DSync({
   viewMode,
   leftPanel,
@@ -265,11 +260,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const canvasSurfaceRef = useRef<HTMLDivElement | null>(null);
   const chromeLayerRef = useRef<HTMLDivElement | null>(null);
   const [isCanvasDragging] = useState(false);
-  const [planNameOverride, setPlanNameOverride] = useState<string | null>(null);
-  const [activeDocumentId, setActiveDocumentId] = useState<string | null>(planId ?? null);
-  const [sessionStatusMessage, setSessionStatusMessage] = useState<string | null>(null);
-  const [sessionErrorMessage, setSessionErrorMessage] = useState<string | null>(null);
-  const [localDraftVersion, setLocalDraftVersion] = useState(0);
   const selectionOpenedRightPanelRef = useRef(false);
 
   const importInputRef = useRef<HTMLInputElement | null>(null);
@@ -300,6 +290,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   useEffect(() => usePlannerCatalogStore.subscribe((state) => {
     writePlannerWorkspacePreferences({ catalogQuery: state.query });
   }), []);
+
   const placeCatalogIntoFabric = useCallback((item: CatalogItem & { left?: number; top?: number }) => {
     const { widthCm, depthCm } = shapePropsToCanvasCm(item.widthMm, item.heightMm);
     const block = resolveCatalogItemBlock2D(item);
@@ -323,6 +314,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       },
     });
   }, [insertObject]);
+
   const fabricRevisionKey = useMemo(
     () => `${states.length}:${redoStates.length}:${roomEditStates.length}:${roomEditRedoStates.length}`,
     [redoStates.length, roomEditRedoStates.length, roomEditStates.length, states.length],
@@ -338,6 +330,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     restoreSnapshot,
     retrySave,
   } = usePlannerFabricAutosave(exportFabricDraft, guestMode, planId, fabricRevisionKey);
+
   const measurementUnit = useMemo<MeasurementUnit>(
     () => plannerUnitSystemToMeasurementUnit(workspaceUnitSystem),
     [workspaceUnitSystem],
@@ -391,22 +384,63 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     applyLayerVisibility(null, layerVisible);
   }, [fabricSerializedDraft, layerVisible, selections]);
 
-  const currentDraftScope = useMemo<PlannerDraftScope>(
-    () => ({ documentId: LOCAL_CURRENT_DRAFT_ID }),
-    [],
-  );
+  const shapeCount = useMemo(() => {
+    if (!fabricSerializedDraft) return 0;
+    try {
+      const state = JSON.parse(fabricSerializedDraft) as { objects?: unknown[] };
+      return state.objects?.length ?? 0;
+    } catch {
+      return 0;
+    }
+  }, [fabricSerializedDraft]);
 
-  const draftPlanName = useMemo(() => {
-    void localDraftVersion;
-    const localDraft = loadPlannerDraftDocument(currentDraftScope);
-    if (!localDraft) return "Workspace Plan";
-    return localDraft.title ?? localDraft.name;
-  }, [currentDraftScope, localDraftVersion]);
+  // Use refs so buildCurrentPlannerDocument can read activeDocumentId and planName without
+  // forward-reference TDZ errors (as they live inside or are derived from the session handlers,
+  // which themselves need to trigger/evaluate document building).
+  const activeDocumentIdRef = useRef<string | null>(planId ?? null);
+  const planNameRef = useRef<string>("Workspace Plan");
 
-  const draftNameKey = useMemo(
-    () => `${currentDraftScope.documentId ?? ""}:${localDraftVersion}`,
-    [currentDraftScope, localDraftVersion],
-  );
+  const buildCurrentPlannerDocument = useCallback(() => {
+    return buildPlannerDocumentFromEditor(null, {
+      id: activeDocumentIdRef.current ?? undefined,
+      title: sanitizePlannerPlanName(planNameRef.current),
+    });
+  }, []);
+
+  // ── Session handlers (extracted to usePlannerSessionHandlers.ts) ──────────
+  const session = usePlannerSessionHandlers({
+    getCurrentPlannerDocument: buildCurrentPlannerDocument,
+    importDraft,
+    planId,
+    shapeCount,
+    saveStatus,
+  });
+
+  const {
+    planNameOverride,
+    setPlanNameOverride,
+    activeDocumentId,
+    sessionStatusMessage,
+    setSessionStatusMessage,
+    sessionErrorMessage,
+    setSessionErrorMessage,
+    draftPlanName,
+    draftNameKey,
+    currentDraftScope,
+    applyPlannerDocument,
+    handleSaveDraft: sessionHandleSaveDraft,
+    handleSaveAsNewSession: sessionHandleSaveAsNewSession,
+    handleLoadPlan,
+    handleDeletePlan,
+    handleRenamePlan,
+    handleImportFileChange,
+    handleExportJson: sessionHandleExportJson,
+    buildSavedEntries,
+  } = session;
+
+  // Keep refs in sync so buildCurrentPlannerDocument always sees the latest values.
+  activeDocumentIdRef.current = activeDocumentId;
+
   const [planNameKey, setPlanNameKey] = useState(draftNameKey);
   if (planNameKey !== draftNameKey) {
     setPlanNameKey(draftNameKey);
@@ -414,6 +448,22 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   }
 
   const planName = planNameOverride ?? draftPlanName;
+  planNameRef.current = planName;
+
+  const currentPlannerDocument = useMemo(
+    () => buildCurrentPlannerDocument(),
+    [buildCurrentPlannerDocument, fabricSerializedDraft, planName],
+  );
+
+  // Wrap session handlers to pass planName (resolved here)
+  const handleSaveDraft = useCallback(() => sessionHandleSaveDraft(planName), [sessionHandleSaveDraft, planName]);
+  const handleSaveAsNewSession = useCallback(() => sessionHandleSaveAsNewSession(planName), [sessionHandleSaveAsNewSession, planName]);
+  const handleExportJson = useCallback(() => sessionHandleExportJson(buildCurrentPlannerDocument, planName), [sessionHandleExportJson, buildCurrentPlannerDocument, planName]);
+
+  const plannerSavedEntries = useMemo(
+    () => buildSavedEntries(activeDocumentId),
+    [buildSavedEntries, activeDocumentId],
+  );
 
   const applyToolBinding = useCallback((binding: PlannerToolBinding) => {
     if (binding.plannerTool === "wall" || binding.plannerTool === "room") {
@@ -492,16 +542,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     }
   }, [isCompact, rightOpen, selectionStatus, setRightOpen]);
 
-  const shapeCount = useMemo(() => {
-    if (!fabricSerializedDraft) return 0;
-    try {
-      const state = JSON.parse(fabricSerializedDraft) as { objects?: unknown[] };
-      return state.objects?.length ?? 0;
-    } catch {
-      return 0;
-    }
-  }, [fabricSerializedDraft]);
-
   const handleApplyTemplate = useCallback((template: LayoutTemplate) => {
     // P4-09: confirm before replacing an existing non-empty canvas.
     if (shapeCount > 0) {
@@ -541,33 +581,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
 
     setIsTemplateOpen(false);
     setSessionStatusMessage(`Applied template: ${template.name}`);
-  }, [insertObject, placeCatalogIntoFabric, shapeCount]);
-
-  const buildCurrentPlannerDocument = useCallback(() => {
-    return buildPlannerDocumentFromEditor(null, {
-      id: activeDocumentId ?? undefined,
-      title: sanitizePlannerPlanName(planName),
-    });
-  }, [activeDocumentId, planName]);
-
-
-
-  const applyPlannerDocument = useCallback((document: ReturnType<typeof normalizePlannerDocument>) => {
-    const normalized = normalizePlannerDocument(document);
-    const loaded = loadPlannerDocumentIntoFabric(importDraft, normalized);
-    if (!loaded) {
-      setSessionErrorMessage("This planner document could not be loaded into the current workspace.");
-      return false;
-    }
-    setPlanNameOverride(normalized.title ?? normalized.name);
-    setActiveDocumentId(normalized.id ?? null);
-    setSessionErrorMessage(null);
-    setSessionStatusMessage(`Loaded ${normalized.title ?? normalized.name}`);
-    setLocalDraftVersion((value) => value + 1);
-    syncPlannerStep("draw");
-    setStepIntroVisible(false);
-    return true;
-  }, [importDraft, syncPlannerStep]);
+  }, [insertObject, placeCatalogIntoFabric, shapeCount, setSessionStatusMessage]);
 
   useEffect(() => {
     const initialBinding = getStepToolBinding(usePlannerWorkspaceStore.getState().plannerStep);
@@ -711,8 +725,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     ],
   );
 
-  // Fabric canvas as the 2D engine.
-  // Combined with 3D: fabric state drives viewerDocument for r3f meshes.
   const canvas2D = useMemo(
     () => (
       <Fabric2DWith3DSync
@@ -722,16 +734,8 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         leftCollapsed={viewMode === "2d" && !isCompact && leftCollapsed}
       />
     ),
-    [
-      viewMode,
-      plannerLeftPanel,
-      leftOpen,
-      leftCollapsed,
-      isCompact,
-    ],
+    [viewMode, plannerLeftPanel, leftOpen, leftCollapsed, isCompact],
   );
-
-  const currentPlannerDocument = useMemo(() => buildCurrentPlannerDocument(), [buildCurrentPlannerDocument]);
 
   const canvas3D = (
     <Suspense fallback={<PlannerSkeleton />}>
@@ -740,249 +744,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       </div>
     </Suspense>
   );
-
-  const localDraft = useMemo(() => {
-    void localDraftVersion;
-    return loadPlannerDraftDocument(currentDraftScope);
-  }, [currentDraftScope, localDraftVersion]);
-
-  const localDraftSessions = useMemo(() => {
-    void localDraftVersion;
-    return listPlannerDraftDocuments()
-      .filter((entry) => entry.scope.documentId && entry.scope.documentId !== LOCAL_CURRENT_DRAFT_ID);
-  }, [localDraftVersion]);
-
-  const plannerSavedEntries = useMemo<PlannerSavedEntry[]>(
-    () => {
-      const namedEntries = localDraftSessions.map((entry) => ({
-        id: entry.scope.documentId ?? entry.envelope.document.id ?? entry.storageKey,
-        name: entry.envelope.document.title ?? entry.envelope.document.name,
-        source: "local" as const,
-        isActive: activeDocumentId === (entry.scope.documentId ?? entry.envelope.document.id ?? entry.storageKey),
-        canDelete: true,
-        canRename: true,
-        updatedAtLabel: formatPlannerSavedPlanTimestamp(
-          entry.envelope.document.updatedAt ?? entry.envelope.document.createdAt ?? entry.envelope.savedAt,
-        ),
-        itemCount: entry.envelope.document.itemCount,
-        detail: `${entry.envelope.document.roomWidthMm}mm x ${entry.envelope.document.roomDepthMm}mm`,
-        subtitle: entry.envelope.document.projectName ?? "Named local session",
-        statusLabel: entry.envelope.document.unitSystem === "imperial" ? "Imperial units" : "Metric units",
-      }));
-
-      if (!localDraft) {
-        return namedEntries;
-      }
-
-      return [
-        {
-          id: LOCAL_CURRENT_DRAFT_ID,
-          name: `${localDraft.title ?? localDraft.name} (Current Draft)`,
-          source: "local" as const,
-          isActive: !activeDocumentId || activeDocumentId === LOCAL_CURRENT_DRAFT_ID,
-          canDelete: false,
-          canRename: false,
-          updatedAtLabel: formatPlannerSavedPlanTimestamp(localDraft.updatedAt ?? localDraft.createdAt),
-          itemCount: localDraft.itemCount,
-          detail: `${localDraft.roomWidthMm}mm x ${localDraft.roomDepthMm}mm`,
-          subtitle: localDraft.projectName ?? "Rolling browser draft",
-          statusLabel: localDraft.unitSystem === "imperial" ? "Imperial units" : "Metric units",
-        },
-        ...namedEntries,
-      ];
-    },
-    [activeDocumentId, localDraft, localDraftSessions],
-  );
-
-  const handleSaveDraft = useCallback(() => {
-    // BUG-04 fix: use the already-memoised document; do not re-serialise the canvas.
-    const draftDocument = currentPlannerDocument;
-    const namedDocumentId = activeDocumentId ?? draftDocument.id ?? crypto.randomUUID();
-    const normalizedName = sanitizePlannerPlanName(planName);
-    const normalizedDraft = normalizePlannerDocument({
-      ...draftDocument,
-      id: namedDocumentId,
-      name: normalizedName,
-      title: normalizedName,
-    });
-
-    const savedCurrent = savePlannerDraftDocument(normalizedDraft, currentDraftScope);
-    const savedNamed = savePlannerDraftDocument(normalizedDraft, { documentId: namedDocumentId });
-    setActiveDocumentId(namedDocumentId);
-    setLocalDraftVersion((value) => value + 1);
-    if (!savedCurrent || !savedNamed) {
-      setSessionErrorMessage("Local draft save is unavailable in this environment.");
-      return;
-    }
-    setSessionErrorMessage(null);
-    setSessionStatusMessage(`Local session saved ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`);
-  }, [activeDocumentId, currentPlannerDocument, currentDraftScope, planName]);
-
-  const handleSaveAsNewSession = useCallback(() => {
-    // BUG-04 fix: use the already-memoised document; do not re-serialise the canvas.
-    const draftDocument = currentPlannerDocument;
-    const newDocumentId = crypto.randomUUID();
-    const normalizedName = sanitizePlannerPlanName(
-      activeDocumentId ? `${planName} Copy` : planName,
-    );
-    const normalizedDraft = normalizePlannerDocument({
-      ...draftDocument,
-      id: newDocumentId,
-      name: normalizedName,
-      title: normalizedName,
-    });
-
-    const savedCurrent = savePlannerDraftDocument(normalizedDraft, currentDraftScope);
-    const savedNamed = savePlannerDraftDocument(normalizedDraft, { documentId: newDocumentId });
-    setActiveDocumentId(newDocumentId);
-    setPlanNameOverride(normalizedName);
-    setLocalDraftVersion((value) => value + 1);
-    if (!savedCurrent || !savedNamed) {
-      setSessionErrorMessage("New local session could not be created.");
-      return;
-    }
-    setSessionErrorMessage(null);
-    setSessionStatusMessage(`New local session created ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`);
-  }, [activeDocumentId, currentPlannerDocument, currentDraftScope, planName, setPlanNameOverride]);
-
-  const handleLoadPlan = useCallback((plan: PlannerSavedEntry) => {
-    if (plan.source !== "local") {
-      setSessionErrorMessage("Only local draft loading is enabled in this planner session.");
-      return;
-    }
-    // P5-09: confirm before replacing an unsaved canvas.
-    if (shapeCount > 0 && saveStatus !== "saved") {
-      const confirmed = window.confirm(
-        `You have unsaved changes (${shapeCount} object${shapeCount !== 1 ? "s" : ""}). Load "${plan.name}" and discard?`,
-      );
-      if (!confirmed) return;
-    }
-    const scope = plan.id === LOCAL_CURRENT_DRAFT_ID ? currentDraftScope : { documentId: plan.id };
-    const draft = loadPlannerDraftDocument(scope);
-    if (!draft) {
-      setSessionErrorMessage("Local draft not found.");
-      return;
-    }
-    applyPlannerDocument(draft);
-  }, [applyPlannerDocument, currentDraftScope, saveStatus, shapeCount]);
-
-  const handleDeletePlan = useCallback((plan: PlannerSavedEntry) => {
-    if (plan.source !== "local" || plan.id === LOCAL_CURRENT_DRAFT_ID) {
-      setSessionErrorMessage("Only named local sessions can be deleted here.");
-      return;
-    }
-
-    const deleted = deletePlannerDraftDocument({ documentId: plan.id });
-    if (!deleted) {
-      setSessionErrorMessage("Local session could not be deleted.");
-      return;
-    }
-
-    if (activeDocumentId === plan.id) {
-      setActiveDocumentId(null);
-    }
-
-    setLocalDraftVersion((value) => value + 1);
-    setSessionErrorMessage(null);
-    setSessionStatusMessage(`Deleted local session: ${plan.name}`);
-  }, [activeDocumentId]);
-
-  const handleRenamePlan = useCallback((plan: PlannerSavedEntry, nextNameInput: string) => {
-    if (plan.source !== "local" || plan.id === LOCAL_CURRENT_DRAFT_ID) {
-      setSessionErrorMessage("Only named local sessions can be renamed here.");
-      return;
-    }
-
-    const existing = loadPlannerDraftDocument({ documentId: plan.id });
-    if (!existing) {
-      setSessionErrorMessage("Local session not found.");
-      return;
-    }
-
-    const nextName = sanitizePlannerPlanName(nextNameInput);
-    const renamed = normalizePlannerDocument({
-      ...existing,
-      name: nextName,
-      title: nextName,
-    });
-
-    const savedNamed = savePlannerDraftDocument(renamed, { documentId: plan.id });
-    if (activeDocumentId === plan.id) {
-      savePlannerDraftDocument(renamed, currentDraftScope);
-      setPlanNameOverride(nextName);
-    }
-    setLocalDraftVersion((value) => value + 1);
-    if (!savedNamed) {
-      setSessionErrorMessage("Local session could not be renamed.");
-      return;
-    }
-
-    setSessionErrorMessage(null);
-    setSessionStatusMessage(`Renamed local session to ${nextName}`);
-  }, [activeDocumentId, currentDraftScope, setPlanNameOverride]);
-
-  const handleImportRequest = useCallback(() => {
-    importInputRef.current?.click();
-  }, []);
-
-  const handleImportFileChange = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // P5-09: confirm before replacing an unsaved canvas.
-    if (shapeCount > 0 && saveStatus !== "saved") {
-      const confirmed = window.confirm(
-        `You have unsaved changes (${shapeCount} object${shapeCount !== 1 ? "s" : ""}). Import this file and discard?`,
-      );
-      if (!confirmed) {
-        event.currentTarget.value = "";
-        return;
-      }
-    }
-
-    const parsed = await parsePlannerDocumentImportFile(file);
-    if (!parsed.ok || !parsed.document) {
-      setSessionErrorMessage(parsed.errors.join(" | "));
-      event.currentTarget.value = "";
-      return;
-    }
-
-    const loaded = applyPlannerDocument(parsed.document);
-    if (loaded) {
-      const documentId = parsed.document.id ?? crypto.randomUUID();
-      const normalizedName = sanitizePlannerPlanName(parsed.document.title ?? parsed.document.name);
-      const normalizedDocument = normalizePlannerDocument({
-        ...parsed.document,
-        id: documentId,
-        name: normalizedName,
-        title: normalizedName,
-      });
-      savePlannerDraftDocument(normalizedDocument, currentDraftScope);
-      savePlannerDraftDocument(normalizedDocument, { documentId });
-      setActiveDocumentId(documentId);
-      setLocalDraftVersion((value) => value + 1);
-      setSessionStatusMessage(`Imported planner JSON: ${normalizedName}`);
-    }
-    event.currentTarget.value = "";
-  }, [applyPlannerDocument, currentDraftScope, saveStatus, shapeCount]);
-
-  const handleExportJson = useCallback(() => {
-    const plannerDocument = buildCurrentPlannerDocument();
-    const payload = JSON.stringify(createPlannerExportPayload(plannerDocument), null, 2);
-    const blob = new Blob([payload], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = window.document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${sanitizePlannerPlanName(planName).toLowerCase().replace(/[^a-z0-9]+/g, "-") || "planner-document"}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    setSessionStatusMessage("Planner JSON exported.");
-  }, [buildCurrentPlannerDocument, planName]);
-
-  const handleOpen3dSession = useCallback(() => {
-    setViewMode("3d");
-    setSessionStatusMessage("Switched to 3D view.");
-  }, []);
 
   const handleOpenAiAssist = useCallback(() => {
     setLeftTab("ai-assist");
@@ -995,6 +756,15 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const handleResetChromeLayout = useCallback(() => {
     resetPlannerChromeLayout();
     setSessionStatusMessage("Planner chrome layout reset.");
+  }, [setSessionStatusMessage]);
+
+  const handleOpen3dSession = useCallback(() => {
+    setViewMode("3d");
+    setSessionStatusMessage("Switched to 3D view.");
+  }, [setSessionStatusMessage]);
+
+  const handleImportRequest = useCallback(() => {
+    importInputRef.current?.click();
   }, []);
 
   return (
@@ -1004,7 +774,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         type="file"
         accept="application/json,.json"
         className="hidden"
-        onChange={handleImportFileChange}
+        onChange={(e) => handleImportFileChange(e, planName)}
       />
       <PlannerTopBar
         guestMode={guestMode}
@@ -1166,7 +936,11 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         statusMessage={sessionStatusMessage}
         errorMessage={sessionErrorMessage}
         canOpen3d={shapeCount > 0}
-        onSaveCloud={() => setSessionErrorMessage("Cloud save is intentionally disabled in this local-first planner session.")}
+        onSaveCloud={() =>
+          setSessionErrorMessage(
+            "Cloud save is intentionally disabled in this local-first planner session.",
+          )
+        }
         onSaveDraft={handleSaveDraft}
         onSaveAsNewSession={handleSaveAsNewSession}
         onLoadPlan={handleLoadPlan}

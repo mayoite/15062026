@@ -1,3 +1,8 @@
+/**
+ * floorplanCanvas.ts — Fabric canvas API factory.
+ *
+ * Types and pure utilities live in floorplanCanvasTypes.ts (split for file-size).
+ */
 import {
   Canvas as FabricCanvas,
   Group,
@@ -19,91 +24,22 @@ import { DEFAULT_FABRIC_DRAW_COLOR, DEFAULT_FABRIC_FILL_COLOR } from '../fabricD
 import { applyFabricTransformLocks, canEditFabricFill } from '../fabricObjectUtils';
 import { wireFabricDrawTools } from './fabricDrawTools';
 import { wireFabricWalls } from './fabricWalls';
-import type { PlannerLayerCategory } from '@/features/planner/store/workspaceStore';
 
-import type { Dispatch, SetStateAction } from 'react';
+// Types and pure utilities are in floorplanCanvasTypes.ts
+export {
+  type PlannerFabricObject,
+  type InsertPayloadObj,
+  type FloorplanCtx,
+  resolveLayerCategory,
+  getBoundingRect,
+} from './floorplanCanvasTypes';
 
-export type PlannerFabricObject = FabricObject & { id?: string; name?: string };
-
-export type InsertPayloadObj = Record<string, unknown> & {
-  id?: string;
-  svg?: string;
-  title?: string;
-  name?: string;
-  variant?: "furniture" | "room" | "zone";
-  width?: number;
-  height?: number;
-  left?: number;
-  top?: number;
-  lrSpacing?: number;
-  tbSpacing?: number;
-};
-
-export type FloorplanCtx = {
-  roomEdit: boolean;
-  zoom: number;
-  gridEnabled: boolean;
-  states: string[];
-  redoStates: string[];
-  roomEditStates: string[];
-  roomEditRedoStates: string[];
-  defaultChair: unknown;
-  setSelections: (items: FabricObject[]) => void;
-  setUngroupable: (v: boolean) => void;
-  pushState: (s: string) => void;
-  setStates: Dispatch<SetStateAction<string[]>>;
-  setRedoStates: Dispatch<SetStateAction<string[]>>;
-  setRoomEditStates: Dispatch<SetStateAction<string[]>>;
-  setRoomEditRedoStates: Dispatch<SetStateAction<string[]>>;
-  enterRoomEdit: () => void;
-  exitRoomEdit: () => void;
-  syncZoom: (zoomPct: number) => void;
-};
-
-export function resolveLayerCategory(obj: unknown): PlannerLayerCategory | null {
-  const name = String((obj as PlannerFabricObject)?.name ?? '');
-  if (!name) return null;
-  if (name === 'CORNER' || name.startsWith('WALL:') || name.startsWith('DOOR') || name.startsWith('WINDOW')) {
-    return 'walls';
-  }
-  if (name.startsWith('DRAW:measure')) {
-    return 'measurements';
-  }
-  if (name.startsWith('DRAW:')) {
-    return 'zones';
-  }
-  if (name.startsWith('GENERIC:') || name.startsWith('TABLE') || name.startsWith('CHAIR') || name.startsWith('DESK')) {
-    return 'furniture';
-  }
-  return null;
-}
-
-export function getBoundingRect(objects: FabricObject[]) {
-  let top = 9999;
-  let left = 9999;
-  let right = 0;
-  let bottom = 0;
-
-  objects.forEach((obj) => {
-    if (obj.top < top) {
-      top = obj.top;
-    }
-    if (obj.left < left) {
-      left = obj.left;
-    }
-    if (obj.top > bottom) {
-      bottom = obj.top;
-    }
-    if (obj.left > right) {
-      right = obj.left;
-    }
-  });
-
-  const center = (left + right) / 2;
-  const middle = (top + bottom) / 2;
-
-  return { left, top, right, bottom, center, middle };
-}
+import type {
+  PlannerFabricObject,
+  InsertPayloadObj,
+  FloorplanCtx,
+} from './floorplanCanvasTypes';
+import { getBoundingRect, resolveLayerCategory } from './floorplanCanvasTypes';
 
 export function createFloorplanCanvasApi(
   ctxRef: { current: FloorplanCtx },
@@ -605,9 +541,6 @@ export function createFloorplanCanvasApi(
     const newLR = payloadObj.lrSpacing || RL_AISLEGAP;
     const newTB = payloadObj.tbSpacing || RL_AISLEGAP;
 
-    // object groups use center as origin, so add half width and height of their reported
-    // width and size; note that this will not account for chairs around tables, which is
-    // intentional; they go in the specified gaps
     const explicitLeft = typeof payloadObj.left === 'number' ? payloadObj.left : null;
     const explicitTop = typeof payloadObj.top === 'number' ? payloadObj.top : null;
     const hasExplicitPosition = explicitLeft !== null && explicitTop !== null;
@@ -959,7 +892,7 @@ export function createFloorplanCanvasApi(
     view.requestRenderAll();
   }
 
-  function setLayerVisibility(layerVisible: Record<PlannerLayerCategory, boolean>) {
+  function setLayerVisibility(layerVisible: Record<string, boolean>) {
     if (!view) return;
     view.getObjects().forEach((obj) => {
       const category = resolveLayerCategory(obj);

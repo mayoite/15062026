@@ -184,3 +184,81 @@ sequenceDiagram
 - **Supabase queries**: `fetchWithSupabaseRetry` with exponential backoff
 - **Canvas operations**: Error boundaries around Fabric/Three.js components
 - **Offline sync**: Retry queue with max 3 attempts, conflict detection
+
+---
+
+## 8. Planner Persistence — 3-Layer Stack (P5-01)
+
+> Authority: this section supersedes inline comments in `persistence/` files.
+
+### Layer 1 — Autosave (IndexedDB)
+**File:** `features/planner/persistence/persistence.ts`
+
+```
+Fabric canvas (live session)
+  └─► exportDraft() → serialized Fabric JSON
+        └─► usePlannerFabricAutosave.schedulePersist()
+              └─► buildSessionEnvelope(store) → PlannerSessionEnvelope
+                    └─► createAutoSaver(projectId).scheduleSave(snapshot)
+                          ├─► saveProject()      → IndexedDB "projects"
+                          └─► saveHistoryEntry() → IndexedDB "history"
+```
+
+| Constant | Value |
+|---|---|
+| DB name | `planner-workspace-db` (version 1) |
+| Guest project ID | `planner-guest-local` |
+| Member project ID | `planner-member-local` (or `:planId`) |
+| Autosave debounce | 5 000 ms |
+| History cap | 10 entries per project |
+
+Restore path: `loadProject(id)` → `parseSessionSnapshot()` → `applySessionWorkspace()` → `importDraft(storeJson)`
+
+### Layer 2 — Named Drafts (localStorage, TTL 24 h)
+**File:** `features/planner/persistence/plannerDraft.ts`
+
+```
+buildCurrentPlannerDocument() → PlannerDocument
+  └─► savePlannerDraftDocument(doc, scope)
+        key:  cad-suite:planner:draft:v1:user:{uid}:doc:{docId}
+        envelope: { schemaVersion: 1, savedAt, expiresAt, document }
+        TTL: 24 hours (PLANNER_DRAFT_TTL_MS = 86_400_000 ms)
+```
+
+Cleanup: `cleanupExpiredPlannerDrafts()` runs on every save/load call.
+Corrupt JSON → `status: "invalid"`, key removed immediately.
+
+### Layer 3 — Cloud Sessions (Supabase)
+**Files:** `plannerSaves.ts`, `plannerCloudApi.ts`
+
+| API | Method | Used by |
+|---|---|---|
+| `/api/plans` | GET | `listOwnerPlansFromApi()` |
+| `/api/plans/{id}` | GET | `loadPlanFromApi(id)` |
+| `/api/plans/{id}` | PUT | `savePlanToApi(doc)` |
+| `/api/plans/{id}` | DELETE | `deletePlanFromApi(id)` |
+| `/api/admin/plans?limit=100` | GET | `listAdminPlansFromApi()` |
+
+### Guest-to-Member Migration
+
+```
+migrateGuestProjectToMember()
+  └─► shouldMigrateGuestPlan(guest, member, alreadyClaimed)
+        ┌────────────────────────────────────────┬──────────────┐
+        │ Condition                              │ Result       │
+        ├────────────────────────────────────────┼──────────────┤
+        │ alreadyClaimed = true                  │ "skipped"    │
+        │ guest.snapshot empty/missing           │ "no-guest-data"│
+        │ member.snapshot non-empty              │ "skipped"    │
+        │ guest data + empty member slot         │ migrate ✅   │
+        └────────────────────────────────────────┴──────────────┘
+```
+
+### Data-Loss Invariants (assert in every test)
+
+1. Validation completes **before** live state replacement.
+2. Failed persistence never shows `Saved`.
+3. Guest claim never overwrites a non-empty member snapshot.
+4. Delete affects only the selected session (local or cloud).
+5. Import/export round-trip preserves all normalized canonical fields.
+6. Draft TTL (24 h) removes only the expired draft.
