@@ -28,15 +28,15 @@ import type { ChangeEvent } from "react";
 
 type UseSessionHandlersOptions = {
   /** Memoised current planner document (already built — do not re-serialise). */
-  currentPlannerDocument: ReturnType<typeof buildPlannerDocumentFromEditor>;
-  importDraft: (json: string) => void;
+  getCurrentPlannerDocument: () => ReturnType<typeof buildPlannerDocumentFromEditor>;
+  importDraft: (json: string) => Promise<void>;
   planId?: string;
   shapeCount: number;
   saveStatus: string;
 };
 
 export function usePlannerSessionHandlers({
-  currentPlannerDocument,
+  getCurrentPlannerDocument,
   importDraft,
   planId,
   shapeCount,
@@ -90,7 +90,7 @@ export function usePlannerSessionHandlers({
   const handleSaveDraft = useCallback(
     (planName: string) => {
       // BUG-04 fix: use the already-memoised document.
-      const draftDocument = currentPlannerDocument;
+      const draftDocument = getCurrentPlannerDocument();
       const namedDocumentId = activeDocumentId ?? draftDocument.id ?? crypto.randomUUID();
       const normalizedName = sanitizePlannerPlanName(planName);
       const normalizedDraft = normalizePlannerDocument({
@@ -115,13 +115,13 @@ export function usePlannerSessionHandlers({
         `Local session saved ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`,
       );
     },
-    [activeDocumentId, currentPlannerDocument, currentDraftScope],
+    [activeDocumentId, getCurrentPlannerDocument, currentDraftScope],
   );
 
   const handleSaveAsNewSession = useCallback(
     (planName: string) => {
       // BUG-04 fix: use the already-memoised document.
-      const draftDocument = currentPlannerDocument;
+      const draftDocument = getCurrentPlannerDocument();
       const newDocumentId = crypto.randomUUID();
       const normalizedName = sanitizePlannerPlanName(
         activeDocumentId ? `${planName} Copy` : planName,
@@ -149,7 +149,7 @@ export function usePlannerSessionHandlers({
         `New local session created ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`,
       );
     },
-    [activeDocumentId, currentPlannerDocument, currentDraftScope],
+    [activeDocumentId, getCurrentPlannerDocument, currentDraftScope],
   );
 
   // ── Load ──────────────────────────────────────────────────────────────────
