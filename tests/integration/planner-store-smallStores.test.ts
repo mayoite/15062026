@@ -88,24 +88,7 @@ describe("planner small stores", () => {
   describe("workspaceStore", () => {
     beforeEach(() => {
       usePlannerWorkspaceStore.setState({
-          dataUrl: null,
-          sourceKind: null,
-          sourcePage: null,
-          sourcePageCount: null,
-          interactionMode: "idle",
-          x: 0,
-          y: 0,
-          scale: 1,
-          widthPx: 0,
-          heightPx: 0,
-          opacity: 0.45,
-          mmPerUnit: null,
-          calibrating: false,
-          calibrationPoints: [],
-          knownDistanceMm: 3000,
-        },
         layerVisible: {
-          underlay: true,
           walls: true,
           rooms: true,
           zones: true,
@@ -124,7 +107,14 @@ describe("planner small stores", () => {
       usePlannerWorkspaceStore.getState().toggleLayer("furniture");
       usePlannerWorkspaceStore.getState().setLayerVisible("zones", false);
       usePlannerWorkspaceStore.getState().setUnitSystem("imperial");
-      usePlannerWorkspaceStore.getState().setProjectMetadata({ projectName: "HQ", clientName: "Acme" });
+      usePlannerWorkspaceStore.getState().setProjectMetadata({
+        projectName: "HQ",
+        city: "Patna",
+        floorAreaSqFt: 1000,
+        primaryPurpose: "workstations",
+        seatTarget: 20,
+        completedAt: "2026-06-21T00:00:00.000Z",
+      });
       expect(usePlannerWorkspaceStore.getState().plannerStep).toBe("draw");
       expect(usePlannerWorkspaceStore.getState().layerVisible.furniture).toBe(false);
       expect(usePlannerWorkspaceStore.getState().unitSystem).toBe("imperial");

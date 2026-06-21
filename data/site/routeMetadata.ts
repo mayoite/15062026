@@ -304,7 +304,7 @@ export const PRODUCTS_PAGE_METADATA: Metadata = buildPageMetadata(SITE_URL, {
 export const PLANNER_LANDING_PAGE_METADATA: Metadata = buildPageMetadata(SITE_URL, {
   title: "Workspace Planner | Plan Your Office in 2D & 3D | One&Only",
   description:
-    "Free online workspace planner. Design office layouts in 2D, preview in 3D, import blueprints, and export BOQ-ready plans. No signup required to try.",
+    "Free online workspace planner. Design office layouts in 2D, preview in 3D, and export BOQ-ready plans. No signup required to try.",
   path: "/planner",
   keywords: [
     "office space planner",
@@ -318,14 +318,14 @@ export const PLANNER_LANDING_PAGE_METADATA: Metadata = buildPageMetadata(SITE_UR
 export const PLANNER_HELP_PAGE_METADATA: Metadata = buildPageMetadata(SITE_URL, {
   title: "Planner Help & Guide | One&Only Workspace Planner",
   description:
-    "Learn how to use the One&Only workspace planner: draw rooms, place furniture, switch to 3D, import blueprints, and export plans.",
+    "Learn how to use the One&Only workspace planner: draw rooms, place furniture, switch to 3D, and export plans.",
   path: "/planner/help",
 });
 
 export const PLANNER_FEATURES_PAGE_METADATA: Metadata = buildPageMetadata(SITE_URL, {
-  title: "Planner Features | Blueprint, 3D, AI Assist & Export | One&Only",
+  title: "Planner Features | Measure, Catalog, 3D & Export | One&Only",
   description:
-    "Explore workspace planner features: blueprint import, measurement tools, product catalog, 3D view, AI assist, and BOQ export.",
+    "Explore workspace planner features: measurement tools, product catalog, 3D view, AI assist, and BOQ export.",
   path: "/planner/features",
 });
 

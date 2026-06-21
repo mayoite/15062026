@@ -14,7 +14,7 @@ describe("planner landing data", () => {
   it("landing shows four feature pillars", () => {
     expect(PLANNER_LANDING_FEATURES).toHaveLength(4);
     expect(PLANNER_LANDING_FEATURES.map((f) => f.slug)).toEqual([
-      "blueprint",
+      "measure",
       "catalog",
       "3d-view",
       "export",

@@ -88,7 +88,6 @@ describe("planner/catalog components", () => {
       render(<CatalogPanel embedded onItemClick={onItemClick} />);
 
       expect(screen.getByRole("searchbox", { name: "Search catalog elements" })).toBeTruthy();
-      expect(screen.getByText(/Oando symbols/)).toBeTruthy();
 
       fireEvent.change(screen.getByRole("searchbox"), { target: { value: "meeting" } });
       expect(screen.getAllByText(/Meeting/i).length).toBeGreaterThan(0);

@@ -1,6 +1,142 @@
 /* Planner marketing sub-pages: /planner/features, /planner/features/[slug], /planner/help.
    All values come from FOCSS tokens; hover language mirrors the landing feature cards. */
 
+.pfp-page {
+  padding-top: 4rem;
+  background: var(--surface-page);
+}
+
+.pfp-hero-band {
+  position: relative;
+  overflow: hidden;
+  min-height: 72vh;
+  padding-block: 6rem 1rem;
+  background: var(--surface-inverse);
+}
+
+.pfp-hero-media {
+  position: absolute;
+  inset: 0;
+}
+
+.pfp-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.76) 0%, rgb(0 0 0 / 0.48) 38%, rgb(0 0 0 / 0.2) 100%),
+    linear-gradient(180deg, rgb(0 0 0 / 0.18) 0%, rgb(0 0 0 / 0.44) 100%);
+}
+
+.pfp-hero-shell {
+  position: relative;
+  min-height: calc(72vh - 7rem);
+}
+
+.pfp-hero-layout {
+  display: grid;
+  gap: 2rem;
+  align-items: end;
+  min-height: calc(72vh - 10rem);
+}
+
+@media (min-width: 1024px) {
+  .pfp-hero-layout {
+    grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+  }
+}
+
+.pfp-hero-copy {
+  min-width: 0;
+  max-width: 43rem;
+  color: var(--text-inverse);
+}
+
+.pfp-hero-demo-wrap {
+  min-width: 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.pfp-hero-demo-wrap .planner-hero-demo {
+  width: 100%;
+  max-width: 33rem;
+  animation: none;
+  box-shadow:
+    0 44px 96px -54px rgb(0 0 0 / 0.72),
+    0 20px 48px -26px rgb(0 0 0 / 0.5);
+}
+
+.pfp-inline-link {
+  color: var(--text-muted);
+  transition: color var(--motion-base) var(--ease-standard);
+}
+
+.pfp-inline-link:hover {
+  color: var(--text-strong);
+}
+
+.pfp-inline-link--inverse {
+  color: var(--text-inverse-body);
+}
+
+.pfp-inline-link--inverse:hover {
+  color: var(--text-inverse);
+}
+
+.pfp-feature-strip {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: -1.75rem;
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .pfp-feature-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .pfp-feature-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.pfp-feature-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 100%;
+  border-radius: 1.5rem;
+  border: 1px solid var(--border-soft);
+  background: color-mix(in srgb, white 78%, var(--surface-page));
+  padding: 1.15rem 1.25rem;
+  transition:
+    transform var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard);
+}
+
+.pfp-feature-pill:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-primary) 28%, var(--border-soft));
+  box-shadow: var(--shadow-soft);
+}
+
+.pfp-feature-pill__icon {
+  display: inline-flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--surface-accent-wash);
+  color: var(--color-primary);
+}
+
 /* ── Capability / help cards ── */
 .pfp-card {
   display: flex;

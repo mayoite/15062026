@@ -6,7 +6,6 @@ describe("countShapesByLayer", () => {
   it("returns zero counts for an empty canvas", () => {
     const counts = countShapesByLayer([]);
     expect(counts).toEqual({
-      underlay: 0,
       walls: 0,
       rooms: 0,
       zones: 0,

@@ -40,21 +40,7 @@ import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStor
 
 function resetWorkspaceStore() {
   usePlannerWorkspaceStore.setState({
-      dataUrl: null,
-      sourceKind: null,
-      sourcePage: null,
-      sourcePageCount: null,
-      interactionMode: "idle",
-      x: 0,
-      y: 0,
-      scale: 1,
-      widthPx: 0,
-      heightPx: 0,
-      opacity: 0.45,
-      mmPerUnit: null,
-    },
     layerVisible: {
-      underlay: true,
       walls: true,
       rooms: true,
       zones: true,

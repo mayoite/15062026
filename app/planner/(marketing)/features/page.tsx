@@ -4,13 +4,13 @@ import { buildPageJsonLd, buildPageMetadata } from "@/lib/helpers/seo";
 import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 export const metadata = buildPageMetadata(SITE_URL, {
-  title: "Planner Features — Blueprint, 3D, AI & Export",
+  title: "Planner Features — Measure, Catalog, 3D & Export",
   description:
-    "Explore workspace planner capabilities: blueprint tracing, measurements, catalog furniture, 3D view, AI assist, and branded PDF export.",
+    "Explore workspace planner capabilities: measurements, catalog furniture, 3D view, AI assist, and branded PDF export.",
   path: "/planner/features",
   keywords: [
     "planner features",
-    "floor plan blueprint",
+    "floor plan measurement",
     "office layout 3d",
     "furniture catalog planner",
   ],

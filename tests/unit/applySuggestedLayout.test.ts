@@ -1,23 +1,69 @@
-import { describe, expect, it } from "vitest";
-
-import { buildShapesFromSuggestedLayout } from "@/features/planner/ai/applySuggestedLayout";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { applySuggestedLayout } from "@/features/planner/ai/applySuggestedLayout";
 import { suggestLayoutGridPack } from "@/features/planner/ai/spaceSuggest";
-import { catalogMmToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
+import type { SpaceSuggestInput } from "@/features/planner/ai/types";
+import { getPlannerFabricRuntime, setPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 
-describe("applySuggestedLayout helpers", () => {
-  it("converts real-mm room dimensions to canvas units", () => {
-    const layout = suggestLayoutGridPack({
-      seatCount: 12,
-      purpose: "workstations",
-      floorAreaSqFt: 1200,
-    });
+describe("applySuggestedLayout", () => {
+  let mockRuntime: ReturnType<typeof getPlannerFabricRuntime>;
+  const insertedObjects: { type: string; object: unknown }[] = [];
 
-    const shapes = buildShapesFromSuggestedLayout(layout);
-    const room = shapes.find((shape) => shape.type === "planner-room");
-    expect(room).toBeTruthy();
+  beforeEach(() => {
+    insertedObjects.length = 0;
+    mockRuntime = {
+      insertObject: vi.fn((payload) => {
+        insertedObjects.push(payload);
+      }),
+    } as any;
+    setPlannerFabricRuntime(mockRuntime);
+  });
 
-    const expectedW = catalogMmToCanvasCm(layout.room.widthMm, layout.room.depthMm);
-    const props = room?.props as { widthMm?: number };
-    expect(props.widthMm).toBe(expectedW);
+  it("inserts room object from layout", () => {
+    const input: SpaceSuggestInput = {
+      seatCount: 10,
+      floorAreaSqFt: 2000,
+      purpose: "open-office",
+    };
+    const layout = suggestLayoutGridPack(input);
+    applySuggestedLayout(null, layout);
+
+    expect(insertedObjects).toContainEqual(
+      expect.objectContaining({
+        type: "ROOM",
+      })
+    );
+  });
+
+  it("inserts at least 4 wall objects from perimeter walls", () => {
+    const input: SpaceSuggestInput = {
+      seatCount: 10,
+      floorAreaSqFt: 2000,
+      purpose: "open-office",
+    };
+    const layout = suggestLayoutGridPack(input);
+    applySuggestedLayout(null, layout);
+
+    const wallObjects = insertedObjects.filter((obj) => obj.type === "WALL");
+    expect(wallObjects.length).toBeGreaterThanOrEqual(4);
+    expect(wallObjects.every((w) => (w.object as any).name?.startsWith("WALL:"))).toBe(true);
+  });
+
+  it("places furniture at explicit coordinates", () => {
+    const input: SpaceSuggestInput = {
+      seatCount: 5,
+      floorAreaSqFt: 1500,
+      purpose: "open-office",
+    };
+    const layout = suggestLayoutGridPack(input);
+    applySuggestedLayout(null, layout);
+
+    const genericObjects = insertedObjects.filter((obj) => obj.type === "GENERIC");
+    expect(genericObjects.length).toBeGreaterThan(0);
+    expect(genericObjects.every((g) => (g.object as any).left !== undefined && (g.object as any).top !== undefined)).toBe(true);
+  });
+
+  it("handles empty layout gracefully", () => {
+    applySuggestedLayout(null, undefined);
+    expect(insertedObjects.length).toBe(0);
   });
 });

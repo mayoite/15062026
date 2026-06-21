@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   applyProjectSetup,
@@ -125,6 +125,18 @@ describe("purpose options and city list", () => {
 
 describe("applyProjectSetup — store mutations", () => {
   beforeEach(() => {
+    usePlannerWorkspaceStore.setState((state) => ({
+      ...state,
+      projectMetadata: null,
+      unitSystem: "metric",
+      layerVisible: {
+        walls: true,
+        rooms: true,
+        zones: true,
+        furniture: true,
+        measurements: true,
+      },
+    }));
   });
 
   it("sets projectMetadata in workspaceStore", () => {
@@ -133,12 +145,6 @@ describe("applyProjectSetup — store mutations", () => {
     const stored = usePlannerWorkspaceStore.getState().projectMetadata;
     expect(stored?.projectName).toBe("Test Office");
     expect(stored?.completedAt).toBeTruthy();
-  });
-
-    applyProjectSetup(makeMetadata({ floorAreaSqFt: 5000 }));
-  });
-
-    applyProjectSetup(makeMetadata({ floorAreaSqFt: 5001 }));
   });
 });
 

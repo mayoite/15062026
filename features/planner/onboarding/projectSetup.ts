@@ -1,6 +1,7 @@
 import type { CatalogCategory, CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
+import type { SpaceSuggestInput } from "@/features/planner/ai/types";
 
 /** Primary layout goal collected before the user enters the canvas. */
 export type PlannerPrimaryPurpose =
@@ -183,5 +184,13 @@ export function metadataToDocumentFields(metadata: PlannerProjectMetadata) {
     clientName: metadata.city,
     roomWidthMm: sideMm,
     roomDepthMm: Math.max(3000, Math.round((sqM * 1_000_000) / sideMm)),
+  };
+}
+
+export function metadataToSpaceSuggestInput(metadata: PlannerProjectMetadata): SpaceSuggestInput {
+  return {
+    seatCount: metadata.seatTarget,
+    purpose: metadata.primaryPurpose,
+    floorAreaSqFt: metadata.floorAreaSqFt,
   };
 }

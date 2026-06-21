@@ -195,6 +195,7 @@
   }
 
   .planner-workspace .pw-empty-canvas-card {
+    max-height: none;
     padding: 1rem;
   }
 
@@ -203,7 +204,8 @@
   }
 
   .planner-workspace .pw-empty-canvas-actions {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .planner-workspace .pw-empty-canvas-link {

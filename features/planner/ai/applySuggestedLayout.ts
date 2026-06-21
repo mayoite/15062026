@@ -168,6 +168,21 @@ export function applySuggestedLayout(_editor?: null, layout?: SuggestedLayoutJso
     },
   });
 
+  layout.walls?.forEach((wall) => {
+    const endX = wall.x + wall.endX;
+    const endY = wall.y + wall.endY;
+    runtime.insertObject({
+      type: "WALL",
+      object: {
+        x1: wall.x,
+        y1: wall.y,
+        x2: endX,
+        y2: endY,
+        name: `WALL:${Date.now()}`,
+      },
+    });
+  });
+
   layout.zones.forEach((zone) => {
     const units = mmToCanvasUnits(zone.widthMm, zone.heightMm);
     runtime.insertObject({
@@ -181,17 +196,6 @@ export function applySuggestedLayout(_editor?: null, layout?: SuggestedLayoutJso
   });
 
   layout.furniture.forEach((item) => {
-    const workspaceItem = PLANNER_CATALOG_ITEMS.find((catalogItem) => catalogItem.id === item.catalogItemId);
-    if (
-      workspaceItem &&
-      workspaceItem.category !== "rooms" &&
-      workspaceItem.category !== "zones" &&
-      workspaceItem.category !== "infrastructure"
-    ) {
-      runtime.placeCatalogItem(workspaceItem);
-      return;
-    }
-
     const dimensions = resolveCatalogDimensions(item.catalogItemId) ?? {
       widthMm: DEFAULT_FURNITURE_WIDTH_MM,
       heightMm: DEFAULT_FURNITURE_HEIGHT_MM,
@@ -203,6 +207,8 @@ export function applySuggestedLayout(_editor?: null, layout?: SuggestedLayoutJso
         title: item.label,
         width: units.width,
         height: units.height,
+        left: item.x,
+        top: item.y,
       },
     });
   });

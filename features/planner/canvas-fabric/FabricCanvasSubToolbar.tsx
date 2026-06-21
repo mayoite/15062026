@@ -14,6 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import { useFloorplan } from "./context/FloorplanContext";
 import { FabricDrawToolsBar } from "./FabricDrawToolsBar";
+import { PlannerTooltip } from "@/features/planner/ui/PlannerTooltip";
 
 function IconButton({
   title,
@@ -27,9 +28,17 @@ function IconButton({
   children: React.ReactNode;
 }) {
   return (
-    <button type="button" className="fcw-icon-btn" title={title} disabled={disabled} onClick={onClick}>
-      {children}
-    </button>
+    <PlannerTooltip label={title} side="bottom" disabled={disabled}>
+      <button
+        type="button"
+        className="fcw-icon-btn"
+        aria-label={title}
+        disabled={disabled}
+        onClick={onClick}
+      >
+        {children}
+      </button>
+    </PlannerTooltip>
   );
 }
 
@@ -119,10 +128,10 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
       <div className="pw-subtopbar pw-subtopbar--fabric fcw-toolbar" role="toolbar" aria-label="Room edit tools">
         <div className="fcw-toolbar-group">
           <IconButton title="Undo" disabled={undoDisabled} onClick={app.undo}>
-            <ArrowArcLeft size={16} weight="bold" />
+            <ArrowArcLeft size={18} weight="bold" />
           </IconButton>
           <IconButton title="Redo" disabled={redoDisabled} onClick={app.redo}>
-            <ArrowArcRight size={16} weight="bold" />
+            <ArrowArcRight size={18} weight="bold" />
           </IconButton>
         </div>
         <div className="fcw-toolbar-separator" />
@@ -148,7 +157,7 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
             End room edit
           </button>
           <button type="button" className="fcw-btn" onClick={exportDraft}>
-            <DownloadSimple size={15} weight="bold" />
+            <DownloadSimple size={18} weight="bold" />
             <span>Export</span>
           </button>
         </div>
@@ -162,39 +171,39 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
       <div className="fcw-toolbar-separator" />
       <div className="fcw-toolbar-group" role="group" aria-label="Canvas history">
         <IconButton title="Undo" disabled={undoDisabled} onClick={app.undo}>
-          <ArrowArcLeft size={16} weight="bold" />
+          <ArrowArcLeft size={18} weight="bold" />
         </IconButton>
         <IconButton title="Redo" disabled={redoDisabled} onClick={app.redo}>
-          <ArrowArcRight size={16} weight="bold" />
+          <ArrowArcRight size={18} weight="bold" />
         </IconButton>
       </div>
       <div className="fcw-toolbar-separator" />
       <div className="fcw-toolbar-group">
         <IconButton title="Clone" disabled={app.roomEdit || !app.selections.length} onClick={app.clone}>
-          <Copy size={16} weight="bold" />
+          <Copy size={18} weight="bold" />
         </IconButton>
         <IconButton title="Delete" disabled={app.roomEdit || !app.selections.length} onClick={app.deleteSelection}>
-          <Trash size={16} weight="bold" />
+          <Trash size={18} weight="bold" />
         </IconButton>
         <IconButton
           title="Rotate left"
           disabled={app.roomEdit || !app.selections.length}
           onClick={app.rotateAntiClockWise}
         >
-          <ArrowCounterClockwise size={16} weight="bold" />
+          <ArrowCounterClockwise size={18} weight="bold" />
         </IconButton>
         <IconButton
           title="Rotate right"
           disabled={app.roomEdit || !app.selections.length}
           onClick={app.rotateClockWise}
         >
-          <ArrowClockwise size={16} weight="bold" />
+          <ArrowClockwise size={18} weight="bold" />
         </IconButton>
         <IconButton title="Group" disabled={app.roomEdit || app.selections.length < 2} onClick={app.group}>
-          <Intersect size={16} weight="bold" />
+          <Intersect size={18} weight="bold" />
         </IconButton>
         <IconButton title="Ungroup" disabled={app.roomEdit || !app.ungroupable} onClick={app.ungroup}>
-          <Exclude size={16} weight="bold" />
+          <Exclude size={18} weight="bold" />
         </IconButton>
       </div>
       <div className="fcw-toolbar-separator" />
@@ -218,7 +227,7 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
       <div className="fcw-toolbar-group">
         <ArrangeMenu app={app} />
         <button type="button" className="fcw-btn" onClick={exportDraft}>
-          <DownloadSimple size={15} weight="bold" />
+          <DownloadSimple size={18} weight="bold" />
           <span>Export</span>
         </button>
       </div>

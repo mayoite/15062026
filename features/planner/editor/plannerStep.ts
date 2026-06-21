@@ -1,4 +1,5 @@
 import type { PlanMetrics } from "@/features/planner/editor/planMetrics";
+import { getPlannerFabricRuntimeState } from "@/features/planner/canvas-fabric";
 
 export type PlannerStep = "draw" | "place" | "review";
 export const PLANNER_STEPS: PlannerStep[] = ["draw", "place", "review"];
@@ -24,7 +25,16 @@ export interface PlannerStepGates {
 }
 
 export function countMeasurementShapes(): number {
-  return 0;
+  try {
+    const serializedDraft = getPlannerFabricRuntimeState().serializedDraft;
+    if (!serializedDraft) return 0;
+    const snapshot = JSON.parse(serializedDraft) as { objects?: any[] };
+    const objects = snapshot.objects;
+    if (!Array.isArray(objects)) return 0;
+    return objects.filter((obj: any) => String(obj.name || "").startsWith("DRAW:measure")).length;
+  } catch {
+    return 0;
+  }
 }
 
 export function evaluatePlannerStepGates(

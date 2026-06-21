@@ -141,12 +141,7 @@ describe("planner ai fabric bridges", () => {
     const meetingRoom = PLANNER_CATALOG_ITEMS.find((item) => item.id === "room-meeting-8");
     expect(meetingRoom).toBeTruthy();
 
-    const placeCatalogItem = vi.fn();
-    const { insertObject } = seedFabricRuntime({
-      runtime: {
-        placeCatalogItem,
-      },
-    });
+    const { insertObject } = seedFabricRuntime();
 
     const deskItem = PLANNER_CATALOG_ITEMS.find((item) => item.category === "desks");
     expect(deskItem).toBeTruthy();
@@ -183,13 +178,24 @@ describe("planner ai fabric bridges", () => {
         type: "ZONE",
       }),
     );
-    expect(placeCatalogItem).toHaveBeenCalledWith(deskItem);
+    expect(insertObject).toHaveBeenNthCalledWith(3, {
+      type: "GENERIC",
+      object: {
+        title: deskItem!.name,
+        width: 120,
+        height: 60,
+        left: 320,
+        top: 220,
+      },
+    });
     expect(insertObject).toHaveBeenLastCalledWith({
       type: "GENERIC",
       object: {
         title: "Meeting room",
-        width: catalogMmToCanvasCm(meetingRoom!.widthMm, meetingRoom!.heightMm),
-        height: catalogMmToCanvasCm(meetingRoom!.heightMm, meetingRoom!.widthMm),
+        width: 35,
+        height: 28,
+        left: 240,
+        top: 240,
       },
     });
   });
