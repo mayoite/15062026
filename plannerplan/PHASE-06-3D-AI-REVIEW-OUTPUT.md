@@ -2,7 +2,7 @@
 
 ## Goal
 
-Prove downstream representations and deliverables match the canonical 2D plan and fail safely. Fix BUG-02, BUG-05, and BUG-07 in this phase.
+Prove downstream representations and deliverables match the canonical 2D plan and fail safely. Fix BUG-02, BUG-05, BUG-07, and BUG-11 in this phase.
 
 ---
 
@@ -53,6 +53,19 @@ Add a test: double-mount `FloorplanProvider` in strict mode; assert the second m
 **File:** `features/planner/3d/Planner3DViewer.tsx`
 
 Search for `THREE.Clock` usage. Replace with `THREE.Timer` (introduced in Three.js r163). If the Clock is used inside `useFrame`, remove it — `useFrame` already provides `delta` as the second argument and does not need a manual clock.
+
+### BUG-11 — 3D is WebGL-ready but functionally broken
+**Reported with screenshots:** 2026-06-21.
+
+Observed failures:
+- Orbit view places furniture outside or through the room instead of matching 2D.
+- Product labels are oversized, overlap objects, and dominate the scene.
+- Default orbit framing wastes space and does not consistently fit the plan.
+- Walk mode starts or moves near/inside walls and furniture; objects clip at screen edges.
+- Walk mode lacks a clear safe reset/recovery action.
+- `data-webgl-status="ready"` and a nonblank frame are not sufficient acceptance evidence.
+
+Audit canvas units → millimetres → world axes, center versus top-left origin, room origin, rotation sign, width/depth mapping, floor elevation, and wall/opening placement. Derive orbit/walk poses from scene bounds. Keep walk positions inside a safe room envelope. Scale, cap, fade, or hide labels based on distance so they do not obscure the scene.
 
 ---
 
@@ -128,6 +141,11 @@ Every download must be opened and content-verified, not just triggered.
 - [x] **P6-14 BUG-05 fix + test:** added `createPlannerFabricRuntimeCleanup()` to `plannerRuntime.ts`. Generation counter incremented on each `setPlannerFabricRuntime(runtime)` call. `PlannerWorkspace.tsx` now returns `createPlannerFabricRuntimeCleanup()` from its useEffect instead of a bare `() => setPlannerFabricRuntime(null)`. Strict-mode double-mount safe. *(unit test still needed)*
 - [x] **P6-15 BUG-07 fix:** source search confirms `THREE.Clock` is NOT present in `Planner3DViewer.tsx` or any planner 3D file. No fix needed. Re-check after any `three` dependency bump in case the R3F internal usage changes.
 - [ ] **P6-16 Resource cleanup:** after unmounting `Planner3DViewer`, assert: no R3F frame loop running (check `raf` handles), no `pointerlockchange` listener remaining, no keyboard listeners remaining. Measure GPU memory before and after repeated mount/unmount cycles (stretch goal: `performance.memory.usedJSHeapSize` does not grow monotonically).
+- [ ] **P6-17 BUG-11 coordinate parity:** use a room fixture with five uniquely placed items. Compare every 2D center/rotation/dimension with 3D scene data and screenshot quadrants. No item may appear outside room bounds unless it is outside in 2D.
+- [ ] **P6-18 Orbit framing:** derive target, distance, near/far planes, fog, and shadows from full scene bounds. Verify empty, small, wide, tall, and 100-item plans fit without clipping.
+- [ ] **P6-19 Walk safety:** choose a free-floor start pose, enforce room bounds, prevent initial wall/object intersection, add Reset view, and verify Escape releases pointer lock.
+- [ ] **P6-20 Label usability:** cap label size, scale by distance, avoid near-plane clipping, fade/hide at unsuitable distances, and prevent labels obscuring most of the scene.
+- [ ] **P6-21 Visual acceptance:** capture orbit and walk screenshots for the same fixture. Pass only when geometry, count, placement, camera, labels, and controls are visibly usable.
 
 ---
 
@@ -166,6 +184,8 @@ Every download must be opened and content-verified, not just triggered.
 - E2E: 3D scene parity (3 known items, assert dimensions). WebGL fallback. Render evidence attribute set.
 - E2E: AI accept/reject/undo cycle.
 - E2E: SVG export parsed and room rect present. BOQ CSV row count matches canvas.
+- E2E: known 2D fixture maps inside room bounds with matching positions/rotations in 3D.
+- E2E: orbit frames the full scene; walk starts safely, moves, resets, and exits pointer lock without clipping.
 
 ---
 

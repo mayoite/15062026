@@ -2,7 +2,7 @@
 
 ## Goal
 
-Prove every Fabric editing tool, geometry mutation, selection path, and history operation. Fix confirmed bugs BUG-01, BUG-03, and BUG-06 in this phase.
+Prove every Fabric editing tool, geometry mutation, selection path, and history operation. Fix confirmed bugs BUG-01, BUG-03, BUG-06, BUG-08, BUG-09, and BUG-10 in this phase.
 
 ---
 
@@ -37,6 +37,21 @@ Remove `// @ts-nocheck` and the 4 eslint-disable comments from the top of `floor
 3. Replace `any` in event handlers with `fabric.TEvent` or the appropriate Fabric v6 event type.
 4. Run `npm.cmd run typecheck` to confirm zero errors on the file after each step.
 Do not rewrite the logic — only add types. Preserve all existing comments.
+
+### BUG-08 — Drawing tools workflow does not complete user actions
+**Reported:** 2026-06-21. The drawing toolbar is visible, but selecting a tool does not provide a reliable end-to-end workflow or visible result.
+
+Audit Select, Line, Measure, Curved line, Rectangle, Pen/Free draw, and Eraser independently. Verify selected state, cursor/mode change, pointer gesture, object creation/deletion, completion behavior, history, metrics, autosave, and reload. Add visible guidance for tools requiring multiple clicks or completion keys. `aria-pressed` alone is not proof that a tool works.
+
+### BUG-09 — Blank canvas, missing background, and invisible elements
+**Reported:** 2026-06-21 and reproduced at 390x844. Controls and metrics render while the 2D canvas appears blank, even though the canvas exists and metrics report objects.
+
+Inspect CSS size, backing-store dimensions, viewport transform, fit-to-stage timing, mobile panel measurements, stacking/opacity, grid background, restored object coordinates, and restore-before-layout races. The canvas needs a visible background/floor boundary. Existing objects must fit in view after load, resize, orientation change, panel collapse, and mobile Canvas-tab activation.
+
+### BUG-10 — Mouse-wheel/trackpad zoom does not work
+**Reported:** 2026-06-21. Zoom buttons are visible, but mouse-wheel scrolling over the canvas does not zoom.
+
+Wheel over the canvas must zoom around the pointer. Trackpad pinch/`ctrlKey` must zoom without scrolling the page. Clamp the supported range, synchronize the percentage, preserve the pointer anchor, prevent passive-listener errors, and remove listeners on dispose.
 
 ---
 
@@ -73,6 +88,10 @@ Do not rewrite the logic — only add types. Preserve all existing comments.
 - [ ] **P3-14 Stress:** 100 objects placed via `handleInsert` in a loop; assert canvas renders without error. Rapid 20× undo/redo cycle; assert final state matches initial state. 500 objects is a stretch goal. *(needs E2E)*
 - [x] **P3-15 BUG-03 fix + test:** `FabricGridBridge` keydown handler now reads `[data-view-mode]` from the DOM and skips grid toggle when `activeViewMode === '3d'`. Fabric canvas is inactive in 3D-only mode.
 - [ ] **P3-16 BUG-06 lift:** remove `@ts-nocheck`. Confirm `npm.cmd run typecheck` passes. Confirm `npm.cmd run lint` passes on the file. *(requires careful incremental TS typing — deferred, needs type-safe pass)*
+- [ ] **P3-17 BUG-08 drawing workflow:** test every active Fabric tool. Record gesture, completion action, created object type, status/history/autosave change, and reload result. Fix silent tools and missing guidance.
+- [ ] **P3-18 BUG-09 canvas visibility:** reproduce desktop/mobile blank states; assert host and backing canvas dimensions are nonzero; restore a known fixture; fit after layout settles; verify background/grid and every fixture object is visible.
+- [ ] **P3-19 BUG-10 wheel zoom:** repair canvas wheel handling. Assert pointer-anchored zoom, displayed percentage, min/max clamp, no unwanted page scroll, trackpad pinch, and listener cleanup.
+- [ ] **P3-20 Responsive canvas activation:** switch Library → Canvas → Properties → Canvas at 390x844 and after orientation change; each return recalculates dimensions and displays the same objects.
 
 ---
 
@@ -107,6 +126,8 @@ The layer-name resolver at `floorplanCanvas.ts:883–899` uses string prefix mat
 - `features/planner/editor/inspector/PropertiesInspector.tsx`
 - `tests/e2e/planner-custom-tools.spec.ts`
 - `tests/unit/floorplanCanvas.test.ts` ← create if absent
+- `app/css/core/planner/fabric-canvas-workspace.css` — canvas sizing/background/visibility
+- `app/css/core/planner/planner-responsive.css` — mobile canvas layout
 
 ---
 
@@ -119,6 +140,9 @@ The layer-name resolver at `floorplanCanvas.ts:883–899` uses string prefix mat
 - E2E: one test per tool type and one combined real-user draw flow.
 - E2E: 3D-mode `G` key does not error (BUG-03).
 - E2E: Arrange toolbar alignment after BUG-01 fix.
+- E2E: active drawing-tool workflow matrix with visible created/deleted results.
+- E2E: restored fixture visible on desktop and 390x844 mobile Canvas tab.
+- E2E: mouse wheel and trackpad-style zoom update scale around the pointer and survive remount.
 
 ---
 

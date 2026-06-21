@@ -33,6 +33,10 @@ Active ownership: `app/planner/` and `features/planner/`. Fabric is the 2D edito
 | BUG-05 | `canvas-fabric/plannerRuntime.ts` | 37–42 | Module-level mutable singleton (`currentRuntime`, `currentState`). Under React strict mode double-mount, the first mount's cleanup wipes state set by the second mount. | P2 |
 | BUG-06 | `canvas-fabric/hooks/floorplanCanvas.ts` | 1–7 | `@ts-nocheck` + 4 eslint-disable suppressions blanket the 1 175-line core hook. Zero TypeScript safety in the most critical stateful path. Must be lifted incrementally during Phase 3. | P2 |
 | BUG-07 | `3d/Planner3DViewer.tsx` | ~20 | `THREE.Clock` usage triggers a deprecation warning. Replace with `THREE.Timer` or remove the direct clock use. | P3 |
+| BUG-08 | Fabric drawing workflow | active toolbar | Drawing tools are visible but do not reliably complete visible, persisted user actions. | P1 |
+| BUG-09 | Fabric canvas/layout/runtime | desktop/mobile | Canvas background and restored elements can be blank or invisible despite nonzero metrics. | P1 |
+| BUG-10 | Fabric wheel/zoom handling | canvas interaction | Mouse-wheel and trackpad zoom do not work over the canvas. | P1 |
+| BUG-11 | 3D viewer and 2D→3D bridge | scene/cameras/labels | Furniture placement does not match 2D; labels overwhelm scene; orbit framing and walk camera clip or start unsafely. | P1 |
 
 ---
 
@@ -48,6 +52,10 @@ Active ownership: `app/planner/` and `features/planner/`. Fabric is the 2D edito
 | `THREE.Clock` deprecation warning | Direct `THREE.Clock` use in `Planner3DViewer` | Replace with `THREE.Timer` (Phase 6) |
 | 31 E2E skipped after 3 serial failures | Serial suite cascade — no test isolation | Fix in Phase 1 |
 | `test:planner` exceeds 120 s | Timeout or hanging test worker | Investigate in Phase 1 |
+| Drawing tools visible but workflow/result unreliable | Missing or broken Fabric gesture/completion behavior | Per-tool workflow audit and repair in Phase 3 |
+| Blank canvas/background and invisible restored elements | Sizing, fit, viewport transform, layering, or restore race | Repair and desktop/mobile fixture proof in Phase 3 |
+| Mouse-wheel zoom has no effect | Missing/broken Fabric wheel contract | Pointer-anchored wheel/pinch zoom in Phase 3 |
+| 3D nonblank but unusable | Coordinate parity, camera framing, walk bounds, and label scale defects | Fixture-based visual acceptance in Phase 6 |
 
 ---
 

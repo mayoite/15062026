@@ -13,10 +13,10 @@
 
 - [~] Phase 1: baseline contract agreed; independent E2E entry is green; test timeout fixed. *(P1-03/04/05/06/07/10 done; P1-01/02/08/09 need dev server)*
 - [~] Phase 2: setup validation, metadata, refresh, keyboard, and mobile are green. *(P2-03/04/05/06/07/08/09 done; P2-01/10/11/12 need browser/E2E)*
-- [~] Phase 3: all 2D tools, history, inspector, grid, geometry, BUG-01/03/06 resolved. *(BUG-01 + BUG-03 fixed; P3-01..08/10..14/16 need E2E)*
+- [!] Phase 3: blocked by reported drawing workflow failure, blank/invisible canvas and background, hidden restored elements, and nonfunctional mouse-wheel zoom. BUG-08/09/10 and P3-17..20 are mandatory.
 - [~] Phase 4: catalog, templates, and blueprint success/failure paths green; BUG-04 fixed; P4-03/14 source-verified. *(BUG-04 + P4-03/09/14/15 done; P4-01/02/04..13 need E2E)*
 - [~] Phase 5: autosave, session CRUD, import/export, offline, and migration green. *(P5-09/10/12/14/16/17 source-verified; P5-01..08/11/13/15/18 need unit/integration/E2E)*
-- [~] Phase 6: 3D, AI, review, every exposed output green; BUG-02/05/07 resolved. *(BUG-02/05/07 + P6-06 fixed; P6-01..05/07..12/16 need E2E)*
+- [!] Phase 6: blocked by 3D scene parity, framing, label, and walk-camera failures shown in 2026-06-21 screenshots. BUG-11 and P6-17..21 are mandatory.
 - [ ] Phase 7: accessibility, responsive, performance, memory, and resilience green.
 - [ ] Phase 8: targeted gates and final journeys pass from clean checkout.
 
@@ -35,6 +35,10 @@ Update status as bugs are fixed. Every fix must include a regression test.
 | BUG-05 | `plannerRuntime.ts:37–42` | Module-level mutable singleton clobbered by strict-mode double-mount. Fixed: generation counter in `setPlannerFabricRuntime`; `createPlannerFabricRuntimeCleanup()` in `PlannerWorkspace.tsx`. | `[x]` | P6 | unit test needed |
 | BUG-06 | `floorplanCanvas.ts:1–7` | `@ts-nocheck` + 4 eslint-disable blanket the 1 175-line canvas hook. Lift incrementally. | `[ ]` | P3 | |
 | BUG-07 | `Planner3DViewer.tsx` | `THREE.Clock` deprecation warning. Source search: NOT present. No fix needed. Re-check after `three` dep bump. | `[x]` | P6 | n/a |
+| BUG-08 | Fabric drawing workflow | Visible tools do not reliably produce or complete visible drawing actions. | `[!]` | P3 | P3-17 drawing workflow matrix |
+| BUG-09 | Fabric canvas/layout/runtime | Canvas appears blank; background and restored elements are not visible, reproduced on mobile. | `[!]` | P3 | P3-18/P3-20 fixture visibility |
+| BUG-10 | Fabric wheel/zoom handling | Mouse wheel and trackpad scrolling over canvas do not zoom. | `[!]` | P3 | P3-19 wheel/pinch zoom E2E |
+| BUG-11 | 3D viewer and 2D→3D bridge | Items outside/intersect room, oversized labels, poor orbit framing, unsafe/clipped walk camera. | `[!]` | P6 | P6-17..21 parity/visual E2E |
 
 ---
 
@@ -49,6 +53,10 @@ Update status as bugs are fixed. Every fix must include a regression test.
 | 3D `data-render-evidence` never set | Fix render proof hook in P6 | `[ ]` |
 | 31 E2E skipped (serial cascade) | Storage helper now exported — needs `beforeEach` in remaining specs; serial fix needs test run to confirm | `[~]` |
 | `test:planner` timeout (> 120 s) | Needs test run to reproduce and measure | `[ ]` |
+| Drawing controls visible but workflow/result unreliable | BUG-08; verify each Fabric tool through persistence | `[!]` |
+| Blank 2D canvas/background and invisible restored elements | BUG-09; repair sizing, fit, background, and mobile activation | `[!]` |
+| Mouse-wheel zoom has no effect | BUG-10; implement pointer-anchored wheel/pinch behavior | `[!]` |
+| 3D is nonblank but visually/functionally incorrect | BUG-11; require parity, camera, and label acceptance | `[!]` |
 
 ---
 
@@ -91,6 +99,15 @@ Update this table for every executed task. Do not mark a phase complete from the
 | P6-13 | `[x]` | BUG-02: rendererRef via onCreated; dispose() called correctly on unmount | Planner3DViewer.tsx | None | Add integration test for dispose |
 | P6-14 | `[x]` | BUG-05: createPlannerFabricRuntimeCleanup() generation counter prevents strict-mode clobber | plannerRuntime.ts + PlannerWorkspace.tsx + index.ts | None | Unit test |
 | P6-15 | `[x]` | BUG-07: THREE.Clock not in source. Confirmed N/A. | N/A | None | Re-check after dep bump |
+| P3-17 | `[!]` | BUG-08 drawing workflow reported broken | User report | Fabric owner | Run per-tool workflow matrix |
+| P3-18 | `[!]` | BUG-09 blank background and invisible elements | Mobile reproduction + user report | Canvas/layout owner | Inspect dimensions/transform and repair fit/background |
+| P3-19 | `[!]` | BUG-10 mouse-wheel zoom not working | User report | Fabric interaction owner | Reproduce wheel events and repair pointer zoom |
+| P3-20 | `[!]` | Mobile Canvas tab does not visibly render objects | 390x844 screenshot | Responsive/canvas owner | Test tab/orientation activation |
+| P6-17 | `[!]` | BUG-11 2D/3D coordinate parity failure | User screenshots | 3D bridge owner | Build known-position fixture and compare bounds |
+| P6-18 | `[!]` | Orbit framing wastes or clips scene | User screenshot | 3D camera owner | Derive camera from scene bounds |
+| P6-19 | `[!]` | Walk camera starts/clips near geometry | User screenshot | 3D camera owner | Add safe start, bounds, and reset |
+| P6-20 | `[!]` | Product labels oversized and overlapping | User screenshots | 3D UI owner | Add distance scaling/capping/fading |
+| P6-21 | `[!]` | WebGL-ready is insufficient 3D proof | Browser + screenshots | QA/3D owner | Add fixture-based visual acceptance |
 
 Add subsequent phase task rows when each phase starts; keep this file as the single status source.
 
@@ -114,7 +131,7 @@ Add subsequent phase task rows when each phase starts; keep this file as the sin
 - [ ] Desktop, tablet, mobile, touch, keyboard, screen reader, reduced motion.
 - [ ] No unexplained console errors or critical accessibility findings.
 - [ ] Typecheck, lint, planner tests, E2E, a11y, and build pass.
-- [ ] All 7 confirmed bugs resolved with regression tests.
+- [ ] All 11 confirmed bugs resolved with regression tests.
 
 ---
 
@@ -154,5 +171,5 @@ Fill this at the end of every work session:
 - [ ] Skipped tests and untested environments are explicit.
 - [ ] No temporary screenshots, traces, or generated reports remain in the repository.
 - [ ] No unauthorized auth/API/database/build/top-level changes were made.
-- [ ] All 7 confirmed bugs have a passing regression test.
+- [ ] All 11 confirmed bugs have a passing regression test.
 - [ ] The next engineer can run the exact next task without rediscovery.
