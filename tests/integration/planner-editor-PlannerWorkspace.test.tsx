@@ -124,8 +124,6 @@ describe("PlannerWorkspace", () => {
         furniture: true,
         measurements: true,
       },
-      blueprint: {
-        ...usePlannerWorkspaceStore.getState().blueprint,
         dataUrl: null,
         calibrating: false,
         interactionMode: "idle",

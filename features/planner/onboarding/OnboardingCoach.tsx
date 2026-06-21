@@ -229,7 +229,7 @@ export const OANDO_ONBOARDING_STEPS: CoachStep[] = [
     id: "export",
     title: "Professional Export",
     description:
-      "Export branded PDF blueprints with Bill of Quantities, or download your plan as JSON for cross-planner import. Better than any competitor's output.",
+      "Export branded PDFs with Bill of Quantities, or download your plan as JSON for cross-planner import. Better than any competitor's output.",
     target: "export",
   },
 ];

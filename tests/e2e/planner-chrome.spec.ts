@@ -34,14 +34,12 @@ test.describe("Planner chrome v1", () => {
   test("closed left panel opens from AccessChrome", async ({ page }) => {
     await openWorkspace(page);
     const leftPanel = page.locator(".pw-left-panel");
-    const accessButton = page.getByRole("button", { name: "Open library and blueprint panel" });
 
     // Default is leftOpen:true — close first so we can test the open action.
     await page.getByRole("button", { name: "Collapse left panel rail" }).click();
     await page.getByRole("button", { name: "Collapse left panel rail" }).waitFor({ state: "hidden", timeout: 3_000 }).catch(() => {});
     // Use the panel toggle button to fully close it
     if (await leftPanel.getAttribute("data-open") === "true") {
-      await page.getByRole("button", { name: "Open library and blueprint panel" }).click();
       await expect(leftPanel).not.toHaveAttribute("data-open", "true");
     }
 
@@ -75,7 +73,6 @@ test.describe("Planner chrome v1", () => {
 
     const accessWidget = page.locator('[data-dock-id="access"]');
     await expect(accessWidget).toBeVisible();
-    await expect(page.getByRole("button", { name: "Open library and blueprint panel" })).toBeVisible();
   });
 
   test("access strip drag persists into v2 storage", async ({ page }) => {
@@ -140,7 +137,6 @@ test.describe("Planner chrome v1", () => {
 
     await page.reload({ waitUntil: "domcontentloaded" });
     await openWorkspace(page);
-    await page.getByRole("button", { name: "Open library and blueprint panel" }).click();
     await page.locator(".pw-left-panel").getByRole("tab", { name: "Library" }).click();
     await expect(page.locator(".pw-catalog-recent")).toBeVisible();
   });

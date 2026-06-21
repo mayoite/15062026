@@ -16,7 +16,6 @@ export function FabricCanvasContextMenu() {
     closeContextMenu,
     selections,
     roomEdit,
-    editRoom,
     endEditRoom,
     clone,
     copy,
@@ -55,7 +54,7 @@ export function FabricCanvasContextMenu() {
 
   if (!contextMenu || typeof document === "undefined") return null;
 
-  const wallTarget = isWallTarget(contextMenu.target);
+
   const hasSelection = selections.length > 0 || Boolean(contextMenu.target);
 
   const run = (action: () => void) => {
@@ -93,19 +92,6 @@ export function FabricCanvasContextMenu() {
         </>
       ) : (
         <>
-          {wallTarget ? (
-            <>
-              <button
-                type="button"
-                role="menuitem"
-                className="fcw-context-menu__item"
-                onClick={() => run(() => editRoom())}
-              >
-                Edit room
-              </button>
-              <div className="fcw-context-menu__divider" role="separator" />
-            </>
-          ) : null}
           <button
             type="button"
             role="menuitem"

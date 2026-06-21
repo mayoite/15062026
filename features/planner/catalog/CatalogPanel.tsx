@@ -271,8 +271,6 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
           </div>
         )}
       </div>
-
-      <div className="pw-catalog-footer">{purposeScopedItems.length} Oando symbols</div>
     </aside>
   );
 }

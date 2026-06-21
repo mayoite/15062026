@@ -32,7 +32,8 @@ export type FloorplanOperation =
   | 'TOP'
   | 'MIDDLE'
   | 'BOTTOM'
-  | 'GRID';
+  | 'GRID'
+  | 'SNAP';
 
 export type InsertPayload = { type: string; object: unknown };
 
@@ -79,6 +80,7 @@ type FloorplanContextValue = {
   ungroupable: boolean;
   zoom: number;
   gridEnabled: boolean;
+  snapEnabled: boolean;
   drawTool: FabricDrawTool;
   drawColor: string;
   drawFillColor: string;
@@ -117,6 +119,7 @@ type FloorplanContextValue = {
   zoomIn: () => void;
   zoomOut: () => void;
   toggleGrid: () => void;
+  toggleSnap: () => void;
   setDrawTool: (tool: FabricDrawTool) => void;
   setDrawColor: (color: string) => void;
   setDrawFillColor: (color: string) => void;
@@ -140,6 +143,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
   const [ungroupable, setUngroupable] = useState(false);
   const [zoom, setZoomState] = useState(100);
   const [gridEnabled, setGridEnabledState] = useState(true);
+  const [snapEnabled, setSnapEnabledState] = useState(true);
   const [drawTool, setDrawToolState] = useState<FabricDrawTool>('select');
   const [drawColor, setDrawColorState] = useState<string>(DEFAULT_FABRIC_DRAW_COLOR);
   const [drawFillColor, setDrawFillColorState] = useState<string>(DEFAULT_FABRIC_FILL_COLOR);
@@ -363,6 +367,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       ungroupable,
       zoom,
       gridEnabled,
+      snapEnabled,
       drawTool,
       drawColor,
       drawFillColor,
@@ -406,6 +411,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       zoomIn,
       zoomOut,
       toggleGrid: () => setGridEnabled(!gridEnabled),
+      toggleSnap: () => setSnapEnabledState(!snapEnabled),
       setDrawTool,
       setDrawColor,
       setDrawFillColor,
@@ -425,6 +431,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       ungroupable,
       zoom,
       gridEnabled,
+      snapEnabled,
       drawTool,
       drawColor,
       drawFillColor,

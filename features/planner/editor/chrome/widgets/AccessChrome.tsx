@@ -27,7 +27,7 @@ export function AccessChrome({
         type="button"
         className="pw-access-chrome__btn pw-icon-btn"
         data-active={leftOpen || undefined}
-        aria-label={leftOpen ? "Close library and blueprint panel" : "Open library and blueprint panel"}
+        aria-label={leftOpen ? "Close library panel" : "Open library panel"}
         aria-pressed={leftOpen}
         onClick={onToggleLeft}
       >

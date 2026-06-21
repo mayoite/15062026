@@ -26,7 +26,6 @@ export type PlannerFabricRuntimeState = {
 };
 
 const DEFAULT_LAYER_VISIBLE: Record<PlannerLayerCategory, boolean> = {
-  underlay: true,
   walls: true,
   rooms: true,
   zones: true,

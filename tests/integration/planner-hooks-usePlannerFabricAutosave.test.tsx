@@ -40,7 +40,6 @@ import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStor
 
 function resetWorkspaceStore() {
   usePlannerWorkspaceStore.setState({
-    blueprint: {
       dataUrl: null,
       sourceKind: null,
       sourcePage: null,

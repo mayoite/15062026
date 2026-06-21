@@ -3,14 +3,14 @@
 import {
   Eraser,
   Minus,
-  MousePointer2,
+  Cursor,
   PaintBucket,
   Palette,
-  Pencil,
+  PencilSimple,
   Ruler,
   Square,
-  Spline,
-} from "lucide-react";
+  BezierCurve,
+} from "@phosphor-icons/react";
 import { useFloorplan } from "./context/FloorplanContext";
 import {
   FABRIC_DRAW_TOOL_COLORS,
@@ -51,13 +51,13 @@ const DRAW_TOOLS: Array<{
   title: string;
   icon: React.ReactNode;
 }> = [
-  { id: "select", title: "Select", icon: <MousePointer2 size={16} strokeWidth={1.9} /> },
-  { id: "line", title: "Line", icon: <Minus size={16} strokeWidth={1.9} /> },
-  { id: "measure", title: "Measure", icon: <Ruler size={16} strokeWidth={1.9} /> },
-  { id: "curve", title: "Curved line", icon: <Spline size={16} strokeWidth={1.9} /> },
-  { id: "rectangle", title: "Rectangle", icon: <Square size={16} strokeWidth={1.9} /> },
-  { id: "pen", title: "Pen / Free draw", icon: <Pencil size={16} strokeWidth={1.9} /> },
-  { id: "eraser", title: "Eraser", icon: <Eraser size={16} strokeWidth={1.9} /> },
+  { id: "select", title: "Select", icon: <Cursor size={16} weight="bold" /> },
+  { id: "line", title: "Line", icon: <Minus size={16} weight="bold" /> },
+  { id: "measure", title: "Measure", icon: <Ruler size={16} weight="bold" /> },
+  { id: "curve", title: "Curved line", icon: <BezierCurve size={16} weight="bold" /> },
+  { id: "rectangle", title: "Rectangle", icon: <Square size={16} weight="bold" /> },
+  { id: "pen", title: "Pen / Free draw", icon: <PencilSimple size={16} weight="bold" /> },
+  { id: "eraser", title: "Eraser", icon: <Eraser size={16} weight="bold" /> },
 ];
 
 const DRAW_TOOL_HELP: Record<FabricDrawTool, string> = {
@@ -96,7 +96,7 @@ export function FabricDrawToolsBar({ disabled = false }: { disabled?: boolean })
 
       <div className="fcw-draw-tool-row">
         <label className="fcw-color-picker" title="Stroke color">
-          <Palette size={14} strokeWidth={1.9} aria-hidden />
+          <Palette size={14} weight="bold" aria-hidden />
           <input
             type="color"
             value={drawColor}
@@ -107,7 +107,7 @@ export function FabricDrawToolsBar({ disabled = false }: { disabled?: boolean })
         </label>
 
         <label className="fcw-color-picker" title="Fill color">
-          <PaintBucket size={14} strokeWidth={1.9} aria-hidden />
+          <PaintBucket size={14} weight="bold" aria-hidden />
           <input
             type="color"
             value={fillPickerValue}

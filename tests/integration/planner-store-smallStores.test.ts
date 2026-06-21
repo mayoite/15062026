@@ -88,7 +88,6 @@ describe("planner small stores", () => {
   describe("workspaceStore", () => {
     beforeEach(() => {
       usePlannerWorkspaceStore.setState({
-        blueprint: {
           dataUrl: null,
           sourceKind: null,
           sourcePage: null,
@@ -122,7 +121,6 @@ describe("planner small stores", () => {
     it("exposes layer categories and mutates workspace state", () => {
       expect(PLANNER_LAYER_CATEGORIES).toContain("walls");
       usePlannerWorkspaceStore.getState().setPlannerStep("draw");
-      usePlannerWorkspaceStore.getState().setBlueprint({ opacity: 0.8, calibrating: true });
       usePlannerWorkspaceStore.getState().toggleLayer("furniture");
       usePlannerWorkspaceStore.getState().setLayerVisible("zones", false);
       usePlannerWorkspaceStore.getState().setUnitSystem("imperial");
@@ -141,18 +139,13 @@ describe("planner small stores", () => {
       expect(usePlannerWorkspaceStore.getState().layerVisible.walls).toBe(true);
       expect(usePlannerWorkspaceStore.getState().unitSystem).toBe("imperial");
 
-      const before = usePlannerWorkspaceStore.getState().blueprint.opacity;
       hydrateWorkspaceState({ unitSystem: "metric" });
-      expect(usePlannerWorkspaceStore.getState().blueprint.opacity).toBe(before);
       expect(serializeWorkspaceState().projectMetadata).toBeNull();
     });
 
     it("serializes and hydrates persisted workspace slices", () => {
-      usePlannerWorkspaceStore.getState().setBlueprint({ dataUrl: "data:image/png;base64,abc" });
       const serialized = serializeWorkspaceState();
-      usePlannerWorkspaceStore.getState().resetBlueprint();
       hydrateWorkspaceState(serialized);
-      expect(usePlannerWorkspaceStore.getState().blueprint.dataUrl).toBe("data:image/png;base64,abc");
     });
   });
 

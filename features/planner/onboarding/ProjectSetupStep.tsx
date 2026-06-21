@@ -8,7 +8,6 @@ import {
   PLANNER_PRIMARY_PURPOSE_OPTIONS,
   applyProjectSetup,
   createDefaultProjectSetupDraft,
-  markProjectSetupCompleteInStorage,
   type PlannerProjectMetadata,
   type PlannerProjectSetupDraft,
   type PlannerPrimaryPurpose,
@@ -80,7 +79,6 @@ export function ProjectSetupStep({ guestMode = false, planId, onComplete }: Proj
 
     try {
       applyProjectSetup(metadata);
-      markProjectSetupCompleteInStorage(guestMode, planId);
     } catch (storageErr) {
       const message =
         storageErr instanceof DOMException && storageErr.name === "QuotaExceededError"

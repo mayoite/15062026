@@ -4,10 +4,6 @@ import { useEffect, useRef } from 'react';
 import { useFloorplan } from './context/FloorplanContext';
 import { createFloorplanCanvasApi, type FloorplanCtx } from './hooks/floorplanCanvas';
 import { usePlannerWorkspaceStore } from '@/features/planner/store/workspaceStore';
-import { BlueprintUnderlay } from '@/features/planner/editor/BlueprintUnderlay';
-import { CalibrationCapture } from '@/features/planner/editor/CalibrationCapture';
-import { BlueprintMoveCapture } from '@/features/planner/editor/BlueprintMoveCapture';
-
 export function FloorplanCanvas() {
   const ctx = useFloorplan();
   const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
@@ -16,6 +12,7 @@ export function FloorplanCanvas() {
     roomEdit: ctx.roomEdit,
     zoom: ctx.zoom,
     gridEnabled: ctx.gridEnabled,
+    snapEnabled: ctx.snapEnabled,
     states: ctx.states,
     redoStates: ctx.redoStates,
     roomEditStates: ctx.roomEditStates,
@@ -38,6 +35,7 @@ export function FloorplanCanvas() {
       roomEdit: ctx.roomEdit,
       zoom: ctx.zoom,
       gridEnabled: ctx.gridEnabled,
+      snapEnabled: ctx.snapEnabled,
       states: ctx.states,
       redoStates: ctx.redoStates,
       roomEditStates: ctx.roomEditStates,
@@ -108,10 +106,8 @@ export function FloorplanCanvas() {
 
   return (
     <div className="canvas-wrap" tabIndex={0}>
-      <BlueprintUnderlay camera={null} />
+
       <canvas id="main" ref={canvasHostRef} />
-      <CalibrationCapture />
-      <BlueprintMoveCapture />
     </div>
   );
 }

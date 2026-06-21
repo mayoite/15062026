@@ -66,6 +66,7 @@
 .planner-workspace .pw-catalog-scroll {
   flex: 1;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   padding: var(--pw-panel-pad-lg);
 }

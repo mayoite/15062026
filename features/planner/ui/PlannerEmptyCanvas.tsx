@@ -8,7 +8,7 @@ interface PlannerEmptyCanvasProps {
   allowCanvasDragThrough?: boolean;
   onDrawWalls: () => void;
   onOpenTemplates: () => void;
-  onImportBlueprint: () => void;
+
 }
 
 export function PlannerEmptyCanvas({
@@ -16,16 +16,16 @@ export function PlannerEmptyCanvas({
   allowCanvasDragThrough = false,
   onDrawWalls,
   onOpenTemplates,
-  onImportBlueprint,
+
 }: PlannerEmptyCanvasProps) {
   return (
     <div
-      className="pw-empty-canvas pointer-events-none absolute inset-0 flex items-end justify-center px-4 pb-4"
+      className="pw-empty-canvas pointer-events-none absolute inset-0 flex items-center justify-center p-4"
       role="region"
       aria-label="Empty canvas guidance"
     >
       <div
-        className={`pw-empty-canvas-card max-w-full${allowCanvasDragThrough ? "" : " pointer-events-auto"}`}
+        className="pw-empty-canvas-card max-w-full pointer-events-auto"
       >
         <div className="pw-empty-canvas-icon" aria-hidden>
           <svg width="22" height="22" viewBox="0 0 36 36" fill="none">
@@ -41,7 +41,7 @@ export function PlannerEmptyCanvas({
         <p className="pw-empty-canvas-copy">
           {guestMode
             ? "Draw walls, drop catalog furniture, or open a template. Your work autosaves in this browser."
-            : "Draw walls, drop catalog furniture, import a blueprint, or open a template to get moving fast."}
+            : "Draw walls, drop catalog furniture, or open a template to get moving fast."}
         </p>
 
         <div className="pw-empty-canvas-actions">
@@ -51,10 +51,6 @@ export function PlannerEmptyCanvas({
           <button type="button" onClick={onOpenTemplates} className="pw-empty-canvas-secondary btn-outline">
             <LayoutTemplate size={14} aria-hidden />
             Use template
-          </button>
-          <button type="button" onClick={onImportBlueprint} className="pw-empty-canvas-secondary btn-outline">
-            <Upload size={14} aria-hidden />
-            Import blueprint
           </button>
         </div>
 

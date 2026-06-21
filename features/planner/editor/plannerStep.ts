@@ -10,7 +10,7 @@ export const PLANNER_STEP_LABELS: Record<PlannerStep, string> = {
 };
 
 export const PLANNER_STEP_DETAILS: Record<PlannerStep, string> = {
-  draw: "Walls, rooms, blueprint",
+  draw: "Walls, rooms",
   place: "Furniture, doors, windows",
   review: "Measurements, properties, export",
 };
@@ -56,7 +56,7 @@ export function getPlannerStepHint(step: PlannerStep, gates: PlannerStepGates): 
     case "draw":
       return gates.hasSpaceShell
         ? "Space shell is ready. Keep refining walls and rooms, or jump to Place to add products."
-        : "Start by tracing a blueprint or drawing walls and rooms to define the space.";
+        : "Start by drawing walls and rooms to define the space.";
     case "place":
       return gates.hasFurniture
         ? "Furniture and openings are in place. Keep arranging, or jump to Review for dimensions and export."

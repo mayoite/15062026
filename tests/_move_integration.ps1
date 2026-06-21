@@ -1,5 +1,4 @@
 $files = @(
-  'planner-lib-blueprintPdf.test.ts',
   'site-catalog-imageMetadata.test.ts',
   'planner-store-plannerSaves.test.ts',
   'catalog-sources.test.ts',

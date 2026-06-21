@@ -1,7 +1,7 @@
 /**
  * Rule-based Layout Advisor
  *
- * Constraint-based layout evaluation inspired by Blueprint3D room/furniture algorithms.
+ * Constraint-based layout evaluation inspired by 3D room/furniture algorithms.
  * Pure geometry - no AI/LLM dependency.
  */
 

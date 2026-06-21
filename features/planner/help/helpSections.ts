@@ -50,7 +50,7 @@ export const PLANNER_HELP_SECTIONS: HelpSection[] = [
   {
     id: "layers-and-visibility",
     title: "Layers and visibility",
-    summary: "Toggle furniture, walls, infrastructure, and blueprint layers independently.",
+    summary: "Toggle furniture, walls, and infrastructure layers independently.",
     keywords: ["layer", "hide", "show", "visibility", "toggle"],
   },
   {
@@ -59,13 +59,6 @@ export const PLANNER_HELP_SECTIONS: HelpSection[] = [
     summary: "Add dimension lines and read total area from the status bar.",
     keywords: ["measure", "dimension", "area", "mm"],
     featureSlug: "measure",
-  },
-  {
-    id: "blueprint-trace",
-    title: "Blueprint tracing",
-    summary: "Import a floor image, calibrate scale, and trace over it.",
-    keywords: ["blueprint", "underlay", "image", "scale", "pdf"],
-    featureSlug: "blueprint",
   },
   {
     id: "ai-assistant",

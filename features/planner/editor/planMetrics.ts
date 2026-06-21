@@ -29,7 +29,9 @@ function roundSqm(valueMm2: number): number {
 }
 
 function areaFromObject(object: Record<string, unknown>) {
-  return Math.max(0, Number(object.width) || 0) * Math.max(0, Number(object.height) || 0) * FABRIC_TO_MM * FABRIC_TO_MM;
+  const w = (Number(object.width) || 0) * (Number(object.scaleX) || 1);
+  const h = (Number(object.height) || 0) * (Number(object.scaleY) || 1);
+  return Math.max(0, w) * Math.max(0, h) * FABRIC_TO_MM * FABRIC_TO_MM;
 }
 
 function roomAreaFromWalls(objects: Record<string, unknown>[]) {
@@ -100,24 +102,15 @@ export function computePlanMetrics(
 
 export function getPageMetrics(_editor: null): PlanMetrics {
   const serializedDraft = getPlannerFabricRuntimeState().serializedDraft;
-  const blueprint = usePlannerWorkspaceStore.getState().blueprint;
-  // Only apply calibration when a blueprint image is actually loaded
-  const calibrationScale = blueprint.dataUrl ? getCalibrationScaleFromBlueprint(blueprint.mmPerUnit) : 1;
-  if (!serializedDraft) return { ...EMPTY_METRICS, calibrated: calibrationScale !== 1 };
+  const calibrationScale = 1;
+  if (!serializedDraft) return { ...EMPTY_METRICS, calibrated: false };
 
   try {
     const snapshot = JSON.parse(serializedDraft) as { objects?: unknown[] };
     return computePlanMetrics(snapshot.objects ?? [], calibrationScale);
   } catch {
-    return { ...EMPTY_METRICS, calibrated: calibrationScale !== 1 };
+    return { ...EMPTY_METRICS, calibrated: false };
   }
 }
 
-export function getCalibrationScaleFromBlueprint(mmPerUnit: number | null): number {
-  if (!mmPerUnit || !Number.isFinite(mmPerUnit) || mmPerUnit <= 0) return 1;
-  // The canonical value is 10 mm per fabric unit. Values far from that indicate a calibrated blueprint.
-  const ratio = mmPerUnit / 10;
-  // Sanity check: reject values that are too far from reasonable (e.g., > 100x)
-  if (ratio > 100 || ratio < 0.01) return 1;
-  return Math.abs(ratio - 1) < 0.01 ? 1 : ratio;
-}
+

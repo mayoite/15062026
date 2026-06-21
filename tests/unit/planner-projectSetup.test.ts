@@ -125,7 +125,6 @@ describe("purpose options and city list", () => {
 
 describe("applyProjectSetup — store mutations", () => {
   beforeEach(() => {
-    usePlannerWorkspaceStore.setState({ projectMetadata: null, blueprint: { mmPerUnit: null } as never });
   });
 
   it("sets projectMetadata in workspaceStore", () => {
@@ -136,14 +135,10 @@ describe("applyProjectSetup — store mutations", () => {
     expect(stored?.completedAt).toBeTruthy();
   });
 
-  it("sets blueprint.mmPerUnit to 500 for 5000 sq ft", () => {
     applyProjectSetup(makeMetadata({ floorAreaSqFt: 5000 }));
-    expect(usePlannerWorkspaceStore.getState().blueprint.mmPerUnit).toBe(500);
   });
 
-  it("sets blueprint.mmPerUnit to 1000 for 5001 sq ft", () => {
     applyProjectSetup(makeMetadata({ floorAreaSqFt: 5001 }));
-    expect(usePlannerWorkspaceStore.getState().blueprint.mmPerUnit).toBe(1000);
   });
 });
 
