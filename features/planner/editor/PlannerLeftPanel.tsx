@@ -1,21 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutGrid, Map, PanelLeftClose, Sparkles, type LucideIcon } from "lucide-react";
-
+import { LayoutGrid, PanelLeftClose, Sparkles, type LucideIcon } from "lucide-react";
 
 import { AIAssistDrawer } from "@/features/planner/ai/AIAssistDrawer";
 import { CatalogPanel } from "@/features/planner/catalog/CatalogPanel";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import type { MeasurementUnit } from "@/features/planner/lib/measurements";
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
-import { BlueprintPanel } from "./BlueprintPanel";
 
 import { getStepLeftEmphasis } from "@/features/planner/editor/usePlannerPanels";
 import { getStepLeftTab, type PlannerLeftTab } from "./plannerStepBindings";
 
 const TAB_META: Record<PlannerLeftTab, { label: string; Icon: LucideIcon }> = {
-  blueprint: { label: "Blueprint", Icon: Map },
   library: { label: "Library", Icon: LayoutGrid },
   "ai-assist": { label: "AI Assist", Icon: Sparkles },
 };
@@ -23,13 +20,13 @@ const TAB_META: Record<PlannerLeftTab, { label: string; Icon: LucideIcon }> = {
 function getTabsForStep(step: PlannerStep): PlannerLeftTab[] {
   switch (step) {
     case "draw":
-      return ["blueprint", "library", "ai-assist"];
+      return ["library", "ai-assist"];
     case "place":
-      return ["library", "blueprint", "ai-assist"];
+      return ["library", "ai-assist"];
     case "review":
-      return ["blueprint", "ai-assist", "library"];
+      return ["ai-assist", "library"];
     default:
-      return ["library", "blueprint", "ai-assist"];
+      return ["library", "ai-assist"];
   }
 }
 
@@ -39,12 +36,10 @@ function getStepNote(step: PlannerStep, tab: PlannerLeftTab): string {
       return tab === "library"
         ? "Browse Oando SVG symbols — click or drag desks, seating, and storage onto the canvas."
         : tab === "ai-assist"
-          ? "Use AI for layout ideas, then return to Library or Blueprint to keep editing."
-          : "Start from a blank canvas, trace a blueprint, or open a template before placing products.";
+          ? "Use AI for layout ideas, then return to Library to keep editing."
+          : "Start from a blank canvas or open a template before placing products.";
     case "place":
-      return tab === "blueprint"
-        ? "Keep the shell visible while you place furniture, doors, and windows."
-        : tab === "ai-assist"
+      return tab === "ai-assist"
           ? "Use AI for arrangement ideas, then place products directly on the canvas."
           : "Use the library for furniture, then place doors and windows on the canvas.";
     case "review":
@@ -154,8 +149,6 @@ export function PlannerLeftPanel({
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
           />
-        ) : tab === "blueprint" ? (
-          <BlueprintPanel guestMode={guestMode} embedded />
         ) : (
           <AIAssistDrawer editor={editor} embedded defaultExpanded />
         )}

@@ -6,7 +6,7 @@
 @media (min-width: 1024px) {
   .planner-workspace .pw-workspace {
     position: relative;
-    display: block;
+    display: flex;
     flex: 1;
     min-height: 0;
     overflow: hidden;
@@ -14,9 +14,11 @@
 
   .planner-workspace .pw-canvas-stage {
     display: flex;
+    flex: 1;
     flex-direction: column;
     width: 100%;
     height: 100%;
+    min-width: 0;
     min-height: 0;
   }
 
@@ -85,34 +87,27 @@
     backdrop-filter: blur(8px);
   }
 
-  /* Slide-over side panels — override legacy flex-column collapse in planner-shell.css */
+  /* Side panels as standard flex row participants — override legacy flex-column in planner-shell.css */
   .planner-workspace .pw-left-panel,
   .planner-workspace .pw-right-panel {
-    position: absolute;
-    top: 0;
-    bottom: 0;
     z-index: 46;
-    flex-shrink: unset;
+    flex-shrink: 0;
     opacity: 1;
     overflow: hidden;
-    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: width 0.24s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: var(--shadow-float);
   }
 
   .planner-workspace .pw-left-panel {
-    left: 0;
     width: var(--pw-left-w);
-    transform: translateX(-106%);
   }
 
   .planner-workspace .pw-left-panel[data-collapsed="true"] {
     width: 4.5rem;
-    transform: translateX(0);
     pointer-events: auto;
   }
 
   .planner-workspace .pw-left-panel[data-open="true"] {
-    transform: translateX(0);
     pointer-events: auto;
   }
 
@@ -129,32 +124,18 @@
     pointer-events: auto;
   }
 
-  .planner-workspace .pw-left-panel[data-step="draw"][data-open="true"] {
-    width: calc(var(--pw-left-w) + var(--space-6));
-  }
 
-  .planner-workspace .pw-left-panel[data-step="place"] {
-    width: calc(var(--pw-left-w) + var(--space-5));
-  }
-
-  .planner-workspace .pw-left-panel[data-step="review"] {
-    width: calc(var(--pw-left-w) - var(--space-4));
-  }
 
   .planner-workspace .pw-right-panel {
-    right: 0;
     width: var(--pw-right-w);
-    transform: translateX(106%);
   }
 
   .planner-workspace .pw-right-panel[data-open="true"] {
-    transform: translateX(0);
     pointer-events: auto;
   }
 
   .planner-workspace .pw-right-panel[data-collapsed="true"] {
     width: 4.5rem;
-    transform: translateX(0);
     pointer-events: auto;
   }
 
@@ -197,17 +178,7 @@
     pointer-events: none;
   }
 
-  .planner-workspace .pw-right-panel[data-step="draw"] {
-    width: calc(var(--pw-right-w) - var(--space-5));
-  }
 
-  .planner-workspace .pw-right-panel[data-step="place"] {
-    width: calc(var(--pw-right-w) - var(--space-2));
-  }
-
-  .planner-workspace .pw-right-panel[data-step="review"] {
-    width: calc(var(--pw-right-w) + var(--space-5));
-  }
 
   .planner-workspace .pw-workspace[data-canvas-dragging="true"] .pw-dockable-chrome,
   .planner-workspace .pw-workspace[data-canvas-dragging="true"] .pw-right-panel {

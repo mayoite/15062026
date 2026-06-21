@@ -439,7 +439,7 @@ export function getFlagMetadata(flag: FeatureFlagName): {
     aiFurnish: { group: "AI", description: "AI auto-furnish" },
     complianceChecks: { group: "AI", description: "Compliance validation" },
     // Export
-    exportPdf: { group: "Export", description: "PDF blueprints" },
+    exportPdf: { group: "Export", description: "PDF exports" },
     exportPng: { group: "Export", description: "PNG images" },
     exportSvg: { group: "Export", description: "SVG vector" },
     exportBoq: { group: "Export", description: "BOQ CSV/JSON" },

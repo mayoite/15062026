@@ -248,7 +248,7 @@
 
 .fcw-workspace-grid {
   --fcw-left-col: 0px;
-  --fcw-right-col: 320px;
+  --fcw-right-col: 0px;
   display: grid;
   grid-template-columns: var(--fcw-left-col) minmax(0, 1fr) var(--fcw-right-col);
   grid-template-rows: minmax(0, 1fr);
@@ -371,6 +371,10 @@
   pointer-events: auto;
   opacity: 1;
   border-right: 1px solid var(--border-soft);
+}
+
+.planner-workspace .fcw-workspace-grid > .pw-left-panel[data-collapsed="true"] {
+  width: 4.5rem !important;
 }
 
 .planner-workspace .fcw-workspace-grid > .pw-left-panel .pw-panel-body[data-active-tab="library"] {

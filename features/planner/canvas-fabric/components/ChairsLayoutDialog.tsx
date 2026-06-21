@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Canvas as FabricCanvas, Group, FabricObject } from 'fabric';
+import { Canvas as FabricCanvas, Group } from 'fabric';
+import type { FabricObject } from 'fabric';
 import { FURNISHINGS } from '../models/furnishings';
 import { createShape, RL_FILL, RL_STROKE } from '../lib/helpers';
 import { ZoomControl } from './ZoomControl';

@@ -8,7 +8,6 @@ import {
   Eye,
   EyeOff,
   Layers2,
-  Map,
   RectangleHorizontal,
   Ruler,
   type LucideIcon,
@@ -26,7 +25,7 @@ import {
 } from "../store/workspaceStore";
 
 const LABELS: Record<PlannerLayerCategory, string> = {
-  underlay: "Blueprint",
+  
   walls: "Walls & openings",
   rooms: "Rooms",
   zones: "Zones",
@@ -35,7 +34,6 @@ const LABELS: Record<PlannerLayerCategory, string> = {
 };
 
 const ICONS: Record<PlannerLayerCategory, LucideIcon> = {
-  underlay: Map,
   walls: BrickWall,
   rooms: RectangleHorizontal,
   zones: Layers2,
@@ -59,7 +57,6 @@ export function countShapesByLayer(
   shapes: ReadonlyArray<{ type: string }>,
 ): Record<PlannerLayerCategory, number> {
   const counts: Record<PlannerLayerCategory, number> = {
-    underlay: 0,
     walls: 0,
     rooms: 0,
     zones: 0,

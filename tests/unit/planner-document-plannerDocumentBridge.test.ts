@@ -16,7 +16,6 @@ describe("planner document editor bridge", () => {
       ...state,
       unitSystem: "metric",
       projectMetadata: null,
-      blueprint: { ...state.blueprint, mmPerUnit: null },
     }));
     usePlannerCatalogStore.setState((state) => ({
       ...state,
@@ -112,7 +111,6 @@ describe("planner document editor bridge", () => {
         completedAt: "2026-06-21T10:30:00.000Z",
       },
       workspace: {
-        blueprint: {
           mmPerUnit: 500,
         },
         projectMetadata: {
@@ -129,7 +127,6 @@ describe("planner document editor bridge", () => {
     expect(getFabricSnapshotFromDocument(normalized)).toContain('"name":"GENERIC:Desk"');
   });
 
-  it("persists blueprint workspace fields through document export and import", () => {
     seedFabricRuntime({
       objects: [
         { name: "GENERIC:Desk", left: 40, top: 60, width: 120, height: 60 },
@@ -141,9 +138,6 @@ describe("planner document editor bridge", () => {
     });
     usePlannerWorkspaceStore.setState((state) => ({
       ...state,
-      blueprint: {
-        ...state.blueprint,
-        dataUrl: "data:image/png;base64,blueprint-fixture",
         sourceKind: "image",
         sourcePage: null,
         sourcePageCount: null,
@@ -161,7 +155,6 @@ describe("planner document editor bridge", () => {
     }));
 
     const document = buildPlannerDocumentFromEditor(null, {
-      title: "Blueprint Session",
     });
     const normalized = normalizePlannerDocument(createPlannerExportPayload(document));
     const importDraft = vi.fn(async () => undefined);
@@ -169,8 +162,6 @@ describe("planner document editor bridge", () => {
     expect(loadPlannerDocumentIntoFabric(importDraft, normalized)).toBe(true);
     expect(normalized.sceneJson).toMatchObject({
       workspace: {
-        blueprint: {
-          dataUrl: "data:image/png;base64,blueprint-fixture",
           sourceKind: "image",
           x: 42,
           y: 24,

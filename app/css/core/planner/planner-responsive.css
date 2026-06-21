@@ -2,8 +2,8 @@
 
 @media (min-width: 1400px) {
   .planner-workspace {
-    --pw-left-w: 18.5rem;
-    --pw-right-w: 19.5rem;
+    --pw-left-w: 19.125rem;
+    --pw-right-w: 20.125rem;
     --pw-topbar-h: 3.625rem;
   }
 
@@ -28,8 +28,8 @@
 
 @media (max-width: 1023px) {
   .planner-workspace {
-    --pw-left-w: min(18rem, 92vw);
-    --pw-right-w: min(18rem, 92vw);
+    --pw-left-w: min(18.625rem, 92vw);
+    --pw-right-w: min(18.625rem, 92vw);
   }
 
   .planner-workspace .pw-left-panel,

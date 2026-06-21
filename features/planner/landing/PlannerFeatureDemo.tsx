@@ -45,35 +45,6 @@ function Label({ x, y, children }: PropsWithChildren<{ x: number; y: number }>) 
   );
 }
 
-function BlueprintDemo() {
-  return (
-    <DemoSvg>
-      <path
-        d="M70 60 H390 V150 H310 V236 H70 Z"
-        stroke={FAINT}
-        strokeWidth="2"
-        strokeDasharray="6 6"
-        opacity="0.6"
-      />
-      <path
-        d="M70 60 H390 V150 H310 V236 H70 Z"
-        stroke={STROKE}
-        strokeWidth="4"
-        strokeLinejoin="round"
-        pathLength={1}
-        className="pfp-anim-draw pfp-delay-2"
-      />
-      <line x1="70" y1="266" x2="390" y2="266" stroke={ACCENT} strokeWidth="2" pathLength={1} className="pfp-anim-draw pfp-delay-5" />
-      <circle cx="70" cy="266" r="6" fill={ACCENT} className="pfp-anim-pulse" />
-      <circle cx="390" cy="266" r="6" fill={ACCENT} className="pfp-anim-pulse" />
-      <g className="pfp-anim-rise pfp-delay-7">
-        <rect x="185" y="250" width="90" height="26" rx="13" fill={WASH} stroke={FAINT} />
-        <Label x={203} y={267}>8 000 mm</Label>
-      </g>
-    </DemoSvg>
-  );
-}
-
 function MeasureDemo() {
   return (
     <DemoSvg>
@@ -225,7 +196,6 @@ function ExportDemo() {
 }
 
 const DEMOS: Record<string, () => ReactElement> = {
-  blueprint: BlueprintDemo,
   measure: MeasureDemo,
   catalog: CatalogDemo,
   "3d-view": ThreeDViewDemo,

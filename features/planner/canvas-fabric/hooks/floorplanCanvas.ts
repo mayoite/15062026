@@ -13,6 +13,7 @@ import {
   Pattern,
   loadSVGFromString,
   util as fabricUtil,
+  Image as FabricImage,
 } from 'fabric';
 import type { Rect, FabricObject } from 'fabric';
 import { saveAs as saveFile } from 'file-saver';
@@ -23,7 +24,7 @@ import type { FabricContextMenuState, FabricDrawTool } from '../fabricDrawToolTy
 import { DEFAULT_FABRIC_DRAW_COLOR, DEFAULT_FABRIC_FILL_COLOR } from '../fabricDrawToolTypes';
 import { applyFabricTransformLocks, canEditFabricFill } from '../fabricObjectUtils';
 import { wireFabricDrawTools } from './fabricDrawTools';
-import { wireFabricWalls } from './fabricWalls';
+
 
 // Types and pure utilities are in floorplanCanvasTypes.ts
 export {
@@ -69,7 +70,7 @@ export function createFloorplanCanvasApi(
   let drawFillColor: string = DEFAULT_FABRIC_FILL_COLOR;
   let contextMenuListener: ((state: FabricContextMenuState | null) => void) | null = null;
   let drawToolsController: ReturnType<typeof wireFabricDrawTools> | null = null;
-  let wc: ReturnType<typeof wireFabricWalls> | null = null;
+  const wc: any = null;
 
   const {
     RL_VIEW_WIDTH,
@@ -86,10 +87,14 @@ export function createFloorplanCanvasApi(
   // ─── convenience aliases that delegate to wc (available after setCanvasView) ─
 
   function isWallLine(obj: unknown): obj is Line {
-    return wc ? wc.isWallLine(obj) : Boolean(obj && obj instanceof Line && String((obj as PlannerFabricObject).name ?? '').includes('WALL'));
+    return false;
   }
 
-  function isRoomEditActive() { return roomEditMode; }
+  function isWallOrCorner(obj: unknown): boolean {
+    return false;
+  }
+
+
 
   /** Scene coordinates (zoom-aware). Never use legacy e.pointer — it can be viewport space in Fabric v7. */
   function getScenePointer(e: unknown): Point | null {
@@ -210,13 +215,11 @@ export function createFloorplanCanvasApi(
   }
 
   function handleSelectionChange() {
-    if (isRoomEditActive()) {
-      const active = view.getActiveObject();
-      if (isWallLine(active)) {
-        selections = [active];
-        ctxRef.current.setSelections(selections);
-        ctxRef.current.setUngroupable(false);
-      }
+    const active = view.getActiveObject();
+    if (isWallOrCorner(active)) {
+      selections = [active as FabricObject];
+      ctxRef.current.setSelections(selections);
+      ctxRef.current.setUngroupable(false);
       return;
     }
     onSelected();
@@ -240,19 +243,7 @@ export function createFloorplanCanvasApi(
     view.calcOffset();
 
     // Initialize walls controller — must come before any event wiring
-    wc = wireFabricWalls({
-      getView: () => view,
-      getCorners: () => corners,
-      setCorners: (c) => { corners = c; },
-      getWalls: () => walls,
-      setWalls: (w) => { walls = w; },
-      isRoomEditActive: () => roomEditMode,
-      enterRoomEdit: () => ctxRef.current.enterRoomEdit(),
-      saveState,
-      getScenePointer,
-      getRoomSize: () => ROOM_SIZE,
-      setRoomSize: (size) => { ROOM_SIZE = size; },
-    });
+
 
     view.on('selection:created', () => {
       handleSelectionChange();
@@ -263,9 +254,6 @@ export function createFloorplanCanvasApi(
     });
 
     view.on('selection:cleared', (_e: unknown) => {
-      if (isRoomEditActive()) {
-        return;
-      }
       selections = []; ctxRef.current.setSelections(selections);
       ctxRef.current.setUngroupable(false);
     });
@@ -284,10 +272,10 @@ export function createFloorplanCanvasApi(
       native?.stopPropagation?.();
       if (!native || !contextMenuListener) return;
       const target = (ev.target as FabricObject | undefined) ?? null;
-      if (target && !isRoomEditActive()) {
-        if (isWallLine(target)) {
-          view.discardActiveObject();
-          selections = [];
+      if (target) {
+        if (isWallOrCorner(target)) {
+          view.setActiveObject(target);
+          selections = [target];
           ctxRef.current.setSelections(selections);
           ctxRef.current.setUngroupable(false);
         } else {
@@ -311,6 +299,18 @@ export function createFloorplanCanvasApi(
       const obj = (e as Record<string, unknown>).target;
       // Wall/corner moving — delegate entirely to wc
       wc?.handleObjectMoving(e);
+
+      // Grid snapping
+      const target = obj as FabricObject;
+      if (ctxRef.current.snapEnabled && target && !isWallOrCorner(target)) {
+        const snap = RL_FOOT;
+        if (target.left !== undefined) {
+          target.left = Math.round(target.left / snap) * snap;
+        }
+        if (target.top !== undefined) {
+          target.top = Math.round(target.top / snap) * snap;
+        }
+      }
 
       // Door/window snapping to nearest wall
       const point = getScenePointer(e);
@@ -350,14 +350,6 @@ export function createFloorplanCanvasApi(
           REMOVE_DW = true;
         } else {
           REMOVE_DW = false;
-          if (!wc) return;
-          const direction = wc.directionOfWall(wall);
-
-          if (direction === wc.HORIZONTAL) {
-            locateDW(obj, wall, point.x, wc.Top(wall));
-          } else {
-            locateDW(obj, wall, wc.Left(wall), point.y);
-          }
         }
       }
     });
@@ -373,10 +365,7 @@ export function createFloorplanCanvasApi(
     });
 
     view.on('mouse:dblclick', (e: unknown) => {
-      const shouldExitRoomEdit = wc?.handleDoubleClick(e);
-      if (shouldExitRoomEdit === true) {
-        ctxRef.current.exitRoomEdit();
-      }
+      wc?.handleDoubleClick(e);
     });
 
     drawToolsController = wireFabricDrawTools({
@@ -385,7 +374,7 @@ export function createFloorplanCanvasApi(
       getDrawTool: () => drawTool,
       getDrawColor: () => drawColor,
       getDrawFillColor: () => drawFillColor,
-      roomEditActive: () => roomEditMode,
+      roomEditActive: () => false,
       saveState,
     });
 
@@ -398,36 +387,17 @@ export function createFloorplanCanvasApi(
 
 
   function locateDW(dw: Group, wall: Line, x: number, y: number) {
-    if (!wc) return dw;
-    const dWall = wc.directionOfWall(wall);
-    const dDW = dw.angle % 180 === 0 ? wc.HORIZONTAL : wc.VERTICAL;
-
-    if (dWall !== dDW) {
-      dw.angle = (dw.angle + 90) % 360;
-    }
-
-    dw.top = y;
-    dw.left = x;
-    const center = dw.getCenterPoint();
-
-    if (dWall === wc.HORIZONTAL) {
-      dw.top += center.y < dw.top ? wc.OFFSET : -wc.OFFSET;
-    } else {
-      dw.left += center.x < dw.left ? wc.OFFSET : -wc.OFFSET;
-    }
-
     return dw;
   }
 
   /**********************************************************************************************************/
 
   function editRoom() {
-    roomEditMode = true;
-    drawToolsController?.applyCanvasMode();
-    wc?.refreshRoomEditObjectModes(true);
+    // No-op: fabricWalls is removed
+  }
 
-    if (ctxRef.current.roomEditStates.length === 0)
-      saveState();
+  function endEditRoom() {
+    // No-op: fabricWalls is removed
   }
 
   function cancelRoomEdition() {
@@ -458,8 +428,6 @@ export function createFloorplanCanvasApi(
           group = fabricUtil.groupSVGElements(objects, parsed.options);
           group.set({
             name: `GENERIC:${payloadObj.name || payloadObj.title || 'Item'}`,
-            originX: 'center',
-            originY: 'center',
           });
           group.scaleX = (payloadObj.width ?? 1) / Math.max(1, group.width);
           group.scaleY = (payloadObj.height ?? 1) / Math.max(1, group.height);
@@ -476,66 +444,7 @@ export function createFloorplanCanvasApi(
       group.set('name', `GENERIC:${payloadObj.name}`);
     }
 
-    if (type === 'DOOR' || type === 'WINDOW') {
-      group.originX = 'center';
-      group.originY = 'top';
 
-
-      const dws = filterObjects(['DOOR', 'WINDOW']);
-      const dw = dws.length ? dws[dws.length - 1] : null;
-
-      let wall: Line | undefined, x: number, y: number;
-      if (!wc) return;
-      if (!dw) {
-        wall = walls[0];
-        if (!wall) return;
-        x = wc.Left(wall) + RL_AISLEGAP;
-        y = wc.Top(wall);
-      } else {
-        const od = dw.angle % 180 === 0 ? wc.HORIZONTAL : wc.VERTICAL;
-
-        let placeOnNextWall = false;
-        wall = wc.wallOfDW(dw);
-        if (!wall) return;
-
-        if (od === wc.HORIZONTAL) {
-          x = dw.left + dw.width + RL_AISLEGAP;
-          y = wc.Top(wall);
-          if (x + group.width > wc.Right(wall)) {
-            placeOnNextWall = true;
-          }
-        } else {
-          y = dw.top + dw.width + RL_AISLEGAP;
-          x = wc.Left(wall);
-          if (y + group.width > wc.Bottom(wall)) {
-            placeOnNextWall = true;
-          }
-        }
-
-        if (placeOnNextWall) {
-          wall = walls[(Number((wall as PlannerFabricObject).name?.split(':')[1]) + 1) % walls.length];
-          if (!wall) return;
-          const nd = wc.directionOfWall(wall);
-
-          if (nd === wc.HORIZONTAL) {
-            x = wc.Left(wall) + RL_AISLEGAP;
-            y = wc.Top(wall);
-          } else {
-            x = wc.Left(wall);
-            y = wc.Top(wall) + RL_AISLEGAP;
-          }
-        }
-      }
-
-      if (!wall) return;
-      locateDW(group, wall, x ?? 0, y ?? 0);
-
-      group.hasBorders = false;
-      view.add(group);
-      saveState();
-
-      return;
-    }
 
     // retrieve spacing from object, use rlAisleGap if not specified
     const newLR = payloadObj.lrSpacing || RL_AISLEGAP;
@@ -571,6 +480,26 @@ export function createFloorplanCanvasApi(
 
       group.left = Math.max(newLeft, roomOrigin() + newLR + group.width / 2);
       group.top = Math.max(newTop, roomOrigin() + newTB + group.height / 2);
+    }
+
+    if (!hasExplicitPosition && view) {
+      let attempts = 0;
+      const spacing = 40;
+      while (attempts < 50) {
+        const collision = view.getObjects().some(obj => 
+          !(obj as any).name?.includes('WALL') && 
+          (obj as any).name !== 'CORNER' &&
+          Math.abs((obj.left || 0) - (group.left || 0)) < 5 && 
+          Math.abs((obj.top || 0) - (group.top || 0)) < 5
+        );
+        if (!collision) break;
+        group.left += spacing;
+        if (group.left + (group.width || 0) / 2 > ROOM_SIZE.width + roomOrigin()) {
+          group.left = newLR + ((group.width || 0) / 2) + roomOrigin();
+          group.top += spacing;
+        }
+        attempts++;
+      }
     }
 
     view.add(group);
@@ -737,7 +666,7 @@ export function createFloorplanCanvasApi(
       return;
     }
     const active = view.getActiveObject();
-    if (!active) {
+    if (!active || isWallOrCorner(active)) {
       return;
     }
     copied = await active.clone(['name', 'hasControls']);
@@ -773,7 +702,11 @@ export function createFloorplanCanvasApi(
     if (ctxRef.current.roomEdit) {
       return;
     }
-    selections.forEach(selection => view.remove(selection));
+    const deletable = selections.filter(selection => !isWallOrCorner(selection));
+    if (deletable.length === 0) {
+      return;
+    }
+    deletable.forEach(selection => view.remove(selection));
     view.discardActiveObject();
     view.requestRenderAll();
     saveState();
@@ -788,7 +721,7 @@ export function createFloorplanCanvasApi(
     let angle = CTRL_KEY_DOWN ? 90 : 15;
     const obj = view.getActiveObject();
 
-    if (!obj) { return; }
+    if (!obj || isWallOrCorner(obj)) { return; }
 
     if ((obj.originX !== 'center' || obj.originY !== 'center') && obj.centeredRotation) {
       obj.originX = 'center';
@@ -815,6 +748,10 @@ export function createFloorplanCanvasApi(
       return;
     }
 
+    if (selections.some(isWallOrCorner)) {
+      return;
+    }
+
     const active = view.getActiveObject();
     if (!(selections.length > 1 && active instanceof ActiveSelection)) {
       return;
@@ -833,6 +770,10 @@ export function createFloorplanCanvasApi(
 
   function ungroup() {
     if (ctxRef.current.roomEdit) {
+      return;
+    }
+
+    if (selections.some(isWallOrCorner)) {
       return;
     }
 
@@ -858,7 +799,7 @@ export function createFloorplanCanvasApi(
     }
 
     const active = view.getActiveObject();
-    if (!active) {
+    if (!active || isWallOrCorner(active)) {
       return;
     }
     switch (direction) {
@@ -915,10 +856,17 @@ export function createFloorplanCanvasApi(
     if (!target) return;
     const newWidth = widthMm / FABRIC_TO_MM;
     const newHeight = heightMm / FABRIC_TO_MM;
-    target.set({
-      width: newWidth,
-      height: newHeight,
-    });
+    if (target instanceof Group) {
+      target.set({
+        scaleX: newWidth / Math.max(0.1, target.width),
+        scaleY: newHeight / Math.max(0.1, target.height),
+      });
+    } else {
+      target.set({
+        width: newWidth,
+        height: newHeight,
+      });
+    }
     target.setCoords();
     view.requestRenderAll();
     saveState();

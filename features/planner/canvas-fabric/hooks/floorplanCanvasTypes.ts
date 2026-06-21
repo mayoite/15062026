@@ -31,6 +31,7 @@ export type FloorplanCtx = {
   roomEdit: boolean;
   zoom: number;
   gridEnabled: boolean;
+  snapEnabled: boolean;
   states: string[];
   redoStates: string[];
   roomEditStates: string[];

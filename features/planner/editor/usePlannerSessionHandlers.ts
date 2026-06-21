@@ -21,7 +21,7 @@ import {
 } from "@/features/planner/persistence/plannerDraft";
 import { parsePlannerDocumentImportFile } from "@/features/planner/persistence/plannerImport";
 import { normalizePlannerDocument } from "@/features/planner/model";
-import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
+import type { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
 import { loadPlannerDocumentIntoFabric } from "@/features/planner/lib/fabricDocumentBridge";
 import type { PlannerSavedEntry } from "@/features/planner/ui/PlannerSessionDialog";
 import type { ChangeEvent } from "react";
@@ -234,7 +234,7 @@ export function usePlannerSessionHandlers({
   // ── Import / Export ───────────────────────────────────────────────────────
 
   const handleImportFileChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>, planName: string) => {
+    async (event: ChangeEvent<HTMLInputElement>, _planName: string) => {
       const file = event.target.files?.[0];
       if (!file) return;
       // P5-09

@@ -21,12 +21,6 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 ### planner (173)
 
 - `planner-3d-types.test.ts`
-- `planner-blueprintCanvasFrame.test.ts`
-- `planner-blueprintCanvasTransform.test.ts`
-- `planner-blueprintImport.test.ts`
-- `planner-blueprintPdfSession.test.ts`
-- `planner-blueprintTraceGuide.test.ts`
-- `planner-blueprintTransform.test.ts`
 - `planner-buildBlock2D.test.ts`
 - `planner-catalog-catalogHierarchy.test.ts`
 - `planner-catalog-catalogStore-init.test.ts`
@@ -43,9 +37,6 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-catalog.test.ts`
 - `planner-catalogBlockBridge.test.ts`
 - `planner-chrome-layout.test.ts`
-- `planner-editor-BlueprintPanel.test.tsx`
-- `planner-editor-BlueprintTraceGuideOverlay.test.tsx`
-- `planner-editor-BlueprintUnderlay.test.tsx`
 - `planner-editor-ExportModal.test.tsx`
 - `planner-editor-LayerManagerPanel.test.tsx`
 - `planner-editor-LayerVisibilityPanel.test.tsx`
@@ -93,7 +84,6 @@ JSON: `results/test-inventory.json` · Migration: `results/test-migration-map.js
 - `planner-lib-applyRoomPreset.test.ts`
 - `planner-lib-assetPipeline.test.ts`
 - `planner-lib-blockTldrawLicensePing.test.ts`
-- `planner-lib-blueprintPdf.test.ts`
 - `planner-lib-branches.test.ts`
 - `planner-lib-calibrationScale.test.ts`
 - `planner-lib-compliance.test.ts`

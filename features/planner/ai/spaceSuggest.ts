@@ -1,6 +1,6 @@
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
-import { millimetersToCanvasUnits, readMmPerCanvasUnit } from "@/features/planner/lib/calibrationScale";
+import { millimetersToCanvasUnits } from "@/features/planner/lib/calibrationScale";
 import {
   normalizeCatalogMm,
   plannerCanvasUnits,
@@ -83,11 +83,11 @@ function buildPerimeterWalls(
 /** Deterministic grid-packing layout for facilities admins. */
 export function suggestLayoutGridPack(input: SpaceSuggestInput): SuggestedLayoutJson {
   const catalog = PLANNER_CATALOG_ITEMS;
-  const mmPerUnit = readMmPerCanvasUnit();
+  const mmPerUnit = 10;
   const roomMm = estimateRoomMm(input.seatCount, input.floorAreaSqFt);
   const roomW = plannerCanvasUnits(roomMm.widthMm);
   const roomH = plannerCanvasUnits(roomMm.depthMm);
-  const aisle = millimetersToCanvasUnits(AISLE_MM, mmPerUnit);
+  const aisle = millimetersToCanvasUnits(AISLE_MM);
 
   const bench = pickWorkstationBench(catalog, input.seatCount);
   const benchW = plannerCanvasUnits(bench.widthMm);

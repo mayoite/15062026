@@ -4,7 +4,6 @@ import { expect, test } from "@playwright/test";
 const ROUTES = [
   "/planner/features/",
   "/planner/features/measure/",
-  "/planner/features/blueprint/",
   "/planner/help/",
 ];
 

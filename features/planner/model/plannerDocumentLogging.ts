@@ -32,7 +32,6 @@ const LARGE_BLOB_FIELD_NAMES = new Set([
   "fabricsnapshot",
   "store",
   "workspace",
-  "blueprint",
   "dataurl",
   "data_url",
   "enquirypayload",

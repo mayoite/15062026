@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Copy,
-  Download,
-  Redo2,
-  RotateCcw,
-  RotateCw,
-  Trash2,
-  Undo2,
-} from "lucide-react";
+  DownloadSimple,
+  ArrowArcRight,
+  ArrowCounterClockwise,
+  ArrowClockwise,
+  Trash,
+  ArrowArcLeft,
+  Intersect,
+  Exclude,
+} from "@phosphor-icons/react";
 import { useFloorplan } from "./context/FloorplanContext";
 import { FabricDrawToolsBar } from "./FabricDrawToolsBar";
 
@@ -117,18 +119,18 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
       <div className="pw-subtopbar pw-subtopbar--fabric fcw-toolbar" role="toolbar" aria-label="Room edit tools">
         <div className="fcw-toolbar-group">
           <IconButton title="Undo" disabled={undoDisabled} onClick={app.undo}>
-            <Undo2 size={16} strokeWidth={1.9} />
+            <ArrowArcLeft size={16} weight="bold" />
           </IconButton>
           <IconButton title="Redo" disabled={redoDisabled} onClick={app.redo}>
-            <Redo2 size={16} strokeWidth={1.9} />
+            <ArrowArcRight size={16} weight="bold" />
           </IconButton>
         </div>
         <div className="fcw-toolbar-separator" />
         <div className="fcw-toolbar-group">
           <button
             type="button"
-            className="fcw-btn fcw-btn--dark"
-            onClick={() => window.alert("Snap controls are not available in this build yet.")}
+            className={`fcw-btn fcw-btn--dark${app.snapEnabled ? " fcw-btn--primary" : ""}`}
+            onClick={app.toggleSnap}
           >
             <span>Snap</span>
           </button>
@@ -146,7 +148,7 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
             End room edit
           </button>
           <button type="button" className="fcw-btn" onClick={exportDraft}>
-            <Download size={15} strokeWidth={1.9} />
+            <DownloadSimple size={15} weight="bold" />
             <span>Export</span>
           </button>
         </div>
@@ -160,47 +162,47 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
       <div className="fcw-toolbar-separator" />
       <div className="fcw-toolbar-group" role="group" aria-label="Canvas history">
         <IconButton title="Undo" disabled={undoDisabled} onClick={app.undo}>
-          <Undo2 size={16} strokeWidth={1.9} />
+          <ArrowArcLeft size={16} weight="bold" />
         </IconButton>
         <IconButton title="Redo" disabled={redoDisabled} onClick={app.redo}>
-          <Redo2 size={16} strokeWidth={1.9} />
+          <ArrowArcRight size={16} weight="bold" />
         </IconButton>
       </div>
       <div className="fcw-toolbar-separator" />
       <div className="fcw-toolbar-group">
         <IconButton title="Clone" disabled={app.roomEdit || !app.selections.length} onClick={app.clone}>
-          <Copy size={16} strokeWidth={1.9} />
+          <Copy size={16} weight="bold" />
         </IconButton>
         <IconButton title="Delete" disabled={app.roomEdit || !app.selections.length} onClick={app.deleteSelection}>
-          <Trash2 size={16} strokeWidth={1.9} />
+          <Trash size={16} weight="bold" />
         </IconButton>
         <IconButton
           title="Rotate left"
           disabled={app.roomEdit || !app.selections.length}
           onClick={app.rotateAntiClockWise}
         >
-          <RotateCcw size={16} strokeWidth={1.9} />
+          <ArrowCounterClockwise size={16} weight="bold" />
         </IconButton>
         <IconButton
           title="Rotate right"
           disabled={app.roomEdit || !app.selections.length}
           onClick={app.rotateClockWise}
         >
-          <RotateCw size={16} strokeWidth={1.9} />
+          <ArrowClockwise size={16} weight="bold" />
         </IconButton>
         <IconButton title="Group" disabled={app.roomEdit || app.selections.length < 2} onClick={app.group}>
-          G
+          <Intersect size={16} weight="bold" />
         </IconButton>
         <IconButton title="Ungroup" disabled={app.roomEdit || !app.ungroupable} onClick={app.ungroup}>
-          U
+          <Exclude size={16} weight="bold" />
         </IconButton>
       </div>
       <div className="fcw-toolbar-separator" />
       <div className="fcw-toolbar-group">
         <button
           type="button"
-          className="fcw-btn fcw-btn--dark"
-          onClick={() => window.alert("Snap controls are not available in this build yet.")}
+          className={`fcw-btn fcw-btn--dark${app.snapEnabled ? " fcw-btn--primary" : ""}`}
+          onClick={app.toggleSnap}
         >
           <span>Snap</span>
         </button>
@@ -215,11 +217,8 @@ export function FabricCanvasSubToolbar({ onExport }: FabricCanvasSubToolbarProps
       <div className="fcw-toolbar-separator" />
       <div className="fcw-toolbar-group">
         <ArrangeMenu app={app} />
-        <button type="button" className="fcw-btn fcw-btn--primary" onClick={app.editRoom}>
-          Edit room
-        </button>
         <button type="button" className="fcw-btn" onClick={exportDraft}>
-          <Download size={15} strokeWidth={1.9} />
+          <DownloadSimple size={15} weight="bold" />
           <span>Export</span>
         </button>
       </div>

@@ -10,7 +10,6 @@ import {
 export type PlannerLandingIcon = React.ComponentType<IconProps>;
 
 export const PLANNER_LANDING_ICONS: Record<string, PlannerLandingIcon> = {
-  blueprint: UploadSimple,
   catalog: Layout,
   "3d-view": Cube,
   export: Export,

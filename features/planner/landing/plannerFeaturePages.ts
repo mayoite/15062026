@@ -23,24 +23,7 @@ export type PlannerFeaturePage = {
 };
 
 export const PLANNER_FEATURE_PAGES: PlannerFeaturePage[] = [
-  {
-    slug: "blueprint",
-    title: "Start from your existing floor plan — upload a PDF or image",
-    tagline: "No measuring tape required",
-    icon: Upload,
-    summary:
-      "Drop in a floor plan from your architect or site survey, set one known wall length, and trace the outline — your layout stays true to scale.",
-    bullets: [
-      "Upload PDFs or photos from site visits, RFP packs, or email attachments",
-      "Mark two points on a known distance to lock accurate measurements",
-      "Fade the background while you trace walls and room boundaries",
-      "Show or hide the floor plan layer whenever you need a clearer view",
-    ],
-    helpSectionId: "blueprint-trace",
-    tryPath: "/planner/guest/",
-    memberPath: "/planner/canvas/",
-    relatedSlugs: ["measure", "catalog"],
-  },
+
   {
     slug: "measure",
     title: "Check room sizes before you commit to furniture orders",
@@ -57,7 +40,7 @@ export const PLANNER_FEATURE_PAGES: PlannerFeaturePage[] = [
     helpSectionId: "measurements",
     tryPath: "/planner/guest/",
     memberPath: "/planner/canvas/",
-    relatedSlugs: ["blueprint", "export"],
+    relatedSlugs: ["export"],
   },
   {
     slug: "catalog",

@@ -53,59 +53,18 @@ export function FabricCanvasWorkspace({
         {selectionAnnouncement ? `Selected: ${selectionAnnouncement}` : ""}
       </div>
       <FabricCanvasContextMenu />
-      <div
-        className="fcw-workspace-grid"
-        data-left-open={leftOpen || undefined}
-        data-left-collapsed={leftCollapsed || undefined}
-      >
-        {leftPanel}
         {/* P7-04: role="application" marks the canvas as a complex interactive widget. */}
         <section
           className="fcw-stage-card"
+          style={{ flex: 1, width: "100%", minHeight: 0, border: "none" }}
           role="application"
           aria-label={canvasLabel}
           data-testid="planner-fabric-ready"
         >
           <FloorplanCanvas />
         </section>
-      </div>
 
-      <table className="fcw-status-bar">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Name</th>
-            <th>Left</th>
-            <th>Top</th>
-            <th>Rotation</th>
-            <th>Width</th>
-            <th>Height</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {app.selections.map((selected, i) => {
-            const name = String(selected.name ?? "");
-            const [type, label] = name.split(":");
-            return (
-              <tr key={i}>
-                <td>{type}</td>
-                <td>{label}</td>
-                <td>{formatDim(Number(selected.left) || 0)}</td>
-                <td>{formatDim(Number(selected.top) || 0)}</td>
-                <td>{String(selected.angle ?? "")}°</td>
-                <td>{formatDim(Number(selected.width) || 0)}</td>
-                <td>{formatDim(Number(selected.height) || 0)}</td>
-                <td>
-                  {type === "TABLE" && Array.isArray((selected as { _objects?: unknown[] })._objects)
-                    ? `${((selected as { _objects: unknown[] })._objects.length ?? 1) - 1} Chairs`
-                    : null}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+
     </div>
   );
 }

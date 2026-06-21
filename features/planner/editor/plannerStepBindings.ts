@@ -1,7 +1,7 @@
 import type { PlannerToolBinding } from "@/features/planner/editor/plannerKeyboardShortcuts";
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
 
-export type PlannerLeftTab = "library" | "blueprint" | "ai-assist";
+export type PlannerLeftTab = "library" | "ai-assist";
 
 export function getStepToolBinding(step: PlannerStep): PlannerToolBinding {
   switch (step) {
@@ -19,10 +19,10 @@ export function getStepToolBinding(step: PlannerStep): PlannerToolBinding {
 export function getStepLeftTab(step: PlannerStep): PlannerLeftTab {
   switch (step) {
     case "draw":
-      return "blueprint";
-    case "review":
-      return "blueprint";
+      return "library";
     case "place":
+      return "library";
+    case "review":
       return "library";
     default:
       return "library";

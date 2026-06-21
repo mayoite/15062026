@@ -1,20 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  clampBlueprintOpacity,
-  clampBlueprintScale,
-  formatBlueprintScalePercent,
-  nudgeBlueprintOffset,
-  stepBlueprintOpacity,
-} from "@/features/planner/editor/blueprintTransform";
-import { moveBlueprintFromPageDelta, getBlueprintScreenFrame } from "@/features/planner/editor/blueprintCanvasTransform";
-import { getBlueprintTraceGuide } from "@/features/planner/editor/blueprintTraceGuide";
 import {
-  BLUEPRINT_MAX_BYTES,
-  getBlueprintImportKind,
-  validateBlueprintImportFile,
-} from "@/features/planner/editor/blueprintImport";
-import { clampBlueprintPdfPage } from "@/features/planner/editor/blueprintPdfSession";
 import {
   DEFAULT_LAYER_MANAGER_UI_STATE,
   loadLayerManagerUiStateFromStorage,
@@ -41,7 +28,6 @@ import {
 } from "@/features/planner/editor/plannerKeyboardShortcuts";
 import {
   computePlanMetrics,
-  getCalibrationScaleFromBlueprint,
   getPageMetrics,
 } from "@/features/planner/editor/planMetrics";
 import {
@@ -49,37 +35,19 @@ import {
 } from "@/features/planner/editor/resetPlannerCanvas";
 import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
 
-describe("blueprint pure helpers", () => {
   it("clamps scale and opacity", () => {
-    expect(clampBlueprintScale(10)).toBe(4);
-    expect(clampBlueprintScale(0)).toBe(0.25);
-    expect(clampBlueprintScale(Number.NaN)).toBe(1);
-    expect(clampBlueprintOpacity(2)).toBe(1);
-    expect(clampBlueprintOpacity(0)).toBe(0.1);
-    expect(clampBlueprintOpacity(Number.NaN)).toBe(0.45);
   });
 
   it("formats scale percent and steps opacity", () => {
-    expect(formatBlueprintScalePercent(0.5)).toBe("50%");
-    expect(stepBlueprintOpacity(0.5, "up")).toBe(0.6);
-    expect(stepBlueprintOpacity(0.15, "down")).toBe(0.1);
   });
 
-  it("nudges blueprint offset in each direction", () => {
     const origin = { x: 100, y: 200 };
-    expect(nudgeBlueprintOffset(origin, "left")).toEqual({ x: 50, y: 200 });
-    expect(nudgeBlueprintOffset(origin, "right")).toEqual({ x: 150, y: 200 });
-    expect(nudgeBlueprintOffset(origin, "up")).toEqual({ x: 100, y: 150 });
-    expect(nudgeBlueprintOffset(origin, "down")).toEqual({ x: 100, y: 250 });
   });
 
-  it("moves blueprint from page delta and computes screen frame", () => {
-    expect(moveBlueprintFromPageDelta({ x: 10, y: 20 }, { x: 5, y: -3 })).toEqual({
       x: 15,
       y: 17,
     });
     expect(
-      getBlueprintScreenFrame({
         pageTopLeft: { x: 40, y: 60 },
         widthPx: 200,
         heightPx: 100,
@@ -96,35 +64,18 @@ describe("blueprint pure helpers", () => {
   });
 
   it("returns trace guide copy for wall and room tools", () => {
-    expect(getBlueprintTraceGuide("wall", true).title).toContain("Trace wall");
-    expect(getBlueprintTraceGuide("wall", false).title).toContain("calibrating");
-    expect(getBlueprintTraceGuide("room", true).title).toContain("Block the room");
-    expect(getBlueprintTraceGuide("room", false).tip).toContain("quick room shell");
   });
 
-  it("validates blueprint import files", () => {
-    expect(getBlueprintImportKind({ type: "image/png" })).toBe("image");
-    expect(getBlueprintImportKind({ type: "application/pdf" })).toBe("pdf");
-    expect(getBlueprintImportKind({ type: "text/plain" })).toBe("unsupported");
-    expect(validateBlueprintImportFile(null)).toEqual({ ok: false, reason: "missing" });
     expect(
-      validateBlueprintImportFile({ type: "image/png", size: BLUEPRINT_MAX_BYTES + 1 }),
     ).toEqual({ ok: false, reason: "too-large" });
-    expect(validateBlueprintImportFile({ type: "text/plain", size: 10 })).toEqual({
       ok: false,
       reason: "unsupported",
     });
-    expect(validateBlueprintImportFile({ type: "image/jpeg", size: 100 })).toEqual({
       ok: true,
       kind: "image",
     });
   });
 
-  it("clamps blueprint pdf page numbers", () => {
-    expect(clampBlueprintPdfPage(0, 5)).toBe(1);
-    expect(clampBlueprintPdfPage(3.4, 5)).toBe(3);
-    expect(clampBlueprintPdfPage(9, 5)).toBe(5);
-    expect(clampBlueprintPdfPage(2, 0)).toBe(1);
   });
 });
 
@@ -248,9 +199,7 @@ describe("planner step workflow", () => {
     expect(getStepToolBinding("draw").plannerTool).toBe("wall");
     expect(getStepToolBinding("place").toolId).toBe("planner-furniture");
     expect(getStepToolBinding("review").toolId).toBe("planner-measurement");
-    expect(getStepLeftTab("draw")).toBe("blueprint");
     expect(getStepLeftTab("place")).toBe("library");
-    expect(getStepLeftTab("review")).toBe("blueprint");
   });
 });
 
@@ -316,9 +265,6 @@ describe("plan metrics", () => {
     });
   });
 
-  it("reads calibration scale from blueprint mmPerUnit", () => {
-    expect(getCalibrationScaleFromBlueprint(20)).toBe(2);
-    expect(getCalibrationScaleFromBlueprint(null)).toBe(1);
   });
 });
 

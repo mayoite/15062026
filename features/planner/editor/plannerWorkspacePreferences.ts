@@ -12,7 +12,7 @@ export const PLANNER_WORKSPACE_PREFERENCES_KEY = "planner-workspace-preferences-
 /**
  * Intended chrome defaults — update tests when these change, not the other way around.
  *
- *  leftOpen:  true  — left panel (library/blueprint) opens immediately on fresh load.
+ *  leftOpen:  true  — left panel opens immediately on fresh load.
  *                     Rationale: canvas-first design; catalog must be reachable without a click.
  *                     Step-based override applies after manual override is cleared.
  *

@@ -14,7 +14,6 @@ import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStor
 describe("planner calibration scale", () => {
   beforeEach(() => {
     usePlannerWorkspaceStore.setState((state) => ({
-      blueprint: { ...state.blueprint, mmPerUnit: null },
     }));
   });
 
@@ -31,7 +30,6 @@ describe("planner calibration scale", () => {
   });
 
   it("reads live calibration from the workspace store", () => {
-    usePlannerWorkspaceStore.getState().setBlueprint({ mmPerUnit: 25 });
     expect(readMmPerCanvasUnit()).toBe(25);
     expect(readCalibrationScale()).toBe(2.5);
   });

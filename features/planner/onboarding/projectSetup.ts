@@ -156,11 +156,10 @@ export function filterCatalogItemsByPurpose(
  */
 export function applyProjectSetup(metadata: PlannerProjectMetadata): void {
   const mmPerUnit = resolveGridMmPerUnit(metadata.floorAreaSqFt);
-  const { setBlueprint, setProjectMetadata } = usePlannerWorkspaceStore.getState();
+  const { setProjectMetadata } = usePlannerWorkspaceStore.getState();
   const { setPurposeFilter } = usePlannerCatalogStore.getState();
 
   setProjectMetadata(metadata);
-  setBlueprint({ mmPerUnit });
   setPurposeFilter(metadata.primaryPurpose);
 }
 
