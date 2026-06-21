@@ -41,7 +41,6 @@ const STATIC_PATHS = [
   "/planner",
   "/planner/help",
   "/planner/features",
-  "/planner/features/blueprint",
   "/planner/features/measure",
   "/planner/features/catalog",
   "/planner/features/3d-view",

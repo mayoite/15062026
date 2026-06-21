@@ -50,7 +50,7 @@ export const PLANNER_PROOF = [
 ] as const;
 
 export const PLANNER_LANDING_FEATURE_SLUGS = [
-  "blueprint",
+  "measure",
   "catalog",
   "3d-view",
   "export",

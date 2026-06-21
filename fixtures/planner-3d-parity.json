@@ -1,0 +1,65 @@
+{
+  "version": "7.0",
+  "objects": [
+    {
+      "type": "line",
+      "left": 200,
+      "top": 200,
+      "x1": 0,
+      "y1": 0,
+      "x2": 400,
+      "y2": 0,
+      "originX": "center",
+      "originY": "center",
+      "name": "WALL:1"
+    },
+    {
+      "type": "line",
+      "left": 600,
+      "top": 400,
+      "x1": 0,
+      "y1": 0,
+      "x2": 0,
+      "y2": 400,
+      "originX": "center",
+      "originY": "center",
+      "name": "WALL:2"
+    },
+    {
+      "type": "group",
+      "left": 300,
+      "top": 300,
+      "width": 120,
+      "height": 60,
+      "scaleX": 1,
+      "scaleY": 1,
+      "originX": "left",
+      "originY": "top",
+      "name": "GENERIC:desk-1"
+    },
+    {
+      "type": "group",
+      "left": 500,
+      "top": 320,
+      "width": 120,
+      "height": 60,
+      "scaleX": 1,
+      "scaleY": 1,
+      "originX": "left",
+      "originY": "top",
+      "name": "GENERIC:desk-2"
+    },
+    {
+      "type": "group",
+      "left": 420,
+      "top": 460,
+      "width": 140,
+      "height": 70,
+      "scaleX": 1,
+      "scaleY": 1,
+      "originX": "left",
+      "originY": "top",
+      "name": "GENERIC:desk-3"
+    }
+  ]
+}

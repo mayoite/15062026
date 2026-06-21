@@ -68,6 +68,8 @@ export type FloorplanCanvasApi = {
   recalcOffset: () => void;
   setLayerVisibility: (layerVisible: Record<PlannerLayerCategory, boolean>) => void;
   resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
+  setObjectRotation: (shapeId: string, angleDeg: number) => void;
+  setObjectLock: (shapeId: string, locked: boolean) => void;
 };
 
 type FloorplanContextValue = {
@@ -128,6 +130,8 @@ type FloorplanContextValue = {
   refitCanvas: () => void;
   setLayerVisibility: (layerVisible: Record<PlannerLayerCategory, boolean>) => void;
   resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
+  setObjectRotation: (shapeId: string, angleDeg: number) => void;
+  setObjectLock: (shapeId: string, locked: boolean) => void;
 };
 
 const FloorplanContext = createContext<FloorplanContextValue | null>(null);
@@ -338,6 +342,14 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
     apiRef.current?.resizeObject(shapeId, widthMm, heightMm);
   }, []);
 
+  const setObjectRotation = useCallback((shapeId: string, angleDeg: number) => {
+    apiRef.current?.setObjectRotation(shapeId, angleDeg);
+  }, []);
+
+  const setObjectLock = useCallback((shapeId: string, locked: boolean) => {
+    apiRef.current?.setObjectLock(shapeId, locked);
+  }, []);
+
   const zoomIn = useCallback(() => {
     setZoomState((z) => {
       if (z >= 150) return z;
@@ -420,6 +432,8 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       refitCanvas,
       setLayerVisibility,
       resizeObject,
+      setObjectRotation,
+      setObjectLock,
     }),
     [
       roomEdit,
@@ -460,6 +474,8 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       refitCanvas,
       setLayerVisibility,
       resizeObject,
+      setObjectRotation,
+      setObjectLock,
     ],
   );
 

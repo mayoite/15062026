@@ -42,7 +42,7 @@ describe("fabricSceneUtils", () => {
       });
       expect(
         resolveRoomMmFromFabricObjects([{ name: "CORNER", left: 10, top: 10 }]),
-      ).toEqual({ widthMm: 5000, depthMm: 4000 });
+      ).toEqual({ widthMm: 1000, depthMm: 1000 });
     });
 
     it("computes room mm from corner bounds (fabric units * 10)", () => {
@@ -71,15 +71,15 @@ describe("fabricSceneUtils", () => {
       });
     });
 
-    it("ignores non-corner objects when computing bounds", () => {
+    it("includes wall objects when computing bounds", () => {
       const objects = [
         { name: "WALL:0", left: 5000, top: 5000, width: 0, height: 0 },
         { name: "CORNER", left: 0, top: 0, width: 0, height: 0 },
         { name: "CORNER", left: 100, top: 100, width: 0, height: 0 },
       ];
       expect(resolveRoomMmFromFabricObjects(objects)).toEqual({
-        widthMm: 1000,
-        depthMm: 1000,
+        widthMm: 50000,
+        depthMm: 50000,
       });
     });
 

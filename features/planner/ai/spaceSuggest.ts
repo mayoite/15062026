@@ -1,6 +1,8 @@
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
 import { millimetersToCanvasUnits } from "@/features/planner/lib/calibrationScale";
+import type { PlannerProjectMetadata } from "@/features/planner/onboarding/projectSetup";
+import { metadataToSpaceSuggestInput } from "@/features/planner/onboarding/projectSetup";
 import {
   normalizeCatalogMm,
   plannerCanvasUnits,
@@ -78,6 +80,29 @@ function buildPerimeterWalls(
     },
     { type: "planner-wall", x, y: y + heightCu, endX: 0, endY: -heightCu, lengthMm: toMm(heightCu) },
   ];
+}
+
+export function buildShellOnlyLayout(metadata: PlannerProjectMetadata): SuggestedLayoutJson {
+  const input = metadataToSpaceSuggestInput(metadata);
+  const roomMm = estimateRoomMm(input.seatCount, input.floorAreaSqFt);
+  const roomW = plannerCanvasUnits(roomMm.widthMm);
+  const roomH = plannerCanvasUnits(roomMm.depthMm);
+
+  return {
+    version: 1,
+    source: "grid-pack",
+    summary: `Starter shell for ${metadata.projectName} sized from ${metadata.floorAreaSqFt} sq ft.`,
+    room: {
+      label: metadata.projectName || "Office shell",
+      x: ORIGIN_X,
+      y: ORIGIN_Y,
+      widthMm: roomMm.widthMm,
+      depthMm: roomMm.depthMm,
+    },
+    walls: buildPerimeterWalls(ORIGIN_X, ORIGIN_Y, roomW, roomH, 10),
+    zones: [],
+    furniture: [],
+  };
 }
 
 /** Deterministic grid-packing layout for facilities admins. */

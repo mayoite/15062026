@@ -7,8 +7,6 @@ vi.mock("@/features/planner/catalog/CatalogPanel", () => ({
   CatalogPanel: () => <div>Browse Oando SVG symbols — click or drag desks, seating, and storage onto the canvas.</div>,
 }));
 
-}));
-
 vi.mock("@/features/planner/ai/AIAssistDrawer", () => ({
   AIAssistDrawer: () => <div>AI assist drawer</div>,
 }));

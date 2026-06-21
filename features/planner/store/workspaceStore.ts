@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import type { SuggestedLayoutJson } from "../ai/types";
 import type { PlannerStep } from "../editor/plannerStep";
 import type { PlannerProjectMetadata } from "../onboarding/projectSetup";
 
@@ -26,11 +27,13 @@ export type WorkspacePersisted = {
 
 interface WorkspaceState extends WorkspacePersisted {
   plannerStep: PlannerStep;
+  pendingBootstrapLayout: SuggestedLayoutJson | null;
   setPlannerStep: (step: PlannerStep) => void;
   toggleLayer: (category: PlannerLayerCategory) => void;
   setLayerVisible: (category: PlannerLayerCategory, visible: boolean) => void;
   setUnitSystem: (unit: "metric" | "imperial") => void;
   setProjectMetadata: (metadata: PlannerProjectMetadata | null) => void;
+  setPendingBootstrapLayout: (layout: SuggestedLayoutJson | null) => void;
 }
 
 export function serializeWorkspaceState(): WorkspacePersisted {
@@ -65,6 +68,7 @@ export const usePlannerWorkspaceStore = create<WorkspaceState>((set) => ({
   unitSystem: "metric",
   projectMetadata: null,
   plannerStep: "draw",
+  pendingBootstrapLayout: null,
   setPlannerStep: (step) => set({ plannerStep: step }),
   toggleLayer: (category) =>
     set((s) => ({
@@ -76,4 +80,5 @@ export const usePlannerWorkspaceStore = create<WorkspaceState>((set) => ({
     })),
   setUnitSystem: (unit) => set({ unitSystem: unit }),
   setProjectMetadata: (metadata) => set({ projectMetadata: metadata }),
+  setPendingBootstrapLayout: (layout) => set({ pendingBootstrapLayout: layout }),
 }));

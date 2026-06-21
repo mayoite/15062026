@@ -419,6 +419,27 @@ export function createFloorplanCanvasApi(
       return;
     }
 
+    if (type === 'WALL') {
+      const { x1, y1, x2, y2, name } = payloadObj as { x1: number; y1: number; x2: number; y2: number; name?: string };
+      const { Line } = await import('fabric');
+      const wall = new Line([x1, y1, x2, y2], {
+        stroke: '#1f2937',
+        strokeWidth: 2,
+        fill: '',
+        originX: 'center',
+        originY: 'center',
+        selectable: true,
+        evented: true,
+        hasControls: true,
+        hasBorders: true,
+      });
+      wall.set('name', name || `WALL:${Date.now()}`);
+      view.add(wall);
+      view.setActiveObject(wall);
+      saveState();
+      return;
+    }
+
     let group = _.createFurniture(type, payloadObj, (DEFAULT_CHAIR ?? undefined) as Record<string, unknown> | undefined);
     if (type === 'GENERIC' && payloadObj.svg) {
       try {
@@ -831,6 +852,11 @@ export function createFloorplanCanvasApi(
     view.setZoom(clamped / 100);
     view.calcOffset();
     view.requestRenderAll();
+    
+    const canvasContainer = document.querySelector('[data-testid="planner-2d-canvas"]');
+    if (canvasContainer) {
+      canvasContainer.setAttribute('data-zoom', String(clamped));
+    }
   }
 
   function setLayerVisibility(layerVisible: Record<string, boolean>) {
@@ -868,6 +894,45 @@ export function createFloorplanCanvasApi(
       });
     }
     target.setCoords();
+    view.requestRenderAll();
+    saveState();
+  }
+
+  function setObjectRotation(shapeId: string, angleDeg: number) {
+    if (!view) return;
+    const target = view.getObjects().find((obj) => String((obj as PlannerFabricObject).id ?? (obj as PlannerFabricObject).name ?? '') === shapeId);
+    if (!target) return;
+    
+    if ((target.originX !== 'center' || target.originY !== 'center') && target.centeredRotation) {
+      target.originX = 'center';
+      target.originY = 'center';
+      target.left += target.width / 2;
+      target.top += target.height / 2;
+    }
+    
+    target.angle = angleDeg;
+    target.setCoords();
+    view.requestRenderAll();
+    saveState();
+  }
+
+  function setObjectLock(shapeId: string, locked: boolean) {
+    if (!view) return;
+    const target = view.getObjects().find((obj) => String((obj as PlannerFabricObject).id ?? (obj as PlannerFabricObject).name ?? '') === shapeId);
+    if (!target) return;
+    
+    target.set({
+      selectable: !locked,
+      evented: !locked,
+      lockMovementX: locked,
+      lockMovementY: locked,
+      lockRotation: locked,
+      lockScalingX: locked,
+      lockScalingY: locked,
+    });
+    if (locked && view.getActiveObject() === target) {
+      view.discardActiveObject();
+    }
     view.requestRenderAll();
     saveState();
   }
@@ -1105,6 +1170,8 @@ export function createFloorplanCanvasApi(
     recalcOffset: () => view?.calcOffset(),
     setLayerVisibility,
     resizeObject,
+    setObjectRotation,
+    setObjectLock,
   };
   return api;
 }

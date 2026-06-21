@@ -117,16 +117,11 @@ describe("PlannerWorkspace", () => {
     usePlannerWorkspaceStore.setState({
       plannerStep: "draw",
       layerVisible: {
-        underlay: true,
         walls: true,
         rooms: true,
         zones: true,
         furniture: true,
         measurements: true,
-      },
-        dataUrl: null,
-        calibrating: false,
-        interactionMode: "idle",
       },
     });
   });

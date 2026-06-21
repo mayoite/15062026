@@ -22,12 +22,13 @@ type PlannerFabricObject = FabricObject & {
   selectable?: boolean;
 };
 
+const FABRIC_TO_MM = 10;
+
 function formatMeasureLabel(pixelDistance: number): string {
-  const inches = Math.max(0, pixelDistance);
-  const feet = Math.floor(inches / 12);
-  const remInches = Math.round(inches % 12);
-  const mm = Math.round(inches * 25.4);
-  return `${feet}' ${remInches}" · ${mm.toLocaleString()} mm`;
+  const mm = Math.round(pixelDistance * FABRIC_TO_MM);
+  const meters = Math.floor(mm / 1000);
+  const remMm = mm % 1000;
+  return meters > 0 ? `${meters}m ${remMm}mm` : `${mm}mm`;
 }
 
 function isProtectedObject(obj: PlannerFabricObject | null | undefined): boolean {
@@ -127,7 +128,11 @@ export function wireFabricDrawTools(options: {
     const view = getView();
     if (!view || !obj) return;
 
-    obj.name = `${ANNOTATION_PREFIX}${activeTool}`;
+    if (activeTool === "wall") {
+      obj.name = `WALL:${Date.now()}`;
+    } else {
+      obj.name = `${ANNOTATION_PREFIX}${activeTool}`;
+    }
     obj.selectable = true;
     obj.evented = true;
     obj.hasControls = true;
@@ -267,14 +272,14 @@ export function wireFabricDrawTools(options: {
   view.on("mouse:move", (event: CanvasEvents["mouse:move"]) => {
     const tool = options.getDrawTool();
     if (!drawStart || options.roomEditActive()) return;
-    if (tool !== "line" && tool !== "measure" && tool !== "rectangle") return;
+    if (tool !== "line" && tool !== "measure" && tool !== "rectangle" && tool !== "wall") return;
 
     const pointer = options.getScenePointer(event);
     if (!pointer) return;
 
     clearPreview();
 
-    if (tool === "line" || tool === "measure") {
+    if (tool === "line" || tool === "measure" || tool === "wall") {
       previewObject = new Line([drawStart.x, drawStart.y, pointer.x, pointer.y], {
         stroke: activeColor,
         strokeWidth: 2,
@@ -308,14 +313,14 @@ export function wireFabricDrawTools(options: {
   view.on("mouse:up", (event: CanvasEvents["mouse:up"]) => {
     const tool = options.getDrawTool();
     if (!drawStart || options.roomEditActive()) return;
-    if (tool !== "line" && tool !== "measure" && tool !== "rectangle") return;
+    if (tool !== "line" && tool !== "measure" && tool !== "rectangle" && tool !== "wall") return;
 
     const pointer = options.getScenePointer(event);
     if (!pointer) return;
 
     clearPreview();
 
-    if (tool === "line") {
+    if (tool === "line" || tool === "wall") {
       finalizeLine(pointer, false);
     } else if (tool === "measure") {
       finalizeLine(pointer, true);

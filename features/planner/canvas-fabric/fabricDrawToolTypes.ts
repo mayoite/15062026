@@ -5,7 +5,8 @@ export type FabricDrawTool =
   | "curve"
   | "rectangle"
   | "pen"
-  | "eraser";
+  | "eraser"
+  | "wall";
 
 export const FABRIC_DRAW_TOOL_COLORS = [
   "#111111",

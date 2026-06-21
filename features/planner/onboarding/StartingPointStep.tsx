@@ -1,18 +1,24 @@
 import { PencilLine } from "lucide-react";
+import { buildShellOnlyLayout } from "@/features/planner/ai/spaceSuggest";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 import { markProjectSetupCompleteInStorage } from "./projectSetup";
 
 type StartingPointStepProps = {
   guestMode?: boolean;
   planId?: string;
-  onComplete: (mode: "template") => void;
+  onComplete: () => void;
 };
 
 export function StartingPointStep({ guestMode = false, planId, onComplete }: StartingPointStepProps) {
   const metadata = usePlannerWorkspaceStore((s) => s.projectMetadata);
+  const setPendingBootstrapLayout = usePlannerWorkspaceStore((s) => s.setPendingBootstrapLayout);
 
-  const handleModeSelect = (mode: "template") => {
-    onComplete(mode);
+  const handleModeSelect = () => {
+    if (metadata) {
+      setPendingBootstrapLayout(buildShellOnlyLayout(metadata));
+    }
+    markProjectSetupCompleteInStorage(guestMode, planId);
+    onComplete();
   };
 
   return (
@@ -27,7 +33,7 @@ export function StartingPointStep({ guestMode = false, planId, onComplete }: Sta
 
         <div className="grid grid-cols-1 gap-4 max-w-lg mx-auto">
           <button
-            onClick={() => handleModeSelect("template")}
+            onClick={handleModeSelect}
             className="pw-starting-point-btn"
           >
             <div className="pw-starting-point-icon">

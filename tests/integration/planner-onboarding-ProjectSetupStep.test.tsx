@@ -5,7 +5,6 @@ import { ProjectSetupStep } from "@/features/planner/onboarding/ProjectSetupStep
 
 const setupMocks = vi.hoisted(() => ({
   applyProjectSetup: vi.fn(),
-  markProjectSetupCompleteInStorage: vi.fn(),
 }));
 
 vi.mock("@/features/planner/onboarding/projectSetup", async (importOriginal) => {
@@ -13,7 +12,6 @@ vi.mock("@/features/planner/onboarding/projectSetup", async (importOriginal) => 
   return {
     ...actual,
     applyProjectSetup: setupMocks.applyProjectSetup,
-    markProjectSetupCompleteInStorage: setupMocks.markProjectSetupCompleteInStorage,
   };
 });
 
@@ -51,7 +49,6 @@ describe("ProjectSetupStep", () => {
     fireEvent.click(screen.getByRole("button", { name: /start placing furniture/i }));
 
     await waitFor(() => expect(setupMocks.applyProjectSetup).toHaveBeenCalledTimes(1));
-    expect(setupMocks.markProjectSetupCompleteInStorage).toHaveBeenCalledWith(true, undefined);
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
 });
