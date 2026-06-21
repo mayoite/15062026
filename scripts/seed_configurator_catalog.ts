@@ -9,8 +9,8 @@ import { config } from "dotenv";
 import { resolve } from "node:path";
 import { readFileSync } from "node:fs";
 import postgres from "postgres";
-import { buildOandoSeedProducts } from "../../lib/catalog/seed/oandoCatalog";
-import { productToRow } from "../../lib/catalog/configuratorCatalog";
+import { buildOandoSeedProducts } from "@/lib/catalog/seed/oandoCatalog";
+import { productToRow } from "@/lib/catalog/configuratorCatalog";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 
@@ -42,26 +42,24 @@ async function main() {
         process.stdout.write(`Applying ${MIGRATION}... `);
         await sql.unsafe(body);
         await sql`insert into public._local_migration_history (filename) values (${MIGRATION});`;
-// eslint-disable-next-line no-console
         console.log("OK");
       } else {
-// eslint-disable-next-line no-console
         console.log(`Migration ${MIGRATION} already applied.`);
       }
 
       // 2) Upsert the seed (idempotent on slug).
       const rows = buildOandoSeedProducts().map(productToRow);
       for (const r of rows) {
-        await sql`
+        await (sql as any)`
           insert into public.configurator_products
             (slug, name, category, family, brand_name, sizing_type, workstation,
              size_options, default_footprint, derived_rules, materials,
              thumbnail_url, model_3d_url, description, active)
           values
             (${r.slug}, ${r.name}, ${r.category}, ${r.family}, ${r.brand_name},
-             ${r.sizing_type}, ${r.workstation as object}, ${sql.json(r.size_options)},
-             ${r.default_footprint as object}, ${r.derived_rules as object},
-             ${r.materials}, ${r.thumbnail_url}, ${r.model_3d_url}, ${r.description}, true)
+             ${r.sizing_type}, ${r.workstation as object}, ${sql.json(r.size_options as any)},
+             ${r.default_footprint as object}, ${r.derived_rules as any},
+             ${r.materials as any}, ${r.thumbnail_url}, ${r.model_3d_url}, ${r.description}, true)
           on conflict (slug) do update set
             name = excluded.name,
             category = excluded.category,
@@ -77,7 +75,6 @@ async function main() {
             active = true;
         `;
       }
-// eslint-disable-next-line no-console
       console.log(`Upserted ${rows.length} configurator products.`);
     }
 
@@ -88,12 +85,9 @@ async function main() {
       group by category, sizing_type
       order by category, sizing_type;
     `;
-// eslint-disable-next-line no-console
     console.log("\nconfigurator_products contents:");
-// eslint-disable-next-line no-console
     for (const s of summary) console.log(`  ${s.category} / ${s.sizing_type}: ${s.n}`);
     const total = summary.reduce((a, s) => a + s.n, 0);
-// eslint-disable-next-line no-console
     console.log(`  total: ${total}`);
   } finally {
     await sql.end({ timeout: 5 });

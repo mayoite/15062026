@@ -91,7 +91,6 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
 
   useEffect(() => {
     if (!open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reset search when drawer closes
       setSearchQuery("");
       setSearchResults([]);
       setSearchLoading(false);
@@ -134,7 +133,6 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
     const query = searchQuery.trim();
  
     if (query.length < 2) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: clear stale results before debounce fires
       setSearchResults([]);
       setSearchLoading(false);
       return;

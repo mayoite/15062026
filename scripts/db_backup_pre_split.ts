@@ -64,7 +64,6 @@ async function dumpTables(
     }
   }
   writeFileSync(out, lines.join("\n"), "utf8");
-// eslint-disable-next-line no-console
   console.log(`Wrote ${out}`);
   await sql.end({ timeout: 5 });
 }
@@ -111,13 +110,11 @@ const ADMIN_TABLES_TO_BACKUP = [
 
 (async () => {
   await dumpTables(
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     process.env.PRODUCTS_DATABASE_URL!,
     "products",
     PRODUCTS_TABLES_TO_BACKUP,
   );
   await dumpTables(
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     process.env.SUPABASE_AUTH_DATABASE_URL!,
     "admin",
     ADMIN_TABLES_TO_BACKUP,

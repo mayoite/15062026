@@ -178,9 +178,7 @@ async function main() {
   fs.writeFileSync(mdPath, renderMarkdown(summary), "utf8");
 
   const failed = runtimeQueries.filter((check) => !check.ok).length;
-  // eslint-disable-next-line no-console
   console.log(`[audit:supabase:admin] wrote ${path.relative(process.cwd(), mdPath)}`);
-  // eslint-disable-next-line no-console
   console.log(
     `[audit:supabase:admin] customer_queries=${tables.find((t) => t.table === "customer_queries")?.rowCount ?? "?"} runtime_failures=${failed}`,
   );

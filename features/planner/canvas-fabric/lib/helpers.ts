@@ -1,8 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable eqeqeq */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Group,
   Rect,
@@ -39,7 +34,7 @@ const
   RL_CREDIT_TEXT_PARAMS = { fontSize: 12, fontFamily: 'Arial', fill: '#999', left: 12 };
 
 
-const createText = (properties) => {
+const createText = (properties: any) => {
   let { text } = properties;
   if (properties.direction === 'VERTICAL') {
     const chars = [];
@@ -49,12 +44,13 @@ const createText = (properties) => {
     text = chars.join('\n');
   }
 
-  return new IText(text, {
+  const textObj = new IText(text, {
     fontSize: properties.font_size,
     lineHeight: 0.8,
-    name: properties.name,
     hasControls: false
-  });
+  }) as IText & { name?: string };
+  (textObj as any).name = properties.name;
+  return textObj;
 };
 
 
@@ -101,7 +97,7 @@ const createBasicShape = (part: any, stroke: string = '#aaaaaa', fill: string = 
 };
 
 
-const createFurniture = (type: string, object, chair = {}) => {
+const createFurniture = (type: string, object: any, chair: any = {}) => {
   if (type === 'TABLE') {
     return createTable(object, chair);
   } else if (type === 'TEXT') {
@@ -132,23 +128,23 @@ const createGenericFurniture = (object: any) => {
     originY: 'center',
   });
   const group = new Group([rect], {
-    name: `GENERIC:${object.title || 'Item'}`,
     hasControls: true,
     originX: 'center',
     originY: 'center',
-  });
+  }) as Group & { name?: string };
+  (group as any).name = `GENERIC:${object.title || 'Item'}`;
   return group;
 };
 
 /** Adding Chairs */
 const createShape = (object: any, stroke = RL_CHAIR_STROKE, fill = RL_CHAIR_FILL, type: string = 'CHAIR'): Group => {
-  const parts = object.parts.map(obj => createBasicShape(obj, stroke, fill));
+  const parts = object.parts.map((obj: any) => createBasicShape(obj, stroke, fill));
   const group = new Group(parts, {
-    name: `${type}:${object.title}`,
     hasControls: false,
     originX: 'center',
     originY: 'center'
-  });
+  }) as Group & { name?: string };
+  (group as any).name = `${type}:${object.title}`;
 
   return group;
 };
@@ -191,7 +187,12 @@ const createTable = (def: any, RL_DEFAULT_CHAIR: any, type: string = 'TABLE') =>
       components[index] = createShape(RL_DEFAULT_CHAIR, RL_CHAIR_STROKE, RL_CHAIR_FILL);
 
       const angle_radians = util.degreesToRadians(angle);
-      const end = util.rotatePoint(new Point(x2, y2), rotation_origin, angle_radians);
+      const dx = x2 - rotation_origin.x;
+      const dy = y2 - rotation_origin.y;
+      const end = new Point(
+        rotation_origin.x + dx * Math.cos(angle_radians) - dy * Math.sin(angle_radians),
+        rotation_origin.y + dx * Math.sin(angle_radians) + dy * Math.cos(angle_radians)
+      );
       components[index].left = end.x;
       components[index].top = end.y;
       components[index].angle = (angle + 180 > 360) ? (angle - 180) : (angle + 180);
@@ -206,19 +207,18 @@ const createTable = (def: any, RL_DEFAULT_CHAIR: any, type: string = 'TABLE') =>
       fill: RL_FILL,
       stroke: RL_STROKE,
       originX: 'center',
-      originY: 'center',
-      name: 'DESK'
-    };
-    components[index] = new Circle(tableCircle);
+      originY: 'center'
+    } as any;
+    components[index] = new Circle(tableCircle) as Circle & { name?: string };
+    (components[index] as any).name = 'DESK';
 
   } else if (def.shape == 'rect') {
     const tableRect = {
       width: def.width,
       height: def.height,
       fill: RL_FILL,
-      stroke: RL_STROKE,
-      name: 'DESK'
-    };
+      stroke: RL_STROKE
+    } as any;
 
     // calculate gap between chairs, with extra for gap to end of table
     let gap = 0, firstOffset = 0, leftOffset = 0, topOffset = 0;
@@ -287,7 +287,9 @@ const createTable = (def: any, RL_DEFAULT_CHAIR: any, type: string = 'TABLE') =>
     }
 
     // add table on top of chairs
-    components[index] = new Rect(tableRect);
+    const rectObj = new Rect(tableRect) as Rect & { name?: string };
+    (rectObj as any).name = 'DESK';
+    components[index] = rectObj;
     components[index].left = tableLeft;
     components[index].top = tableTop;
   }
@@ -296,11 +298,10 @@ const createTable = (def: any, RL_DEFAULT_CHAIR: any, type: string = 'TABLE') =>
     left: 0,
     top: 0,
     hasControls: false,
-    // set origin for all groups to center
     originX: 'center',
-    originY: 'center',
-    name: `${type}:${def.title}`
-  });
+    originY: 'center'
+  }) as Group & { name?: string };
+  (tableGroup as any).name = `${type}:${def.title}`;
 
   return tableGroup;
 };

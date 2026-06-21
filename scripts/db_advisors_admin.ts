@@ -6,7 +6,7 @@ import { resolve } from "node:path";
 config({ path: resolve(process.cwd(), ".env.local") });
 process.env.PRODUCTS_DATABASE_URL = process.env.SUPABASE_AUTH_DATABASE_URL;
 
-import("./db_advisors").catch((e) => {
+import("./db_advisors.js").catch((e) => {
   console.error(e);
   process.exit(1);
 });

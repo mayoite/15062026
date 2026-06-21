@@ -128,7 +128,7 @@ function rewriteCatalogSeatingLegacyChairPaths(): number {
 }
 
 function renderMarkdown(report: {
-  totals: Record<string, number>;
+  totals: Record<string, number | boolean>;
   byCategory: Record<string, number>;
   unresolved: FailureRow[];
 }): string {

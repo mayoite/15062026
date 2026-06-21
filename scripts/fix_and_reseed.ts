@@ -17,7 +17,6 @@ async function fix() {
       INSERT INTO catalog_categories (id, name) VALUES ('oando-workstations', 'Workstations')
       ON CONFLICT (id) DO NOTHING
     `;
-// eslint-disable-next-line no-console
     console.log('✅ Added oando-workstations category');
 
     // Now re-run seed_data.sql for the failed workstation products
@@ -39,16 +38,14 @@ async function fix() {
         await sql.unsafe(stmt + ';');
         ok++;
       } catch (e: unknown) {
-        console.error(`  → Error: ${e.message?.split('\n')[0]}`);
+        console.error(`  → Error: ${(e as any).message?.split('\n')[0]}`);
         fail++;
       }
     }
-// eslint-disable-next-line no-console
     console.log(`\n✅ Re-seed done: ${ok} succeeded, ${fail} failed.`);
 
     // Verify count
     const count = await sql`SELECT COUNT(*) as cnt FROM catalog_products`;
-// eslint-disable-next-line no-console
     console.log(`📦 Total products in DB: ${count[0].cnt}`);
   } catch (e) {
     console.error('Fatal error:', e);

@@ -14,7 +14,6 @@ const sql = postgres({
 
 async function seed() {
   try {
-// eslint-disable-next-line no-console
     console.log('📋 Re-applying fixed catalog functions...');
     // Re-apply the fixed migration to update functions with ELSE NULL
     const migrationSql = fs.readFileSync(
@@ -23,10 +22,8 @@ async function seed() {
     );
     // Run the whole migration again (idempotent due to CREATE OR REPLACE)
     await sql.unsafe(migrationSql);
-// eslint-disable-next-line no-console
     console.log('✅ Functions updated.');
 
-// eslint-disable-next-line no-console
     console.log('🌱 Running seed_data.sql...');
     let seedSql = fs.readFileSync(
       path.resolve(__dirname, '../scripts/seed_data.sql'),
@@ -48,11 +45,10 @@ async function seed() {
         await sql.unsafe(stmt + ';');
         ok++;
       } catch (e: unknown) {
-        console.error(`  → Error: ${e.message?.split('\n')[0]}`);
+        console.error(`  → Error: ${(e as any).message?.split('\n')[0]}`);
         fail++;
       }
     }
-// eslint-disable-next-line no-console
     console.log(`\n✅ Done: ${ok} statements succeeded, ${fail} failed.`);
   } catch (e) {
     console.error('Fatal error:', e);

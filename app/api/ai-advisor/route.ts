@@ -621,7 +621,6 @@ async function handleCatalogAdvisor(req: NextRequest): Promise<NextResponse | Re
           }
         } catch (providerError) {
           const isTimeout = isAbortLikeError(providerError);
-          // eslint-disable-next-line no-console
           console.error(
             `[ai-advisor] ${advisorClient.provider} stream error${
               isTimeout ? " (timeout)" : ""
@@ -657,7 +656,6 @@ async function handleCatalogAdvisor(req: NextRequest): Promise<NextResponse | Re
       }
     } catch (providerError) {
       const isTimeout = isAbortLikeError(providerError);
-      // eslint-disable-next-line no-console
       console.error(
         `[ai-advisor] ${advisorClient.provider} provider error${
           isTimeout ? " (timeout)" : ""

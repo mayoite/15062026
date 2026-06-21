@@ -207,7 +207,6 @@ async function handlePlannerAdvisor(req: NextRequest): Promise<NextResponse> {
     }
   } catch (err) {
     if (mode === "space-suggest") {
-      // eslint-disable-next-line no-console
       console.error("[planner/ai-advisor] space-suggest error:", err);
       return error(
         new ApiError(
@@ -217,7 +216,6 @@ async function handlePlannerAdvisor(req: NextRequest): Promise<NextResponse> {
         ),
       );
     }
-    // eslint-disable-next-line no-console
     console.error("[planner/ai-advisor] provider error:", err);
     const lastUserMsg = messages.filter((m) => m.role === "user").pop();
     aiResponse = generateFallbackResponse(lastUserMsg?.content || "");

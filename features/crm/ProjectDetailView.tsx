@@ -141,7 +141,6 @@ export default function ProjectDetailView({ projectId }: ProjectDetailViewProps)
     if (!newPlanTitle.trim()) return;
 
     // Create a new local plan entry in localStorage
-// eslint-disable-next-line react-hooks/purity
     const newId = `plan-${Date.now()}`;
     const newKey = `planner_${newId}`;
     const now = new Date().toISOString();

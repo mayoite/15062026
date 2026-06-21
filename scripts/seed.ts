@@ -35,7 +35,6 @@ const passwordStr = decodeURIComponent(passParts.join(':')); // handle colons in
 const [hostStr, portAndDb] = hostPart.split(':');
 const [portStr, dbStr] = portAndDb.split('/');
 
-// eslint-disable-next-line no-console
 console.log(`Connecting to: ${hostStr}:${portStr}/${dbStr} as ${userStr}`);
 const sql = postgres({
     host: hostStr,
@@ -47,7 +46,6 @@ const sql = postgres({
 });
 
 async function seed() {
-// eslint-disable-next-line no-console
     console.log('Connecting to Supabase via direct postgres connection...');
 
     // seed_data.sql lives alongside this script in scripts/.
@@ -76,21 +74,20 @@ async function seed() {
             await sql.unsafe(statement + ';');
             successCount++;
         } catch (err: unknown) {
-            if (err.code === '23505' || err.message?.includes('duplicate key')) {
+            if ((err as any).code === '23505' || (err as any).message?.includes('duplicate key')) {
                 skipCount++; // Already exists, skip
             } else {
-                console.error(`Error: ${err.message}\n  → ${statement.substring(0, 100)}`);
+                console.error(`Error: ${(err as any).message}\n  → ${statement.substring(0, 100)}`);
                 errorCount++;
             }
         }
     }
 
-// eslint-disable-next-line no-console
     console.log(`✅ Done: ${successCount} inserted, ${skipCount} skipped (already exist), ${errorCount} errors.`);
     await sql.end();
 }
 
 seed().catch(err => {
-    console.error('Fatal:', err.message);
+    console.error('Fatal:', (err as any).message);
     process.exit(1);
 });

@@ -75,7 +75,6 @@ export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
 
   // Recompute the resolved theme when the preference changes.
   useEffect(() => {
-// eslint-disable-next-line react-hooks/set-state-in-effect
     setResolvedTheme(resolveTheme(theme))
   }, [theme])
 

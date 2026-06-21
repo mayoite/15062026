@@ -74,7 +74,6 @@ function quoteValue(v: unknown): string {
   }
 
   writeFileSync(out, lines.join("\n"), "utf8");
-// eslint-disable-next-line no-console
   console.log(`Backup written: ${out}`);
   await sql.end({ timeout: 5 });
 })().catch((e: unknown) => {

@@ -64,8 +64,9 @@ function walkFiles(absDir: string, relPrefix: string): string[] {
         walk(entryAbs, entryRel);
         continue;
       }
-      if (!entry.isFile() || entry.size === 0) continue;
-      files.push(path.posix.join(relPrefix, entryRel).replace(/^\/+/, ""));
+      if (entry.isFile() && (entry as any).size > 0) {
+        files.push(path.posix.join(relPrefix, entryRel).replace(/^\/+/, ""));
+      }
     }
   }
 

@@ -7,7 +7,7 @@ import {
   buildCanonicalSeriesId,
   normalizeRequestedCategoryId,
   resolveCanonicalSubcategory,
-} from "../../lib/catalogCategories";
+} from "@/features/catalog/categories";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 
@@ -185,7 +185,6 @@ async function main() {
     ),
   );
 
-// eslint-disable-next-line no-console
   console.log(
     `[backfill] updated=${updates.length} aliasesInserted=${inserts.length} aliasConflicts=${conflictSummary.length}`,
   );

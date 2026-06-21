@@ -277,7 +277,6 @@ function applyFilters(
   }
   if (typeof filters.ecoMin === "number") {
  
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     list = list.filter((product) => (product.metadata?.sustainabilityScore || 0) >= filters.ecoMin!);
   }
 

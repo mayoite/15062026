@@ -262,15 +262,10 @@ async function main(): Promise<void> {
     ),
   );
 
-// eslint-disable-next-line no-console
   console.log("Supabase catalog asset arrangement complete.");
-// eslint-disable-next-line no-console
   console.log(`Created: ${result.created.length}`);
-// eslint-disable-next-line no-console
   console.log(`Already present: ${result.skipped.length}`);
-// eslint-disable-next-line no-console
   console.log(`Unresolved: ${result.unresolved.length}`);
-// eslint-disable-next-line no-console
   console.log(`Report: ${REPORT_PATH}`);
 }
 

@@ -29,7 +29,6 @@ export function DashboardClient({ userEmail }: DashboardClientProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
-// eslint-disable-next-line react-hooks/set-state-in-effect
     setPlannerDraftCount(readPlannerDraftCount());
   }, []);
 

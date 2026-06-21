@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import sharp from "sharp";
-import { resolveSvgForRaster } from "../../lib/catalog/resolveBlockColors";
+import { resolveSvgForRaster } from "@/lib/catalog/resolveBlockColors";
 
 const REPO = resolve(__dirname, "../..");
 

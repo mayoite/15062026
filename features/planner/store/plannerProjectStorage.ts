@@ -5,7 +5,6 @@ export function getProjectIndex(): ProjectIndexEntry[] {
   try {
     const raw = localStorage.getItem("planner_project_index");
     if (raw) return JSON.parse(raw);
-// eslint-disable-next-line no-empty
   } catch {}
   return [];
 }
@@ -13,7 +12,6 @@ export function getProjectIndex(): ProjectIndexEntry[] {
 export function saveProjectIndex(index: ProjectIndexEntry[]): void {
   try {
     localStorage.setItem("planner_project_index", JSON.stringify(index));
-  // eslint-disable-next-line no-empty
   } catch {}
 }
 
@@ -45,7 +43,6 @@ export function migrateOldProjects(params: {
 
     saveProjectIndex(index);
     localStorage.removeItem("planner_projects");
-// eslint-disable-next-line no-empty
   } catch {}
 }
 

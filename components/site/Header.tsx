@@ -203,7 +203,6 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sync search panel visibility with route changes
     setShowSearchPanel(false);
     setActiveMega(null);
   }, [pathname]);
@@ -212,7 +211,6 @@ export function SiteHeader() {
     const query = searchQuery.trim();
  
     if (query.length < 2) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: clear stale results before the debounce timer fires
       setSearchResults([]);
       setSearchSource(null);
       setSearchLoading(false);

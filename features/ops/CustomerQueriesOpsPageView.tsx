@@ -65,7 +65,6 @@ export default function CustomerQueriesOpsPage() {
   useEffect(() => {
     const saved = window.localStorage.getItem(tokenStorageKey) || "";
     if (saved) {
-// eslint-disable-next-line react-hooks/set-state-in-effect
       setAdminToken(saved);
       setAdminTokenInput(saved);
     }
@@ -118,7 +117,6 @@ export default function CustomerQueriesOpsPage() {
   }, [adminToken, mergeDrafts, statusFilter]);
 
   useEffect(() => {
-// eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchItems();
     if (!adminToken) return;
     const interval = window.setInterval(() => {
@@ -156,7 +154,6 @@ export default function CustomerQueriesOpsPage() {
         return;
       }
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setItems((current) => current.map((row) => (row.id === id ? json.item! : row)));
       setLastUpdatedAt(new Date().toISOString());
     } catch {

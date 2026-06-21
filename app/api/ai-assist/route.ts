@@ -55,7 +55,6 @@ async function handleAiAssist(req: NextRequest): Promise<NextResponse> {
       return success({ content, provider: provider.provider, model: provider.model });
     } catch (providerError) {
       lastError = providerError;
-      // eslint-disable-next-line no-console
       console.error(`[ai-assist] ${provider.provider} error:`, providerError);
     }
   }

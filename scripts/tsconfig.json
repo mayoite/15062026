@@ -1,0 +1,26 @@
+{
+  "extends": "../config/build/tsconfig.json",
+  "compilerOptions": {
+    "module": "node16",
+    "moduleResolution": "node16",
+    "paths": {
+      "@/types/*": ["../config/database/types/*"],
+      "@/app/*": ["../app/*"],
+      "@/components/*": ["../components/*"],
+      "@/data/*": ["../data/*"],
+      "@/features/*": ["../features/*"],
+      "@/lib/*": ["../lib/*"],
+      "@/*": ["../*"]
+    },
+    "target": "ES2022",
+    "strict": false,
+    "allowJs": true,
+    "noEmit": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "**/*.mjs"
+  ]
+}

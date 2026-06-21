@@ -1,13 +1,9 @@
-// @ts-nocheck
 // deno-lint-ignore-file no-console
 import { serve } from 'https://deno.land/std@0.208.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.7'
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')
 const OPENAI_MODEL = Deno.env.get('OPENAI_MODEL') ?? 'gpt-4.1-mini'

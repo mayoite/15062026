@@ -36,7 +36,6 @@ async function downloadFile(
   const resolution = resolveMissingAssetPath(relPath, basenameIndex);
   if (resolution.kind === "copy") {
     copyWebAsset(resolution.sourceWebPath, relPath);
-// eslint-disable-next-line no-console
     console.log(`✅ Copied local fallback: ${resolution.sourceWebPath} -> ${relPath}`);
     return true;
   }
@@ -49,7 +48,6 @@ async function downloadFile(
     }
     const buffer = Buffer.from(await res.arrayBuffer());
     fs.writeFileSync(destPath, buffer);
-// eslint-disable-next-line no-console
     console.log(`✅ Downloaded: ${url} -> ${path.relative(process.cwd(), destPath)}`);
     return true;
   } catch (err) {
@@ -59,7 +57,6 @@ async function downloadFile(
 }
 
 async function run() {
-// eslint-disable-next-line no-console
   console.log("🔍 Scanning for CDN assets to download locally...");
   const assetPaths = new Set<string>();
 
@@ -109,7 +106,6 @@ async function run() {
   // 3. Read from Supabase DB tables if connected
   if (supabaseUrl && supabaseAnonKey) {
     try {
-// eslint-disable-next-line no-console
       console.log(`Connecting to Supabase at ${supabaseUrl}...`);
       const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -128,9 +124,9 @@ async function run() {
             for (const img of p.scene_images) assetPaths.add(img);
           }
           if (p.metadata && typeof p.metadata === "object") {
-            const m = p.metadata as unknown;
-            if (m.threeDModelUrl) assetPaths.add(m.threeDModelUrl);
-            if (m["3d_model"]) assetPaths.add(m["3d_model"]);
+            const m = p.metadata as Record<string, unknown>;
+            if (m.threeDModelUrl) assetPaths.add(m.threeDModelUrl as string);
+            if (m["3d_model"]) assetPaths.add(m["3d_model"] as string);
           }
         }
       }
@@ -147,9 +143,9 @@ async function run() {
           }
           if (p.flagship_image) assetPaths.add(p.flagship_image);
           if (p.metadata && typeof p.metadata === "object") {
-            const m = p.metadata as unknown;
-            if (m.threeDModelUrl) assetPaths.add(m.threeDModelUrl);
-            if (m["3d_model"]) assetPaths.add(m["3d_model"]);
+            const m = p.metadata as Record<string, unknown>;
+            if (m.threeDModelUrl) assetPaths.add(m.threeDModelUrl as string);
+            if (m["3d_model"]) assetPaths.add(m["3d_model"] as string);
           }
         }
       }
@@ -173,16 +169,8 @@ async function run() {
     .map(p => p.trim())
     .filter(p => p.startsWith("/") && !p.startsWith("//"));
 
-// eslint-disable-next-line no-console
   console.log(`Found ${localRelativePaths.length} unique asset paths referenced.`);
 
-// eslint-disable-next-line null
-// eslint-disable-next-line null
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line null
-// eslint-disable-next-line prefer-const
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line prefer-const
   let successCount = 0;
   const basenameIndex = buildBasenameIndex("images");
 
@@ -196,7 +184,6 @@ async function run() {
     }
   }
 
-// eslint-disable-next-line no-console
   console.log(`Finished downloading CDN assets locally. Success: ${successCount}/${localRelativePaths.length}`);
 }
 

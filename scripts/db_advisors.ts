@@ -315,9 +315,7 @@ async function main() {
 
   const totals = { ERROR: 0, WARN: 0, INFO: 0 };
 
-// eslint-disable-next-line no-console
   console.log("");
-// eslint-disable-next-line no-console
   console.log(
     `${COLOR.bold}Supabase Advisors${COLOR.reset} ${COLOR.dim}(${categories.join(
       " + ",
@@ -325,7 +323,6 @@ async function main() {
   );
 
   if (findings.length === 0) {
-// eslint-disable-next-line no-console
     console.log(`${COLOR.green}No issues detected. Nice.${COLOR.reset}\n`);
     return;
   }
@@ -333,35 +330,28 @@ async function main() {
   let lastCategory: Category | null = null;
   for (const { lint, rows } of findings) {
     if (lint.category !== lastCategory) {
-// eslint-disable-next-line no-console
       console.log(
         `\n${COLOR.bold}${COLOR.dim}── ${lint.category} ──${COLOR.reset}\n`,
       );
       lastCategory = lint.category;
     }
     totals[lint.level] += rows.length;
-// eslint-disable-next-line no-console
     console.log(
       `${severityBadge(lint.level)} ${COLOR.bold}${lint.title}${COLOR.reset} ${COLOR.dim}(${
         lint.name
       }, ${rows.length} affected)${COLOR.reset}`,
     );
-// eslint-disable-next-line no-console
     console.log(`  ${lint.description}`);
     const sample = rows.slice(0, 12);
     for (const r of sample) {
-// eslint-disable-next-line no-console
       console.log(`    • ${lint.identify(r)}`);
     }
     if (rows.length > sample.length) {
-// eslint-disable-next-line no-console
       console.log(`    ${COLOR.dim}… and ${rows.length - sample.length} more${COLOR.reset}`);
     }
-// eslint-disable-next-line no-console
     console.log(`  ${COLOR.dim}fix:${COLOR.reset} ${lint.remediation}\n`);
   }
 
-// eslint-disable-next-line no-console
   console.log(
     `${COLOR.bold}Totals:${COLOR.reset} ${COLOR.red}${totals.ERROR} error${COLOR.reset}, ${COLOR.yellow}${totals.WARN} warn${COLOR.reset}, ${COLOR.blue}${totals.INFO} info${COLOR.reset}\n`,
   );

@@ -69,7 +69,6 @@ export function CustomerQueryForm({ intent, source }: CustomerQueryFormProps) {
   useEffect(() => {
     if (!contextCopy) return;
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm((current) =>
       current.message.trim().length > 0
         ? current

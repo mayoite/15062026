@@ -481,7 +481,6 @@ export async function listConfiguratorCatalog(req: NextRequest): Promise<NextRes
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped catalog DB schema
   let query = (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .select("*")
@@ -528,7 +527,6 @@ export async function createConfiguratorCatalog(req: NextRequest): Promise<NextR
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- untyped catalog DB schema
   const { data, error: dbError } = await (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .insert(result.row)
@@ -572,7 +570,6 @@ export async function patchConfiguratorCatalog(
   if (keys.length === 1 && keys[0] === "active") {
     const parsed = ConfiguratorActiveToggleSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error.issues);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error: dbError } = await (supabase as SupabaseClient<any>)
       .from(CONFIGURATOR_TABLE)
       .update({ active: parsed.data.active })
@@ -595,7 +592,6 @@ export async function patchConfiguratorCatalog(
     return error(new ApiError(400, API_ERROR_CODES.VALIDATION_ERROR, result.error));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error: dbError } = await (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .update(result.row)
@@ -632,7 +628,6 @@ export async function deleteConfiguratorCatalog(id: string): Promise<NextRespons
 
   // SOFT delete (active=false) so existing Spaces/quotes keep resolving.
   // Hard delete is intentionally not exposed.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error: dbError } = await (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .update({ active: false })

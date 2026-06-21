@@ -21,9 +21,7 @@ const CHAIRS_DIR = path.resolve("public/images/chairs");
 const CATALOG_DIR = path.resolve("public/images/catalog");
 const WEBP_QUALITY = 85;
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 async function main() {
@@ -36,9 +34,7 @@ async function main() {
     fs.statSync(path.join(CHAIRS_DIR, f)).isDirectory()
   );
 
-// eslint-disable-next-line no-console
   console.log(`Found ${slugs.length} chair product folders`);
-// eslint-disable-next-line no-console
   if (DRY_RUN) console.log("🏜️  DRY RUN — no files will be written\n");
 
   const pathMap: Record<string, string> = {}; // old path → new path
@@ -84,20 +80,16 @@ async function main() {
       totalConverted++;
     }
 
-// eslint-disable-next-line no-console
     console.log(`  ✓ ${slug} → ${destSlug}/ (${files.length} images)`);
   }
 
-// eslint-disable-next-line no-console
   console.log(`\n📊 Converted: ${totalConverted} images`);
   if (!DRY_RUN) {
-// eslint-disable-next-line no-console
     console.log(`💾 Saved: ${totalSavedMB.toFixed(1)} MB`);
   }
 
   // Update Supabase
   if (!DRY_RUN && supabaseUrl && supabaseKey) {
-// eslint-disable-next-line no-console
     console.log("\n🔄 Updating Supabase product image paths...");
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -108,7 +100,6 @@ async function main() {
 
     if (error) {
       // Fallback: fetch all products and filter locally
-// eslint-disable-next-line no-console
       console.log("  Using full-table scan fallback...");
       const { data: allProducts, error: err2 } = await supabase
         .from("products")
@@ -123,35 +114,29 @@ async function main() {
       await updateProducts(supabase, products || [], pathMap);
     }
   } else if (DRY_RUN) {
-// eslint-disable-next-line no-console
     console.log("\n🔄 Would update Supabase paths (dry run)");
     // Show sample mappings
     const sample = Object.entries(pathMap).slice(0, 5);
     for (const [old, nw] of sample) {
-// eslint-disable-next-line no-console
       console.log(`  ${old}\n  → ${nw}`);
     }
     if (Object.keys(pathMap).length > 5) {
-// eslint-disable-next-line no-console
       console.log(`  ... and ${Object.keys(pathMap).length - 5} more`);
     }
   }
 
   // Delete old chairs directory
   if (!DRY_RUN) {
-// eslint-disable-next-line no-console
     console.log("\n🗑️  Removing public/images/chairs/...");
     fs.rmSync(CHAIRS_DIR, { recursive: true, force: true });
-// eslint-disable-next-line no-console
     console.log("✅ Done! Old chairs/ directory removed.");
   } else {
-// eslint-disable-next-line no-console
     console.log("\n🗑️  Would remove public/images/chairs/ (dry run)");
   }
 }
 
 async function updateProducts(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   products: Array<{ id: string; images: string[] | null; image_url: string | null }>,
   pathMap: Record<string, string>
 ) {
@@ -160,7 +145,6 @@ async function updateProducts(
   for (const product of products) {
     let changed = false;
     let newImageUrl = product.image_url;
-// eslint-disable-next-line prefer-const
     let newImages = product.images ? [...product.images] : null;
 
     // Update image_url
@@ -180,7 +164,7 @@ async function updateProducts(
     }
 
     if (changed) {
-      const updatePayload: Record<string, unknown> = {};
+      const updatePayload: any = {};
       if (newImageUrl !== product.image_url) updatePayload.image_url = newImageUrl;
       if (newImages) updatePayload.images = newImages;
 
@@ -197,7 +181,6 @@ async function updateProducts(
     }
   }
 
-// eslint-disable-next-line no-console
   console.log(`  ✅ Updated ${updated} products in Supabase`);
 }
 
