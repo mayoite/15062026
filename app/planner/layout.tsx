@@ -9,15 +9,17 @@ import { SITE_VIEWPORT } from "@/lib/siteViewport";
 import { PlannerBodyTheme } from "@/features/planner/components/PlannerBodyTheme";
 import { PlannerErrorBoundary } from "@/features/planner/editor/PlannerErrorBoundary";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
-
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 export const viewport: Viewport = SITE_VIEWPORT;
 
-export default function PlannerRootLayout({
+export default async function PlannerRootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages();
   return (
     <html lang="en-IN" className={`${ciscoSans.variable} ${helveticaNeue.variable}`}>
       <body className="antialiased">
@@ -28,14 +30,16 @@ export default function PlannerRootLayout({
           Skip to main content
         </a>
         <ServiceWorkerRegister />
-        <QueryProvider>
-          <ThemeProvider>
-            <PlannerBodyTheme />
-            <main id="main-content">
-              <PlannerErrorBoundary label="Planner">{children}</PlannerErrorBoundary>
-            </main>
-          </ThemeProvider>
-        </QueryProvider>
+        <NextIntlClientProvider messages={messages}>
+          <QueryProvider>
+            <ThemeProvider>
+              <PlannerBodyTheme />
+              <main id="main-content">
+                <PlannerErrorBoundary label="Planner">{children}</PlannerErrorBoundary>
+              </main>
+            </ThemeProvider>
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -79,19 +79,13 @@ export function wireFabricWalls(options: FabricWallsOptions) {
     walls.forEach((w, i) => {
       const start = corners[i];
       const end = (i === corners.length - 1) ? corners[0] : corners[i + 1];
-      const left = (start.left + end.left) / 2;
-      const top = (start.top + end.top) / 2;
-      const width = Math.max(0.01, Math.abs(end.left - start.left));
-      const height = Math.max(0.01, Math.abs(end.top - start.top));
+      
+      // In Fabric v6, setting x1/y1/x2/y2 directly is the correct way to reposition a line's endpoints.
       w.set({
-        x1: start.left - left,
-        y1: start.top - top,
-        x2: end.left - left,
-        y2: end.top - top,
-        left,
-        top,
-        width,
-        height
+        x1: start.left,
+        y1: start.top,
+        x2: end.left,
+        y2: end.top
       });
       w.setCoords();
     });
