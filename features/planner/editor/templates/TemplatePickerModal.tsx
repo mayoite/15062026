@@ -66,6 +66,12 @@ export function buildTemplatePreview(template: LayoutTemplate): TemplatePreview 
   return { viewBoxHeight, rects };
 }
 
+function formatTemplateRoomSize(template: LayoutTemplate): string {
+  const widthM = (template.recommendedRoomSize.minWidth / 100).toFixed(1);
+  const heightM = (template.recommendedRoomSize.minHeight / 100).toFixed(1);
+  return `min ${widthM} x ${heightM} m`;
+}
+
 // --- Component ---
 
 interface TemplatePickerModalProps {
@@ -197,10 +203,7 @@ export function TemplatePickerModal({ isOpen, onClose, onApply }: TemplatePicker
                       {template.totalSeats} seats
                     </span>
                     <span className="pwx-meta-chip">{template.category.replace("-", " ")}</span>
-                    <span className="pwx-meta-chip">
-                      min {template.recommendedRoomSize.minWidth}×
-                      {template.recommendedRoomSize.minHeight} mm
-                    </span>
+                    <span className="pwx-meta-chip">{formatTemplateRoomSize(template)}</span>
                   </div>
                 </button>
               );

@@ -8,9 +8,9 @@ interface BlueprintUnderlayProps {
 
 export function BlueprintUnderlay({ camera }: BlueprintUnderlayProps) {
   const blueprint = usePlannerWorkspaceStore((s) => s.blueprint);
-  const underlayVisible = usePlannerWorkspaceStore((s) => s.layerVisible.underlay);
+  const underlayVisible = usePlannerWorkspaceStore((s) => s.layerVisible?.underlay ?? true);
 
-  if (!blueprint.dataUrl || !underlayVisible) return null;
+  if (!blueprint?.dataUrl || !underlayVisible) return null;
 
   const cameraScale = camera?.z ?? 1;
   const tx = camera ? -camera.x * cameraScale : 0;
@@ -24,6 +24,7 @@ export function BlueprintUnderlay({ camera }: BlueprintUnderlayProps) {
       <div
         role="presentation"
         className="absolute origin-top-left select-none bg-center bg-no-repeat"
+        data-testid="planner-blueprint-underlay"
         style={{
           opacity: blueprint.opacity,
           width: blueprint.widthPx,

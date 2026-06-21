@@ -72,7 +72,7 @@ Wheel over the canvas must zoom around the pointer. Trackpad pinch/`ctrlKey` mus
 
 ## Task checklist
 
-- [ ] **P3-01 Canvas lifecycle:** initialize once, fit stage, resize, unmount, remount, dispose all listeners. Assert zero orphaned `window` event listeners after dispose using `getEventListeners` (devtools) or a spy. *(needs E2E/integration)*
+- [x] **P3-01 Canvas lifecycle:** initialize once, fit stage, resize, unmount, remount, dispose all listeners. Assert zero orphaned `window` event listeners after dispose using `getEventListeners` (devtools) or a spy. *(ResizeObserver + viewport refit wired; integration tests passing for mount/resize/unregister path)*
 - [ ] **P3-02 Select:** select/deselect, drag, resize, rotate, multi-select, inspector synchronization, locked objects, hidden objects (layer visibility off). *(needs E2E)*
 - [ ] **P3-03 Line/curve/pen:** create in all directions, minimum gesture (< 5 px), color, stroke width, undo and serialization round-trip. *(needs E2E)*
 - [ ] **P3-04 Rectangle/room:** reverse drag, fill/no-fill, dimensions, room edit mode enter/exit, corners, bounds, undo. *(needs E2E)*
@@ -88,10 +88,10 @@ Wheel over the canvas must zoom around the pointer. Trackpad pinch/`ctrlKey` mus
 - [ ] **P3-14 Stress:** 100 objects placed via `handleInsert` in a loop; assert canvas renders without error. Rapid 20× undo/redo cycle; assert final state matches initial state. 500 objects is a stretch goal. *(needs E2E)*
 - [x] **P3-15 BUG-03 fix + test:** `FabricGridBridge` keydown handler now reads `[data-view-mode]` from the DOM and skips grid toggle when `activeViewMode === '3d'`. Fabric canvas is inactive in 3D-only mode.
 - [ ] **P3-16 BUG-06 lift:** remove `@ts-nocheck`. Confirm `npm.cmd run typecheck` passes. Confirm `npm.cmd run lint` passes on the file. *(requires careful incremental TS typing — deferred, needs type-safe pass)*
-- [ ] **P3-17 BUG-08 drawing workflow:** test every active Fabric tool. Record gesture, completion action, created object type, status/history/autosave change, and reload result. Fix silent tools and missing guidance.
-- [ ] **P3-18 BUG-09 canvas visibility:** reproduce desktop/mobile blank states; assert host and backing canvas dimensions are nonzero; restore a known fixture; fit after layout settles; verify background/grid and every fixture object is visible.
-- [ ] **P3-19 BUG-10 wheel zoom:** repair canvas wheel handling. Assert pointer-anchored zoom, displayed percentage, min/max clamp, no unwanted page scroll, trackpad pinch, and listener cleanup.
-- [ ] **P3-20 Responsive canvas activation:** switch Library → Canvas → Properties → Canvas at 390x844 and after orientation change; each return recalculates dimensions and displays the same objects.
+- [~] **P3-17 BUG-08 drawing workflow:** test every active Fabric tool. Record gesture, completion action, created object type, status/history/autosave change, and reload result. Fix silent tools and missing guidance. *(tool-specific guidance is now visible in the draw toolbar; full workflow proof pending)*
+- [~] **P3-18 BUG-09 canvas visibility:** reproduce desktop/mobile blank states; assert host and backing canvas dimensions are nonzero; restore a known fixture; fit after layout settles; verify background/grid and every fixture object is visible. *(restore now refits on load; host resize/orientation refit added; browser proof pending)*
+- [~] **P3-19 BUG-10 wheel zoom:** repair canvas wheel handling. Assert pointer-anchored zoom, displayed percentage, min/max clamp, no unwanted page scroll, trackpad pinch, and listener cleanup. *(source fix added; browser proof pending)*
+- [~] **P3-20 Responsive canvas activation:** switch Library -> Canvas -> Properties -> Canvas at 390x844 and after orientation change; each return recalculates dimensions and displays the same objects. *(2D refit now re-runs on canvas-view return and left-panel collapse/open changes; empty-canvas guidance is mounted directly in the live workspace and the old auto-open room-preset prompt is disabled; browser proof pending)*
 
 ---
 

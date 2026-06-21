@@ -26,10 +26,15 @@ import type { Dispatch, SetStateAction } from 'react';
 export type PlannerFabricObject = FabricObject & { id?: string; name?: string };
 
 export type InsertPayloadObj = Record<string, unknown> & {
+  id?: string;
   svg?: string;
   title?: string;
+  name?: string;
+  variant?: "furniture" | "room" | "zone";
   width?: number;
   height?: number;
+  left?: number;
+  top?: number;
   lrSpacing?: number;
   tbSpacing?: number;
 };
@@ -52,7 +57,53 @@ export type FloorplanCtx = {
   setRoomEditRedoStates: Dispatch<SetStateAction<string[]>>;
   enterRoomEdit: () => void;
   exitRoomEdit: () => void;
+  syncZoom: (zoomPct: number) => void;
 };
+
+export function resolveLayerCategory(obj: unknown): PlannerLayerCategory | null {
+  const name = String((obj as PlannerFabricObject)?.name ?? '');
+  if (!name) return null;
+  if (name === 'CORNER' || name.startsWith('WALL:') || name.startsWith('DOOR') || name.startsWith('WINDOW')) {
+    return 'walls';
+  }
+  if (name.startsWith('DRAW:measure')) {
+    return 'measurements';
+  }
+  if (name.startsWith('DRAW:')) {
+    return 'zones';
+  }
+  if (name.startsWith('GENERIC:') || name.startsWith('TABLE') || name.startsWith('CHAIR') || name.startsWith('DESK')) {
+    return 'furniture';
+  }
+  return null;
+}
+
+export function getBoundingRect(objects: FabricObject[]) {
+  let top = 9999;
+  let left = 9999;
+  let right = 0;
+  let bottom = 0;
+
+  objects.forEach((obj) => {
+    if (obj.top < top) {
+      top = obj.top;
+    }
+    if (obj.left < left) {
+      left = obj.left;
+    }
+    if (obj.top > bottom) {
+      bottom = obj.top;
+    }
+    if (obj.left > right) {
+      right = obj.left;
+    }
+  });
+
+  const center = (left + right) / 2;
+  const middle = (top + bottom) / 2;
+
+  return { left, top, right, bottom, center, middle };
+}
 
 export function createFloorplanCanvasApi(
   ctxRef: { current: FloorplanCtx },
@@ -401,6 +452,12 @@ export function createFloorplanCanvasApi(
       roomEditActive: () => roomEditMode,
       saveState,
     });
+
+    view.on('mouse:wheel', (event: unknown) => {
+      const native = (event as Record<string, unknown>).e;
+      if (!(native instanceof WheelEvent)) return;
+      zoomToPointer(native);
+    });
   }
 
 
@@ -464,7 +521,7 @@ export function createFloorplanCanvasApi(
         if (objects.length) {
           group = fabricUtil.groupSVGElements(objects, parsed.options);
           group.set({
-            name: `GENERIC:${payloadObj.title || 'Item'}`,
+            name: `GENERIC:${payloadObj.name || payloadObj.title || 'Item'}`,
             originX: 'center',
             originY: 'center',
           });
@@ -474,6 +531,13 @@ export function createFloorplanCanvasApi(
       } catch {
         // Keep the generic footprint as a safe fallback for malformed symbols.
       }
+    }
+
+    if (payloadObj.id) {
+      group.set('id', payloadObj.id);
+    }
+    if (payloadObj.name && type === 'GENERIC' && payloadObj.variant !== 'zone' && payloadObj.variant !== 'room') {
+      group.set('name', `GENERIC:${payloadObj.name}`);
     }
 
     if (type === 'DOOR' || type === 'WINDOW') {
@@ -544,10 +608,18 @@ export function createFloorplanCanvasApi(
     // object groups use center as origin, so add half width and height of their reported
     // width and size; note that this will not account for chairs around tables, which is
     // intentional; they go in the specified gaps
+    const explicitLeft = typeof payloadObj.left === 'number' ? payloadObj.left : null;
+    const explicitTop = typeof payloadObj.top === 'number' ? payloadObj.top : null;
+    const hasExplicitPosition = explicitLeft !== null && explicitTop !== null;
     group.left = newLR + (group.width / 2) + roomOrigin();
     group.top = newTB + (group.height / 2) + roomOrigin();
 
-    if (lastObject) {
+    if (hasExplicitPosition) {
+      group.left = explicitLeft + roomOrigin();
+      group.top = explicitTop + roomOrigin();
+    }
+
+    if (lastObject && !hasExplicitPosition) {
       const lastLR = lastObjectDefinition?.lrSpacing || RL_AISLEGAP;
       const lastTB = lastObjectDefinition?.tbSpacing || RL_AISLEGAP;
       const useLR = Math.max(newLR, lastLR);
@@ -588,6 +660,12 @@ export function createFloorplanCanvasApi(
     ctxRef.current.setSelections([]);
     ctxRef.current.setUngroupable(false);
     syncGrid();
+    window.requestAnimationFrame(() => {
+      const zoomPct = fitToStage();
+      ctxRef.current.syncZoom(zoomPct);
+      view.calcOffset();
+      view.requestRenderAll();
+    });
   }
 
   function createGridPattern() {
@@ -652,12 +730,13 @@ export function createFloorplanCanvasApi(
 
   /** Save current state */
   function saveState() {
-    const state = view.toDatalessJSON(['name', 'hasControls', 'selectable', 'hasBorders', 'evented', 'hoverCursor', 'moveCursor']);
+    const state = view.toDatalessJSON(['id', 'name', 'hasControls', 'selectable', 'hasBorders', 'evented', 'hoverCursor', 'moveCursor']);
     ctxRef.current.pushState(JSON.stringify(state));
   }
 
   function exportState() {
     const state = view.toDatalessJSON([
+      'id',
       'name',
       'hasControls',
       'selectable',
@@ -880,24 +959,6 @@ export function createFloorplanCanvasApi(
     view.requestRenderAll();
   }
 
-  function resolveLayerCategory(obj: unknown): PlannerLayerCategory | null {
-    const name = String((obj as PlannerFabricObject)?.name ?? '');
-    if (!name) return null;
-    if (name === 'CORNER' || name.startsWith('WALL:') || name.startsWith('DOOR') || name.startsWith('WINDOW')) {
-      return 'walls';
-    }
-    if (name.startsWith('DRAW:measure')) {
-      return 'measurements';
-    }
-    if (name.startsWith('DRAW:')) {
-      return 'zones';
-    }
-    if (name.startsWith('GENERIC:') || name.startsWith('TABLE') || name.startsWith('CHAIR') || name.startsWith('DESK')) {
-      return 'furniture';
-    }
-    return null;
-  }
-
   function setLayerVisibility(layerVisible: Record<PlannerLayerCategory, boolean>) {
     if (!view) return;
     view.getObjects().forEach((obj) => {
@@ -947,6 +1008,23 @@ export function createFloorplanCanvasApi(
     return zoomPct;
   }
 
+  function zoomToPointer(nativeEvent: WheelEvent) {
+    if (!view) return;
+
+    const rect = view.lowerCanvasEl.getBoundingClientRect();
+    const anchor = new Point(nativeEvent.clientX - rect.left, nativeEvent.clientY - rect.top);
+    const nextZoom = Math.max(0.2, Math.min(1.5, view.getZoom() * Math.pow(0.999, nativeEvent.deltaY)));
+    const nextZoomPct = Math.round(nextZoom * 100);
+
+    nativeEvent.preventDefault();
+    nativeEvent.stopPropagation();
+    view.zoomToPoint(anchor, nextZoom);
+    ctxRef.current.zoom = nextZoomPct;
+    ctxRef.current.syncZoom(nextZoomPct);
+    view.calcOffset();
+    view.requestRenderAll();
+  }
+
   function setGridVisible(enabled: boolean) {
     ctxRef.current.gridEnabled = enabled;
     syncGrid();
@@ -994,29 +1072,6 @@ export function createFloorplanCanvasApi(
   function isDW(object: unknown) {
     const name = String((object as PlannerFabricObject)?.name ?? '');
     return name.includes('DOOR') || name.includes('WINDOW');
-  }
-
-  function getBoundingRect(objects: FabricObject[]) {
-    let top = 9999, left = 9999, right = 0, bottom = 0;
-    objects.forEach(obj => {
-      if (obj.top < top) {
-        top = obj.top;
-      }
-      if (obj.left < left) {
-        left = obj.left;
-      }
-      if (obj.top > bottom) {
-        bottom = obj.top;
-      }
-      if (obj.left > right) {
-        right = obj.left;
-      }
-    });
-
-    const center = (left + right) / 2;
-    const middle = (top + bottom) / 2;
-
-    return { left, top, right, bottom, center, middle };
   }
 
   function withExportFrame<T>(run: () => T): T {
@@ -1085,6 +1140,7 @@ export function createFloorplanCanvasApi(
 
 
   function dispose() {
+    drawToolsController?.dispose?.();
     drawToolsController = null;
     if (view && !view.destroyed) {
       view.dispose();

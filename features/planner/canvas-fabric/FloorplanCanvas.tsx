@@ -4,6 +4,9 @@ import { useEffect, useRef } from 'react';
 import { useFloorplan } from './context/FloorplanContext';
 import { createFloorplanCanvasApi, type FloorplanCtx } from './hooks/floorplanCanvas';
 import { usePlannerWorkspaceStore } from '@/features/planner/store/workspaceStore';
+import { BlueprintUnderlay } from '@/features/planner/editor/BlueprintUnderlay';
+import { CalibrationCapture } from '@/features/planner/editor/CalibrationCapture';
+import { BlueprintMoveCapture } from '@/features/planner/editor/BlueprintMoveCapture';
 
 export function FloorplanCanvas() {
   const ctx = useFloorplan();
@@ -27,6 +30,7 @@ export function FloorplanCanvas() {
     setRoomEditRedoStates: ctx.setRoomEditRedoStates,
     enterRoomEdit: ctx.editRoom,
     exitRoomEdit: ctx.endEditRoom,
+    syncZoom: ctx.setZoom,
   });
 
   useEffect(() => {
@@ -48,6 +52,7 @@ export function FloorplanCanvas() {
       setRoomEditRedoStates: ctx.setRoomEditRedoStates,
       enterRoomEdit: ctx.editRoom,
       exitRoomEdit: ctx.endEditRoom,
+      syncZoom: ctx.setZoom,
     };
   }, [ctx]);
 
@@ -70,13 +75,27 @@ export function FloorplanCanvas() {
 
     const onKeyDown = (e: KeyboardEvent) => api.onKeyDown(e);
     const onKeyUp = (e: KeyboardEvent) => api.onKeyUp(e);
+    const onViewportChange = () => applyFit();
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
+    window.addEventListener('resize', onViewportChange);
+    window.addEventListener('orientationchange', onViewportChange);
+
+    const resizeObserver =
+      wrap && typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(() => applyFit())
+        : null;
+    if (wrap) {
+      resizeObserver?.observe(wrap);
+    }
 
     return () => {
       window.cancelAnimationFrame(fitFrame);
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('resize', onViewportChange);
+      window.removeEventListener('orientationchange', onViewportChange);
+      resizeObserver?.disconnect();
       api.dispose();
       ctx.registerCanvasApi(null);
     };
@@ -89,7 +108,10 @@ export function FloorplanCanvas() {
 
   return (
     <div className="canvas-wrap" tabIndex={0}>
+      <BlueprintUnderlay camera={null} />
       <canvas id="main" ref={canvasHostRef} />
+      <CalibrationCapture />
+      <BlueprintMoveCapture />
     </div>
   );
 }

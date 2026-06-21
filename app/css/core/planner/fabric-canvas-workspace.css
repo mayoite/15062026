@@ -36,7 +36,26 @@
 }
 
 .fcw-toolbar-group--draw {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.18rem;
   padding-right: 0.12rem;
+}
+
+.fcw-draw-tool-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+  flex-wrap: nowrap;
+}
+
+.fcw-draw-tool-help {
+  max-width: 24rem;
+  padding: 0 0.15rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  line-height: 1.35;
 }
 
 .fcw-draw-tool-btn[data-active="true"] {
@@ -274,6 +293,7 @@
 .fcw-stage-card .canvas-wrap {
   display: flex;
   flex: 1;
+  width: 100%;
   justify-content: center;
   align-items: center;
   overflow: auto;

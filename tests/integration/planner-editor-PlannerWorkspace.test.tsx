@@ -169,4 +169,15 @@ describe("PlannerWorkspace", () => {
 
     await waitFor(() => expect(insertObject).toHaveBeenCalled());
   });
+
+  it("shows blank canvas guidance and starter actions on an empty canvas", () => {
+    render(<PlannerWorkspace guestMode />);
+
+    expect(screen.getByRole("region", { name: "Empty canvas guidance" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Draw walls" }));
+    expect(setPlannerTool).toHaveBeenCalledWith("wall");
+
+    fireEvent.click(screen.getByRole("button", { name: "Use template" }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
 });

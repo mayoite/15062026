@@ -25,6 +25,35 @@ export interface LayoutTemplate {
   totalSeats: number;
 }
 
+export interface TemplateCanvasPlacement {
+  id: string;
+  label: string;
+  type: string;
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+}
+
+export function buildTemplateCanvasPlacements(template: LayoutTemplate): TemplateCanvasPlacement[] {
+  return template.shapes.map((shape, index) => {
+    const width = shape.widthMm;
+    const height = shape.heightMm;
+    const left = shape.x * template.recommendedRoomSize.minWidth + width / 2;
+    const top = shape.y * template.recommendedRoomSize.minHeight + height / 2;
+
+    return {
+      id: `template-${template.id}-${index}`,
+      label: shape.label,
+      type: shape.type,
+      width,
+      height,
+      left,
+      top,
+    };
+  });
+}
+
 export const LAYOUT_TEMPLATES: LayoutTemplate[] = [
   {
     id: "open-plan-24",

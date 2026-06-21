@@ -177,9 +177,9 @@ describe("BlueprintPanel", () => {
     expect(screen.getByText(/Use PNG, JPG, WebP, or PDF/i)).toBeInTheDocument();
 
     const oversized = new File(["x"], "big.png", { type: "image/png" });
-    Object.defineProperty(oversized, "size", { value: 9 * 1024 * 1024 });
+    Object.defineProperty(oversized, "size", { value: 21 * 1024 * 1024 });
     fireEvent.change(getHiddenFileInput(container), { target: { files: [oversized] } });
-    expect(screen.getByText(/8 MB or smaller/i)).toBeInTheDocument();
+    expect(screen.getByText(/20 MB or smaller/i)).toBeInTheDocument();
   });
 
   it("shows import errors for PDF render, image load, and read failures", async () => {

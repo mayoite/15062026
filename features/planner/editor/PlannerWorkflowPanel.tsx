@@ -1,5 +1,6 @@
 "use client";
 import { AlertTriangle, CircleAlert } from "lucide-react";
+import { useMemo } from "react";
 
 
 import type { PlanMetrics } from "@/features/planner/editor/planMetrics";
@@ -60,7 +61,12 @@ export function PlannerWorkflowPanel({
   onStepChange,
   onOpenExport,
 }: PlannerWorkflowPanelProps) {
-  const findings = runPlannerComplianceCheck(editor ?? null, []).map(toWorkflowFinding);
+  const findings = useMemo(() => {
+    void metrics.furnitureCount;
+    void metrics.shapeCount;
+    void metrics.wallCount;
+    return runPlannerComplianceCheck(editor ?? null, []).map(toWorkflowFinding);
+  }, [editor, metrics.furnitureCount, metrics.shapeCount, metrics.wallCount]);
 
   const gates = evaluatePlannerStepGates(null, metrics);
 
@@ -123,9 +129,9 @@ export function PlannerWorkflowPanel({
         </div>
 
         {findings.length > 0 ? (
-          <ul className="pw-workflow-findings" role="list" aria-live="polite">
-            {findings.map((finding) => (
-              <FindingRow key={finding.message} finding={finding} />
+          <ul className="pw-workflow-findings" role="list">
+            {findings.map((finding, index) => (
+              <FindingRow key={`${finding.severity}:${finding.message}:${index}`} finding={finding} />
             ))}
           </ul>
         ) : (

@@ -35,7 +35,7 @@ Make first entry, validation, metadata application, and returning-entry behavior
 - [x] **P2-09 Focus and accessibility:** `autoFocus` added to name field. `role="radiogroup"` + `aria-labelledby` added to purpose grid. Error paragraph gets `id="project-setup-error"` + `aria-live="assertive"`. Name input `aria-describedby` wired to error id when error is present.
 - [ ] **P2-10 Responsive layout:** at `320×568`, `390×844`, tablet portrait, and short desktop (`1024×600`): form is scrollable, submit button is visible without horizontal scroll, no field is clipped. *(needs browser)*
 - [ ] **P2-11 Refresh and race:** (a) refresh immediately after opening setup but before submit → setup shows again; (b) refresh during setup `state write` (simulate slow storage) → no partial state; (c) refresh immediately after successful setup → workspace loads with correct project metadata. *(needs E2E)*
-- [ ] **P2-12 Document round-trip:** project name, floor area, seat count, purpose, city, and grid unit survive: `buildCurrentPlannerDocument()` → `normalizePlannerDocument()` → JSON export → JSON import → `loadPlannerDocumentIntoFabric()`. Assert field values match at each step. *(needs integration test)*
+- [x] **P2-12 Document round-trip:** project name, floor area, seat count, purpose, city, and grid unit survive: `buildCurrentPlannerDocument()` → `normalizePlannerDocument()` → JSON export → JSON import → `loadPlannerDocumentIntoFabric()`. Assert field values match at each step. *(source fix + regression test passing)*
 
 ---
 
