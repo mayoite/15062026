@@ -29,25 +29,27 @@ export function FloorplanCanvas() {
     exitRoomEdit: ctx.endEditRoom,
   });
 
-  ctxRef.current = {
-    roomEdit: ctx.roomEdit,
-    zoom: ctx.zoom,
-    gridEnabled: ctx.gridEnabled,
-    states: ctx.states,
-    redoStates: ctx.redoStates,
-    roomEditStates: ctx.roomEditStates,
-    roomEditRedoStates: ctx.roomEditRedoStates,
-    defaultChair: ctx.defaultChair,
-    setSelections: ctx.setSelections as unknown as FloorplanCtx['setSelections'],
-    setUngroupable: ctx.setUngroupable,
-    pushState: ctx.pushState,
-    setStates: ctx.setStates,
-    setRedoStates: ctx.setRedoStates,
-    setRoomEditStates: ctx.setRoomEditStates,
-    setRoomEditRedoStates: ctx.setRoomEditRedoStates,
-    enterRoomEdit: ctx.editRoom,
-    exitRoomEdit: ctx.endEditRoom,
-  };
+  useEffect(() => {
+    ctxRef.current = {
+      roomEdit: ctx.roomEdit,
+      zoom: ctx.zoom,
+      gridEnabled: ctx.gridEnabled,
+      states: ctx.states,
+      redoStates: ctx.redoStates,
+      roomEditStates: ctx.roomEditStates,
+      roomEditRedoStates: ctx.roomEditRedoStates,
+      defaultChair: ctx.defaultChair,
+      setSelections: ctx.setSelections as unknown as FloorplanCtx['setSelections'],
+      setUngroupable: ctx.setUngroupable,
+      pushState: ctx.pushState,
+      setStates: ctx.setStates,
+      setRedoStates: ctx.setRedoStates,
+      setRoomEditStates: ctx.setRoomEditStates,
+      setRoomEditRedoStates: ctx.setRoomEditRedoStates,
+      enterRoomEdit: ctx.editRoom,
+      exitRoomEdit: ctx.endEditRoom,
+    };
+  }, [ctx]);
 
   useEffect(() => {
     const el = canvasHostRef.current;
@@ -78,6 +80,7 @@ export function FloorplanCanvas() {
       api.dispose();
       ctx.registerCanvasApi(null);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

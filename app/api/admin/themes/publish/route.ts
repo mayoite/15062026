@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
       uploadPromises.push(
         doClient.send(new PutObjectCommand(doParams))
-          .then(() => console.log("DO Upload Success"))
+          .then(() => { /* DO Upload Success */ })
           .catch(err => console.error("DO Upload Failed:", err))
       );
     }
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
 
       uploadPromises.push(
         r2Client.send(new PutObjectCommand(r2Params))
-          .then(() => console.log("R2 Upload Success"))
+          .then(() => { /* R2 Upload Success */ })
           .catch(err => console.error("R2 Upload Failed:", err))
       );
     }

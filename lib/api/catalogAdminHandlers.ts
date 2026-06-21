@@ -14,8 +14,7 @@
  */
 
 import { randomUUID } from "node:crypto";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import type { NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   createAdminServiceClient,
@@ -238,7 +237,7 @@ export async function listStandardCatalog(req: NextRequest): Promise<NextRespons
     filtered = filtered.filter((item) =>
       [item.name, item.category, item.subcategory, item.description]
         .filter(Boolean)
-        .some((value) => value!.toLowerCase().includes(search)),
+        .some((value) => value ? value.toLowerCase().includes(search) : false),
     );
   }
   if (visible === "true" || visible === "false") {
@@ -481,6 +480,7 @@ export async function listConfiguratorCatalog(req: NextRequest): Promise<NextRes
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .select("*")
@@ -527,6 +527,7 @@ export async function createConfiguratorCatalog(req: NextRequest): Promise<NextR
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error: dbError } = await (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .insert(result.row)
@@ -570,6 +571,7 @@ export async function patchConfiguratorCatalog(
   if (keys.length === 1 && keys[0] === "active") {
     const parsed = ConfiguratorActiveToggleSchema.safeParse(body);
     if (!parsed.success) return validationError(parsed.error.issues);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error: dbError } = await (supabase as SupabaseClient<any>)
       .from(CONFIGURATOR_TABLE)
       .update({ active: parsed.data.active })
@@ -592,6 +594,7 @@ export async function patchConfiguratorCatalog(
     return error(new ApiError(400, API_ERROR_CODES.VALIDATION_ERROR, result.error));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error: dbError } = await (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .update(result.row)
@@ -628,6 +631,7 @@ export async function deleteConfiguratorCatalog(id: string): Promise<NextRespons
 
   // SOFT delete (active=false) so existing Spaces/quotes keep resolving.
   // Hard delete is intentionally not exposed.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error: dbError } = await (supabase as SupabaseClient<any>)
     .from(CONFIGURATOR_TABLE)
     .update({ active: false })

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Canvas as FabricCanvas, Group } from 'fabric';
+import { Canvas as FabricCanvas, Group, FabricObject } from 'fabric';
 import { FURNISHINGS } from '../models/furnishings';
 import { createShape, RL_FILL, RL_STROKE } from '../lib/helpers';
 import { ZoomControl } from './ZoomControl';
@@ -10,6 +10,7 @@ const HEIGHT = 400;
 type ChairsLayoutDialogProps = {
   open: boolean;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onCreate: (layout: any) => void;
 };
 
@@ -37,8 +38,8 @@ const toRadians = (angle: number) => angle * (Math.PI / 180);
 export function ChairsLayoutDialog({ open, onClose, onCreate }: ChairsLayoutDialogProps) {
   const [layoutOption, setLayoutOption] = useState<'NORMAL' | 'CURVED'>('NORMAL');
   const [zoom, setZoom] = useState(100);
-  const [view, setView] = useState<any>(null);
-  const [layout, setLayout] = useState<any>(null);
+  const [view, setView] = useState<FabricCanvas | null>(null);
+  const [layout, setLayout] = useState<Group | null>(null);
 
   const [rectBlock, setRectBlock] = useState<RectForm>({
     chair: 0,
@@ -65,7 +66,7 @@ export function ChairsLayoutDialog({ open, onClose, onCreate }: ChairsLayoutDial
     if (!open) return;
     const canvas = new FabricCanvas('layout_chairs');
     canvas.setDimensions({ width: WIDTH, height: HEIGHT });
-    setView(canvas);
+    Promise.resolve().then(() => setView(canvas));
     return () => {
       canvas.dispose();
       setView(null);
@@ -76,7 +77,7 @@ export function ChairsLayoutDialog({ open, onClose, onCreate }: ChairsLayoutDial
   const changeLayout = useMemo(
     () => () => {
       if (!view) return;
-      const chrs: any[] = [];
+      const chrs: FabricObject[] = [];
 
       if (layoutOption === 'CURVED') {
         const { radius, angle, rows, chair, spacing_row, chairs: rowChairs } = curvedBlock;
@@ -110,10 +111,10 @@ export function ChairsLayoutDialog({ open, onClose, onCreate }: ChairsLayoutDial
           chr.top = y;
 
           if (i % perRow === 0) {
-            y += spacing_row + chr.height!;
+            y += spacing_row + (chr.height as number);
             x = 0;
           } else {
-            x += chr.width! + spacing_chair;
+            x += (chr.width as number) + spacing_chair;
             const s = Math.floor((i % perRow) / cps);
             if (i % perRow % cps === 0 && s + 1 <= sections) {
               x += rectBlock.spacing_sections[s - 1];
@@ -142,7 +143,7 @@ export function ChairsLayoutDialog({ open, onClose, onCreate }: ChairsLayoutDial
   );
 
   useEffect(() => {
-    if (open && view) changeLayout();
+    if (open && view) Promise.resolve().then(() => changeLayout());
   }, [open, view, changeLayout]);
 
   if (!open) return null;
@@ -320,7 +321,7 @@ export function ChairsLayoutDialog({ open, onClose, onCreate }: ChairsLayoutDial
             className="btn primary"
             onClick={() => {
               if (!layout) return;
-              layout.selectable = true;
+              layout.set('selectable', true);
               layout.scale(1);
               onCreate(layout);
               onClose();

@@ -33,8 +33,7 @@ export function LoginForm({
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
- 
-    setIsHydrated(true);
+    Promise.resolve().then(() => setIsHydrated(true));
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

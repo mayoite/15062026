@@ -10,7 +10,7 @@ type PreviewFurnitureProps = {
 
 export function PreviewFurniture({ type, furniture }: PreviewFurnitureProps) {
   const canvasId = useId().replace(/:/g, '');
-  const canvasRef = useRef<any>(null);
+  const canvasRef = useRef<FabricCanvas | null>(null);
   const { defaultChair } = useFloorplan();
 
   useEffect(() => {

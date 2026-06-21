@@ -16,7 +16,7 @@
  */
 
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api/withAuth";
 import { success, validationError } from "@/lib/api/apiResponse";
 import { LegacyAdvisorRequestSchema } from "@/lib/api/schemas";

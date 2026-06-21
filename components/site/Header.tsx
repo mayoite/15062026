@@ -203,17 +203,21 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
-    setShowSearchPanel(false);
-    setActiveMega(null);
+    Promise.resolve().then(() => {
+      setShowSearchPanel(false);
+      setActiveMega(null);
+    });
   }, [pathname]);
 
   useEffect(() => {
     const query = searchQuery.trim();
  
     if (query.length < 2) {
-      setSearchResults([]);
-      setSearchSource(null);
-      setSearchLoading(false);
+      Promise.resolve().then(() => {
+        setSearchResults([]);
+        setSearchSource(null);
+        setSearchLoading(false);
+      });
       return;
     }
 

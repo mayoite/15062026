@@ -91,10 +91,12 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
 
   useEffect(() => {
     if (!open) {
-      setSearchQuery("");
-      setSearchResults([]);
-      setSearchLoading(false);
-      setShowSearchPanel(false);
+      Promise.resolve().then(() => {
+        setSearchQuery("");
+        setSearchResults([]);
+        setSearchLoading(false);
+        setShowSearchPanel(false);
+      });
     }
   }, [open]);
 
@@ -133,8 +135,10 @@ export function MobileNavDrawer({ open, onClose, closeButtonRef, groupedCategori
     const query = searchQuery.trim();
  
     if (query.length < 2) {
-      setSearchResults([]);
-      setSearchLoading(false);
+      Promise.resolve().then(() => {
+        setSearchResults([]);
+        setSearchLoading(false);
+      });
       return;
     }
 

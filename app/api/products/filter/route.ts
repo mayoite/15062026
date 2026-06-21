@@ -277,7 +277,7 @@ function applyFilters(
   }
   if (typeof filters.ecoMin === "number") {
  
-    list = list.filter((product) => (product.metadata?.sustainabilityScore || 0) >= filters.ecoMin!);
+    list = list.filter((product) => (product.metadata?.sustainabilityScore || 0) >= (filters.ecoMin as number));
   }
 
   list.sort((left, right) => {

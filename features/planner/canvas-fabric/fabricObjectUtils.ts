@@ -1,10 +1,12 @@
 
 const ANNOTATION_PREFIX = "DRAW:";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isFabricAnnotation(obj: any): boolean {
   return String(obj?.name ?? "").startsWith(ANNOTATION_PREFIX);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function canResizeFabricObject(obj: any): boolean {
   if (!obj) return false;
   const name = String(obj.name ?? "");
@@ -14,6 +16,7 @@ export function canResizeFabricObject(obj: any): boolean {
   return false;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function canEditFabricFill(obj: any): boolean {
   if (!obj) return false;
   if (canResizeFabricObject(obj)) return true;
@@ -21,6 +24,7 @@ export function canEditFabricFill(obj: any): boolean {
   return name.startsWith("GROUP") || name === "GROUP";
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function applyFabricTransformLocks(obj: any) {
   if (!obj) return;
   const resizable = canResizeFabricObject(obj);

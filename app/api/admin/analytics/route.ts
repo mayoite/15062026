@@ -16,7 +16,7 @@
  */
 
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
 import { withAuth } from "@/lib/api/withAuth";
 import { success, error } from "@/lib/api/apiResponse";
 import { ApiError, API_ERROR_CODES } from "@/lib/api/ApiError";

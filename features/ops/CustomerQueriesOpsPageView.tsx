@@ -65,8 +65,10 @@ export default function CustomerQueriesOpsPage() {
   useEffect(() => {
     const saved = window.localStorage.getItem(tokenStorageKey) || "";
     if (saved) {
-      setAdminToken(saved);
-      setAdminTokenInput(saved);
+      Promise.resolve().then(() => {
+        setAdminToken(saved);
+        setAdminTokenInput(saved);
+      });
     }
   }, []);
 
@@ -117,7 +119,7 @@ export default function CustomerQueriesOpsPage() {
   }, [adminToken, mergeDrafts, statusFilter]);
 
   useEffect(() => {
-    void fetchItems();
+    Promise.resolve().then(() => { void fetchItems(); });
     if (!adminToken) return;
     const interval = window.setInterval(() => {
       void fetchItems();
@@ -154,7 +156,7 @@ export default function CustomerQueriesOpsPage() {
         return;
       }
 
-      setItems((current) => current.map((row) => (row.id === id ? json.item! : row)));
+      setItems((current) => current.map((row) => (row.id === id ? (json.item as CustomerQuery) : row)));
       setLastUpdatedAt(new Date().toISOString());
     } catch {
       setError("Unable to update query.");

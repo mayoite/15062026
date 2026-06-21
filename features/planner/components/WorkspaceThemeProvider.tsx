@@ -75,7 +75,7 @@ export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
 
   // Recompute the resolved theme when the preference changes.
   useEffect(() => {
-    setResolvedTheme(resolveTheme(theme))
+    Promise.resolve().then(() => setResolvedTheme(resolveTheme(theme)));
   }, [theme])
 
   // When the user picked 'system', listen to the OS preference and

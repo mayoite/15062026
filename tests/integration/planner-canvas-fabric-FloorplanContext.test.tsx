@@ -49,12 +49,13 @@ function makeMockApi(overrides: Partial<FloorplanCanvasApi> = {}): FloorplanCanv
     fitToStage: vi.fn(() => 100),
     recalcOffset: vi.fn(),
     setLayerVisibility: vi.fn(),
+    resizeObject: vi.fn(),
     ...overrides,
   };
 }
 
-function setupHook(initialApi: FloorplanCanvasApi | null = null) {
-  let apiRef: { current: FloorplanCanvasApi | null } = { current: initialApi };
+function setupHook(_initialApi: FloorplanCanvasApi | null = null) {
+  const apiRef = React.createRef<FloorplanCanvasApi>();
   const wrapper = ({ children }: { children: ReactNode }) => (
     <FloorplanProvider>{children}</FloorplanProvider>
   );
@@ -127,7 +128,7 @@ describe("FloorplanContext", () => {
       ["PNG", "saveAs"],
       ["SVG", "saveAs"],
     ];
-    for (const [operation, method] of cases) {
+    for (const [operation, _method] of cases) {
       act(() => result.current.performOperation(operation));
     }
     expect(api.undo).toHaveBeenCalled();

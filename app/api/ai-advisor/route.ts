@@ -1,5 +1,5 @@
 import type { NextRequest} from "next/server";
-import { NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
 import { getProductsFresh } from '@/features/catalog/getProducts';
 import { createSupabaseAuthAdminClient } from '@/platform/supabase/auth-admin';
 import { normalizeRequestedCategoryId } from '@/features/catalog/categories';
@@ -14,14 +14,13 @@ import {
   buildConfiguratorContextSummary,
   sanitizeAdvisorPriceText,
   type AdvisorRecommendation,
-  type AdvisorRequest,
   type AdvisorResult,
   type AdvisorStreamEvent,
   type ConfiguratorAdvisorContext,
 } from '@/features/ai/aiAdvisor';
 import { withAuth } from "@/lib/api/withAuth";
 import { ApiError, API_ERROR_CODES } from "@/lib/api/ApiError";
-import { success, error, validationError } from "@/lib/api/apiResponse";
+import { success, error } from "@/lib/api/apiResponse";
 import { CatalogAdvisorRequestSchema } from "@/lib/api/schemas";
 
 type ProductLite = Awaited<ReturnType<typeof getProductsFresh>>[number];

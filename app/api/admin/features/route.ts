@@ -16,7 +16,7 @@
  */
 
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { withAuth } from "@/lib/api/withAuth";
 import { success, error, validationError } from "@/lib/api/apiResponse";

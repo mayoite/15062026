@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import { type PlannerDocument } from "./plannerDocument";
-import type { PlannerIdentityId } from "./plannerIdentity";
 
 export type PlannerTransferSource = "save" | "import" | "export";
 
