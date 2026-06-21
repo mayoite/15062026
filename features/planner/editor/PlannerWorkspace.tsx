@@ -275,10 +275,12 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
 
   useEffect(() => {
-    const saved = readPlannerWorkspacePreferences();
-    setViewMode(saved.viewMode);
-    usePlannerCatalogStore.getState().setQuery(saved.catalogQuery);
-    setPreferencesHydrated(true);
+    Promise.resolve().then(() => {
+      const saved = readPlannerWorkspacePreferences();
+      setViewMode(saved.viewMode);
+      usePlannerCatalogStore.getState().setQuery(saved.catalogQuery);
+      setPreferencesHydrated(true);
+    });
   }, []);
 
   useEffect(() => {

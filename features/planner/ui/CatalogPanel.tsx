@@ -14,6 +14,7 @@ import {
   Square,
   X,
 } from "lucide-react";
+import Image from "next/image";
 
 
 import type { CatalogProduct, PlannerStep, RoomPreset } from "@/features/planner/shared/types/planner";
@@ -110,7 +111,7 @@ function ProductAvatar({ name, src }: { name: string; src?: string }) {
   const initials = name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
   if (src && !failed) {
     return (
-      <img src={src} alt={name} onError={() => setFailed(true)} className="h-full w-full object-contain" />
+      <Image src={src} alt={name} onError={() => setFailed(true)} className="object-contain" fill unoptimized />
     );
   }
   return (

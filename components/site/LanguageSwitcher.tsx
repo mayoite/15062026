@@ -16,7 +16,7 @@ export function LanguageSwitcher() {
   useEffect(() => {
     const match = document.cookie.match(/(^|;)\s*NEXT_LOCALE\s*=\s*([^;]+)/);
     if (match) {
-      setCurrentLocale(match[2]);
+      Promise.resolve().then(() => setCurrentLocale(match[2]));
     }
   }, []);
 

@@ -1,6 +1,9 @@
 // Client-safe asset path utilities
 // Note: File system checks are only available server-side
 
+import type fsType from "node:fs";
+import type pathType from "node:path";
+
 const configuredAssetBaseUrl = (
   process.env.NEXT_PUBLIC_ASSET_BASE_URL ||
   process.env.ASSET_BASE_URL ||
@@ -24,10 +27,10 @@ function isServer(): boolean {
 }
 
 // Lazy-loaded Node.js modules (server-only)
-let _fs: typeof import("node:fs") | null = null;
-let _path: typeof import("node:path") | null = null;
+let _fs: typeof fsType | null = null;
+let _path: typeof pathType | null = null;
 
-function getFs(): typeof import("node:fs") | null {
+function getFs(): typeof fsType | null {
   if (!isServer()) return null;
   if (!_fs) {
     try {
@@ -39,7 +42,7 @@ function getFs(): typeof import("node:fs") | null {
   return _fs;
 }
 
-function getPath(): typeof import("node:path") | null {
+function getPath(): typeof pathType | null {
   if (!isServer()) return null;
   if (!_path) {
     try {

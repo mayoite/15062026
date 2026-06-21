@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
  
-import { Save, UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Save, UploadCloud, AlertCircle } from 'lucide-react';
 
 interface ThemeRow {
   id: string;
@@ -23,7 +23,7 @@ export function ThemeEditor() {
   useEffect(() => {
  
     async function loadThemes() {
-      const { data, error } = await supabase.from('block_themes').select('*').order('created_at', { ascending: false });
+      const { data, error: _error } = await supabase.from('block_themes').select('*').order('created_at', { ascending: false });
       if (data) setThemes(data);
       setLoading(false);
     }
@@ -58,7 +58,7 @@ export function ThemeEditor() {
  
         alert(`Error publishing: ${data.error}`);
       }
-    } catch (err) {
+    } catch (_err) {
       alert(`Network error`);
     } finally {
       setIsPublishing(false);

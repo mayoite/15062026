@@ -268,7 +268,7 @@ export type PlannerDocumentBuildContext = {
   sceneEnvelopeType?: string;
 };
 
-export function logPlannerDocumentBuildAttempt(context: PlannerDocumentBuildContext): void {
+export function logPlannerDocumentBuildAttempt(_context: PlannerDocumentBuildContext): void {
   // if (process.env.NODE_ENV !== "development") return;
   // console.warn(`${LOG_PREFIX} build`, context);
 }

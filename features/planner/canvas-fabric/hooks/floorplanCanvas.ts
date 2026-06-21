@@ -456,7 +456,7 @@ export function createFloorplanCanvasApi(
       return;
     }
 
-    let group = _.createFurniture(type, payloadObj, (DEFAULT_CHAIR ?? undefined) as {} | undefined);
+    let group = _.createFurniture(type, payloadObj, (DEFAULT_CHAIR ?? undefined) as Record<string, unknown> | undefined);
     if (type === 'GENERIC' && payloadObj.svg) {
       try {
         const parsed = await loadSVGFromString(payloadObj.svg);

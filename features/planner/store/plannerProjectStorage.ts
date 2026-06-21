@@ -5,14 +5,18 @@ export function getProjectIndex(): ProjectIndexEntry[] {
   try {
     const raw = localStorage.getItem("planner_project_index");
     if (raw) return JSON.parse(raw);
-  } catch {}
+  } catch {
+    // ignore
+  }
   return [];
 }
 
 export function saveProjectIndex(index: ProjectIndexEntry[]): void {
   try {
     localStorage.setItem("planner_project_index", JSON.stringify(index));
-  } catch {}
+  } catch {
+    // ignore
+  }
 }
 
 export function migrateOldProjects(params: {
@@ -43,7 +47,9 @@ export function migrateOldProjects(params: {
 
     saveProjectIndex(index);
     localStorage.removeItem("planner_projects");
-  } catch {}
+  } catch {
+    // ignore
+  }
 }
 
 export function validateImportedProject(data: unknown): { valid: boolean; errors: string[] } {

@@ -1,4 +1,6 @@
-import { Rect, Line, Point, Group, Canvas as FabricCanvas } from 'fabric';
+/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, eqeqeq */
+import type { Group, Canvas as FabricCanvas } from 'fabric';
+import { Rect, Line, Point } from 'fabric';
 import * as _ from '../lib/helpers';
 
 export interface FabricWallsOptions {

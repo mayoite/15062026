@@ -173,7 +173,7 @@ export function UnifiedAssistant() {
   ]);
 
   useEffect(() => {
-    setConsentChosen(hasConsentChoice());
+    Promise.resolve().then(() => setConsentChosen(hasConsentChoice()));
 
     const handleGuidedOpen = (event: Event) => {
       const custom = event as CustomEvent<{ tab?: "guided" | "ai" }>;

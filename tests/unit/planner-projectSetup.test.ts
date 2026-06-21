@@ -1,4 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+/**
+ * @vitest-environment jsdom
+ */
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   applyProjectSetup,
@@ -149,28 +152,21 @@ describe("applyProjectSetup — store mutations", () => {
 // ---------------------------------------------------------------------------
 
 describe("markProjectSetupCompleteInStorage — quota failure", () => {
-  let originalSetItem: typeof localStorage.setItem;
-
-  beforeEach(() => {
-    originalSetItem = localStorage.setItem.bind(localStorage);
-  });
-
   afterEach(() => {
-    localStorage.setItem = originalSetItem;
+    vi.restoreAllMocks();
     localStorage.clear();
   });
 
   it("throws DOMException QuotaExceededError when storage is full", () => {
-    localStorage.setItem = () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       const err = new DOMException("QuotaExceededError", "QuotaExceededError");
       throw err;
-    };
+    });
 
     expect(() => markProjectSetupCompleteInStorage(true, undefined)).toThrow(DOMException);
   });
 
   it("does not throw when storage succeeds", () => {
-    localStorage.setItem = originalSetItem;
     expect(() => markProjectSetupCompleteInStorage(true, "test-plan")).not.toThrow();
     localStorage.removeItem(projectSetupStorageKey(true, "test-plan"));
   });

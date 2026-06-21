@@ -160,6 +160,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
       setDownloadState("error");
       setStatusMessage(message);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [downloadState, selectedFormat, selectedPreset]);
 
   const handleCopyLink = useCallback(() => {

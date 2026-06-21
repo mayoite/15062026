@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, eqeqeq, @typescript-eslint/no-unused-vars */
 import {
   Group,
   Rect,

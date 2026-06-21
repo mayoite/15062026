@@ -62,7 +62,7 @@ export async function GET(request: Request) {
         seriesName: item.seriesName,
       });
  
-      const bucket = subMap.get(mappedCategory)!;
+      const bucket = subMap.get(mappedCategory) as Map<string, number>;
       bucket.set(subcategory, (bucket.get(subcategory) || 0) + 1);
     }
 

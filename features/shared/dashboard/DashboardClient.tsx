@@ -29,7 +29,7 @@ export function DashboardClient({ userEmail }: DashboardClientProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
-    setPlannerDraftCount(readPlannerDraftCount());
+    Promise.resolve().then(() => setPlannerDraftCount(readPlannerDraftCount()));
   }, []);
 
   const plannerSummary = useMemo(

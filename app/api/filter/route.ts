@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
       .map((p) => {
         const meta = [
  
-          p.sustainabilityScore != null ? `eco:${p.sustainabilityScore}` : null,
+          p.sustainabilityScore !== null && p.sustainabilityScore !== undefined ? `eco:${p.sustainabilityScore}` : null,
           p.priceRange ? `price:${p.priceRange}` : null,
           p.material?.length ? `mat:${p.material.join(",")}` : null,
           p.bifmaCertified ? "BIFMA" : null,

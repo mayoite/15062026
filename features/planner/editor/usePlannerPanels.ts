@@ -37,12 +37,14 @@ export function usePlannerPanels() {
   const [preferencesHydrated, setPreferencesHydrated] = useState(false);
 
   useEffect(() => {
-    const saved = readPlannerWorkspacePreferences();
-    setLeftOpenState(saved.leftOpen);
-    setRightOpen(saved.rightOpen);
-    setLeftCollapsed(saved.leftCollapsed);
-    setRightCollapsed(saved.rightCollapsed);
-    setPreferencesHydrated(true);
+    Promise.resolve().then(() => {
+      const saved = readPlannerWorkspacePreferences();
+      setLeftOpenState(saved.leftOpen);
+      setRightOpen(saved.rightOpen);
+      setLeftCollapsed(saved.leftCollapsed);
+      setRightCollapsed(saved.rightCollapsed);
+      setPreferencesHydrated(true);
+    });
   }, []);
 
   useEffect(() => {

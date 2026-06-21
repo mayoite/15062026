@@ -11,6 +11,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { Clock, Plus, Search } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
 import {
@@ -281,12 +282,13 @@ function CatalogThumb({ item }: { item: CatalogItem }) {
 
   if (item.imageUrl && !imageFailed) {
     return (
-      <img
+      <Image
         src={item.imageUrl}
         alt=""
         className="pw-catalog-card-thumb-img"
         width={120}
         height={80}
+        unoptimized
         onError={() => setImageFailed(true)}
       />
     );

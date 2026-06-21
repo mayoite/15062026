@@ -516,7 +516,7 @@ export function buildRequestedCategoryCatalog(
   for (const id of Catalog_CATEGORY_ORDER) buckets.set(id, []);
   for (const item of flat) {
     const bucketId = classifyToRequestedCategory(item);
-    buckets.get(bucketId)!.push(item);
+    (buckets.get(bucketId) as ProductWithContext[]).push(item);
   }
 
   return Catalog_CATEGORY_ORDER.map((id) => {
@@ -530,7 +530,7 @@ export function buildRequestedCategoryCatalog(
       if (!seriesMap.has(key)) seriesMap.set(key, []);
       const canonicalSubcategory = classifyToRequestedSubcategoryInternal(id, item);
       const canonicalSubcategoryId = getCanonicalSubcategoryId(id, canonicalSubcategory);
-      seriesMap.get(key)!.push({
+      (seriesMap.get(key) as CompatProduct[]).push({
         ...item.product,
         metadata: {
           ...(item.product.metadata || {}),

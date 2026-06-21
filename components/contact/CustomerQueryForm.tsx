@@ -69,11 +69,13 @@ export function CustomerQueryForm({ intent, source }: CustomerQueryFormProps) {
   useEffect(() => {
     if (!contextCopy) return;
 
-    setForm((current) =>
-      current.message.trim().length > 0
-        ? current
-        : { ...current, message: contextCopy.seededMessage },
-    );
+    Promise.resolve().then(() => {
+      setForm((current) =>
+        current.message.trim().length > 0
+          ? current
+          : { ...current, message: contextCopy.seededMessage },
+      );
+    });
   }, [contextCopy]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

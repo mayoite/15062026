@@ -18,7 +18,8 @@
  * Errors: 400 (validation), 429 (rate limit), 503 (AI unavailable), 500.
  */
 
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { AI_ADVISOR_PLANNER_ID } from "@/features/planner/ai/aiAdvisorConfig";
 import { CHAT_ADVISOR_SYSTEM_PROMPT } from "@/features/planner/ai/prompts";
 import { withAuth } from "@/lib/api/withAuth";

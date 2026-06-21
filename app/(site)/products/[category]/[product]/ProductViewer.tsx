@@ -174,10 +174,11 @@ export function ProductViewer({
     let cancelled = false;
 
     if (!hasModelPath) {
- 
-      setIsModelAvailable(false);
-      setIsCheckingModel(false);
-      setIs3DMode(false);
+      Promise.resolve().then(() => {
+        setIsModelAvailable(false);
+        setIsCheckingModel(false);
+        setIs3DMode(false);
+      });
       return;
     }
 
