@@ -123,7 +123,7 @@ async function withRetry<T>(
 }
 
 async function fetchAllRows(
-  client: ReturnType<typeof createClient>,
+  client: any,
   table: string,
   maxRetries: number,
 ): Promise<{ rows: unknown[]; pages: number }> {
@@ -201,7 +201,6 @@ async function main() {
         "utf8",
       );
       results.push({ table, rows: rows.length, pages, status: "ok", file });
-// eslint-disable-next-line no-console
       console.log(`[backup] ${table}: ${rows.length} rows`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -250,7 +249,6 @@ async function main() {
   const okCount = results.filter((r) => r.status === "ok").length;
   const skippedCount = results.filter((r) => r.status === "skipped").length;
   const errCount = results.filter((r) => r.status === "error").length;
-// eslint-disable-next-line no-console
   console.log(
     `[backup] complete run=${runId} tables_ok=${okCount} tables_skipped=${skippedCount} tables_error=${errCount}`,
   );

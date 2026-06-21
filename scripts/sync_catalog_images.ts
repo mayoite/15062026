@@ -29,7 +29,6 @@ function fileExists(assetPath: string): boolean {
   return fs.existsSync(toFsPath(assetPath));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function normalizeImageName(name: string): string {
   return name.replace(/\s+/g, "-").toLowerCase();
 }
@@ -152,13 +151,9 @@ async function main(): Promise<void> {
     created++;
   }
 
-// eslint-disable-next-line no-console
   console.log("Catalog image sync complete.");
-// eslint-disable-next-line no-console
   console.log(`Created: ${created}`);
-// eslint-disable-next-line no-console
   console.log(`Already present: ${skipped}`);
-// eslint-disable-next-line no-console
   console.log(`Unresolved: ${unresolved}`);
 }
 

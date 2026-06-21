@@ -14,9 +14,7 @@ import { createClient } from "@supabase/supabase-js";
 
 config({ path: ".env.local" });
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseKey) {
@@ -56,7 +54,6 @@ function remapPath(p: string): string | null {
 async function main() {
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-// eslint-disable-next-line no-console
   console.log("Fetching all products...");
   const { data: products, error } = await supabase
     .from("products")
@@ -68,12 +65,10 @@ async function main() {
   }
 
   if (!products || products.length === 0) {
-// eslint-disable-next-line no-console
     console.log("No products found");
     return;
   }
 
-// eslint-disable-next-line no-console
   console.log(`Found ${products.length} products. Checking for /images/chairs/ paths...`);
 
   let updated = 0;
@@ -130,14 +125,12 @@ async function main() {
       if (updateErr) {
         console.error(`  ❌ ${product.slug}: ${updateErr.message}`);
       } else {
-// eslint-disable-next-line no-console
         console.log(`  ✓ ${product.slug}`);
         updated++;
       }
     }
   }
 
-// eslint-disable-next-line no-console
   console.log(`\n✅ Updated ${updated} products in Supabase`);
 }
 

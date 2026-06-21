@@ -138,5 +138,4 @@ const sheet =
 const out = resolve(__dirname, "../../docs/plans/assets/10-BLOCKS-CATALOG-PREVIEW.svg");
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, sheet, "utf8");
-// eslint-disable-next-line no-console
 console.log("Wrote", out, `(${blocks.length} blocks)`);

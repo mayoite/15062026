@@ -12,7 +12,6 @@
  *   npm run db:apply -- --dry          # plan only
  */
 import { config } from "dotenv";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { resolve, basename } from "node:path";
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import postgres from "postgres";
@@ -46,7 +45,6 @@ async function main() {
     process.exit(1);
   }
   if (!existsSync(cfg.dir)) {
-// eslint-disable-next-line no-console
     console.log(`No migrations directory for target=${target} (${cfg.dir})`);
     return;
   }
@@ -57,7 +55,6 @@ async function main() {
   const candidates = files.filter((f) => f.startsWith(cfg.batchPrefix));
 
   if (candidates.length === 0) {
-// eslint-disable-next-line no-console
     console.log(`No migrations matching prefix ${cfg.batchPrefix}.`);
     return;
   }
@@ -78,14 +75,10 @@ async function main() {
 
   const plan = candidates.filter((f) => !appliedSet.has(f));
 
-// eslint-disable-next-line no-console
   console.log(`Target: ${target}`);
-// eslint-disable-next-line no-console
   console.log(`Migrations to apply:`);
-// eslint-disable-next-line no-console
   for (const f of plan) console.log("  -", f);
   if (plan.length === 0) {
-// eslint-disable-next-line no-console
     console.log("  (none — all up to date)");
     await sql.end({ timeout: 5 });
     return;
@@ -106,10 +99,8 @@ async function main() {
         insert into public._local_migration_history (filename)
         values (${f});
       `;
-// eslint-disable-next-line no-console
       console.log("OK");
     } catch (err) {
-// eslint-disable-next-line no-console
       console.log("FAILED");
       console.error(err);
       await sql.end({ timeout: 5 });
@@ -118,7 +109,6 @@ async function main() {
   }
 
   await sql.end({ timeout: 5 });
-// eslint-disable-next-line no-console
   console.log("\nAll migrations applied.");
 }
 

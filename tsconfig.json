@@ -32,6 +32,7 @@
     "proxy.ts"
   ],
   "exclude": [
+    "platform/supabase/functions",
     "platform/drizzle/drizzle.config.ts",
     "node_modules",
     "unused",

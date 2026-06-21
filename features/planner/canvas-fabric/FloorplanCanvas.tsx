@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable react-hooks/refs */
 import { useEffect, useRef } from 'react';
 import { useFloorplan } from './context/FloorplanContext';
 import { createFloorplanCanvasApi, type FloorplanCtx } from './hooks/floorplanCanvas';
@@ -19,7 +18,7 @@ export function FloorplanCanvas() {
     roomEditStates: ctx.roomEditStates,
     roomEditRedoStates: ctx.roomEditRedoStates,
     defaultChair: ctx.defaultChair,
-    setSelections: ctx.setSelections,
+    setSelections: ctx.setSelections as unknown as FloorplanCtx['setSelections'],
     setUngroupable: ctx.setUngroupable,
     pushState: ctx.pushState,
     setStates: ctx.setStates,
@@ -39,7 +38,7 @@ export function FloorplanCanvas() {
     roomEditStates: ctx.roomEditStates,
     roomEditRedoStates: ctx.roomEditRedoStates,
     defaultChair: ctx.defaultChair,
-    setSelections: ctx.setSelections,
+    setSelections: ctx.setSelections as unknown as FloorplanCtx['setSelections'],
     setUngroupable: ctx.setUngroupable,
     pushState: ctx.pushState,
     setStates: ctx.setStates,
@@ -79,7 +78,6 @@ export function FloorplanCanvas() {
       api.dispose();
       ctx.registerCanvasApi(null);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

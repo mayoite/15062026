@@ -197,7 +197,6 @@ export function withAuth<TContext = unknown>(
       return await handler(req, auth, context);
     } catch (err) {
       if (err instanceof ApiError) return error(err);
-      // eslint-disable-next-line no-console
       console.error(`[withAuth:${options.rateLimitScope}] error:`, err);
       return error(toApiError(err));
     }

@@ -516,7 +516,6 @@ export function buildRequestedCategoryCatalog(
   for (const id of Catalog_CATEGORY_ORDER) buckets.set(id, []);
   for (const item of flat) {
     const bucketId = classifyToRequestedCategory(item);
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     buckets.get(bucketId)!.push(item);
   }
 
@@ -531,7 +530,6 @@ export function buildRequestedCategoryCatalog(
       if (!seriesMap.has(key)) seriesMap.set(key, []);
       const canonicalSubcategory = classifyToRequestedSubcategoryInternal(id, item);
       const canonicalSubcategoryId = getCanonicalSubcategoryId(id, canonicalSubcategory);
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       seriesMap.get(key)!.push({
         ...item.product,
         metadata: {

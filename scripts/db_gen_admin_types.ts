@@ -227,7 +227,6 @@ ${viewBlocks.length ? viewBlocks.join("\n") : "      [_ in never]: never"}
 `;
 
   writeFileSync(resolve("types", "database.admin.types.ts"), out, "utf8");
-// eslint-disable-next-line no-console
   console.log(`Wrote types/database.admin.types.ts (${out.length} bytes)`);
   await sql.end({ timeout: 5 });
 }

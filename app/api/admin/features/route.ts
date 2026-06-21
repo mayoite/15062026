@@ -55,7 +55,6 @@ async function handleFeaturesGet(): Promise<NextResponse> {
       .select("key, enabled");
 
     if (dbError) {
-      // eslint-disable-next-line no-console
       console.error("[admin/features] GET error:", dbError.message);
       return success({ flags: getFeatureFlags(), source: "local" });
     }
@@ -73,7 +72,6 @@ async function handleFeaturesGet(): Promise<NextResponse> {
 
     return success({ flags: mergedFlags, source: "supabase+local" });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[admin/features] GET failed:", err);
     return success({ flags: getFeatureFlags(), source: "local" });
   }
@@ -129,7 +127,6 @@ async function handleFeaturesPatch(req: NextRequest): Promise<NextResponse> {
 
   const { error: dbError } = await supabase.from("feature_flags").upsert(rows);
   if (dbError) {
-    // eslint-disable-next-line no-console
     console.error("[admin/features] PATCH error:", dbError.message);
     return error(
       new ApiError(500, API_ERROR_CODES.DATABASE_ERROR, dbError.message),

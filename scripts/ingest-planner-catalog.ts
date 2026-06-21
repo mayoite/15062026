@@ -12,8 +12,8 @@ import {
   PLANNER_CSV_FILES,
   dedupeCatalogItems,
   parseCsvFile,
-} from "../../features/planner/data/csvCatalogIngest";
-import type { CatalogItem } from "../../features/planner/data/catalogTypes";
+} from "@/features/planner/catalog/ingest/csvCatalogIngest";
+import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 
 const ROOT = path.resolve(__dirname, "../..");
 const OUT = path.join(ROOT, "features/planner/data/generatedCatalogItems.ts");

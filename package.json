@@ -14,6 +14,7 @@
     "seed": "npx tsx scripts/seed.ts",
     "seed:direct": "npx tsx scripts/seed.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck:scripts": "tsc -p scripts/tsconfig.json --noEmit",
     "lint": "eslint -c config/build/eslint.config.mjs app components features lib tests --max-warnings=0",
     "test": "vitest run",
     "test:layout:check": "node scripts/check-test-layout.mjs",

@@ -121,7 +121,6 @@ export async function POST(req: NextRequest) {
       .map((p) => {
         const meta = [
  
-// eslint-disable-next-line eqeqeq
           p.sustainabilityScore != null ? `eco:${p.sustainabilityScore}` : null,
           p.priceRange ? `price:${p.priceRange}` : null,
           p.material?.length ? `mat:${p.material.join(",")}` : null,

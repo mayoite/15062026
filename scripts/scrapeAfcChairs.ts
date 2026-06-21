@@ -12,7 +12,6 @@
  *   npx tsx scripts/scrapeAfcChairs.ts
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { chromium, type Page, type Browser } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
@@ -30,7 +29,6 @@ const CATEGORIES = [
 
 const OUTPUT_DIR = path.resolve(__dirname, "..");
 const IMAGE_DIR = path.join(OUTPUT_DIR, "public", "images", "chairs");
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DOCS_DIR = path.join(OUTPUT_DIR, "public", "docs", "chairs");
 const CATALOG_OUT = path.join(__dirname, "catalog-seating.json");
 
@@ -54,7 +52,6 @@ interface ScrapedProduct {
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function slugify(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
@@ -117,7 +114,6 @@ async function scrapeProductPage(
   category: { slug: string; label: string }
 ): Promise<ScrapedProduct[]> {
   const url = `${BASE_URL}/products/${productSlug}`;
-// eslint-disable-next-line no-console
   console.log(`    📄 Scraping ${url}`);
 
   await page.goto(url, { waitUntil: "networkidle", timeout: 30000 });
@@ -254,7 +250,6 @@ async function scrapeProductPage(
 
   if (shouldSplit) {
     // Split into two items
-// eslint-disable-next-line no-console
     console.log(`      🔀 Splitting "${productName}" into with/without headrest variants`);
 
     results.push({
@@ -294,7 +289,6 @@ async function scrapeProductPage(
 // ─── Scrape a category page to get product slugs ───────────────────────────────
 async function getCategoryProducts(page: Page, categorySlug: string): Promise<string[]> {
   const url = `${BASE_URL}/sub-categories/${categorySlug}`;
-// eslint-disable-next-line no-console
   console.log(`  📂 Fetching category: ${url}`);
   await page.goto(url, { waitUntil: "networkidle", timeout: 30000 });
 
@@ -340,7 +334,7 @@ async function downloadProductAssets(product: ScrapedProduct): Promise<void> {
         product.images.push(localPath);
       }
     } catch (err: unknown) {
-      console.warn(`      ⚠️ Failed to download image: ${srcUrl} — ${err.message}`);
+      console.warn(`      ⚠️ Failed to download image: ${srcUrl} — ${(err as any).message}`);
     }
   }
 
@@ -357,9 +351,7 @@ async function downloadProductAssets(product: ScrapedProduct): Promise<void> {
 
 // ─── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
-// eslint-disable-next-line no-console
   console.log("🚀 AFC India Chair Scraper");
-// eslint-disable-next-line no-console
   console.log("═".repeat(60));
 
   ensureDir(IMAGE_DIR);
@@ -370,25 +362,21 @@ async function main() {
   const allProducts: ScrapedProduct[] = [];
 
   for (const category of CATEGORIES) {
-// eslint-disable-next-line no-console
     console.log(`\n📁 Category: ${category.label} (${category.slug})`);
-// eslint-disable-next-line no-console
     console.log("─".repeat(50));
 
     const productSlugs = await getCategoryProducts(page, category.slug);
-// eslint-disable-next-line no-console
     console.log(`  Found ${productSlugs.length} products`);
 
     for (const slug of productSlugs) {
       try {
         const products = await scrapeProductPage(page, slug, category);
         allProducts.push(...products);
-// eslint-disable-next-line no-console
         console.log(
           `      ✅ ${products.map((p) => p.name).join(", ")} — ${products[0].imageSourceUrls.length} images, ${Object.keys(products[0].dimensions).length} dims`
         );
       } catch (err: unknown) {
-        console.error(`      ❌ Failed to scrape ${slug}: ${err.message}`);
+        console.error(`      ❌ Failed to scrape ${slug}: ${(err as any).message}`);
       }
 
       // Polite delay between requests
@@ -398,11 +386,8 @@ async function main() {
 
   await browser.close();
 
-// eslint-disable-next-line no-console
   console.log(`\n${"═".repeat(60)}`);
-// eslint-disable-next-line no-console
   console.log(`📦 Total scraped items: ${allProducts.length}`);
-// eslint-disable-next-line no-console
   console.log(`\n⬇️  Downloading assets...`);
 
   // Download all assets
@@ -413,11 +398,10 @@ async function main() {
       downloaded++;
       process.stdout.write(`\r  Downloaded ${downloaded}/${allProducts.length}: ${product.name.padEnd(40)}`);
     } catch (err: unknown) {
-      console.error(`\n  ❌ Asset download failed for ${product.name}: ${err.message}`);
+      console.error(`\n  ❌ Asset download failed for ${product.name}: ${(err as any).message}`);
     }
   }
 
-// eslint-disable-next-line no-console
   console.log(`\n\n✅ Asset download complete.`);
 
   // Write catalog JSON
@@ -435,23 +419,18 @@ async function main() {
   }));
 
   fs.writeFileSync(CATALOG_OUT, JSON.stringify(catalogOutput, null, 2));
-// eslint-disable-next-line no-console
   console.log(`\n📝 Catalog written to ${CATALOG_OUT}`);
 
   // Summary
-// eslint-disable-next-line no-console
   console.log(`\n${"═".repeat(60)}`);
-// eslint-disable-next-line no-console
   console.log("📊 Summary:");
   for (const cat of CATEGORIES) {
     const items = allProducts.filter((p) => p.category === cat.slug);
     const totalImages = items.reduce((s, p) => s + p.images.length, 0);
-// eslint-disable-next-line no-console
     console.log(`  ${cat.label}: ${items.length} items, ${totalImages} images`);
   }
   const splits = allProducts.filter((p) => p.headrestVariant !== "none");
   if (splits.length > 0) {
-// eslint-disable-next-line no-console
     console.log(`  Headrest splits: ${splits.length} items (${splits.length / 2} products split)`);
   }
 }

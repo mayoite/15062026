@@ -62,7 +62,6 @@ export async function GET(request: Request) {
         seriesName: item.seriesName,
       });
  
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const bucket = subMap.get(mappedCategory)!;
       bucket.set(subcategory, (bucket.get(subcategory) || 0) + 1);
     }

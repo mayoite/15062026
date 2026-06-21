@@ -3,8 +3,8 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import sharp from "sharp";
-import { buildOandoSeedProducts } from "../../lib/catalog/seed/oandoCatalog";
-import { buildBlock2D, blockToSvg } from "../../lib/catalog/blocks2d";
+import { buildOandoSeedProducts } from "@/lib/catalog/seed/oandoCatalog";
+import { buildBlock2D, blockToSvg } from "@/lib/catalog/blocks2d";
 
 const picks: Array<[string, Parameters<typeof buildBlock2D>[1]]> = [
   ["oando-ws-linear", { selection: { seaters: 4, length: 1500, depth: 600 } }],
@@ -49,7 +49,6 @@ sharp(Buffer.from(sheet), { density: 200 })
   .png()
   .flatten({ background: "#f6f8fa" })
   .toFile(resolve(dir, "seed-catalog.png"))
-// eslint-disable-next-line no-console
   .then((info) => console.log("wrote seed-catalog.png", `${info.width}x${info.height}`))
   .catch((err) => {
     console.error("render failed:", err);

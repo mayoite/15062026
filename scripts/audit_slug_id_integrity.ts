@@ -7,7 +7,7 @@ import {
   buildCanonicalSeriesId,
   getCanonicalCategoryId,
   resolveCanonicalSubcategory,
-} from "@/lib/catalogCategories";
+} from "@/features/catalog/categories";
 
 type ProductRow = {
   id: string;
@@ -221,7 +221,6 @@ async function main() {
     "utf8",
   );
 
-// eslint-disable-next-line no-console
   console.log(
     `[audit:slug-id] products=${summary.totals.products} aliasCoverageMissing=${summary.totals.aliasCoverageMissing} canonicalConflicts=${summary.totals.canonicalSlugConflicts}`,
   );

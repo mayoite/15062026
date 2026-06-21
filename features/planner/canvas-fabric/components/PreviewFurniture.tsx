@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useId, useRef } from 'react';
 import { Canvas as FabricCanvas } from 'fabric';
 import { createFurniture, RL_PREVIEW_HEIGHT, RL_PREVIEW_WIDTH } from '../lib/helpers';

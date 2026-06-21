@@ -10,12 +10,12 @@ import type {
   ProductDetailedInfo,
   ProductMetadata,
   ProductVariant,
-} from "../../lib/getProducts.ts";
+} from "@/features/catalog/getProducts";
 import {
   auditCompatProduct,
   collectProductDocuments,
   collectProductImages,
-} from "../../lib/productSpecSchema.ts";
+} from "@/features/catalog/specSchema";
 
 config({ path: resolve(process.cwd(), ".env.local") });
 
@@ -82,8 +82,8 @@ function toCompatProduct(product: Product): CompatProduct {
     name: product.name,
     description: product.description || "",
     flagshipImage: product.flagship_image || "",
-    sceneImages: Array.isArray(product.scene_images) ? product.scene_images : [],
-    variants: Array.isArray(product.variants) ? (product.variants as ProductVariant[]) : [],
+    sceneImages: Array.isArray((product as any).scene_images) ? (product as any).scene_images : [],
+    variants: Array.isArray((product as any).variants) ? ((product as any).variants as ProductVariant[]) : [],
     detailedInfo: {
       overview: product.description || "",
       features: specsFeatures,
@@ -205,7 +205,6 @@ async function main() {
         productCount += 1;
         categoryCounts.set(category.id, (categoryCounts.get(category.id) || 0) + 1);
         if (debugSlug && product.slug === debugSlug) {
-// eslint-disable-next-line no-console
           console.log(
             JSON.stringify(
               {
@@ -318,7 +317,6 @@ async function main() {
   );
   writeFileSync(resolve(outDir, "product-quality-audit.md"), markdown, "utf8");
 
-// eslint-disable-next-line no-console
   console.log(JSON.stringify(summary, null, 2));
 }
 

@@ -1,10 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import fs from "fs";
 import { mkdir, readFile, writeFile, access, copyFile } from "fs/promises";
-// eslint-disable-next-line null
-// eslint-disable-next-line null
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { createReadStream, createWriteStream } from "fs";
 import path from "path";
 import sharp from "sharp";
@@ -262,7 +257,6 @@ function buildPlans(rows: ManifestRow[]): ProductPlan[] {
   const grouped = new Map<string, ManifestRow[]>();
   for (const row of rows) {
     if (!grouped.has(row.product_slug)) grouped.set(row.product_slug, []);
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     grouped.get(row.product_slug)!.push(row);
   }
 
@@ -308,7 +302,6 @@ function buildPlans(rows: ManifestRow[]): ProductPlan[] {
 
     const images: PlannedImage[] = [];
     for (const rank of ranks) {
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const row = rankMap.get(rank)!;
       const sourceAbsolutePath = path.resolve(RAW_DIR, row.source_relative_path);
       if (!sourceAbsolutePath.startsWith(RAW_DIR)) {
@@ -356,11 +349,11 @@ async function copyFileRecursive(
   source: string,
   dest: string,
 ): Promise<void> {
-  const stat = await fsPromises.stat(source);
+  const stat = await fs.promises.stat(source);
 
   if (stat.isDirectory()) {
     await mkdir(dest, { recursive: true });
-    const entries = await fsPromises.readdir(source);
+    const entries = await fs.promises.readdir(source);
     for (const entry of entries) {
       const srcPath = path.join(source, entry);
       const destPath = path.join(dest, entry);
@@ -803,11 +796,8 @@ async function main(): Promise<void> {
     "utf8",
   );
 
-// eslint-disable-next-line no-console
   console.log(`Report: ${REPORT_PATH}`);
-// eslint-disable-next-line no-console
   console.log(`Post-sync audit: ${POST_SYNC_AUDIT_PATH}`);
-// eslint-disable-next-line no-console
   console.log(
     `Processed ${report.summary.productsProcessed} products, planned ${report.summary.filesPlanned} files.`,
   );

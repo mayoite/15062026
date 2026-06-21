@@ -24,12 +24,9 @@ function isServer(): boolean {
 }
 
 // Lazy-loaded Node.js modules (server-only)
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 let _fs: typeof import("node:fs") | null = null;
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 let _path: typeof import("node:path") | null = null;
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 function getFs(): typeof import("node:fs") | null {
   if (!isServer()) return null;
   if (!_fs) {
@@ -42,7 +39,6 @@ function getFs(): typeof import("node:fs") | null {
   return _fs;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 function getPath(): typeof import("node:path") | null {
   if (!isServer()) return null;
   if (!_path) {

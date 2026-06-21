@@ -110,7 +110,6 @@ async function main() {
     ),
   );
 
-// eslint-disable-next-line no-console
   console.log(
     `[images-backfill] scanned=${candidates.length} updated=${updated.length} unresolved=${unresolved.length}`,
   );

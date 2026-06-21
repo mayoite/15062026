@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
  
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Save, UploadCloud, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface ThemeRow {
@@ -24,7 +23,6 @@ export function ThemeEditor() {
   useEffect(() => {
  
     async function loadThemes() {
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { data, error } = await supabase.from('block_themes').select('*').order('created_at', { ascending: false });
       if (data) setThemes(data);
       setLoading(false);
@@ -60,7 +58,6 @@ export function ThemeEditor() {
  
         alert(`Error publishing: ${data.error}`);
       }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       alert(`Network error`);
     } finally {

@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/immutability */
-/* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useEffect, useMemo, useState } from 'react';
 import { Canvas as FabricCanvas, Group } from 'fabric';
 import { FURNISHINGS } from '../models/furnishings';

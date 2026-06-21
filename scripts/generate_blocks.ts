@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { buildBlock2D } from '../../lib/catalog/blocks2d';
+import { buildBlock2D } from '@/lib/catalog/blocks2d';
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
 

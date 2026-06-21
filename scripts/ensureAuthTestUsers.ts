@@ -24,7 +24,7 @@ async function ensureSupabaseUser(
     }
 
     const existing = list.data.users.find(
-      (u) => u.email?.toLowerCase() === user.email.toLowerCase(),
+      (u: any) => u.email?.toLowerCase() === user.email.toLowerCase(),
     );
 
     if (!existing) {

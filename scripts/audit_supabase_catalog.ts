@@ -394,9 +394,7 @@ async function main() {
     "utf8",
   );
 
-// eslint-disable-next-line no-console
   console.log(`[audit:supabase] wrote ${path.relative(process.cwd(), schemaMdPath)}`);
-// eslint-disable-next-line no-console
   console.log(`[audit:supabase] products=${summary.dataQuality.productCount} blankSlugs=${summary.dataQuality.blankSlugs} duplicateSlugs=${summary.dataQuality.duplicateSlugs.length}`);
 }
 

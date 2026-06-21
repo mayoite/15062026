@@ -175,7 +175,6 @@ export function ProductViewer({
 
     if (!hasModelPath) {
  
-// eslint-disable-next-line react-hooks/set-state-in-effect
       setIsModelAvailable(false);
       setIsCheckingModel(false);
       setIs3DMode(false);

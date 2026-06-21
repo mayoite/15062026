@@ -110,7 +110,6 @@ function ProductAvatar({ name, src }: { name: string; src?: string }) {
   const initials = name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
   if (src && !failed) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
       <img src={src} alt={name} onError={() => setFailed(true)} className="h-full w-full object-contain" />
     );
   }
