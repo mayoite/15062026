@@ -14,5 +14,6 @@ This folder holds the three-phase plan for fixing the CSS hardcoding problem and
 
 ## Status review
 
+- Run `npm run failures:sync` after changing `Failures.md`.
 - Use `results/failures-index.csv` for resolved/pending status review.
 - Use `results/pending-failures.csv` for the pending-only view.

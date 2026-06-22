@@ -12,6 +12,8 @@ import {
   type PlannerProjectSetupDraft,
   type PlannerPrimaryPurpose,
 } from "./projectSetup";
+import { estimateRoomMm } from "@/features/planner/ai/spaceSuggest";
+import { PLANNER_MAX_CANVAS_MM, PLANNER_MAX_CANVAS_METERS } from "@/features/planner/lib/canvasBounds";
 
 
 
@@ -66,6 +68,14 @@ export function ProjectSetupStep({ guestMode = false, planId: _planId, onComplet
 
     if (!Number.isFinite(draft.seatTarget) || draft.seatTarget < 1) {
       setError("Enter how many people you need to seat.");
+      return;
+    }
+
+    const projectedRoom = estimateRoomMm(Math.round(draft.seatTarget), Math.round(draft.floorAreaSqFt));
+    if (projectedRoom.widthMm > PLANNER_MAX_CANVAS_MM || projectedRoom.depthMm > PLANNER_MAX_CANVAS_MM) {
+      setError(
+        `This floor size exceeds the planner canvas limit (${PLANNER_MAX_CANVAS_METERS} m per side). Reduce floor area or seat count.`,
+      );
       return;
     }
 

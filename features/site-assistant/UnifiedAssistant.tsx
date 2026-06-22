@@ -99,13 +99,46 @@ const TIMELINE_LABEL: Record<Timeline, string> = {
   exploring: "Exploring options",
 };
 
-const FOCUS_RING =
-  "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
-const ASSISTANT_CHIP_CLASS = `rounded-full border px-3 py-1.5 text-xs`;
-const ASSISTANT_FIELD_CLASS = `w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`;
-const ASSISTANT_TEXT_BUTTON_CLASS = `text-xs font-semibold uppercase tracking-wide ${FOCUS_RING}`;
-const ASSISTANT_PRIMARY_ACTION_CLASS = `inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_RING}`;
-const ASSISTANT_CHOICE_BUTTON_CLASS = `rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-700 transition-colors hover:border-primary/50 hover:text-primary ${FOCUS_RING}`;
+const ASSISTANT_FLOATING_PRIMARY_CLASS =
+  "assistant-floating-primary assistant-focus-ring";
+const ASSISTANT_LAUNCHER_PANEL_GRID_CLASS = "assistant-launcher-panel-grid";
+const ASSISTANT_MODAL_GUIDED_SHEET_CLASS =
+  "assistant-modal-sheet assistant-sheet assistant-sheet--guided";
+const ASSISTANT_MODAL_CHAT_SHEET_CLASS =
+  "assistant-modal-sheet assistant-sheet assistant-sheet--chat";
+const ASSISTANT_CHIP_GROUP_CLASS = "assistant-chip-group";
+const ASSISTANT_CHIP_BASE_CLASS = "assistant-chip assistant-focus-ring";
+const ASSISTANT_CHIP_FLEX_CLASS = "assistant-chip--flex";
+const ASSISTANT_CHIP_SELECTED_CLASS = "assistant-chip--selected";
+const ASSISTANT_CHIP_IDLE_CLASS = "assistant-chip--idle";
+const ASSISTANT_MODAL_ACTION_ROW_CLASS = "assistant-modal-action-row";
+const ASSISTANT_TEXT_ACTION_CLASS =
+  "assistant-text-action assistant-text-button assistant-focus-ring";
+const ASSISTANT_TEXT_ACTION_MUTED_CLASS =
+  "assistant-text-action assistant-text-action--muted assistant-text-button assistant-focus-ring";
+const ASSISTANT_CHOICE_BUTTON_CLASS =
+  "assistant-choice-button assistant-focus-ring";
+const ASSISTANT_PRIMARY_ACTION_CLASS =
+  "assistant-primary-action assistant-focus-ring";
+const ASSISTANT_PRIMARY_COMPACT_ACTION_CLASS =
+  "assistant-primary-action assistant-primary-action--compact assistant-focus-ring";
+const ASSISTANT_FIELD_CLASS = "assistant-field";
+const ASSISTANT_TEXTAREA_FIELD_CLASS = "assistant-field assistant-field--textarea";
+const ASSISTANT_SURPRISE_ACTION_CLASS =
+  "assistant-surprise-action assistant-focus-ring";
+const ASSISTANT_CHAT_FOOTER_CLASS = "assistant-chat-footer";
+const ASSISTANT_CHAT_FORM_CLASS = "assistant-chat-form";
+const ASSISTANT_REFINER_BAR_CLASS = "assistant-refiner-bar";
+
+function assistantChipClass(isSelected: boolean, flex = false) {
+  return [
+    ASSISTANT_CHIP_BASE_CLASS,
+    flex ? ASSISTANT_CHIP_FLEX_CLASS : "",
+    isSelected ? ASSISTANT_CHIP_SELECTED_CLASS : ASSISTANT_CHIP_IDLE_CLASS,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
 
 function buildGuidedSummary(guided: GuidedState) {
   const lines = ["Guided planner intake"];
@@ -462,24 +495,22 @@ export function UnifiedAssistant() {
             onClick={() => setMobileLauncherOpen((prev) => !prev)}
             aria-label={MOBILE_ASSISTANT_COPY.launcher}
             aria-expanded={mobileLauncherOpen}
-            className={`site-fab-launcher site-fab-launcher--assistant ${mobileFabAnchor} ${FOCUS_RING}`}
+            className={`site-fab-launcher site-fab-launcher--assistant ${mobileFabAnchor} ${ASSISTANT_FLOATING_PRIMARY_CLASS}`}
           >
             <Sparkles className="h-5 w-5" aria-hidden="true" />
           </button>
         ) : null}
 
         {mobileLauncherOpen && !suppressFloatingLauncher ? (
-          <div
-            className={`${mobilePanelAnchor} z-50 rounded-2xl border border-neutral-200 bg-white p-3 shadow-2xl`}
-          >
-            <div className="grid grid-cols-1 gap-2">
+          <div className={`${mobilePanelAnchor} assistant-launcher-panel`}>
+            <div className={ASSISTANT_LAUNCHER_PANEL_GRID_CLASS}>
               <button
                 type="button"
                 onClick={() => {
                   setMobileLauncherOpen(false);
                   setGuidedOpen(true);
                 }}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-normal text-white focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="assistant-launcher-action assistant-launcher-action--dark assistant-focus-ring"
               >
                 <MessageSquareText className="h-4 w-4" />
                 {MOBILE_ASSISTANT_COPY.planner}
@@ -490,7 +521,7 @@ export function UnifiedAssistant() {
                   setMobileLauncherOpen(false);
                   setChatOpen(true);
                 }}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-normal text-white focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="assistant-launcher-action assistant-launcher-action--primary assistant-focus-ring"
               >
                 <Sparkles className="h-4 w-4" />
                 {MOBILE_ASSISTANT_COPY.chatbot}
@@ -506,7 +537,7 @@ export function UnifiedAssistant() {
             type="button"
             onClick={() => setChatOpen(true)}
             aria-label="Open AI chatbot"
-            className={`${desktopFabAnchor} inline-flex items-center gap-2 rounded-full bg-primary px-3.5 py-3 text-white shadow-xl transition-colors hover:bg-primary-hover ${FOCUS_RING}`}
+            className={`${desktopFabAnchor} ${ASSISTANT_FLOATING_PRIMARY_CLASS}`}
           >
             <Sparkles className="h-4 w-4" />
             <span className="hidden xl:inline text-xs font-semibold uppercase tracking-[0.14em]">
@@ -518,33 +549,33 @@ export function UnifiedAssistant() {
 
       {guidedOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-0 sm:items-center sm:p-6"
+          className="assistant-overlay"
           role="dialog"
           aria-modal="true"
           aria-label="Guided planner"
         >
-          <div className="relative flex max-h-[92vh] w-full max-w-[560px] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-2xl">
-            <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-900 text-white">
+          <div className={ASSISTANT_MODAL_GUIDED_SHEET_CLASS}>
+            <div className="assistant-sheet__header">
+              <div className="assistant-sheet__brand">
+                <span className="assistant-sheet__icon assistant-sheet__icon--dark">
                   <Bot className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-neutral-900">{GUIDED_PLANNER_COPY.title}</p>
-                  <p className="text-xs text-neutral-500">{GUIDED_PLANNER_COPY.subtitle}</p>
+                  <p className="assistant-sheet__title">{GUIDED_PLANNER_COPY.title}</p>
+                  <p className="assistant-sheet__subtitle">{GUIDED_PLANNER_COPY.subtitle}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setGuidedOpen(false)}
-                className={`rounded-full bg-neutral-100 p-2 text-neutral-700 transition-colors hover:bg-neutral-200 ${FOCUS_RING}`}
+                className="assistant-sheet__close assistant-focus-ring"
                 aria-label="Close guided planner"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5">
+            <div className="assistant-log">
               {guidedSubmittedId ? (
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
                   <p className="mb-1 flex items-center gap-2 text-sm font-semibold text-emerald-900">
@@ -559,14 +590,14 @@ export function UnifiedAssistant() {
                         setGuidedOpen(false);
                         setChatOpen(true);
                       }}
-                      className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-neutral-900 underline`}
+                      className={ASSISTANT_TEXT_ACTION_CLASS}
                     >
                       {GUIDED_PLANNER_COPY.submittedFollowUp}
                     </button>
                     <button
                       type="button"
                       onClick={resetGuided}
-                      className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-neutral-500 underline`}
+                      className={ASSISTANT_TEXT_ACTION_MUTED_CLASS}
                     >
                       {GUIDED_PLANNER_COPY.submittedReset}
                     </button>
@@ -577,17 +608,13 @@ export function UnifiedAssistant() {
                   {guidedStep === 0 ? (
                     <>
                       <p className="text-sm text-neutral-700">{GUIDED_PLANNER_COPY.stepOneIntro}</p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className={ASSISTANT_CHIP_GROUP_CLASS}>
                         {(Object.keys(USE_CASE_LABEL) as UseCase[]).map((key) => (
                           <button
                             key={key}
                             type="button"
                             onClick={() => setGuided({ ...guided, useCase: key })}
-                            className={`${ASSISTANT_CHIP_CLASS} ${FOCUS_RING} ${
-                              guided.useCase === key
-                                ? "border-neutral-900 bg-neutral-900 text-white"
-                                : "border-neutral-300 text-neutral-700"
-                            }`}
+                            className={assistantChipClass(guided.useCase === key)}
                           >
                             {USE_CASE_LABEL[key]}
                           </button>
@@ -620,17 +647,13 @@ export function UnifiedAssistant() {
                         onChange={(event) => setGuided({ ...guided, city: event.target.value })}
                         className={ASSISTANT_FIELD_CLASS}
                       />
-                      <div className="flex flex-wrap gap-2">
+                      <div className={ASSISTANT_CHIP_GROUP_CLASS}>
                         {(Object.keys(TIMELINE_LABEL) as Timeline[]).map((key) => (
                           <button
                             key={key}
                             type="button"
                             onClick={() => setGuided({ ...guided, timeline: key })}
-                            className={`${ASSISTANT_CHIP_CLASS} ${FOCUS_RING} ${
-                              guided.timeline === key
-                                ? "border-neutral-900 bg-neutral-900 text-white"
-                                : "border-neutral-300 text-neutral-700"
-                            }`}
+                            className={assistantChipClass(guided.timeline === key)}
                           >
                             {TIMELINE_LABEL[key]}
                           </button>
@@ -648,7 +671,7 @@ export function UnifiedAssistant() {
                         placeholder={GUIDED_PLANNER_COPY.placeholders.notes}
                         value={guided.notes}
                         onChange={(event) => setGuided({ ...guided, notes: event.target.value })}
-                        className={`${ASSISTANT_FIELD_CLASS} resize-none`}
+                        className={ASSISTANT_TEXTAREA_FIELD_CLASS}
                       />
                     </>
                   ) : null}
@@ -682,11 +705,11 @@ export function UnifiedAssistant() {
 
                   {guidedError ? <p className="text-sm text-red-600" aria-live="polite">{guidedError}</p> : null}
 
-                  <div className="flex items-center justify-between pt-2">
+                  <div className={ASSISTANT_MODAL_ACTION_ROW_CLASS}>
                     <button
                       type="button"
                       onClick={() => setGuidedStep((prev) => (prev > 0 ? prev - 1 : prev))}
-                      className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-neutral-500`}
+                      className={ASSISTANT_TEXT_ACTION_MUTED_CLASS}
                       disabled={guidedStep === 0 || guidedSaving}
                     >
                       {GUIDED_PLANNER_COPY.back}
@@ -724,34 +747,34 @@ export function UnifiedAssistant() {
 
       {chatOpen ? (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-0 sm:items-center sm:p-6"
+          className="assistant-overlay"
           role="dialog"
           aria-modal="true"
           aria-label="AI chatbot"
         >
-          <div className="relative flex max-h-[92vh] w-full max-w-[640px] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-2xl">
-            <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white">
+          <div className={ASSISTANT_MODAL_CHAT_SHEET_CLASS}>
+            <div className="assistant-sheet__header">
+              <div className="assistant-sheet__brand">
+                <span className="assistant-sheet__icon assistant-sheet__icon--primary">
                   <Sparkles className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-neutral-900">{AI_CHATBOT_COPY.title}</p>
-                  <p className="text-xs text-neutral-500">{AI_CHATBOT_COPY.subtitle}</p>
+                  <p className="assistant-sheet__title">{AI_CHATBOT_COPY.title}</p>
+                  <p className="assistant-sheet__subtitle">{AI_CHATBOT_COPY.subtitle}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setChatOpen(false)}
-                className={`rounded-full bg-neutral-100 p-2 text-neutral-700 transition-colors hover:bg-neutral-200 ${FOCUS_RING}`}
+                className="assistant-sheet__close assistant-focus-ring"
                 aria-label="Close AI chatbot"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="border-b border-neutral-100 bg-primary/5 px-5 py-3">
-              <div className="flex flex-wrap gap-2">
+            <div className="assistant-toolbar">
+              <div className={ASSISTANT_CHIP_GROUP_CLASS}>
                 {AI_ASSISTANT_STARTERS.map((starter) => (
                   <button
                     key={starter}
@@ -766,7 +789,7 @@ export function UnifiedAssistant() {
               <button
                 type="button"
                 onClick={useSurprisePrompt}
-                className={`mt-2 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-primary ${FOCUS_RING}`}
+                className={ASSISTANT_SURPRISE_ACTION_CLASS}
               >
                 <Wand2 className="h-3.5 w-3.5" />
                 {AI_ADVISOR_COPY.surpriseLabel}
@@ -774,7 +797,7 @@ export function UnifiedAssistant() {
             </div>
 
             <div
-              className="flex-1 space-y-4 overflow-y-auto p-5"
+              className="assistant-log space-y-4"
               role="log"
               aria-live="polite"
               aria-relevant="additions text"
@@ -783,50 +806,54 @@ export function UnifiedAssistant() {
               {chatMessages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`assistant-message-row ${
+                    message.role === "user"
+                      ? "assistant-message-row--user"
+                      : "assistant-message-row--assistant"
+                  }`}
                 >
                   <div
-                    className={`max-w-[88%] rounded-xl px-4 py-3 text-sm ${
+                    className={`assistant-message ${
                       message.role === "user"
-                        ? "bg-neutral-900 text-white"
-                        : "border border-neutral-200 bg-neutral-50 text-neutral-800"
+                        ? "assistant-message--user"
+                        : "assistant-message--assistant"
                     }`}
                   >
                     {message.streaming && !message.text && !message.result ? (
-                      <div className="space-y-2" aria-hidden="true">
-                        <div className="h-3 w-28 rounded-full bg-neutral-200" />
-                        <div className="h-3 w-44 rounded-full bg-neutral-200" />
-                        <div className="h-3 w-36 rounded-full bg-neutral-200" />
+                      <div className="assistant-message__skeleton space-y-2" aria-hidden="true">
+                        <div className="assistant-message__skeleton-line assistant-message__skeleton-line--short" />
+                        <div className="assistant-message__skeleton-line assistant-message__skeleton-line--medium" />
+                        <div className="assistant-message__skeleton-line assistant-message__skeleton-line--long" />
                       </div>
                     ) : (
                       <p>{sanitizeDisplayText(message.text)}</p>
                     )}
 
                     {message.streaming && message.text && !message.result ? (
-                      <p className="mt-2 text-[11px] uppercase tracking-[0.12em] text-neutral-500">
+                      <p className="assistant-message__streaming">
                         Streaming reply
                       </p>
                     ) : null}
 
                     {message.result ? (
                       <div className="mt-3 space-y-3">
-                        <div className="rounded-lg border border-neutral-200 bg-white p-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                              {message.result.pricingMode === "band"
-                                ? AI_CHATBOT_COPY.bandLabel
-                                : AI_CHATBOT_COPY.totalLabel}
-                            </p>
+                        <div className="assistant-result-card">
+                          <p className="assistant-result-title">
+                            {message.result.pricingMode === "band"
+                              ? AI_CHATBOT_COPY.bandLabel
+                              : AI_CHATBOT_COPY.totalLabel}
+                          </p>
                           <p className="mt-1 text-sm font-semibold text-neutral-900">
                             {message.result.totalBudget}
                           </p>
                         </div>
 
                         {message.result.warnings?.length ? (
-                          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">
+                          <div className="assistant-result-card assistant-result-card--warning">
+                            <p className="assistant-result-title assistant-result-title--warning">
                               {AI_CHATBOT_COPY.warningsTitle}
                             </p>
-                            <div className="mt-2 space-y-1 text-xs text-amber-900">
+                            <div className="assistant-result-body text-amber-900">
                               {message.result.warnings.map((warning) => (
                                 <p key={warning}>{warning}</p>
                               ))}
@@ -837,7 +864,7 @@ export function UnifiedAssistant() {
                         {message.result.recommendations.map((item) => (
                           <div
                             key={`${message.id}-${item.productId}`}
-                            className="rounded-lg border border-neutral-200 bg-white p-3"
+                            className="assistant-result-card"
                           >
                             <div className="mb-1 flex items-start justify-between gap-2">
                               <p className="text-sm font-semibold text-neutral-900">
@@ -845,7 +872,7 @@ export function UnifiedAssistant() {
                               </p>
                               <Link
                                 href={recommendationHref(item)}
-                                className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-primary underline`}
+                                className="assistant-text-button assistant-focus-ring assistant-result-link"
                               >
                                 View
                               </Link>
@@ -855,11 +882,11 @@ export function UnifiedAssistant() {
                         ))}
 
                         {message.result.nextActions?.length ? (
-                          <div className="rounded-lg border border-neutral-200 bg-white p-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                          <div className="assistant-result-card">
+                            <p className="assistant-result-title">
                               {AI_CHATBOT_COPY.nextActionsTitle}
                             </p>
-                            <div className="mt-2 space-y-1 text-xs text-neutral-700">
+                            <div className="assistant-result-body text-neutral-700">
                               {message.result.nextActions.map((action) => (
                                 <p key={action}>{action}</p>
                               ))}
@@ -873,9 +900,9 @@ export function UnifiedAssistant() {
               ))}
             </div>
 
-            <div className="border-t border-neutral-100 p-4">
+            <div className={ASSISTANT_CHAT_FOOTER_CLASS}>
               {lastUserQuery ? (
-                <div className="mb-3 flex flex-wrap gap-2">
+                <div className={ASSISTANT_REFINER_BAR_CLASS}>
                   {AI_ASSISTANT_REFINERS.map((refiner) => (
                     <button
                       key={refiner.label}
@@ -906,18 +933,18 @@ export function UnifiedAssistant() {
                 </div>
               ) : null}
 
-              <form onSubmit={handleAiSubmit} className="flex items-end gap-2">
+              <form onSubmit={handleAiSubmit} className={ASSISTANT_CHAT_FORM_CLASS}>
                 <textarea
                   rows={2}
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder={AI_CHATBOT_COPY.placeholder}
-                  className={`min-h-11 flex-1 resize-none rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                  className={`${ASSISTANT_TEXTAREA_FIELD_CLASS} min-h-11 flex-1`}
                 />
                 <button
                   type="submit"
                   disabled={!query.trim() || aiLoading}
-                  className={`inline-flex min-h-11 items-center gap-2 rounded-lg bg-neutral-900 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-primary disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_RING}`}
+                  className={ASSISTANT_PRIMARY_COMPACT_ACTION_CLASS}
                 >
                   {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                   {AI_CHATBOT_COPY.send}

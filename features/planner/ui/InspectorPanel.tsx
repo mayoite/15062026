@@ -42,6 +42,55 @@ function fmtArea(wMm: number, hMm: number): { sqm: string; sqft: string } {
   };
 }
 
+const INSPECTOR_PANEL_SECTION_LABEL_BASE = "pwx-panel-section-label";
+const INSPECTOR_PANEL_HEADER_ACTIONS = "pwx-panel-header-actions";
+const INSPECTOR_PANEL_TAB_BASE = "pwx-panel-tab flex-1 py-2 pw-ui-2xs font-semibold uppercase tracking-[0.12em] transition-colors border-b-2";
+const INSPECTOR_PANEL_TAB_ACTIVE = "border-[color:var(--planner-primary)] text-[color:var(--planner-primary)]";
+const INSPECTOR_PANEL_TAB_INACTIVE = "border-transparent text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-primary)]";
+const INSPECTOR_PANEL_PRIMARY_ACTION = "pwx-panel-action bg-[color:var(--planner-primary)] py-2.5 pw-ui-xs text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-border-soft)] disabled:text-[color:var(--planner-text-subtle)]";
+const INSPECTOR_PANEL_APPLY_ACTION = "pwx-panel-action justify-center bg-[color:var(--planner-primary)] py-2 pw-ui-xs text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-border-soft)] disabled:text-[color:var(--planner-text-subtle)]";
+const INSPECTOR_PANEL_INPUT = "w-full border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-2 py-1.5 pw-ui-xs text-[color:var(--planner-text-body)] outline-none transition focus:border-[color:var(--planner-primary)]";
+const INSPECTOR_PANEL_LABEL = "block mb-1 pw-ui-2xs font-semibold uppercase tracking-[0.08em] text-[color:var(--planner-text-subtle)]";
+const INSPECTOR_PANEL_UNIT_BASE = "px-3 py-1.5 pw-ui-2xs font-semibold uppercase tracking-[0.06em] transition-colors";
+const INSPECTOR_PANEL_SNAP_TRACK = "relative h-5 w-9 transition-colors";
+const INSPECTOR_PANEL_SNAP_THUMB = "absolute top-0.5 h-4 w-4 bg-white transition-all";
+
+function cx(...parts: Array<string | false | null | undefined>) {
+  return parts.filter(Boolean).join(" ");
+}
+
+function getSectionLabelClass(marginClass = "mb-2") {
+  return cx(INSPECTOR_PANEL_SECTION_LABEL_BASE, marginClass);
+}
+
+function getTabClass(active: boolean) {
+  return cx(
+    INSPECTOR_PANEL_TAB_BASE,
+    active ? INSPECTOR_PANEL_TAB_ACTIVE : INSPECTOR_PANEL_TAB_INACTIVE,
+  );
+}
+
+function getIconButtonClass(active: boolean) {
+  return cx("pwx-panel-icon-btn", active && "pwx-panel-icon-btn--active");
+}
+
+function getUnitButtonClass(active: boolean) {
+  return cx(
+    INSPECTOR_PANEL_UNIT_BASE,
+    active
+      ? "bg-[color:var(--planner-primary)] text-white"
+      : "bg-[color:var(--planner-panel-strong)] text-[color:var(--planner-text-muted)] hover:text-[color:var(--planner-primary)]",
+  );
+}
+
+function getSnapTrackClass(active: boolean) {
+  return cx(INSPECTOR_PANEL_SNAP_TRACK, active ? "bg-[color:var(--planner-primary)]" : "bg-[color:var(--planner-border-soft)]");
+}
+
+function getSnapThumbClass(active: boolean) {
+  return cx(INSPECTOR_PANEL_SNAP_THUMB, active ? "left-4" : "left-0.5");
+}
+
 /** Row in the shortcuts table */
 function ShortcutRow({ name, kbd }: { name: string; kbd: string }) {
   return (
@@ -135,16 +184,19 @@ export function InspectorPanel({
         <div>
           <span className="pwx-panel-title">Inspector</span>
         </div>
-        <div className="flex items-center gap-0.5">
+        <div className={INSPECTOR_PANEL_HEADER_ACTIONS}>
           {showPinToggle && (
-            <button type="button" onClick={onTogglePin}
-              aria-label={pinned ? "Float panel" : "Dock panel"} title={pinned ? "Float panel" : "Dock panel"}
-              className={`pwx-panel-icon-btn ${pinned ? "text-[color:var(--planner-primary)]" : ""}`}>
+            <button
+              type="button"
+              onClick={onTogglePin}
+              aria-label={pinned ? "Float panel" : "Dock panel"}
+              title={pinned ? "Float panel" : "Dock panel"}
+              className={getIconButtonClass(pinned)}
+            >
               {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
             </button>
           )}
-          <button type="button" onClick={onClose} aria-label="Close"
-            className="pwx-panel-icon-btn">
+          <button type="button" onClick={onClose} aria-label="Close" className="pwx-panel-icon-btn">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -152,12 +204,7 @@ export function InspectorPanel({
 
       <div className="flex shrink-0 border-b border-[color:var(--planner-border-soft)]">
         {(["items", "settings"] as const).map((t) => (
-          <button key={t} type="button" onClick={() => setTab(t)}
-            className={`flex flex-1 items-center justify-center gap-1.5 py-2 pw-ui-2xs font-semibold uppercase tracking-[0.12em] transition-colors border-b-2 ${
-              tab === t
-                ? "border-[color:var(--planner-primary)] text-[color:var(--planner-primary)]"
-                : "border-transparent text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-primary)]"
-            }`}>
+          <button key={t} type="button" onClick={() => setTab(t)} className={getTabClass(tab === t)}>
             {t === "items" ? <Tag className="h-3.5 w-3.5" /> : <Settings2 className="h-3.5 w-3.5" />}
             {t === "items" ? `Items (${boqItems.length})` : "Settings"}
           </button>
@@ -172,8 +219,10 @@ export function InspectorPanel({
           <div className="flex h-full flex-col">
             <div className="flex-1 overflow-y-auto divide-y divide-[color:var(--planner-border-soft)]">
               {boqItems.length === 0 ? (
-                <div className="pwx-panel-empty flex flex-col items-center justify-center gap-2 py-10 px-4">
-                  <MousePointer2 className="h-6 w-6 text-[color:var(--planner-text-subtle)]" />
+                <div className="pwx-panel-empty">
+                  <div className="pwx-panel-empty-icon">
+                    <MousePointer2 className="h-6 w-6" />
+                  </div>
                   <p className="text-[14px] font-semibold text-[color:var(--planner-text-strong)]">No items yet</p>
                   <p className="pw-ui-xs leading-5 text-[color:var(--planner-text-muted)]">{emptyBody}</p>
                 </div>
@@ -198,11 +247,10 @@ export function InspectorPanel({
               {hasBoqData && (
                 <div className="mb-2 flex items-baseline justify-between">
                   <span className="pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">BOQ Lines</span>
-                  <span className="pwx-panel-count text-[14px]">{boqItems.length}</span>
+                  <span className="pwx-panel-count">{boqItems.length}</span>
                 </div>
               )}
-              <button onClick={onAdvanceBoqFlow} disabled={primaryDisabled}
-                className="pwx-panel-action w-full bg-[color:var(--planner-primary)] py-2.5 pw-ui-xs text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-border-soft)] disabled:text-[color:var(--planner-text-subtle)]">
+              <button onClick={onAdvanceBoqFlow} disabled={primaryDisabled} className={INSPECTOR_PANEL_PRIMARY_ACTION}>
                 <FileText className="h-4 w-4" /> {primaryActionLabel}
               </button>
             </div>
@@ -214,7 +262,7 @@ export function InspectorPanel({
           <div className="divide-y divide-[color:var(--planner-border-soft)]">
 
             <div className="px-3 py-3 text-center">
-              <p className="mb-2 pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Room Shell</p>
+              <p className={getSectionLabelClass()}>Room Shell</p>
               <p className="font-mono text-[13px] font-semibold text-[color:var(--planner-text-strong)]">{roomMetrics}</p>
               {area && (
                 <div className="mt-1.5 flex items-center justify-center gap-3">
@@ -226,28 +274,26 @@ export function InspectorPanel({
             </div>
 
             <div className="px-3 py-3">
-              <p className="mb-1.5 pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Selection</p>
+              <p className={getSectionLabelClass("mb-1.5")}>Selection</p>
               <p className="font-mono pw-ui-xs font-semibold text-[color:var(--planner-text-strong)]">
                 {selectedMetrics ?? "Select a wall or item"}
               </p>
             </div>
 
             <div className="px-3 py-3">
-              <p className="mb-2 pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Edit Size</p>
+              <p className={getSectionLabelClass()}>Edit Size</p>
               {selectionDimensions ? (
                 <div className="space-y-2">
                   <p className="pw-ui-xs font-medium text-[color:var(--planner-text-body)]">{selectionDimensions.shapeName}</p>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block pw-ui-2xs font-semibold uppercase tracking-[0.08em] text-[color:var(--planner-text-subtle)] mb-1">
+                      <label className={INSPECTOR_PANEL_LABEL}>
                         {selectionDimensions.mode === "line" ? "Length" : "Width"} ({unitLabel})
                       </label>
-                      <input value={widthInput} onChange={(e) => setWidthInput(e.target.value)}
-                        placeholder={dimHint}
-                        className="w-full border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-2 py-1.5 pw-ui-xs text-[color:var(--planner-text-body)] outline-none transition focus:border-[color:var(--planner-primary)]" />
+                      <input value={widthInput} onChange={(e) => setWidthInput(e.target.value)} placeholder={dimHint} className={INSPECTOR_PANEL_INPUT} />
                     </div>
                     <div>
-                      <label className="block pw-ui-2xs font-semibold uppercase tracking-[0.08em] text-[color:var(--planner-text-subtle)] mb-1">
+                      <label className={INSPECTOR_PANEL_LABEL}>
                         {selectionDimensions.mode === "line" ? "Locked" : `Depth (${unitLabel})`}
                       </label>
                       <input
@@ -255,16 +301,20 @@ export function InspectorPanel({
                         disabled={selectionDimensions.mode === "line"}
                         onChange={(e) => setHeightInput(e.target.value)}
                         placeholder={dimHint}
-                        className="w-full border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-2 py-1.5 pw-ui-xs text-[color:var(--planner-text-body)] outline-none transition focus:border-[color:var(--planner-primary)] disabled:opacity-40" />
+                        className={cx(INSPECTOR_PANEL_INPUT, "disabled:opacity-40")}
+                      />
                     </div>
                   </div>
-                    <button type="button" disabled={!canApply}
+                  <button
+                    type="button"
+                    disabled={!canApply}
                     onClick={() => {
                       if (widthValueMm === null) return;
                       if (selectionDimensions.mode === "box" && heightValueMm === null) return;
                       onUpdateSelectionDimensions({ widthMm: widthValueMm, heightMm: selectionDimensions.mode === "line" ? null : heightValueMm });
                     }}
-                    className="w-full bg-[color:var(--planner-primary)] py-2 pw-ui-xs font-semibold text-white transition-colors hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-border-soft)] disabled:text-[color:var(--planner-text-subtle)]">
+                    className={INSPECTOR_PANEL_APPLY_ACTION}
+                  >
                     Apply Size
                   </button>
                 </div>
@@ -278,12 +328,7 @@ export function InspectorPanel({
               <span className="pw-ui-xs font-semibold text-[color:var(--planner-text-body)]">Units</span>
               <div className="flex border border-[color:var(--planner-border-soft)]">
                 {(["mm", "ft-in"] as const).map((u) => (
-                  <button key={u} type="button" onClick={() => onUnitSystemChange(u)}
-                    className={`px-3 py-1.5 pw-ui-2xs font-semibold uppercase tracking-[0.06em] transition-colors ${
-                      unitSystem === u
-                        ? "bg-[color:var(--planner-primary)] text-white"
-                        : "bg-[color:var(--planner-panel-strong)] text-[color:var(--planner-text-muted)] hover:text-[color:var(--planner-primary)]"
-                    }`}>
+                  <button key={u} type="button" onClick={() => onUnitSystemChange(u)} className={getUnitButtonClass(unitSystem === u)}>
                     {u === "mm" ? "mm" : "ft/in"}
                   </button>
                 ))}
@@ -296,15 +341,14 @@ export function InspectorPanel({
                 <Magnet className="h-3.5 w-3.5 text-[color:var(--planner-primary)]" />
                 <span className="pw-ui-xs font-semibold text-[color:var(--planner-text-body)]">Grid Snap</span>
               </div>
-              <button onClick={onToggleSnap}
-                className={`relative h-5 w-9 transition-colors ${isSnapMode ? "bg-[color:var(--planner-primary)]" : "bg-[color:var(--planner-border-soft)]"}`}>
-                <div className={`absolute top-0.5 h-4 w-4 bg-white transition-all ${isSnapMode ? "left-4" : "left-0.5"}`} />
+              <button onClick={onToggleSnap} className={getSnapTrackClass(isSnapMode)}>
+                <div className={getSnapThumbClass(isSnapMode)} />
               </button>
             </div>
 
             {/* Shortcuts */}
             <div className="px-3 py-3">
-              <p className="mb-2 pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Shortcuts</p>
+              <p className={getSectionLabelClass()}>Shortcuts</p>
               {[["Select", "V"], ["Draw", "D"], ["Eraser", "E"], ["Rectangle", "R"], ["Undo", "Ctrl+Z"]].map(([n, k]) => (
                 <ShortcutRow key={n} name={n} kbd={k} />
               ))}

@@ -1,6 +1,13 @@
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
 import { millimetersToCanvasUnits } from "@/features/planner/lib/calibrationScale";
+import {
+  PLANNER_CANVAS_CONFIG,
+  PLANNER_LAYOUT_ORIGIN_UNITS,
+  PLANNER_MM_PER_CANVAS_UNIT,
+  capRoomEstimateMm,
+  clampLayoutOrigin,
+} from "@/features/planner/lib/canvasBounds";
 import type { PlannerProjectMetadata } from "@/features/planner/onboarding/projectSetup";
 import { metadataToSpaceSuggestInput } from "@/features/planner/onboarding/projectSetup";
 import {
@@ -11,21 +18,19 @@ import {
 import { buildSpaceSuggestUserPrompt, SPACE_SUGGEST_SYSTEM_PROMPT } from "./prompts";
 import type { SpaceSuggestInput, SuggestedLayoutJson } from "./types";
 
-const ORIGIN_X = 120;
-const ORIGIN_Y = 120;
 const AISLE_MM = 1200;
 const BENCH_SEATS = 4;
 
-function estimateRoomMm(seatCount: number, floorAreaSqFt?: number) {
+export function estimateRoomMm(seatCount: number, floorAreaSqFt?: number) {
   const sqFt = floorAreaSqFt ?? Math.max(1200, seatCount * 50);
   const sqM = sqFt * 0.092903;
   const aspect = 1.3;
   const depthM = Math.sqrt(sqM / aspect);
   const widthM = depthM * aspect;
-  return {
-    widthMm: Math.max(6000, Math.round(widthM * 1000)),
-    depthMm: Math.max(5000, Math.round(depthM * 1000)),
-  };
+  return capRoomEstimateMm(
+    Math.max(PLANNER_CANVAS_CONFIG.layout.estimateRoomMinWidthMm, Math.round(widthM * 1000)),
+    Math.max(PLANNER_CANVAS_CONFIG.layout.estimateRoomMinDepthMm, Math.round(depthM * 1000)),
+  );
 }
 
 function pickWorkstationBench(catalog: CatalogItem[], seatsNeeded: number): CatalogItem {
@@ -87,6 +92,7 @@ export function buildShellOnlyLayout(metadata: PlannerProjectMetadata): Suggeste
   const roomMm = estimateRoomMm(input.seatCount, input.floorAreaSqFt);
   const roomW = plannerCanvasUnits(roomMm.widthMm);
   const roomH = plannerCanvasUnits(roomMm.depthMm);
+  const origin = clampLayoutOrigin(PLANNER_LAYOUT_ORIGIN_UNITS, PLANNER_LAYOUT_ORIGIN_UNITS, roomW, roomH);
 
   return {
     version: 1,
@@ -94,12 +100,12 @@ export function buildShellOnlyLayout(metadata: PlannerProjectMetadata): Suggeste
     summary: `Starter shell for ${metadata.projectName} sized from ${metadata.floorAreaSqFt} sq ft.`,
     room: {
       label: metadata.projectName || "Office shell",
-      x: ORIGIN_X,
-      y: ORIGIN_Y,
+      x: origin.x,
+      y: origin.y,
       widthMm: roomMm.widthMm,
       depthMm: roomMm.depthMm,
     },
-    walls: buildPerimeterWalls(ORIGIN_X, ORIGIN_Y, roomW, roomH, 10),
+    walls: buildPerimeterWalls(origin.x, origin.y, roomW, roomH, PLANNER_MM_PER_CANVAS_UNIT),
     zones: [],
     furniture: [],
   };
@@ -108,10 +114,13 @@ export function buildShellOnlyLayout(metadata: PlannerProjectMetadata): Suggeste
 /** Deterministic grid-packing layout for facilities admins. */
 export function suggestLayoutGridPack(input: SpaceSuggestInput): SuggestedLayoutJson {
   const catalog = PLANNER_CATALOG_ITEMS;
-  const mmPerUnit = 10;
+  const mmPerUnit = PLANNER_MM_PER_CANVAS_UNIT;
   const roomMm = estimateRoomMm(input.seatCount, input.floorAreaSqFt);
   const roomW = plannerCanvasUnits(roomMm.widthMm);
   const roomH = plannerCanvasUnits(roomMm.depthMm);
+  const origin = clampLayoutOrigin(PLANNER_LAYOUT_ORIGIN_UNITS, PLANNER_LAYOUT_ORIGIN_UNITS, roomW, roomH);
+  const originX = origin.x;
+  const originY = origin.y;
   const aisle = millimetersToCanvasUnits(AISLE_MM);
 
   const bench = pickWorkstationBench(catalog, input.seatCount);
@@ -129,8 +138,8 @@ export function suggestLayoutGridPack(input: SpaceSuggestInput): SuggestedLayout
     for (let col = 0; col < cols; col += 1) {
       if (placedSeats >= input.seatCount) break;
       if (placedSeats > 0 && placedSeats + seatsPerBench > input.seatCount) break;
-      const x = ORIGIN_X + 80 + col * (benchW + aisle * 0.35);
-      const y = ORIGIN_Y + 80 + row * (benchH + aisle);
+      const x = originX + 80 + col * (benchW + aisle * 0.35);
+      const y = originY + 80 + row * (benchH + aisle);
       furniture.push({
         catalogItemId: bench.id,
         label: bench.name,
@@ -145,8 +154,8 @@ export function suggestLayoutGridPack(input: SpaceSuggestInput): SuggestedLayout
   const zones: SuggestedLayoutJson["zones"] = [
     {
       label: "Open workstations",
-      x: ORIGIN_X + 40,
-      y: ORIGIN_Y + 40,
+      x: originX + 40,
+      y: originY + 40,
       widthMm: roomMm.widthMm - 800,
       heightMm: roomMm.depthMm - 1600,
       zoneType: "focus",
@@ -158,8 +167,8 @@ export function suggestLayoutGridPack(input: SpaceSuggestInput): SuggestedLayout
     furniture.push({
       catalogItemId: storage.id,
       label: storage.name,
-      x: ORIGIN_X + roomW - plannerCanvasUnits(storage.widthMm) - 60,
-      y: ORIGIN_Y + roomH - plannerCanvasUnits(storage.heightMm) - 60,
+      x: originX + roomW - plannerCanvasUnits(storage.widthMm) - 60,
+      y: originY + roomH - plannerCanvasUnits(storage.heightMm) - 60,
     });
   }
 
@@ -169,13 +178,13 @@ export function suggestLayoutGridPack(input: SpaceSuggestInput): SuggestedLayout
       furniture.push({
         catalogItemId: meeting.id,
         label: meeting.name,
-        x: ORIGIN_X + roomW - plannerCanvasUnits(meeting.widthMm) - 100,
-        y: ORIGIN_Y + 80,
+        x: originX + roomW - plannerCanvasUnits(meeting.widthMm) - 100,
+        y: originY + 80,
       });
       zones.push({
         label: "Meeting area",
-        x: ORIGIN_X + roomW - plannerCanvasUnits(meeting.widthMm) - 140,
-        y: ORIGIN_Y + 40,
+        x: originX + roomW - plannerCanvasUnits(meeting.widthMm) - 140,
+        y: originY + 40,
         widthMm: normalizeCatalogMm(meeting.widthMm) + 200,
         heightMm: normalizeCatalogMm(meeting.heightMm) + 200,
         zoneType: "collaborative",
@@ -189,12 +198,12 @@ export function suggestLayoutGridPack(input: SpaceSuggestInput): SuggestedLayout
     summary: `Packed ${Math.min(placedSeats, input.seatCount)} of ${input.seatCount} seats into ${rows} row(s) of ${seatsPerBench}-seat benches with aisles and storage.`,
     room: {
       label: "Support office shell",
-      x: ORIGIN_X,
-      y: ORIGIN_Y,
+      x: originX,
+      y: originY,
       widthMm: roomMm.widthMm,
       depthMm: roomMm.depthMm,
     },
-    walls: buildPerimeterWalls(ORIGIN_X, ORIGIN_Y, roomW, roomH, mmPerUnit),
+    walls: buildPerimeterWalls(originX, originY, roomW, roomH, mmPerUnit),
     zones,
     furniture,
   };

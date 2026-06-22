@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutTemplate, MousePointerClick } from "lucide-react";
+import { LayoutTemplate, MousePointerClick, Sparkles } from "lucide-react";
 
 interface PlannerEmptyCanvasProps {
   guestMode?: boolean;
@@ -8,7 +8,7 @@ interface PlannerEmptyCanvasProps {
   allowCanvasDragThrough?: boolean;
   onDrawWalls: () => void;
   onOpenTemplates: () => void;
-
+  onQuickLayout?: () => void;
 }
 
 export function PlannerEmptyCanvas({
@@ -16,7 +16,7 @@ export function PlannerEmptyCanvas({
   allowCanvasDragThrough: _allowCanvasDragThrough = false,
   onDrawWalls,
   onOpenTemplates,
-
+  onQuickLayout,
 }: PlannerEmptyCanvasProps) {
   return (
     <div
@@ -52,6 +52,12 @@ export function PlannerEmptyCanvas({
             <LayoutTemplate size={14} aria-hidden />
             Use template
           </button>
+          {onQuickLayout ? (
+            <button type="button" onClick={onQuickLayout} className="pw-empty-canvas-secondary btn-outline">
+              <Sparkles size={14} aria-hidden />
+              Quick layout
+            </button>
+          ) : null}
         </div>
 
         <p className="pw-empty-canvas-note">

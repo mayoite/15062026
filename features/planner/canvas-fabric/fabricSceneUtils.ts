@@ -1,4 +1,11 @@
-const FABRIC_TO_MM = 10;
+import {
+  PLANNER_MAX_CANVAS_MM,
+  PLANNER_MIN_ROOM_DIMENSION_MM,
+  PLANNER_MM_PER_CANVAS_UNIT,
+  capMillimetersToCanvas,
+} from "@/features/planner/lib/canvasBounds";
+
+const FABRIC_TO_MM = PLANNER_MM_PER_CANVAS_UNIT;
 
 export type FabricRoomMm = {
   widthMm: number;
@@ -37,8 +44,6 @@ export function resolveRoomMmFromFabricObjects(
     const top = Number(el.top) || 0;
 
     if (String(el.type) === "line") {
-      // For lines, x1, y1, x2, y2 can represent the segment.
-      // left/top in fabric for lines are usually bounding box coords.
       const width = Number(el.width) || 0;
       const height = Number(el.height) || 0;
       minLeft = Math.min(minLeft, left);
@@ -55,8 +60,14 @@ export function resolveRoomMmFromFabricObjects(
     }
   });
 
-  const widthMm = Math.max(1000, Math.round((maxRight - minLeft) * FABRIC_TO_MM));
-  const depthMm = Math.max(1000, Math.round((maxBottom - minTop) * FABRIC_TO_MM));
+  const widthMm = capMillimetersToCanvas(
+    Math.round((maxRight - minLeft) * FABRIC_TO_MM),
+    PLANNER_MIN_ROOM_DIMENSION_MM,
+  );
+  const depthMm = capMillimetersToCanvas(
+    Math.round((maxBottom - minTop) * FABRIC_TO_MM),
+    PLANNER_MIN_ROOM_DIMENSION_MM,
+  );
   return { widthMm, depthMm };
 }
 
@@ -133,3 +144,6 @@ export function fabricObjectToSceneItem(o: Record<string, unknown>, index: numbe
     rotationDeg: angleDeg,
   };
 }
+
+// Re-export for tests documenting the cap.
+export { PLANNER_MAX_CANVAS_MM };

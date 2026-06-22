@@ -47,6 +47,7 @@ function makeMockApi(overrides: Partial<FloorplanCanvasApi> = {}): FloorplanCanv
     applyFillToSelection: vi.fn(),
     setContextMenuListener: vi.fn(),
     fitToStage: vi.fn(() => 100),
+    fitToContent: vi.fn(() => 100),
     recalcOffset: vi.fn(),
     setLayerVisibility: vi.fn(),
     resizeObject: vi.fn(),
@@ -362,11 +363,11 @@ describe("FloorplanContext", () => {
   });
 
   it("refitCanvas asks the api for fit + recalc and updates zoom", () => {
-    const api = makeMockApi({ fitToStage: vi.fn(() => 84) });
+    const api = makeMockApi({ fitToContent: vi.fn(() => 84) });
     const { result } = setupHook();
     act(() => result.current.registerCanvasApi(api));
     act(() => result.current.refitCanvas());
-    expect(api.fitToStage).toHaveBeenCalled();
+    expect(api.fitToContent).toHaveBeenCalled();
     expect(api.recalcOffset).toHaveBeenCalled();
     expect(result.current.zoom).toBe(84);
   });

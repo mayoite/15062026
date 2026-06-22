@@ -22,16 +22,37 @@ This file documents critical blockers, failed parameters, and required follow-up
 
 ## Repo Hygiene Follow-ups
 
+### Toolbar utility cleanup
+- **Status:** `[x] Resolved` (2026-06-22)
+- **Files:** `features/planner/shared/components/editor/Toolbar.tsx`, `app/css/core/planner/editor-chrome.css`
+- **Note:** Replaced repeated toolbar icon sizing utilities with a shared chrome CSS class. Verification was intentionally skipped because Playwright/test runs were not permitted for this task.
+
 ### Planner panel orchestrator refactor completed
 - **Status:** `[x] Resolved` (2026-06-22)
 - **Files:** `features/planner/ui/PlannerDesktopPanels.tsx`, `features/planner/ui/PlannerMobilePanels.tsx`
 - **Note:** Rewrapped the desktop/mobile planner panel orchestrators to reduce wrapper noise without changing catalog, inspector, layers, or session dialog code. Verification was not run because explicit permission was not given.
+
+### Site assistant shell refactor
+- **Status:** `[~] Not verified` (2026-06-22)
+- **Files:** `app/css/core/chrome/shell/assistant.css`, `app/css/index.css`, `features/site-assistant/UnifiedAssistant.tsx`, `features/site-assistant/AdvancedBot.tsx`
+- **Note:** Repeated assistant UI styling moved out of TSX into shared chrome-shell CSS utilities. Playwright and other tests were not run because explicit permission was not granted.
+
+### Lint check surfaced unrelated planner-admin hook errors
+- **Status:** `[~] Open`
+- **Files:** `features/planner/admin/AdminAnalyticsPageView.tsx`, `features/planner/admin/AdminCatalogListView.tsx`, `features/planner/admin/AdminFeatureFlagsPageView.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`
+- **Note:** `npm run lint` still fails on pre-existing `react-hooks/set-state-in-effect` and `react-hooks/exhaustive-deps` violations outside the assistant refactor; I left those untouched to stay in scope.
 
 ### Generated hardcoded audit CSV refreshed successfully
 - **Status:** `[x] Resolved` (2026-06-22)
 - **File:** `results/hardcoded-audit-detail.csv`, `results/hardcoded-audit-summary.csv`
 - **Note:** The audit was regenerated after the lock cleared, and the stale `data/site/*` hit now points at `lib/site-data/*` in the generated output.
 - **Action:** Keep the generator on the atomic temp-file write path so future refreshes survive transient file locks.
+
+### Hardcoded audit rerun hit a locked CSV
+- **Status:** `[~] Follow-up`
+- **File:** `results/hardcoded-audit-detail.csv`, `results/hardcoded-audit-summary.csv`
+- **Note:** A fresh audit pass for TSX plus non-base CSS failed to overwrite the canonical CSV because the destination file was locked (`EPERM` on rename). The same scan completed successfully when written to alternate temp outputs.
+- **Action:** Re-run the audit after the lock clears, or keep using an alternate output path when the canonical CSV is held open.
 
 ### 1. Stale root test/typecheck artifacts
 - **Status:** `[x] Resolved` (2026-06-22)

@@ -2,10 +2,10 @@ import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 import { getPlacementCatalogItem } from "@/features/planner/catalog/placementCatalogResolver";
 import { catalogMmToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
+import { millimetersToCanvasUnits } from "@/features/planner/lib/canvasBounds";
 import type { PlannerCanvasShape } from "@/features/planner/editor/plannerShapeFactories";
 import type { SuggestedLayoutJson } from "./types";
 
-const MM_PER_INCH = 25.4;
 const DEFAULT_FURNITURE_WIDTH_MM = 1200;
 const DEFAULT_FURNITURE_HEIGHT_MM = 600;
 
@@ -32,10 +32,6 @@ type FabricRectObject = {
     };
   }>;
 };
-
-function mmToFabricRoomUnits(mm: number): number {
-  return Math.max(1, Math.round(mm / MM_PER_INCH));
-}
 
 function mmToCanvasUnits(widthMm: number, heightMm: number): { width: number; height: number } {
   return {
@@ -163,8 +159,8 @@ export function applySuggestedLayout(_editor?: null, layout?: SuggestedLayoutJso
     type: "ROOM",
     object: {
       title: layout.room.label,
-      width: mmToFabricRoomUnits(layout.room.widthMm),
-      height: mmToFabricRoomUnits(layout.room.depthMm),
+      width: millimetersToCanvasUnits(layout.room.widthMm),
+      height: millimetersToCanvasUnits(layout.room.depthMm),
     },
   });
 

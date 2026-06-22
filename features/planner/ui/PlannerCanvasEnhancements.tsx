@@ -45,6 +45,9 @@ export function PlannerCanvasEnhancements({ guestMode = false }: PlannerCanvasEn
 
       applySuggestedLayout(null, pendingBootstrapLayout);
       setPendingBootstrapLayout(null);
+      frameId = window.requestAnimationFrame(() => {
+        runtime.fitToContent();
+      });
     };
 
     frameId = window.requestAnimationFrame(tryApplyBootstrap);

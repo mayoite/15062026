@@ -150,22 +150,22 @@ export function LayersPanel({
   };
 
   return (
-    <div className="pwx-panel-shell bg-transparent">
+    <div className="pwx-panel-shell pwx-panel-shell--transparent">
       <div data-panel-drag-handle="true" className="pwx-panel-header">
         <div>
           <span className="pwx-panel-title">Layers</span>
           <p className="pwx-panel-subtitle">{selectionHint}</p>
-          <p className="mt-0.5 text-[10px] leading-[1.35] text-[color:var(--planner-text-muted)]">{unitHint}</p>
+          <p className="pwx-panel-meta">{unitHint}</p>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="pwx-panel-header-actions">
           {showPinToggle ? (
             <button
               type="button"
               onClick={onTogglePin}
               aria-label={pinned ? "Float panel" : "Dock panel"}
               title={pinned ? "Float panel" : "Dock panel"}
-              className={`pwx-panel-icon-btn ${pinned ? "border-[color:var(--planner-primary-soft)] bg-[color:var(--planner-primary-soft)] text-[color:var(--planner-primary)]" : ""}`}
+              className={`pwx-panel-icon-btn ${pinned ? "pwx-panel-icon-btn--active" : ""}`}
             >
               {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
             </button>
@@ -173,7 +173,7 @@ export function LayersPanel({
           <button
             type="button"
             onClick={onClose}
-            className="pwx-panel-icon-btn border-transparent"
+            className="pwx-panel-icon-btn pwx-panel-icon-btn--ghost"
             aria-label="Close layers panel"
           >
             <X className="h-3.5 w-3.5" />
@@ -181,15 +181,11 @@ export function LayersPanel({
         </div>
       </div>
 
-      <div className="border-b border-[color:var(--planner-border-soft)] px-4 py-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Actions</span>
-          </div>
-        </div>
+      <div className="pwx-panel-section">
+        <span className="pwx-panel-section-label">Actions</span>
       </div>
 
-      <div className="border-b border-[color:var(--planner-border-soft)] p-3">
+      <div className="pwx-panel-section pwx-panel-section--controls">
         <div className="pwx-panel-toolbar">
           <PanelActionButton
             icon={<MousePointer2 className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -208,65 +204,56 @@ export function LayersPanel({
             onClick={handleToggleSelectionLock}
             disabled={!hasSelection}
           />
-          <div className="flex h-10 items-center gap-2 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-3" title={`${layerEntries.length} layers`}>
-            <span className="pwx-panel-count">
-              {layerEntries.length}
-            </span>
-            <span className="truncate text-[11px] font-semibold text-[color:var(--planner-text-subtle)]">Layers</span>
+          <div className="pwx-panel-metric" title={`${layerEntries.length} layers`}>
+            <span className="pwx-panel-count">{layerEntries.length}</span>
+            <span className="pwx-panel-metric-label">Layers</span>
           </div>
         </div>
 
-        <div className="mt-3 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-3 py-2.5">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Arrange Selection</p>
-            <div className="flex shrink-0 items-center gap-1.5">
-              <IconControlButton label="Align Left"              disabled={!canAlign}     onClick={() => onAlignSelection("left")}        glyph={<ArrangeGlyph type="left" />} />
-              <IconControlButton label="Align Top"               disabled={!canAlign}     onClick={() => onAlignSelection("top")}         glyph={<ArrangeGlyph type="top" />} />
+        <div className="pwx-panel-arrange-box">
+          <div className="pwx-panel-arrange-header">
+            <p className="pwx-panel-section-label">Arrange Selection</p>
+            <div className="pwx-panel-arrange-actions">
+              <IconControlButton label="Align Left" disabled={!canAlign} onClick={() => onAlignSelection("left")} glyph={<ArrangeGlyph type="left" />} />
+              <IconControlButton label="Align Top" disabled={!canAlign} onClick={() => onAlignSelection("top")} glyph={<ArrangeGlyph type="top" />} />
               <IconControlButton label="Distribute Horizontally" disabled={!canDistribute} onClick={() => onDistributeSelection("horizontal")} glyph={<ArrangeGlyph type="horizontal" />} />
-              <IconControlButton label="Distribute Vertically"   disabled={!canDistribute} onClick={() => onDistributeSelection("vertical")}   glyph={<ArrangeGlyph type="vertical" />} />
+              <IconControlButton label="Distribute Vertically" disabled={!canDistribute} onClick={() => onDistributeSelection("vertical")} glyph={<ArrangeGlyph type="vertical" />} />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="pwx-panel-content p-3">
+      <div className="pwx-panel-content pwx-panel-content--padded">
         {layerEntries.length === 0 ? (
           <div className="pwx-panel-empty">
             No editable layers yet. Draw walls or place items to build the plan.
           </div>
         ) : (
-          <div className="space-y-1.5">
+          <div className="pwx-panel-card-list">
             {layerEntries.map((layer) => (
               <div
                 key={layer.id}
-                className={`pwx-panel-card-item px-3 py-2.5 transition-colors ${
-                  layer.isSelected
-                    ? "border-[color:var(--planner-primary-soft)] bg-[color:var(--planner-primary-soft)]/72"
-                    : "border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)]"
-                }`}
+                className="pwx-panel-card-item"
+                data-active={layer.isSelected ? "true" : undefined}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <button type="button" onClick={() => handleSelectShape(layer.id)} className="min-w-0 flex-1 text-left" title={`Select ${layer.name}`}>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <p className="truncate text-[13px] font-semibold leading-[1.15] text-[color:var(--planner-text-strong)]">{layer.name}</p>
-                      <span className="border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[color:var(--planner-text-muted)]">
-                        {layer.type}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-[11px] leading-[1.4] text-[color:var(--planner-text-body)]">{layer.metrics}</p>
-                  </button>
-
-                  <div className="flex shrink-0 items-center gap-1">
-                    <LayerRowIconAction label={layer.isLocked ? "Unlock Layer" : "Lock Layer"} onClick={() => handleToggleShapeLock(layer.id)} active={layer.isLocked}>
-                      {layer.isLocked ? <Lock className="h-3.5 w-3.5" /> : <LockOpen className="h-3.5 w-3.5" />}
-                    </LayerRowIconAction>
-                    <LayerRowIconAction label="Bring To Front" onClick={() => handleBringToFront(layer.id)}>
-                      <ArrowUpToLine className="h-3.5 w-3.5" />
-                    </LayerRowIconAction>
-                    <LayerRowIconAction label="Send To Back" onClick={() => handleSendToBack(layer.id)}>
-                      <ArrowDownToLine className="h-3.5 w-3.5" />
-                    </LayerRowIconAction>
+                <button type="button" onClick={() => handleSelectShape(layer.id)} className="pwx-layer-row-button" title={`Select ${layer.name}`}>
+                  <div className="pwx-layer-row-heading">
+                    <p className="pwx-layer-row-title">{layer.name}</p>
+                    <span className="pwx-layer-row-chip">{layer.type}</span>
                   </div>
+                  <p className="pwx-layer-row-metrics">{layer.metrics}</p>
+                </button>
+
+                <div className="pwx-layer-row-actions">
+                  <LayerRowIconAction label={layer.isLocked ? "Unlock Layer" : "Lock Layer"} onClick={() => handleToggleShapeLock(layer.id)} active={layer.isLocked}>
+                    {layer.isLocked ? <Lock className="h-3.5 w-3.5" /> : <LockOpen className="h-3.5 w-3.5" />}
+                  </LayerRowIconAction>
+                  <LayerRowIconAction label="Bring To Front" onClick={() => handleBringToFront(layer.id)}>
+                    <ArrowUpToLine className="h-3.5 w-3.5" />
+                  </LayerRowIconAction>
+                  <LayerRowIconAction label="Send To Back" onClick={() => handleSendToBack(layer.id)}>
+                    <ArrowDownToLine className="h-3.5 w-3.5" />
+                  </LayerRowIconAction>
                 </div>
               </div>
             ))}
@@ -291,16 +278,11 @@ function PanelActionButton({
   disabled?: boolean;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="pwx-panel-action group flex h-10 items-center gap-2 px-3 text-left disabled:opacity-35"
-    >
-      <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-surface-soft)] text-[color:var(--planner-primary)] transition-colors group-enabled:group-hover:border-[color:var(--planner-primary)]">
+    <button type="button" onClick={onClick} disabled={disabled} className="pwx-panel-action">
+      <span className="pwx-panel-action-icon">
         {icon}
       </span>
-      <span className="truncate text-[11px] font-semibold">{label}</span>
+      <span className="pwx-panel-action-label">{label}</span>
     </button>
   );
 }
@@ -317,18 +299,11 @@ function IconControlButton({
   disabled: boolean;
 }) {
   return (
-    <div className="group relative">
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-        title={label}
-        aria-label={label}
-        className="flex h-9 w-9 items-center justify-center border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel)] text-[color:var(--planner-primary)] transition-colors enabled:hover:border-[color:var(--planner-primary)] enabled:hover:bg-[color:var(--planner-primary-soft)] disabled:cursor-not-allowed disabled:opacity-35"
-      >
+    <div className="pwx-panel-arrange-control">
+      <button type="button" onClick={onClick} disabled={disabled} title={label} aria-label={label} className="pwx-panel-arrange-btn">
         {glyph}
       </button>
-      <span className="pointer-events-none absolute top-[calc(100%+0.35rem)] left-1/2 z-10 -translate-x-1/2 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-text-strong)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-white opacity-0 shadow-theme-panel transition-opacity group-hover:opacity-100 whitespace-nowrap">
+      <span className="pwx-panel-tooltip">
         {label}
       </span>
     </div>
@@ -347,21 +322,18 @@ function LayerRowIconAction({
   active?: boolean;
 }) {
   return (
-    <div className="group relative">
+    <div className="pwx-layer-row-action-wrap">
       <button
         type="button"
         onClick={onClick}
         title={label}
         aria-label={label}
-        className={`border p-1.5 transition-colors ${
-          active
-            ? "border-[color:var(--planner-accent-soft)] bg-[color:var(--planner-accent-soft)] text-[color:var(--planner-accent-strong)]"
-            : "border-[color:var(--planner-border-soft)] text-[color:var(--planner-text-subtle)] hover:bg-[color:var(--planner-primary-soft)] hover:text-[color:var(--planner-primary)]"
-        }`}
+        className="pwx-layer-row-action"
+        data-active={active ? "true" : undefined}
       >
         {children}
       </button>
-      <span className="pointer-events-none absolute right-0 bottom-[calc(100%+0.35rem)] z-10 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-text-strong)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-white opacity-0 shadow-theme-panel transition-opacity group-hover:opacity-100 whitespace-nowrap">
+      <span className="pwx-layer-row-tooltip">
         {label}
       </span>
     </div>

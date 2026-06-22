@@ -5,6 +5,7 @@ Use this checklist while working through the hardcoding cleanup and the follow-o
 ## Before editing
 
 - [ ] Review `results/failures-index.csv` for resolved/pending status, or `results/pending-failures.csv` for pending-only view
+- [ ] Run `npm run failures:sync` if `Failures.md` changed since the last export
 - [ ] Confirm the target file already has a nearby CSS home in `app/css/`
 - [ ] Decide whether the styling is shared, route-owned, or truly one-off
 - [ ] Avoid moving code unless the new CSS location is clear

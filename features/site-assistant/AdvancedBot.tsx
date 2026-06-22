@@ -20,6 +20,11 @@ type Timeline = "immediately" | "one-to-three" | "three-to-six" | "exploring";
 
 type ContactMethod = "whatsapp" | "email";
 
+type Option<T extends string> = {
+  value: T;
+  label: string;
+};
+
 interface BotState {
   useCase: UseCase | null;
   companyName: string;
@@ -44,13 +49,58 @@ const initialState: BotState = {
   notes: "",
 };
 
-const CHOICE_PILL_CLASS = "rounded-full border px-3 py-1.5 text-xs";
-const INPUT_CLASS =
-  "w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500";
-const INPUT_SMALL_CLASS =
-  "w-full rounded-md border border-neutral-200 px-3 py-2 text-xs text-neutral-700 focus:outline-none focus:ring-1 focus:ring-amber-400 focus:border-amber-400";
-const ACTION_BUTTON_CLASS =
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium";
+const useCaseOptions: Array<Option<UseCase>> = [
+  { value: "workstations", label: "Workstations" },
+  { value: "seating", label: "Seating" },
+  { value: "meeting", label: "Meeting tables" },
+  { value: "storage", label: "Storage" },
+  { value: "acoustics", label: "Acoustics" },
+  { value: "reception", label: "Reception & lounge" },
+  { value: "cafeteria", label: "Cafeteria" },
+  { value: "full-office", label: "Full office" },
+  { value: "other", label: "Other" },
+];
+
+const timelineOptions: Array<Option<Timeline>> = [
+  { value: "immediately", label: "ASAP (0–4 weeks)" },
+  { value: "one-to-three", label: "1–3 months" },
+  { value: "three-to-six", label: "3–6 months" },
+  { value: "exploring", label: "Just exploring" },
+];
+
+const contactMethodOptions: Array<Option<ContactMethod>> = [
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "email", label: "Email" },
+];
+
+const useCaseSummaryLabels: Record<UseCase, string> = {
+  workstations: "Workstations",
+  seating: "Seating",
+  meeting: "Meeting and conference",
+  storage: "Storage",
+  acoustics: "Acoustic solutions",
+  reception: "Reception and lounge",
+  cafeteria: "Cafeteria and breakout",
+  "full-office": "Full office fitout",
+  other: "Other",
+};
+
+const timelineSummaryLabels: Record<Timeline, string> = {
+  immediately: "Immediate (0–4 weeks)",
+  "one-to-three": "1–3 months",
+  "three-to-six": "3–6 months",
+  exploring: "Just exploring / no fixed date",
+};
+
+function getChipClass(active: boolean, flex = false) {
+  return [
+    "assistant-chip assistant-focus-ring",
+    flex ? "assistant-chip--flex" : "",
+    active ? "assistant-chip--selected" : "assistant-chip--idle-hover",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
 
 export function AdvancedBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,21 +124,12 @@ export function AdvancedBot() {
   }, [step, state]);
 
   const summary = useMemo(() => {
-    const lines = [];
+    const lines: string[] = [];
     lines.push("Enquiry for One&Only via Website Bot");
     if (state.useCase) {
-      const labels: Record<UseCase, string> = {
-        workstations: "Workstations",
-        seating: "Seating",
-        meeting: "Meeting and conference",
-        storage: "Storage",
-        acoustics: "Acoustic solutions",
-        reception: "Reception and lounge",
-        cafeteria: "Cafeteria and breakout",
-        "full-office": "Full office fitout",
-        other: "Other",
-      };
-      lines.push(`Product family / project type: ${labels[state.useCase]}`);
+      lines.push(
+        `Product family / project type: ${useCaseSummaryLabels[state.useCase]}`,
+      );
     }
     if (state.companyName.trim()) {
       lines.push(`Company: ${state.companyName.trim()}`);
@@ -97,13 +138,7 @@ export function AdvancedBot() {
       lines.push(`Approx seats / units: ${state.seats.trim()}`);
     if (state.city.trim()) lines.push(`City: ${state.city.trim()}`);
     if (state.timeline) {
-      const labels: Record<Timeline, string> = {
-        immediately: "Immediate (0–4 weeks)",
-        "one-to-three": "1–3 months",
-        "three-to-six": "3–6 months",
-        exploring: "Just exploring / no fixed date",
-      };
-      lines.push(`Timeline: ${labels[state.timeline]}`);
+      lines.push(`Timeline: ${timelineSummaryLabels[state.timeline]}`);
     }
     if (state.budget.trim()) lines.push(`Budget range: ${state.budget.trim()}`);
     if (state.contactMethod && state.contactValue.trim()) {
@@ -166,17 +201,17 @@ export function AdvancedBot() {
             closeBot();
           }
         }}
-        className="whatsapp-cta fixed bottom-20 right-3 z-40 inline-flex h-11 items-center gap-1.5 px-3 text-white shadow-xl transition-colors sm:bottom-24 sm:right-6 sm:h-12 sm:gap-2 sm:px-4"
+        className="assistant-launcher-action assistant-launcher-action--primary assistant-focus-ring fixed bottom-20 right-3 z-40 rounded-full px-3 shadow-xl transition-colors sm:bottom-24 sm:right-6 sm:px-4"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Open WhatsApp project assistant"
         title="Open WhatsApp project assistant"
       >
         <MessageCircle className="h-5 w-5" />
-        <span className="hidden sm:inline text-xs font-semibold tracking-wide">
+        <span className="hidden text-xs font-semibold tracking-wide sm:inline">
           WhatsApp
         </span>
-        <span className="hidden sm:inline h-2 w-2 rounded-full bg-white/90" />
+        <span className="hidden h-2 w-2 rounded-full bg-white/90 sm:inline" />
       </motion.button>
 
       <AnimatePresence>
@@ -186,134 +221,50 @@ export function AdvancedBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 260, damping: 22 }}
-            className="fixed z-40 right-3 bottom-32 sm:right-6 sm:bottom-40 w-[min(22rem,calc(100vw-1.5rem))] sm:w-80 rounded-2xl bg-white shadow-2xl border border-neutral-200"
+            className="assistant-sheet fixed bottom-32 right-3 z-40 w-[min(22rem,calc(100vw-1.5rem))] sm:bottom-40 sm:w-80"
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
-              <div>
-                <p className="text-sm font-semibold text-neutral-900">
-                  WhatsApp Project Assistant
-                </p>
-                <p className="text-xs text-neutral-500">
-                  Share your requirement in under 60 seconds
-                </p>
+            <div className="assistant-sheet__header">
+              <div className="assistant-sheet__brand">
+                <span className="assistant-sheet__icon assistant-sheet__icon--primary">
+                  <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="assistant-sheet__title">
+                    WhatsApp Project Assistant
+                  </p>
+                  <p className="assistant-sheet__subtitle">
+                    Share your requirement in under 60 seconds
+                  </p>
+                </div>
               </div>
               <button
                 onClick={closeBot}
                 aria-label="Close chat assistant"
                 title="Close chat assistant"
-                className="p-1 rounded-full hover:bg-neutral-100 text-neutral-500"
+                className="assistant-sheet__close assistant-focus-ring"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="px-4 py-3 space-y-3 text-sm">
+            <div className="assistant-log space-y-3">
               {step === 0 && (
                 <div className="space-y-3">
                   <p className="text-neutral-800">
                     Which product family or project type is this for?
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() =>
-                        setState({ ...state, useCase: "workstations" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "workstations"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Workstations
-                    </button>
-                    <button
-                      onClick={() => setState({ ...state, useCase: "seating" })}
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "seating"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Seating
-                    </button>
-                    <button
-                      onClick={() => setState({ ...state, useCase: "meeting" })}
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "meeting"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Meeting tables
-                    </button>
-                    <button
-                      onClick={() => setState({ ...state, useCase: "storage" })}
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "storage"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Storage
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, useCase: "acoustics" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "acoustics"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Acoustics
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, useCase: "reception" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "reception"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Reception & lounge
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, useCase: "cafeteria" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "cafeteria"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Cafeteria
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, useCase: "full-office" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "full-office"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Full office
-                    </button>
-                    <button
-                      onClick={() => setState({ ...state, useCase: "other" })}
-                      className={`${CHOICE_PILL_CLASS} ${
-                        state.useCase === "other"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Other
-                    </button>
+                    {useCaseOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() =>
+                          setState({ ...state, useCase: option.value })
+                        }
+                        className={getChipClass(state.useCase === option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -330,7 +281,7 @@ export function AdvancedBot() {
                       setState({ ...state, seats: e.target.value })
                     }
                     placeholder="e.g. 12 workstations, 30 chairs"
-                    className={INPUT_CLASS}
+                    className="assistant-bot-input"
                   />
                 </div>
               )}
@@ -347,7 +298,7 @@ export function AdvancedBot() {
                       setState({ ...state, companyName: e.target.value })
                     }
                     placeholder="Company name"
-                    className={INPUT_CLASS}
+                    className="assistant-bot-input"
                   />
                   <input
                     type="text"
@@ -356,57 +307,23 @@ export function AdvancedBot() {
                       setState({ ...state, city: e.target.value })
                     }
                     placeholder="City and state"
-                    className={INPUT_CLASS}
+                    className="assistant-bot-input"
                   />
                   <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() =>
-                        setState({ ...state, timeline: "immediately" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} flex-1 ${
-                        state.timeline === "immediately"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      ASAP (0–4 weeks)
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, timeline: "one-to-three" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} flex-1 ${
-                        state.timeline === "one-to-three"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      1–3 months
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, timeline: "three-to-six" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} flex-1 ${
-                        state.timeline === "three-to-six"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      3–6 months
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, timeline: "exploring" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} flex-1 ${
-                        state.timeline === "exploring"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Just exploring
-                    </button>
+                    {timelineOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() =>
+                          setState({ ...state, timeline: option.value })
+                        }
+                        className={getChipClass(
+                          state.timeline === option.value,
+                          true,
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
                   </div>
                   <input
                     type="text"
@@ -414,7 +331,7 @@ export function AdvancedBot() {
                     onChange={(e) =>
                       setState({ ...state, budget: e.target.value })
                     }
-                    className={INPUT_SMALL_CLASS}
+                    className="assistant-bot-input assistant-bot-input--small"
                     aria-label="Your approximate budget"
                     placeholder="e.g. ₹5,00,000"
                     title="Your approximate budget"
@@ -426,30 +343,20 @@ export function AdvancedBot() {
                 <div className="space-y-3">
                   <p className="text-neutral-800">How should we contact you?</p>
                   <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        setState({ ...state, contactMethod: "whatsapp" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} flex-1 ${
-                        state.contactMethod === "whatsapp"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      WhatsApp
-                    </button>
-                    <button
-                      onClick={() =>
-                        setState({ ...state, contactMethod: "email" })
-                      }
-                      className={`${CHOICE_PILL_CLASS} flex-1 ${
-                        state.contactMethod === "email"
-                          ? "bg-neutral-900 text-white border-neutral-900"
-                          : "border-neutral-300 text-neutral-700 hover:border-neutral-500"
-                      }`}
-                    >
-                      Email
-                    </button>
+                    {contactMethodOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() =>
+                          setState({ ...state, contactMethod: option.value })
+                        }
+                        className={getChipClass(
+                          state.contactMethod === option.value,
+                          true,
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
                   </div>
                   <input
                     type="text"
@@ -462,7 +369,7 @@ export function AdvancedBot() {
                         ? "Your email address"
                         : "Your WhatsApp number with country code"
                     }
-                    className={INPUT_CLASS}
+                    className="assistant-bot-input"
                   />
                 </div>
               )}
@@ -479,13 +386,13 @@ export function AdvancedBot() {
                     }
                     rows={3}
                     placeholder="Optional details about layout, timelines, or brands."
-                    className={`${INPUT_CLASS} resize-none`}
+                    className="assistant-bot-input assistant-field--textarea"
                   />
-                  <div className="rounded-md bg-neutral-50 border border-neutral-200 px-3 py-2 text-[11px] leading-snug text-neutral-700">
-                    <p className="font-medium mb-1">
+                  <div className="assistant-result-card">
+                    <p className="assistant-result-title">
                       Preview of what we receive:
                     </p>
-                    <pre className="whitespace-pre-wrap text-[10px] text-neutral-700">
+                    <pre className="assistant-result-body whitespace-pre-wrap text-[10px] text-neutral-700">
                       {summary}
                     </pre>
                   </div>
@@ -494,14 +401,14 @@ export function AdvancedBot() {
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`${ACTION_BUTTON_CLASS} whatsapp-cta text-white transition-colors`}
+                      className="assistant-bot-action assistant-bot-action--primary assistant-focus-ring"
                     >
                       Send via WhatsApp
                       <ArrowRight className="w-3 h-3" />
                     </a>
                     <a
                       href={mailtoUrl}
-                      className={`${ACTION_BUTTON_CLASS} border border-neutral-900 text-neutral-900 transition-colors hover:bg-neutral-900 hover:text-white`}
+                      className="assistant-bot-action assistant-bot-action--secondary assistant-focus-ring"
                     >
                       Send via Email
                       <ArrowRight className="w-3 h-3" />
@@ -511,10 +418,10 @@ export function AdvancedBot() {
               )}
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border-t border-neutral-200">
+            <div className="flex items-center justify-between border-t border-neutral-200 px-4 py-3">
               <button
                 onClick={handleBack}
-                className="text-xs text-neutral-600 hover:text-neutral-900"
+                className="text-xs font-semibold uppercase tracking-wide text-neutral-600 transition-colors hover:text-neutral-900 assistant-focus-ring"
               >
                 {step === 0 ? "Close" : "Back"}
               </button>
@@ -522,11 +429,11 @@ export function AdvancedBot() {
                 <button
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  className={`${ACTION_BUTTON_CLASS} ${
+                  className={`assistant-bot-action ${
                     canGoNext
-                      ? "bg-neutral-900 text-white hover:bg-neutral-800"
-                      : "bg-neutral-200 text-neutral-500 cursor-not-allowed"
-                  }`}
+                      ? "assistant-bot-action--primary"
+                      : "assistant-bot-action--disabled"
+                  } assistant-focus-ring`}
                 >
                   Next
                   <ArrowRight className="w-3 h-3" />
@@ -535,7 +442,7 @@ export function AdvancedBot() {
               {step === 4 && (
                 <button
                   onClick={resetBot}
-                  className="text-xs text-neutral-500 hover:text-neutral-800"
+                  className="text-xs font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:text-neutral-800 assistant-focus-ring"
                 >
                   Start over
                 </button>
