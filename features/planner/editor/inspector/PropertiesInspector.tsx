@@ -5,8 +5,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MousePointer2 } from "lucide-react";
+import { Lock, MousePointer2, Trash2, Unlock } from "lucide-react";
 
+import { useFloorplan } from "@/features/planner/canvas-fabric";
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
 import {
   applyInspectorChanges,
@@ -32,30 +33,67 @@ const INSPECTOR_TIPS = [
 ] as const;
 
 export function PropertiesInspector({ editor, step = "review" }: PropertiesInspectorProps) {
+  const app = useFloorplan();
   const emphasis = inspectorEmphasis(step);
   const [data, setData] = useState(() => readInspectorSelection());
+  const [rotationInput, setRotationInput] = useState("");
 
   useEffect(() => {
     return syncSelectionFromEditor(editor ?? null, setData);
   }, [editor]);
 
+  useEffect(() => {
+    setRotationInput(data ? String(Math.round(data.rotation)) : "");
+  }, [data?.id, data?.rotation]);
+
   const handleDimensionChange = (field: "widthMm" | "heightMm", value: string) => {
     const num = parseInt(value, 10);
     if (!data || isNaN(num) || num <= 0) return;
-    const changes = { [field]: num };
-    applyInspectorChanges(null, data.id, changes);
+    applyInspectorChanges(null, data.id, { [field]: num });
+  };
+
+  const handleRotationBlur = () => {
+    if (!data || data.isLocked) return;
+    const angle = Number(rotationInput);
+    if (!isNaN(angle)) {
+      app.setObjectRotation(data.id, angle);
+    }
   };
 
   return (
     <aside className="pwx-inspector" data-emphasis={emphasis} data-step={step} aria-label="Properties Inspector">
       <div className="pwx-inspector-header">
         <p className="text-sm font-semibold">{data ? data.label : "Nothing selected"}</p>
+        {data ? (
+          <button
+            type="button"
+            className="pw-icon-btn text-danger flex items-center gap-1 text-xs"
+            onClick={() => app.deleteSelection()}
+            title="Delete selected"
+          >
+            <Trash2 size={14} aria-hidden />
+            Delete
+          </button>
+        ) : null}
       </div>
       {data ? (
         <div className="pwx-inspector-body custom-scrollbar">
           <div className="pwx-inspector-section">
-            <p className="typ-label text-muted mb-2">Type</p>
-            <p className="text-sm text-strong">{data.type}</p>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <p className="typ-label text-muted mb-1">Type</p>
+                <p className="text-sm text-strong">{data.type}</p>
+              </div>
+              <button
+                type="button"
+                className="pw-icon-btn"
+                onClick={() => app.setObjectLock(data.id, !data.isLocked)}
+                title={data.isLocked ? "Unlock" : "Lock"}
+                aria-label={data.isLocked ? "Unlock selection" : "Lock selection"}
+              >
+                {data.isLocked ? <Lock size={14} aria-hidden /> : <Unlock size={14} aria-hidden />}
+              </button>
+            </div>
           </div>
           <div className="pwx-inspector-section">
             <p className="typ-label text-muted mb-2">Dimensions</p>
@@ -73,12 +111,13 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
                     }
                   }}
                   min="1"
+                  disabled={data.isLocked}
                   aria-label="Width in millimeters"
                 />
                 <span className="pwx-field-unit">mm</span>
               </div>
               <div className="pwx-field">
-                <span className="pwx-field-label">H</span>
+                <span className="pwx-field-label">D</span>
                 <input
                   type="number"
                   className="pwx-field-input"
@@ -90,7 +129,8 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
                     }
                   }}
                   min="1"
-                  aria-label="Height in millimeters"
+                  disabled={data.isLocked}
+                  aria-label="Depth in millimeters"
                 />
                 <span className="pwx-field-unit">mm</span>
               </div>
@@ -98,7 +138,23 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
           </div>
           <div className="pwx-inspector-section">
             <p className="typ-label text-muted mb-2">Rotation</p>
-            <p className="text-sm text-strong">{data.rotation}°</p>
+            <div className="pwx-field">
+              <input
+                type="number"
+                className="pwx-field-input"
+                value={rotationInput}
+                onChange={(e) => setRotationInput(e.target.value)}
+                onBlur={handleRotationBlur}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.currentTarget.blur();
+                  }
+                }}
+                disabled={data.isLocked}
+                aria-label="Rotation in degrees"
+              />
+              <span className="pwx-field-unit">°</span>
+            </div>
           </div>
           <div className="pwx-inspector-section">
             <p className="typ-label text-muted mb-2">Status</p>

@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useFloorplan } from './context/FloorplanContext';
 import { createFloorplanCanvasApi, type FloorplanCtx } from './hooks/floorplanCanvas';
 import { usePlannerWorkspaceStore } from '@/features/planner/store/workspaceStore';
+import { PLANNER_VIEWPORT } from '@/features/planner/lib/canvasBounds';
 export function FloorplanCanvas() {
   const ctx = useFloorplan();
   const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
@@ -64,8 +65,8 @@ export function FloorplanCanvas() {
 
     const wrap = el.closest('.canvas-wrap');
     const applyFit = () => {
-      if (!wrap || wrap.clientWidth < 280) return;
-      const zoomPct = api.fitToStage();
+      if (!wrap || wrap.clientWidth < PLANNER_VIEWPORT.minContainerWidthPx) return;
+      const zoomPct = api.fitToContent();
       ctx.setZoom(zoomPct);
       api.recalcOffset();
     };

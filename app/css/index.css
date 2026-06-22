@@ -22,7 +22,10 @@
 @import "./core/layout/app-shell.css";
 @import "./core/layout/marketing.css";
 
+/* shell chrome */
 @import "./core/chrome/shell/footer.css";
+@import "./core/chrome/shell/assistant.css";
+@import "./core/chrome/shell/assistant-bot.css";
 @import "./core/chrome/shell/quick-contact.css";
 @import "./core/chrome/shell/site-fabs.css";
 @import "./core/chrome/shell/cta.css";

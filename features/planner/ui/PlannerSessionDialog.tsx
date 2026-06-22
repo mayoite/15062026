@@ -259,7 +259,7 @@ export function PlannerSessionDialog({
                 </Dialog.Description>
               </div>
               <Dialog.Close asChild>
-                <button type="button" className="pwx-session-close p-2 text-subtle hover:bg-[color:var(--planner-primary-soft)] hover:text-[color:var(--planner-primary)]" aria-label="Close session dialog">
+                <button type="button" className="pwx-session-close" aria-label="Close session dialog">
                   <X className="h-4 w-4" />
                 </button>
               </Dialog.Close>
@@ -268,7 +268,7 @@ export function PlannerSessionDialog({
 
           <div className="overflow-y-auto px-5 py-5">
             <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
-              <section className="pwx-session-section p-4">
+              <section className="pwx-session-section">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <h2 className="typ-caption-lg font-semibold uppercase tracking-[0.14em] text-muted">{t("savedPlans")}</h2>
@@ -300,13 +300,13 @@ export function PlannerSessionDialog({
                                 if (event.key === "Enter") {
                                   event.preventDefault();
                                   submitRename(plan);
-                              }
-                              if (event.key === "Escape") {
-                                event.preventDefault();
-                                cancelRename();
-                              }
-                            }}
-                              className="pwx-session-field min-w-0 flex-1 rounded-[0.8rem] px-3 py-2 text-[0.95rem] font-semibold tracking-[-0.02em] text-strong"
+                                }
+                                if (event.key === "Escape") {
+                                  event.preventDefault();
+                                  cancelRename();
+                                }
+                              }}
+                              className="pwx-session-field pwx-session-field--rename min-w-0 flex-1"
                               aria-label={`Rename ${plan.name}`}
                               autoFocus
                               onFocus={(event) => event.currentTarget.select()}
@@ -315,14 +315,14 @@ export function PlannerSessionDialog({
                               type="button"
                               onClick={() => submitRename(plan)}
                               disabled={!renameValue.trim() || isBusy}
-                              className="pwx-session-btn pwx-session-btn--primary rounded-[0.8rem] px-3 py-2 typ-caption"
+                              className="pwx-session-btn pwx-session-btn--primary pwx-session-btn--compact"
                             >
                               Save
                             </button>
                             <button
                               type="button"
                               onClick={cancelRename}
-                              className="pwx-session-btn pwx-session-btn--secondary rounded-[0.8rem] px-3 py-2 typ-caption"
+                              className="pwx-session-btn pwx-session-btn--secondary pwx-session-btn--compact"
                             >
                               Cancel
                             </button>
@@ -339,16 +339,16 @@ export function PlannerSessionDialog({
                         {plan.statusLabel ? <p className="mt-1 typ-caption uppercase tracking-[0.1em] text-[color:var(--planner-primary)]">{plan.statusLabel}</p> : null}
                       </div>
                       <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => onLoadPlan(plan)} disabled={isBusy || editingPlanId === plan.id} className="pwx-session-icon-btn rounded-full bg-[color:var(--planner-panel)] p-2 text-subtle disabled:cursor-not-allowed disabled:opacity-60" aria-label={`Load ${plan.name}`}>
+                        <button type="button" onClick={() => onLoadPlan(plan)} disabled={isBusy || editingPlanId === plan.id} className="pwx-session-icon-btn pwx-session-icon-btn--surface" aria-label={`Load ${plan.name}`}>
                           <FolderOpen className="h-4 w-4" />
                         </button>
                         {onRenamePlan && plan.canRename ? (
-                          <button type="button" onClick={() => { setEditingPlanId(plan.id); setRenameValue(plan.name); }} disabled={isBusy || editingPlanId === plan.id} className="pwx-session-icon-btn rounded-full bg-[color:var(--planner-panel)] p-2 text-subtle disabled:cursor-not-allowed disabled:opacity-60" aria-label={`Rename ${plan.name}`}>
+                          <button type="button" onClick={() => { setEditingPlanId(plan.id); setRenameValue(plan.name); }} disabled={isBusy || editingPlanId === plan.id} className="pwx-session-icon-btn pwx-session-icon-btn--surface" aria-label={`Rename ${plan.name}`}>
                             <Pencil className="h-4 w-4" />
                           </button>
                         ) : null}
                         {onDeletePlan && plan.canDelete ? (
-                          <button type="button" onClick={() => onDeletePlan(plan)} disabled={isBusy || editingPlanId === plan.id} className="pwx-session-icon-btn rounded-full bg-[color:var(--planner-panel)] p-2 text-[color:var(--planner-accent-strong)] disabled:cursor-not-allowed disabled:opacity-60" aria-label={`Delete ${plan.name}`}>
+                          <button type="button" onClick={() => onDeletePlan(plan)} disabled={isBusy || editingPlanId === plan.id} className="pwx-session-icon-btn pwx-session-icon-btn--surface pwx-session-icon-btn--danger" aria-label={`Delete ${plan.name}`}>
                             <Trash2 className="h-4 w-4" />
                           </button>
                         ) : null}
@@ -358,14 +358,14 @@ export function PlannerSessionDialog({
                 </div>
               </section>
 
-              <section className="pwx-session-section pwx-session-section--strong space-y-4 p-4">
-                <div className="rounded-[1.2rem] border border-theme-soft bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(245,247,250,0.96)_100%)] p-4">
+              <section className="pwx-session-section pwx-session-section--strong space-y-4">
+                <div className="pwx-session-section pwx-session-section--panel">
                   <h2 className="typ-caption-lg font-semibold uppercase tracking-[0.14em] text-muted">Current Plan</h2>
                   <label className="mt-3 block typ-caption text-subtle" htmlFor="planner-plan-name">Plan name</label>
-                  <input id="planner-plan-name" value={planName} onChange={(event) => onPlanNameChange(event.target.value)} placeholder="Untitled plan" className="pwx-session-field mt-2 w-full rounded-[1rem] px-4 py-3 typ-caption-lg text-body" />
+                  <input id="planner-plan-name" value={planName} onChange={(event) => onPlanNameChange(event.target.value)} placeholder="Untitled plan" className="pwx-session-field pwx-session-field--panel mt-2 w-full" />
                 </div>
                 <div className="grid gap-3">
-                  <button type="button" onClick={onSaveCloud} disabled={!isAuthenticated || isBusy || !isOnline} className={`${primary} bg-[color:var(--planner-primary)] text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-surface-muted)] disabled:text-[color:var(--planner-text-subtle)]`}><Save className="h-4 w-4" /> {t("saveCloud")}{!isOnline && " (Offline)"}</button>
+                  <button type="button" onClick={onSaveCloud} disabled={!isAuthenticated || isBusy || !isOnline} className={primary}><Save className="h-4 w-4" /> {t("saveCloud")}{!isOnline && " (Offline)"}</button>
                   <button type="button" onClick={onSaveDraft} disabled={isBusy} className={accent}><Download className="h-4 w-4" /> {t("saveDraft")}</button>
                   {onSaveAsNewSession ? <button type="button" onClick={onSaveAsNewSession} disabled={isBusy} className={secondary}><CopyPlus className="h-4 w-4" /> {t("saveAsNew")}</button> : null}
                   <button type="button" onClick={onImport} disabled={isBusy} className={secondary}><Import className="h-4 w-4" /> {t("importJson")}</button>
@@ -381,22 +381,22 @@ export function PlannerSessionDialog({
                     "No authenticated session detected. Cloud save is disabled, but local draft and import still work."
                   )}
                 </div>
-                {errorMessage ? <div className="pwx-session-message" data-tone="error"><div className="flex items-start justify-between gap-3"><div><p className="typ-caption font-semibold uppercase tracking-[0.12em] text-[color:var(--planner-accent-strong)]">Planner error</p><p className="mt-1 typ-caption-lg text-body">{errorMessage}</p></div>{onDismissError ? <button type="button" onClick={onDismissError} className="pwx-session-icon-btn rounded-full border border-[color:rgba(151,43,26,0.18)] bg-white/70 p-1.5 text-[color:var(--planner-accent-strong)] transition hover:bg-white" aria-label="Dismiss planner error"><X className="h-4 w-4" /></button> : null}</div></div> : null}
+                {errorMessage ? <div className="pwx-session-message" data-tone="error"><div className="flex items-start justify-between gap-3"><div><p className="typ-caption font-semibold uppercase tracking-[0.12em] text-[color:var(--planner-accent-strong)]">Planner error</p><p className="mt-1 typ-caption-lg text-body">{errorMessage}</p></div>{onDismissError ? <button type="button" onClick={onDismissError} className="pwx-session-icon-btn pwx-session-icon-btn--error" aria-label="Dismiss planner error"><X className="h-4 w-4" /></button> : null}</div></div> : null}
                 {statusMessage ? <div className="pwx-session-message" data-tone="success"><div className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 text-[color:var(--planner-primary)]" /><p className="typ-caption-lg text-body">{statusMessage}</p></div></div> : null}
               </section>
             </div>
 
             {isAdmin ? (
-              <section className="pwx-session-section mt-5 p-4">
+              <section className="pwx-session-section mt-5">
                 <h2 className="typ-caption-lg font-semibold uppercase tracking-[0.14em] text-muted">Admin Oversight</h2>
                 <p className="mt-1 max-w-3xl typ-caption-lg text-subtle">These browser surfaces run through the normal authenticated Supabase client. No planner admin action here requires a browser-exposed service-role key.</p>
                 <div className="mt-4 grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-                  <section className="pwx-session-section pwx-session-section--strong rounded-[1.2rem] p-4">
+                  <section className="pwx-session-section pwx-session-section--panel">
                     <p className="typ-caption font-semibold uppercase tracking-[0.14em] text-muted">Admin Cloud Saves</p>
                     <div className="pwx-session-list mt-3">
                       {adminCloudPlans.length === 0 ? <div className="rounded-[1rem] border border-dashed border-theme-soft px-4 py-5 text-center typ-caption-lg text-subtle">No admin-visible cloud plans found.</div> : null}
                       {adminCloudPlans.map((plan) => (
-                        <button key={`admin:${plan.id}`} type="button" onClick={() => onLoadPlan(plan)} className="pwx-session-item w-full rounded-[1rem] px-4 py-3 text-left" data-active={false}>
+                        <button key={`admin:${plan.id}`} type="button" onClick={() => onLoadPlan(plan)} className="pwx-session-item pwx-session-item--compact w-full text-left" data-active={false}>
                           <div className="text-[0.94rem] font-semibold text-strong">{plan.name}</div>
                           <div className="mt-1 typ-caption text-subtle">{plan.ownerLabel ?? "Unknown owner"} | {plan.updatedAtLabel ?? "No timestamp"}</div>
                           {plan.detail ? <div className="mt-1 typ-caption-lg text-body">{plan.detail}</div> : null}
@@ -405,30 +405,30 @@ export function PlannerSessionDialog({
                     </div>
                   </section>
 
-                  <section className="pwx-session-section pwx-session-section--strong rounded-[1.2rem] p-4">
+                  <section className="pwx-session-section pwx-session-section--panel">
                     <p className="typ-caption font-semibold uppercase tracking-[0.14em] text-muted">Planner-Managed Products</p>
                     <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      <input value={draft.name} onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Name" />
-                      <input value={draft.slug} onChange={(event) => setDraft((current) => ({ ...current, slug: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Slug" />
-                      <input value={draft.plannerSourceSlug} onChange={(event) => setDraft((current) => ({ ...current, plannerSourceSlug: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Source slug" />
-                      <input value={draft.category} onChange={(event) => setDraft((current) => ({ ...current, category: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Category" />
-                      <input value={draft.series} onChange={(event) => setDraft((current) => ({ ...current, series: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Series" />
-                      <input value={draft.price} onChange={(event) => setDraft((current) => ({ ...current, price: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Price" />
-                      <input value={draft.dimensions} onChange={(event) => setDraft((current) => ({ ...current, dimensions: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Dimensions" />
-                      <input value={draft.flagshipImage} onChange={(event) => setDraft((current) => ({ ...current, flagshipImage: event.target.value }))} className="pwx-session-field rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Image URL" />
+                      <input value={draft.name} onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Name" />
+                      <input value={draft.slug} onChange={(event) => setDraft((current) => ({ ...current, slug: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Slug" />
+                      <input value={draft.plannerSourceSlug} onChange={(event) => setDraft((current) => ({ ...current, plannerSourceSlug: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Source slug" />
+                      <input value={draft.category} onChange={(event) => setDraft((current) => ({ ...current, category: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Category" />
+                      <input value={draft.series} onChange={(event) => setDraft((current) => ({ ...current, series: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Series" />
+                      <input value={draft.price} onChange={(event) => setDraft((current) => ({ ...current, price: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Price" />
+                      <input value={draft.dimensions} onChange={(event) => setDraft((current) => ({ ...current, dimensions: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Dimensions" />
+                      <input value={draft.flagshipImage} onChange={(event) => setDraft((current) => ({ ...current, flagshipImage: event.target.value }))} className="pwx-session-field pwx-session-field--compact" placeholder="Image URL" />
                     </div>
-                    <textarea value={draft.description} onChange={(event) => setDraft((current) => ({ ...current, description: event.target.value }))} className="pwx-session-textarea mt-3 min-h-24 w-full rounded-[0.9rem] px-3 py-2 typ-caption-lg text-body" placeholder="Description" />
+                    <textarea value={draft.description} onChange={(event) => setDraft((current) => ({ ...current, description: event.target.value }))} className="pwx-session-textarea pwx-session-textarea--compact mt-3 w-full" placeholder="Description" />
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                       <label className="inline-flex items-center gap-2 typ-caption-lg text-body"><input type="checkbox" checked={draft.active} onChange={(event) => setDraft((current) => ({ ...current, active: event.target.checked }))} /> Active in planner catalog</label>
                       <div className="flex flex-wrap items-center gap-2">
                         {draft.id ? <button type="button" onClick={() => setDraft(emptyDraft())} className={secondary}>Reset</button> : null}
-                        <button type="button" onClick={() => void (async () => { if (!onUpsertManagedProduct) return; await onUpsertManagedProduct(draftToWrite(draft)); setDraft(emptyDraft()); })()} disabled={isBusy || !draft.name.trim()} className={`${primary} bg-[color:var(--planner-primary)] text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-surface-muted)] disabled:text-[color:var(--planner-text-subtle)]`}><Save className="h-4 w-4" /> {draft.id ? "Update Product" : "Create Product"}</button>
+                        <button type="button" onClick={() => void (async () => { if (!onUpsertManagedProduct) return; await onUpsertManagedProduct(draftToWrite(draft)); setDraft(emptyDraft()); })()} disabled={isBusy || !draft.name.trim()} className={primary}><Save className="h-4 w-4" /> {draft.id ? "Update Product" : "Create Product"}</button>
                       </div>
                     </div>
                     <div className="mt-4 space-y-3">
                       {managedProducts.length === 0 ? <div className="rounded-[1rem] border border-dashed border-theme-soft px-4 py-5 text-center typ-caption-lg text-subtle">No planner-managed products found yet.</div> : null}
                       {managedProducts.map((product) => (
-                        <div key={product.id} className="pwx-session-item rounded-[1rem] px-4 py-3">
+                        <div key={product.id} className="pwx-session-item pwx-session-item--compact">
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
                               <div className="text-[0.94rem] font-semibold text-strong">{product.name}</div>
@@ -436,9 +436,9 @@ export function PlannerSessionDialog({
                               <div className="mt-1 typ-caption-lg text-body">{product.category_name} | {product.series_name} | INR {product.price.toLocaleString("en-IN")}</div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <button type="button" onClick={() => setDraft(draftFromProduct(product))} disabled={isBusy} className="pwx-session-icon-btn rounded-full bg-[color:var(--planner-panel-strong)] p-2 text-subtle" aria-label={`Edit ${product.name}`}><Pencil className="h-4 w-4" /></button>
-                              <button type="button" onClick={() => void onUpsertManagedProduct?.(rowToWrite(product, !product.active))} disabled={isBusy} className="pwx-session-icon-btn rounded-full bg-[color:var(--planner-panel-strong)] p-2 text-subtle" aria-label={product.active ? `Archive ${product.name}` : `Activate ${product.name}`}><ShieldCheck className="h-4 w-4" /></button>
-                              {onDeleteManagedProduct ? <button type="button" onClick={() => void onDeleteManagedProduct(product.id)} disabled={isBusy} className="pwx-session-icon-btn rounded-full bg-[color:var(--planner-panel-strong)] p-2 text-[color:var(--planner-accent-strong)]" aria-label={`Delete ${product.name}`}><Trash2 className="h-4 w-4" /></button> : null}
+                              <button type="button" onClick={() => setDraft(draftFromProduct(product))} disabled={isBusy} className="pwx-session-icon-btn pwx-session-icon-btn--surface-strong" aria-label={`Edit ${product.name}`}><Pencil className="h-4 w-4" /></button>
+                              <button type="button" onClick={() => void onUpsertManagedProduct?.(rowToWrite(product, !product.active))} disabled={isBusy} className="pwx-session-icon-btn pwx-session-icon-btn--surface-strong" aria-label={product.active ? `Archive ${product.name}` : `Activate ${product.name}`}><ShieldCheck className="h-4 w-4" /></button>
+                              {onDeleteManagedProduct ? <button type="button" onClick={() => void onDeleteManagedProduct(product.id)} disabled={isBusy} className="pwx-session-icon-btn pwx-session-icon-btn--surface-strong pwx-session-icon-btn--danger" aria-label={`Delete ${product.name}`}><Trash2 className="h-4 w-4" /></button> : null}
                             </div>
                           </div>
                         </div>

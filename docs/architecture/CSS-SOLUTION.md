@@ -20,6 +20,7 @@ Make `app/css/` the canonical styling system and treat Tailwind as the base engi
 - Shared styling should live in `app/css/`
 - Route-owned styling should stay close to the route or feature that owns it
 - Pure data and logic folders should not spawn CSS mirrors
+- Canonical content/data homes stay in `lib/site-data/`, `i18n/messages/`, and `config/route-contract.json`
 
 ## Canonical CSS Roles
 
@@ -50,16 +51,17 @@ Make `app/css/` the canonical styling system and treat Tailwind as the base engi
 
 ## Recommended Migration Order
 
-1. Stabilize `lib/site-data/` as the canonical home for site copy and route data.
+1. Stabilize `lib/site-data/`, `i18n/messages/`, and `config/route-contract.json` as the canonical non-CSS homes.
 2. Rebuild generated docs and reports so they stop pointing at the legacy site-data path.
-3. Normalize the CSS folder tree by ownership:
+3. Keep `docs/plans/` and `tech-stack-docs/` aligned with the current folder policy.
+4. Normalize the CSS folder tree by ownership:
    - tokens
    - base
    - shared components
    - utilities
    - site bundles
    - planner bundles
-4. Remove duplicated TSX class noise only after the shared CSS layer is clear.
+5. Remove duplicated TSX class noise only after the shared CSS layer is clear.
 
 ## Exit Criteria
 

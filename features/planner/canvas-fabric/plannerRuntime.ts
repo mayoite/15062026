@@ -17,6 +17,7 @@ export type PlannerFabricRuntime = {
   resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
   editRoom: () => void;
   endEditRoom: () => void;
+  fitToContent: (padding?: number) => number;
 };
 
 export type PlannerFabricRuntimeState = {

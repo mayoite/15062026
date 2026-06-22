@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import type { Tool, SnapDistance } from "@/features/planner/store/plannerStore";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { useToastStore } from "@/features/planner/store/toastStore";
@@ -48,6 +47,49 @@ const TOOL_GROUPS: ToolDef[][] = TOOL_GROUP_ORDER.map(
 // Snap distance options — derived from the SnapDistance type
 const SNAP_OPTIONS: SnapDistance[] = [5, 10, 20];
 
+const TOOL_SHELL = "pw-tool-shell";
+const TOOL_SCROLL = "pw-tool-scroll";
+const TOOL_BRAND = "pw-tool-brand";
+const TOOL_GROUPS_CLASS = "pw-tool-groups";
+const TOOL_GROUP_CLASS = "pw-tool-group";
+const TOOL_GROUP_LABEL = "pw-tool-group-label";
+const TOOL_GROUP_BUTTONS = "pw-tool-group-buttons";
+const TOOL_DIVIDER = "pw-tool-divider";
+const TOOL_SETTINGS = "pw-tool-settings";
+const TOOL_SETTING_LABEL = "pw-tool-setting-label";
+const TOOL_SEGMENT = "pw-tool-segment";
+const TOOL_SEGMENT_STACKED = "pw-tool-segment--stacked";
+const TOOL_SEGMENT_BUTTON = "pw-tool-segment-button";
+const TOOL_ICON = "pw-tool-icon";
+const TOOL_FOOTER = "pw-tool-footer";
+
+function toolButtonClass({
+  collapsed,
+  active,
+  variant = "default",
+}: {
+  collapsed?: boolean;
+  active?: boolean;
+  variant?: "default" | "ghost" | "danger" | "save";
+}) {
+  return [
+    "pw-tool-button",
+    collapsed ? "pw-tool-button--compact" : "pw-tool-button--wide",
+    variant === "ghost" ? "pw-tool-button--ghost" : "",
+    variant === "danger" ? "pw-tool-button--danger" : "",
+    variant === "save" && !active ? "pw-tool-button--default" : "",
+    variant === "save" && active ? "pw-tool-button--save-active" : "",
+    variant === "default" && active ? "pw-tool-button--active" : "",
+    variant === "default" && !active ? "pw-tool-button--default" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function segmentButtonClass() {
+  return TOOL_SEGMENT_BUTTON;
+}
+
 interface Props {
   onOpenTemplates: () => void;
   collapsed?: boolean;
@@ -86,25 +128,25 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
   return (
     <nav 
       aria-label="Editor tools" 
-      className="flex flex-col h-full w-full bg-[var(--surface-glass)] backdrop-blur-[var(--blur-lg)] text-[var(--text-strong)] border-r border-[var(--border-soft)] shadow-[var(--shadow-soft)] transition-all duration-[var(--motion-base)] ease-[var(--ease-standard)]"
+      className={TOOL_SHELL}
     >
       {/* ── Tools ─────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide py-4 px-3 flex flex-col gap-6">
+      <div className={TOOL_SCROLL}>
         {!collapsed && (
-          <div className="flex items-center justify-center px-2 pb-2">
+          <div className={TOOL_BRAND}>
             <OneAndOnlyLogo variant="white" className="h-7 w-auto" />
           </div>
         )}
 
-        <div className="flex flex-col gap-5">
+        <div className={TOOL_GROUPS_CLASS}>
           {TOOL_GROUPS.map((group, gi) => (
-            <div key={gi} className="flex flex-col">
+            <div key={gi} className={TOOL_GROUP_CLASS}>
               {!collapsed && (
-                <p className="text-[10px] font-semibold text-[var(--text-subtle)] uppercase tracking-[var(--type-letter-label-wide)] mb-3 px-2">
+                <p className={TOOL_GROUP_LABEL}>
                   {TOOL_GROUP_ORDER[gi]}
                 </p>
               )}
-              <div className="flex flex-col gap-1.5">
+              <div className={TOOL_GROUP_BUTTONS}>
                 {group.map((t) => {
                   const active = tool === t.id;
                   return (
@@ -114,41 +156,28 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
                       title={`${t.label} (${t.shortcut})`}
                       aria-label={t.label}
                       aria-pressed={!!active}
-                      className={`
-                        relative flex items-center h-10 rounded-[var(--radius-md)] transition-all duration-[var(--motion-fast)] group
-                        ${collapsed ? "w-10 justify-center mx-auto" : "w-full px-3 justify-start"}
-                        ${active 
-                          ? "bg-[var(--color-primary)] text-[var(--color-white-50)] shadow-[var(--shadow-lift)]" 
-                          : "text-[var(--text-muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--text-strong)]"
-                        }
-                      `}
+                      className={toolButtonClass({ collapsed, active, variant: "default" })}
+                      data-active={active}
                     >
-                      <span className={`flex items-center justify-center transition-transform duration-[var(--motion-fast)] ${active ? "scale-110" : ""}`}>
-                        <t.icon className={`w-5 h-5 ${active ? "stroke-[2.5]" : "stroke-[2]"}`} />
+                      <span className="pw-tool-button-icon">
+                        <t.icon className={TOOL_ICON} />
                       </span>
                       
                       {!collapsed && (
-                        <span className={`ml-3 text-sm font-medium transition-colors ${active ? "text-[var(--color-white-50)]" : ""}`}>
+                        <span className="pw-tool-button-label">
                           {t.label}
                         </span>
                       )}
                       
                       {!collapsed && (
-                        <kbd className={`
-                          ml-auto text-[10px] px-1.5 py-0.5 rounded border 
-                          ${active 
-                            ? "bg-white/20 border-white/20 text-white" 
-                            : "bg-[var(--surface-muted)] border-[var(--border-soft)] text-[var(--text-subtle)] group-hover:bg-[var(--surface-panel)] group-hover:border-[var(--border-muted)]"
-                          }
-                          transition-colors
-                        `}>
+                        <kbd className="pw-tool-button-shortcut">
                           {t.shortcut}
                         </kbd>
                       )}
 
                       {collapsed && !active && (
-                        <span className="absolute left-full ml-3 px-2 py-1 bg-[var(--surface-inverse)] text-[var(--text-inverse)] text-xs font-medium rounded-[var(--radius-sm)] shadow-[var(--shadow-panel)] opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-[var(--motion-fast)] z-50 whitespace-nowrap">
-                          {t.label} <span className="text-[var(--text-inverse-muted)] ml-1">{t.shortcut}</span>
+                        <span className="pw-tool-button-tooltip">
+                          {t.label} <span className="pw-tool-button-tooltip-shortcut">{t.shortcut}</span>
                         </span>
                       )}
                     </button>
@@ -156,7 +185,7 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
                 })}
               </div>
               {gi < TOOL_GROUPS.length - 1 && (
-                <div className="mt-5 mx-2 h-px bg-[var(--border-soft)] opacity-60" />
+                <div className={TOOL_DIVIDER} />
               )}
             </div>
           ))}
@@ -164,22 +193,17 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
       </div>
 
       {/* ── Settings ──────────────────────────────────── */}
-      <div className="p-4 border-t border-[var(--border-soft)] flex flex-col gap-5 bg-[var(--surface-soft)]/50">
+      <div className={TOOL_SETTINGS}>
         <div>
-          {!collapsed && <p className="text-[10px] font-semibold text-[var(--text-subtle)] uppercase tracking-[var(--type-letter-label-wide)] mb-2 px-1">Snap Grid</p>}
-          <div className={`flex ${collapsed ? "flex-col" : "flex-row"} gap-1.5 bg-[var(--surface-muted)] p-1 rounded-[var(--radius-md)] shadow-inner`}>
+          {!collapsed && <p className={TOOL_SETTING_LABEL}>Snap Grid</p>}
+          <div className={`${TOOL_SEGMENT} ${collapsed ? TOOL_SEGMENT_STACKED : ""}`}>
             {SNAP_OPTIONS.map((opt) => (
               <button
                 key={opt}
                 onClick={() => { if (!canMutate) return; setSnapDistance(opt); }}
                 title={`Snap to ${opt}px`}
-                className={`
-                  flex-1 flex items-center justify-center h-8 text-xs font-semibold rounded-[var(--radius-sm)] transition-all duration-[var(--motion-fast)]
-                  ${snapDistance === opt 
-                    ? "bg-[var(--surface-page)] text-[var(--color-primary)] shadow-sm ring-1 ring-black/5" 
-                    : "text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-hover)]/50"
-                  }
-                `}
+                className={segmentButtonClass()}
+                data-active={snapDistance === opt}
               >
                 {opt}
               </button>
@@ -188,20 +212,15 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
         </div>
 
         <div>
-          {!collapsed && <p className="text-[10px] font-semibold text-[var(--text-subtle)] uppercase tracking-[var(--type-letter-label-wide)] mb-2 px-1">Measurement</p>}
-          <div className={`flex ${collapsed ? "flex-col" : "flex-row"} gap-1.5 bg-[var(--surface-muted)] p-1 rounded-[var(--radius-md)] shadow-inner`}>
+          {!collapsed && <p className={TOOL_SETTING_LABEL}>Measurement</p>}
+          <div className={`${TOOL_SEGMENT} ${collapsed ? TOOL_SEGMENT_STACKED : ""}`}>
             {(["cm", "m"] as const).map((u) => (
               <button
                 key={u}
                 onClick={() => { if (!canMutate) return; setWallDimensionUnit(u); }}
                 title={`Use ${u}`}
-                className={`
-                  flex-1 flex items-center justify-center h-8 text-xs font-semibold rounded-[var(--radius-sm)] uppercase transition-all duration-[var(--motion-fast)]
-                  ${wallDimensionUnit === u 
-                    ? "bg-[var(--surface-page)] text-[var(--color-primary)] shadow-sm ring-1 ring-black/5" 
-                    : "text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-hover)]/50"
-                  }
-                `}
+                className={segmentButtonClass()}
+                data-active={wallDimensionUnit === u}
               >
                 {u}
               </button>
@@ -211,46 +230,32 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
       </div>
 
       {/* ── Bottom actions ────────────────────────────── */}
-      <div className="p-3 border-t border-[var(--border-soft)] flex flex-col gap-2 bg-[var(--surface-panel)]">
+      <div className={TOOL_FOOTER}>
         <button 
           onClick={canMutate ? onOpenTemplates : undefined} 
           disabled={!canMutate}
           title="Templates"
-          className={`
-            relative flex items-center h-10 rounded-[var(--radius-md)] transition-all duration-[var(--motion-fast)] group
-            ${collapsed ? "w-10 justify-center mx-auto" : "w-full px-3 justify-start"}
-            text-[var(--text-strong)] hover:bg-[var(--surface-hover)] hover:shadow-sm
-          `}
+          className={toolButtonClass({ collapsed, variant: "ghost" })}
         >
-          <LayoutTemplate className="w-5 h-5 stroke-[2] text-[var(--text-muted)] group-hover:text-[var(--color-primary)] transition-colors" />
-          {!collapsed && <span className="ml-3 text-sm font-medium">Templates</span>}
+          <LayoutTemplate className={TOOL_ICON} />
+          {!collapsed && <span className="pw-tool-button-label">Templates</span>}
           
           {collapsed && (
-            <span className="absolute left-full ml-3 px-2 py-1 bg-[var(--surface-inverse)] text-[var(--text-inverse)] text-xs font-medium rounded-[var(--radius-sm)] shadow-[var(--shadow-panel)] opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-[var(--motion-fast)] z-50 whitespace-nowrap">
-              Templates
-            </span>
+            <span className="pw-tool-button-tooltip">Templates</span>
           )}
         </button>
 
         <button 
           onClick={handleSave}
           title="Save Project"
-          className={`
-            relative flex items-center h-10 rounded-[var(--radius-md)] transition-all duration-[var(--motion-fast)] group
-            ${collapsed ? "w-10 justify-center mx-auto" : "w-full px-3 justify-start"}
-            ${isDirty 
-              ? "bg-[var(--color-accent)] text-[var(--color-white-50)] shadow-[var(--shadow-soft)] hover:bg-[var(--color-accent-hover)] hover:-translate-y-0.5" 
-              : "text-[var(--text-strong)] hover:bg-[var(--surface-hover)] hover:shadow-sm"
-            }
-          `}
+          className={toolButtonClass({ collapsed, active: isDirty, variant: "save" })}
+          data-active={isDirty}
         >
-          <Save className={`w-5 h-5 transition-all ${isDirty ? "stroke-[2.5]" : "stroke-[2] text-[var(--text-muted)] group-hover:text-[var(--color-accent)]"}`} />
-          {!collapsed && <span className={`ml-3 text-sm font-medium ${isDirty ? "text-[var(--color-white-50)]" : ""}`}>Save</span>}
+          <Save className={TOOL_ICON} />
+          {!collapsed && <span className="pw-tool-button-label">Save</span>}
           
           {collapsed && (
-            <span className="absolute left-full ml-3 px-2 py-1 bg-[var(--surface-inverse)] text-[var(--text-inverse)] text-xs font-medium rounded-[var(--radius-sm)] shadow-[var(--shadow-panel)] opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-[var(--motion-fast)] z-50 whitespace-nowrap">
-              Save Project
-            </span>
+            <span className="pw-tool-button-tooltip">Save Project</span>
           )}
         </button>
 
@@ -258,19 +263,13 @@ export function Toolbar({ onOpenTemplates, collapsed, readOnly = false }: Props)
           onClick={handleClear} 
           disabled={!canMutate}
           title="Clear Canvas"
-          className={`
-            relative flex items-center h-10 rounded-[var(--radius-md)] transition-all duration-[var(--motion-fast)] group
-            ${collapsed ? "w-10 justify-center mx-auto" : "w-full px-3 justify-start"}
-            text-[var(--color-danger)] hover:bg-red-50 hover:text-red-600
-          `}
+          className={toolButtonClass({ collapsed, variant: "danger" })}
         >
-          <Trash2 className="w-5 h-5 stroke-[2] transition-colors" />
-          {!collapsed && <span className="ml-3 text-sm font-medium">Clear Canvas</span>}
+          <Trash2 className={TOOL_ICON} />
+          {!collapsed && <span className="pw-tool-button-label">Clear Canvas</span>}
           
           {collapsed && (
-            <span className="absolute left-full ml-3 px-2 py-1 bg-[var(--surface-inverse)] text-[var(--text-inverse)] text-xs font-medium rounded-[var(--radius-sm)] shadow-[var(--shadow-panel)] opacity-0 -translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-[var(--motion-fast)] z-50 whitespace-nowrap">
-              Clear Canvas
-            </span>
+            <span className="pw-tool-button-tooltip">Clear Canvas</span>
           )}
         </button>
       </div>

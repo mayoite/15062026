@@ -77,32 +77,38 @@ export function resolveLayerCategory(obj: unknown): PlannerLayerCategory | null 
 }
 
 /**
- * Compute the bounding rectangle of an array of Fabric objects.
- * BUG-01 fix: `obj.top < top` (was erroneously `obj.left < top`).
+ * Compute the axis-aligned bounding rectangle of Fabric objects (includes size).
  */
 export function getBoundingRect(objects: FabricObject[]) {
-  let top = 9999;
-  let left = 9999;
-  let right = 0;
-  let bottom = 0;
+  let top = Number.POSITIVE_INFINITY;
+  let left = Number.POSITIVE_INFINITY;
+  let right = Number.NEGATIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
 
   objects.forEach((obj) => {
-    if (obj.top < top) {
-      top = obj.top;
-    }
-    if (obj.left < left) {
-      left = obj.left;
-    }
-    if (obj.top > bottom) {
-      bottom = obj.top;
-    }
-    if (obj.left > right) {
-      right = obj.left;
-    }
+    obj.setCoords?.();
+    const bounds = obj.getBoundingRect();
+    left = Math.min(left, bounds.left);
+    top = Math.min(top, bounds.top);
+    right = Math.max(right, bounds.left + bounds.width);
+    bottom = Math.max(bottom, bounds.top + bounds.height);
   });
+
+  if (!Number.isFinite(left)) {
+    return { left: 0, top: 0, right: 0, bottom: 0, center: 0, middle: 0, width: 0, height: 0 };
+  }
 
   const center = (left + right) / 2;
   const middle = (top + bottom) / 2;
 
-  return { left, top, right, bottom, center, middle };
+  return {
+    left,
+    top,
+    right,
+    bottom,
+    center,
+    middle,
+    width: right - left,
+    height: bottom - top,
+  };
 }

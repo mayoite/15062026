@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   fabricObjectCategory,
   parseFabricObjects,
+  PLANNER_MAX_CANVAS_MM,
   resolveRoomMmFromFabricObjects,
   resolveRoomMmFromFabricSnapshot,
 } from "@/features/planner/canvas-fabric/fabricSceneUtils";
@@ -59,7 +60,7 @@ describe("fabricSceneUtils", () => {
       });
     });
 
-    it("enforces a 1000mm minimum for each dimension", () => {
+    it("enforces a configured minimum for each dimension", () => {
       const corners = [
         { name: "CORNER", left: 0, top: 0, width: 0, height: 0 },
         { name: "CORNER", left: 5, top: 0, width: 0, height: 0 },
@@ -68,6 +69,18 @@ describe("fabricSceneUtils", () => {
       expect(resolveRoomMmFromFabricObjects(corners)).toEqual({
         widthMm: 1000,
         depthMm: 1000,
+      });
+    });
+
+    it("caps room dimensions at the configured canvas maximum", () => {
+      const corners = [
+        { name: "CORNER", left: 0, top: 0, width: 0, height: 0 },
+        { name: "CORNER", left: 200_000, top: 0, width: 0, height: 0 },
+        { name: "CORNER", left: 200_000, top: 200_000, width: 0, height: 0 },
+      ];
+      expect(resolveRoomMmFromFabricObjects(corners)).toEqual({
+        widthMm: PLANNER_MAX_CANVAS_MM,
+        depthMm: PLANNER_MAX_CANVAS_MM,
       });
     });
 

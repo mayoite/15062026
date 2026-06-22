@@ -155,7 +155,7 @@ Edit `tailwind.config.js` to change the `brand` and `accent` color scales. The M
 
 ## Relationship to the Main Platform
 
-This documentation site is a **separate Vite app** that lives inside the main Oando Platform repository at `tech-stack-docs/`. It has its own `package.json` and does not share dependencies with the main Next.js app. The content is hand-curated to reflect the actual technology stack, file structure, and conventions of the main platform — see the main repository's `Readme.md` and `AGENTS.md` for authoritative details.
+This documentation site is a **separate Vite app** that lives inside the main Oando Platform repository at `tech-stack-docs/`. It has its own `package.json` and does not share dependencies with the main Next.js app. Keep it aligned with the authoritative repo docs in `Readme.md`, `AGENTS.md`, `docs/architecture/STRUCTURE_GUIDELINES.md`, `docs/architecture/CSS-SOLUTION.md`, and `docs/plans/` so it mirrors the current stack rather than drifting into stale paths.
 
 ---
 

@@ -20,6 +20,7 @@
     "docs:sync:coverage": "node scripts/generate-docs.mjs --coverage",
     "docs:check": "node scripts/generate-docs.mjs --check",
     "docs:check:coverage": "node scripts/generate-docs.mjs --coverage --check",
+    "failures:sync": "node scripts/export-pending-failures.mjs",
     "test:clean": "node scripts/clean-test-artifacts.mjs",
     "pretest": "npm run test:clean",
     "test": "vitest run",

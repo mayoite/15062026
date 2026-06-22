@@ -19,7 +19,7 @@ import {
   type ComponentProps,
   type DragEvent,
 } from "react";
-import { PanelRightClose, Settings2, PenTool } from "lucide-react";
+import { PanelRightClose } from "lucide-react";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
 import dynamic from "next/dynamic";
@@ -30,7 +30,7 @@ const Planner3DViewer = dynamic(
 );
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
 import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
-import { FabricPropertiesInspector } from "@/features/planner/canvas-fabric/components/FabricPropertiesInspector";
+import { queueQuickStarterLayout } from "@/features/planner/ai/quickStarterLayout";
 import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
@@ -211,6 +211,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     insertObject,
     setLayerVisibility,
     resizeObject,
+    fitToContent,
     redoStates,
     roomEditRedoStates,
     roomEditStates,
@@ -348,6 +349,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       resizeObject,
       editRoom,
       endEditRoom,
+      fitToContent,
     });
     // BUG-05: use generation-scoped cleanup so strict-mode double-mount does
     // not let the first mount's cleanup wipe the second mount's runtime.
@@ -363,6 +365,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     placeCatalogIntoFabric,
     setLayerVisibility,
     resizeObject,
+    fitToContent,
   ]);
 
   useEffect(() => {
@@ -430,7 +433,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   } = session;
 
   const [planNameKey, setPlanNameKey] = useState(draftNameKey);
-  const [rightTab, setRightTab] = useState<"properties" | "tools">("properties");
   if (planNameKey !== draftNameKey) {
     setPlanNameKey(draftNameKey);
     setPlanNameOverride(null);
@@ -782,6 +784,10 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     />
   );
 
+  const handleQuickLayout = useCallback(() => {
+    queueQuickStarterLayout();
+  }, []);
+
   const rightPanel = (
     <aside
       className="pw-right-panel"
@@ -790,30 +796,10 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       data-step={plannerStep}
       data-selection={selectionStatus ? "active" : undefined}
     >
-      <div className="pw-panel-tabs" role="tablist" aria-label="Right panel">
-        <button
-          type="button"
-          role="tab"
-          className="pw-panel-tab pwx-panel-tab"
-          data-active={rightTab === "properties" || undefined}
-          aria-selected={rightTab === "properties"}
-          onClick={() => setRightTab("properties")}
-        >
-          <Settings2 size={14} strokeWidth={2} aria-hidden />
-          <span>Properties</span>
-        </button>
-        <button
-          type="button"
-          role="tab"
-          className="pw-panel-tab pwx-panel-tab"
-          data-active={rightTab === "tools" || undefined}
-          aria-selected={rightTab === "tools"}
-          onClick={() => setRightTab("tools")}
-        >
-          <PenTool size={14} strokeWidth={2} aria-hidden />
-          <span>Tools</span>
-        </button>
-
+      <div className="pw-panel-tabs" aria-label="Right panel">
+        <p className="pw-panel-tab pwx-panel-tab" data-active>
+          Properties
+        </p>
         <button
           type="button"
           className="pw-panel-collapse pw-icon-btn"
@@ -825,19 +811,9 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       </div>
 
       <div className="pw-panel-body" hidden={rightCollapsed}>
-        {rightTab === "properties" && (
-          <>
-            <PropertiesInspector step={plannerStep} />
-            <FabricPropertiesInspector />
-            {plannerStep === "review" ? <LayerVisibilityPanel /> : null}
-            {plannerStep === "review" ? <LayerManagerPanel unitSystem={workspaceUnitSystem} /> : null}
-          </>
-        )}
-        {rightTab === "tools" && (
-          <div className="pw-right-tools" style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
-            <p className="text-muted text-sm">Tools have been moved to the top bar.</p>
-          </div>
-        )}
+        <PropertiesInspector step={plannerStep} />
+        {plannerStep === "review" ? <LayerVisibilityPanel /> : null}
+        {plannerStep === "review" ? <LayerManagerPanel unitSystem={workspaceUnitSystem} /> : null}
       </div>
     </aside>
   );
@@ -857,6 +833,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       guestMode={guestMode}
       applyToolBinding={applyToolBinding}
       setIsTemplateOpen={setIsTemplateOpen}
+      onQuickLayout={handleQuickLayout}
       plannerChromeHost={<PlannerChromeHost />}
       statusBar={
         <PlannerStatusBarWithFabricGrid

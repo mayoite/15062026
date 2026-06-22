@@ -10,6 +10,7 @@ import {
 import type { PlannerLayerCategory } from '@/features/planner/store/workspaceStore';
 import type { FabricContextMenuState, FabricDrawTool } from '../fabricDrawToolTypes';
 import { DEFAULT_FABRIC_DRAW_COLOR, DEFAULT_FABRIC_FILL_COLOR } from '../fabricDrawToolTypes';
+import { PLANNER_VIEWPORT } from '@/features/planner/lib/canvasBounds';
 
 export type FloorplanOperation =
   | 'UNDO'
@@ -65,6 +66,7 @@ export type FloorplanCanvasApi = {
   applyFillToSelection: (color: string) => void;
   setContextMenuListener: (listener: ((state: FabricContextMenuState | null) => void) | null) => void;
   fitToStage: () => number;
+  fitToContent: (padding?: number) => number;
   recalcOffset: () => void;
   setLayerVisibility: (layerVisible: Record<PlannerLayerCategory, boolean>) => void;
   resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
@@ -128,6 +130,7 @@ type FloorplanContextValue = {
   closeContextMenu: () => void;
   registerCanvasApi: (api: FloorplanCanvasApi | null) => void;
   refitCanvas: () => void;
+  fitToContent: (padding?: number) => number;
   setLayerVisibility: (layerVisible: Record<PlannerLayerCategory, boolean>) => void;
   resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
   setObjectRotation: (shapeId: string, angleDeg: number) => void;
@@ -329,9 +332,18 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
   const refitCanvas = useCallback(() => {
     const api = apiRef.current;
     if (!api) return;
-    const zoomPct = api.fitToStage();
+    const zoomPct = api.fitToContent();
     setZoomState(zoomPct);
     api.recalcOffset();
+  }, []);
+
+  const fitToContent = useCallback((padding?: number) => {
+    const api = apiRef.current;
+    if (!api) return PLANNER_VIEWPORT.defaultZoomPercent;
+    const zoomPct = api.fitToContent(padding);
+    setZoomState(zoomPct);
+    api.recalcOffset();
+    return zoomPct;
   }, []);
 
   const setLayerVisibility = useCallback((layerVisible: Record<PlannerLayerCategory, boolean>) => {
@@ -352,7 +364,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
 
   const zoomIn = useCallback(() => {
     setZoomState((z) => {
-      if (z >= 150) return z;
+      if (z >= PLANNER_VIEWPORT.zoomMaxPercent) return z;
       const next = z + 10;
       apiRef.current?.setZoom(next);
       return next;
@@ -361,7 +373,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
 
   const zoomOut = useCallback(() => {
     setZoomState((z) => {
-      if (z <= 20) return z;
+      if (z <= PLANNER_VIEWPORT.zoomMinPercent) return z;
       const next = z - 10;
       apiRef.current?.setZoom(next);
       return next;
@@ -430,6 +442,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       closeContextMenu,
       registerCanvasApi,
       refitCanvas,
+      fitToContent,
       setLayerVisibility,
       resizeObject,
       setObjectRotation,
@@ -472,6 +485,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       closeContextMenu,
       registerCanvasApi,
       refitCanvas,
+      fitToContent,
       setLayerVisibility,
       resizeObject,
       setObjectRotation,

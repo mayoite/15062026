@@ -19,6 +19,7 @@ export interface PlannerCanvasStageProps {
   guestMode: boolean;
   applyToolBinding: (binding: PlannerToolBinding) => void;
   setIsTemplateOpen: (open: boolean) => void;
+  onQuickLayout?: () => void;
   plannerChromeHost: ReactNode;
   statusBar: ReactNode;
 }
@@ -37,6 +38,7 @@ export function PlannerCanvasStage({
   guestMode,
   applyToolBinding,
   setIsTemplateOpen,
+  onQuickLayout,
   plannerChromeHost,
   statusBar,
 }: PlannerCanvasStageProps) {
@@ -71,6 +73,7 @@ export function PlannerCanvasStage({
                 allowCanvasDragThrough
                 onDrawWalls={() => applyToolBinding({ toolId: "planner-wall", plannerTool: "wall" })}
                 onOpenTemplates={() => setIsTemplateOpen(true)}
+                onQuickLayout={onQuickLayout}
               />
             ) : null}
           </div>

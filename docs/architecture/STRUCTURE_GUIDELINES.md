@@ -8,6 +8,8 @@ It is meant to keep folder planning consistent and prevent the CSS tree from bec
 ## Current Canonical Homes
 
 - Site static data now lives in `lib/site-data/`
+- Locale message JSON lives in `i18n/messages/`
+- Route contract metadata lives in `config/route-contract.json`
 - Shared CSS lives in `app/css/`
 - Route-specific UI stays next to the route or feature that owns it
 
@@ -70,10 +72,11 @@ Shared CSS should keep flowing through the existing `app/css/` layers:
 
 The next cleanup pass should be:
 
-1. Regenerate stale docs and inventories so they point at `lib/site-data/`
+1. Regenerate stale docs and inventories so they point at `lib/site-data/`, `i18n/messages/`, and `config/route-contract.json`
 2. Clear any leftover generated artifacts that still mention the legacy site-data path
-3. Then review the CSS layer tree and simplify only the UI-owned parts
-4. Keep CSS tokens, utilities, and component classes centralized instead of scattering them into page files
+3. Keep `docs/plans/` and `tech-stack-docs/` aligned with the current ownership model
+4. Then review the CSS layer tree and simplify only the UI-owned parts
+5. Keep CSS tokens, utilities, and component classes centralized instead of scattering them into page files
 
 ## Caution
 

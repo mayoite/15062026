@@ -17,6 +17,41 @@ function cleanField(value) {
   return String(value ?? "").replace(/`/g, "").trim();
 }
 
+function sleep(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+function writeAtomicFile(targetPath, contents) {
+  const dir = path.dirname(targetPath);
+  const base = path.basename(targetPath);
+  const tempPath = path.join(dir, `${base}.${process.pid}.tmp`);
+
+  fs.writeFileSync(tempPath, contents, "utf8");
+
+  let lastError;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    try {
+      fs.renameSync(tempPath, targetPath);
+      return;
+    } catch (error) {
+      lastError = error;
+      const code = error && typeof error === "object" ? error.code : undefined;
+      if (attempt === 5 || !["EBUSY", "EPERM", "EACCES"].includes(code)) {
+        break;
+      }
+      sleep(200 * attempt);
+    }
+  }
+
+  try {
+    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+  } catch {
+    // Leave cleanup alone if the temp file is also locked.
+  }
+
+  throw lastError;
+}
+
 function resolutionStateFromStatus(status) {
   const text = String(status ?? "").toLowerCase();
   if (text.includes("resolved")) return "resolved";
@@ -177,8 +212,8 @@ const pendingBody = pendingRows
   )
   .join("\n");
 
-fs.writeFileSync(INDEX_OUTPUT, `${header}\n${indexBody}\n`, "utf8");
-fs.writeFileSync(PENDING_OUTPUT, `${header}\n${pendingBody}\n`, "utf8");
+writeAtomicFile(INDEX_OUTPUT, `${header}\n${indexBody}\n`);
+writeAtomicFile(PENDING_OUTPUT, `${header}\n${pendingBody}\n`);
 
 console.log(`Wrote ${indexRows.length} failures to ${INDEX_OUTPUT}`);
 console.log(`Wrote ${pendingRows.length} pending items to ${PENDING_OUTPUT}`);

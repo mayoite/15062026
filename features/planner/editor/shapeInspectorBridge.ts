@@ -4,8 +4,7 @@ import {
   subscribePlannerFabricRuntimeState,
 } from "@/features/planner/canvas-fabric";
 import type { InspectorData } from "@/features/planner/editor/inspector/inspectorTypes";
-
-const FABRIC_TO_MM = 10;
+import { PLANNER_MM_PER_CANVAS_UNIT } from "@/features/planner/lib/canvasBounds";
 
 export function shapeToInspectorData(shape: unknown): InspectorData | null {
   if (!shape || typeof shape !== "object") return null;
@@ -18,10 +17,14 @@ export function shapeToInspectorData(shape: unknown): InspectorData | null {
     id: String(item.id ?? name),
     type,
     label: rest.join(":") || type,
-    widthMm: Math.round((Number(item.width) || 0) * (Number(item.scaleX) || 1) * FABRIC_TO_MM),
-    heightMm: Math.round((Number(item.height) || 0) * (Number(item.scaleY) || 1) * FABRIC_TO_MM),
+    widthMm: Math.round(
+      (Number(item.width) || 0) * (Number(item.scaleX) || 1) * PLANNER_MM_PER_CANVAS_UNIT,
+    ),
+    heightMm: Math.round(
+      (Number(item.height) || 0) * (Number(item.scaleY) || 1) * PLANNER_MM_PER_CANVAS_UNIT,
+    ),
     rotation: Number(item.angle) || 0,
-    isLocked: item.selectable === false,
+    isLocked: Boolean(item.lockMovementX) || item.selectable === false,
     color: typeof item.stroke === "string" ? item.stroke : undefined,
   };
 }
@@ -46,8 +49,18 @@ export function applyInspectorChanges(
 ): void {
   const runtime = getPlannerFabricRuntime();
   if (!runtime) return;
-  if (changes.widthMm !== undefined && changes.heightMm !== undefined) {
-    runtime.resizeObject(shapeId, changes.widthMm, changes.heightMm);
+
+  const current = shapeToInspectorData(
+    getPlannerFabricRuntimeState().selections.find(
+      (sel) => String((sel as Record<string, unknown>).id ?? (sel as Record<string, unknown>).name) === shapeId,
+    ) ?? null,
+  );
+  if (!current) return;
+
+  const widthMm = changes.widthMm ?? current.widthMm;
+  const heightMm = changes.heightMm ?? current.heightMm;
+  if (widthMm > 0 && heightMm > 0) {
+    runtime.resizeObject(shapeId, widthMm, heightMm);
   }
 }
 
