@@ -10,6 +10,8 @@ import {
 } from "./catalogHierarchy";
 import type { CatalogCategory, CatalogItem } from "./catalogTypes";
 import { PLANNER_CATALOG_ITEMS } from "./workspaceCatalog";
+import { mergeWorkspaceCatalogItems } from "./mergeCatalogItems";
+import { fetchPlannerCatalogItems } from "./plannerCatalogApi";
 
 const RECENT_STORAGE_KEY = "planner-catalog-recent";
 const RECENT_LIMIT = 8;
@@ -42,9 +44,13 @@ interface PlannerCatalogState {
   query: string;
   purposeFilter: PlannerPrimaryPurpose | null;
   recentIds: string[];
+  catalogSource: string;
+  managedCount: number;
+  catalogHydrating: boolean;
   setQuery: (query: string) => void;
   setPurposeFilter: (purpose: PlannerPrimaryPurpose | null) => void;
   recordRecentPlacement: (itemId: string) => void;
+  hydrateCatalog: () => Promise<void>;
   getFilteredItems: () => CatalogItem[];
   getByCategory: (category: CatalogCategory) => CatalogItem[];
   getRecentItems: () => CatalogItem[];
@@ -61,8 +67,32 @@ export const usePlannerCatalogStore = create<PlannerCatalogState>((set, get) => 
   query: "",
   purposeFilter: null,
   recentIds: readRecentIds(),
+  catalogSource: "static",
+  managedCount: 0,
+  catalogHydrating: false,
   setQuery: (query) => set({ query }),
   setPurposeFilter: (purpose) => set({ purposeFilter: purpose }),
+  hydrateCatalog: async () => {
+    if (get().catalogHydrating) return;
+    set({ catalogHydrating: true });
+    try {
+      const { items: managedItems, source } = await fetchPlannerCatalogItems();
+      const merged = mergeWorkspaceCatalogItems(PLANNER_CATALOG_ITEMS, managedItems);
+      set({
+        items: enrichCatalogItems(merged),
+        catalogSource: managedItems.length > 0 ? source : "static",
+        managedCount: managedItems.length,
+      });
+    } catch {
+      set({
+        items: enrichCatalogItems(PLANNER_CATALOG_ITEMS),
+        catalogSource: "static",
+        managedCount: 0,
+      });
+    } finally {
+      set({ catalogHydrating: false });
+    }
+  },
   recordRecentPlacement: (itemId) =>
     set((state) => {
       const recentIds = [itemId, ...state.recentIds.filter((id) => id !== itemId)].slice(0, RECENT_LIMIT);

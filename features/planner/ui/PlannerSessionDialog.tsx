@@ -65,6 +65,7 @@ interface PlannerSessionDialogProps {
   onOpen3d?: () => void;
   onUpsertManagedProduct?: (product: PlannerManagedProductWrite) => void | Promise<void>;
   onDeleteManagedProduct?: (id: string) => void | Promise<void>;
+  onStartFreshLayout?: () => void | Promise<void>;
   onDismissError?: () => void;
   isOnline?: boolean;
 }
@@ -238,6 +239,7 @@ export function PlannerSessionDialog({
   onOpen3d,
   onUpsertManagedProduct,
   onDeleteManagedProduct,
+  onStartFreshLayout,
   onDismissError,
   isOnline = true,
 }: PlannerSessionDialogProps) {
@@ -417,6 +419,16 @@ export function PlannerSessionDialog({
                   <button type="button" onClick={onImport} disabled={isBusy} className={secondary}><Import className={SESSION_ICON_CLASS} /> {t("importJson")}</button>
                   {onExportJson ? <button type="button" onClick={onExportJson} disabled={isBusy} className={secondary}><Upload className={SESSION_ICON_CLASS} /> {t("exportJson")}</button> : null}
                   {onOpen3d ? <button type="button" onClick={onOpen3d} disabled={!canOpen3d || isBusy} className={secondary}><FolderOpen className={SESSION_ICON_CLASS} /> {t("open3d")}</button> : null}
+                  {onStartFreshLayout ? (
+                    <button
+                      type="button"
+                      onClick={() => void onStartFreshLayout()}
+                      disabled={isBusy}
+                      className={secondary}
+                    >
+                      New blank layout
+                    </button>
+                  ) : null}
                 </div>
                 <div className={SESSION_MESSAGE_COPY_CLASS}>
                   {!isOnline ? (

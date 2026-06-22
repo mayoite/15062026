@@ -1,6 +1,9 @@
 import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 import { getPlacementCatalogItem } from "@/features/planner/catalog/placementCatalogResolver";
-import { catalogMmToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
+import {
+  catalogFootprintToCanvasUnits,
+  resolveCatalogPlacementFootprintMm,
+} from "@/features/planner/catalog/catalogBlockBridge";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
 import { millimetersToCanvasUnits } from "@/features/planner/lib/canvasBounds";
 import type { PlannerCanvasShape } from "@/features/planner/editor/plannerShapeFactories";
@@ -34,10 +37,8 @@ type FabricRectObject = {
 };
 
 function mmToCanvasUnits(widthMm: number, heightMm: number): { width: number; height: number } {
-  return {
-    width: Math.max(1, catalogMmToCanvasCm(widthMm, heightMm)),
-    height: Math.max(1, catalogMmToCanvasCm(heightMm, widthMm)),
-  };
+  const units = catalogFootprintToCanvasUnits({ widthMm, depthMm: heightMm });
+  return { width: units.width, height: units.depth };
 }
 
 function resolveCatalogDimensions(catalogItemId: string): SuggestedLayoutCatalogDimensions | null {
@@ -52,9 +53,10 @@ function resolveCatalogDimensions(catalogItemId: string): SuggestedLayoutCatalog
   const workspaceItem = PLANNER_CATALOG_ITEMS.find((item) => item.id === catalogItemId);
   if (!workspaceItem) return null;
 
+  const footprint = resolveCatalogPlacementFootprintMm(workspaceItem);
   return {
-    widthMm: workspaceItem.widthMm,
-    heightMm: workspaceItem.heightMm,
+    widthMm: footprint.widthMm,
+    heightMm: footprint.depthMm,
   };
 }
 

@@ -32,6 +32,7 @@ interface PlannerTopBarProps {
   onOpenSession: () => void;
   onSaveDraft: () => void;
   onImport: () => void;
+  onUploadFloorPlan?: () => void;
   onOpenTemplates: () => void;
   onOpenAi: () => void;
   isOnline?: boolean;
@@ -49,6 +50,7 @@ export function PlannerTopBar({
   onOpenSession,
   onSaveDraft,
   onImport,
+  onUploadFloorPlan,
   onOpenTemplates,
   onOpenAi,
   isOnline = true,
@@ -197,6 +199,19 @@ export function PlannerTopBar({
               <button type="button" role="menuitem" className="pw-menu-item" onClick={() => { onImport(); setMenuOpen(false); }}>
                 Import JSON
               </button>
+              {onUploadFloorPlan ? (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="pw-menu-item"
+                  onClick={() => {
+                    onUploadFloorPlan();
+                    setMenuOpen(false);
+                  }}
+                >
+                  Upload sketch or plan
+                </button>
+              ) : null}
               <Link href="/planner/help/" role="menuitem" className="pw-menu-item" onClick={() => setMenuOpen(false)}>
                 Help
               </Link>

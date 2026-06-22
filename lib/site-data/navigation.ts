@@ -103,13 +103,9 @@ export const SITE_FOOTER_NAV = buildFooterNav([
   {
     heading: "Workspace",
     links: [
-      { href: PRODUCT_SUITE.shared.routes.access, label: "Access" },
-      { href: PRODUCT_SUITE.shared.routes.login, label: "Login" },
-      { href: PRODUCT_SUITE.shared.routes.chooser, label: "Choose Product" },
-      { href: PRODUCT_SUITE.shared.routes.dashboard, label: "Dashboard" },
-      { href: PRODUCT_SUITE.planner.routes.portal, label: "Member Portal" },
-      { href: PRODUCT_SUITE.admin.routes.landing, label: "Admin" },
-      { href: "/ops/customer-queries", label: "Ops" },
+      { href: PRODUCT_SUITE.planner.routes.landing, label: "Workspace Planner" },
+      { href: PRODUCT_SUITE.shared.routes.dashboard, label: "Workspace hub" },
+      { href: `${PRODUCT_SUITE.shared.routes.access}?next=${encodeURIComponent("/dashboard")}`, label: "Sign in" },
     ],
   },
 ]);

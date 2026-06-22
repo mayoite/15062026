@@ -20,6 +20,7 @@ export interface PlannerCanvasStageProps {
   applyToolBinding: (binding: PlannerToolBinding) => void;
   setIsTemplateOpen: (open: boolean) => void;
   onQuickLayout?: () => void;
+  onUploadFloorPlan?: () => void;
   plannerChromeHost: ReactNode;
   toolRail?: ReactNode;
   statusBar: ReactNode;
@@ -40,6 +41,7 @@ export function PlannerCanvasStage({
   applyToolBinding,
   setIsTemplateOpen,
   onQuickLayout,
+  onUploadFloorPlan,
   plannerChromeHost,
   toolRail,
   statusBar,
@@ -78,6 +80,7 @@ export function PlannerCanvasStage({
                 onDrawWalls={() => applyToolBinding({ toolId: "planner-wall", plannerTool: "wall" })}
                 onOpenTemplates={() => setIsTemplateOpen(true)}
                 onQuickLayout={onQuickLayout}
+                onUploadFloorPlan={onUploadFloorPlan}
               />
             ) : null}
           </div>

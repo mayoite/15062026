@@ -46,10 +46,25 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
     setRotationInput(data ? String(Math.round(data.rotation)) : "");
   }, [data?.id, data?.rotation]);
 
+  const [widthInput, setWidthInput] = useState("");
+  const [depthInput, setDepthInput] = useState("");
+
+  useEffect(() => {
+    if (!data) {
+      setWidthInput("");
+      setDepthInput("");
+      return;
+    }
+    setWidthInput(String(data.widthMm));
+    setDepthInput(String(data.heightMm));
+  }, [data?.id, data?.widthMm, data?.heightMm]);
+
   const handleDimensionChange = (field: "widthMm" | "heightMm", value: string) => {
     const num = parseInt(value, 10);
     if (!data || isNaN(num) || num <= 0) return;
     applyInspectorChanges(null, data.id, { [field]: num });
+    if (field === "widthMm") setWidthInput(String(num));
+    else setDepthInput(String(num));
   };
 
   const handleRotationBlur = () => {
@@ -103,7 +118,8 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
                 <input
                   type="number"
                   className="pwx-field-input"
-                  defaultValue={data.widthMm}
+                  value={widthInput}
+                  onChange={(e) => setWidthInput(e.target.value)}
                   onBlur={(e) => handleDimensionChange("widthMm", e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -121,7 +137,8 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
                 <input
                   type="number"
                   className="pwx-field-input"
-                  defaultValue={data.heightMm}
+                  value={depthInput}
+                  onChange={(e) => setDepthInput(e.target.value)}
                   onBlur={(e) => handleDimensionChange("heightMm", e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {

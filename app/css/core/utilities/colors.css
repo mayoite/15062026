@@ -21,6 +21,7 @@
 @utility bg-primary { background-color: var(--color-primary); }
 @utility bg-primary-hover { background-color: var(--color-primary-hover); }
 @utility bg-soft { background-color: var(--surface-soft); }
+@utility bg-subtle { background-color: var(--surface-soft); }
 @utility bg-muted { background-color: var(--surface-muted); }
 @utility bg-panel { background-color: var(--surface-panel); }
 @utility bg-hover { background-color: var(--surface-hover); }

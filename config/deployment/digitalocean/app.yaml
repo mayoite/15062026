@@ -101,6 +101,10 @@ services:
         scope: RUN_TIME
         type: SECRET
         value: ""
+      - key: GOOGLE_GENERATIVE_AI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: ""
       - key: NOVA_ACT_API_KEY
         scope: RUN_TIME
         type: SECRET

@@ -10,6 +10,8 @@ import {
   catalogMmToCanvasCm,
   moduleLengthMmFromItem,
   straightWorkstationFootprintMm,
+  resolveCatalogPlacementFootprintMm,
+  catalogFootprintToCanvasUnits,
 } from "@/features/planner/catalog/catalogBlockBridge";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 
@@ -135,6 +137,40 @@ describe("straightWorkstationFootprintMm", () => {
     const { L, D } = straightWorkstationFootprintMm(item);
     expect(L).toBe(1500);
     expect(D).toBe(600);
+  });
+});
+
+// ─── resolveCatalogPlacementFootprintMm ──────────────────────────────────────
+
+describe("resolveCatalogPlacementFootprintMm", () => {
+  it("4-seater desk uses bay × module length, not single module", () => {
+    const item = makeDeskItem({ name: "Desk (1200mm)", seatCount: 4, tags: ["straight", "non-sharing"] });
+    const footprint = resolveCatalogPlacementFootprintMm(item);
+    expect(footprint.widthMm).toBe(4800);
+    expect(footprint.depthMm).toBe(600);
+  });
+
+  it("storage item uses normalized catalog cm fields", () => {
+    const item = makeDeskItem({
+      category: "storage",
+      shapeType: "planner-storage",
+      name: "Pedestal",
+      widthMm: 40,
+      heightMm: 50,
+      seatCount: undefined,
+    });
+    const footprint = resolveCatalogPlacementFootprintMm(item);
+    expect(footprint.widthMm).toBe(400);
+    expect(footprint.depthMm).toBe(500);
+  });
+});
+
+describe("catalogFootprintToCanvasUnits", () => {
+  it("converts 4800×600 mm to 480×60 canvas units", () => {
+    expect(catalogFootprintToCanvasUnits({ widthMm: 4800, depthMm: 600 })).toEqual({
+      width: 480,
+      depth: 60,
+    });
   });
 });
 

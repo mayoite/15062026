@@ -1,15 +1,21 @@
 import { z } from "zod";
 
+const optionalEnvString = z.preprocess(
+  (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+  z.string().min(1).optional(),
+);
+
 const envSchema = z.object({
-  OPENAI_API_KEY: z.string().min(1).optional(),
-  OPENROUTER_API_KEY: z.string().min(1).optional(),
-  GOOGLE_API_KEY: z.string().min(1).optional(),
-  NOVA_ACT_API_KEY: z.string().min(1).optional(),
-  AWS_BEARER_TOKEN_BEDROCK: z.string().min(1).optional(),
-  GOOGLE_MODEL: z.string().min(1).optional(),
-  AWS_NOVA_MODEL: z.string().min(1).optional(),
-  AWS_BEDROCK_REGION: z.string().min(1).optional(),
-  OPENROUTER_MODEL: z.string().min(1).optional(),
+  OPENAI_API_KEY: optionalEnvString,
+  OPENROUTER_API_KEY: optionalEnvString,
+  GOOGLE_API_KEY: optionalEnvString,
+  GOOGLE_GENERATIVE_AI_API_KEY: optionalEnvString,
+  NOVA_ACT_API_KEY: optionalEnvString,
+  AWS_BEARER_TOKEN_BEDROCK: optionalEnvString,
+  GOOGLE_MODEL: optionalEnvString,
+  AWS_NOVA_MODEL: optionalEnvString,
+  AWS_BEDROCK_REGION: optionalEnvString,
+  OPENROUTER_MODEL: optionalEnvString,
 });
 
 type ServerEnv = z.infer<typeof envSchema>;

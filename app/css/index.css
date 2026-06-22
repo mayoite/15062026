@@ -32,6 +32,7 @@
 @import "./core/chrome/shell/workspace.css";
 @import "./core/chrome/shell/portal.css";
 @import "./core/chrome/shell/admin.css";
+@import "./core/chrome/shell/admin-pages.css";
 @import "./core/chrome/shell/nav.css";
 
 @import "./base/animations.css";

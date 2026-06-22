@@ -46,6 +46,9 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
   const searchQuery = usePlannerCatalogStore((s) => s.query);
   const setSearchQuery = usePlannerCatalogStore((s) => s.setQuery);
   const catalogItems = usePlannerCatalogStore((s) => s.items);
+  const catalogSource = usePlannerCatalogStore((s) => s.catalogSource);
+  const managedCount = usePlannerCatalogStore((s) => s.managedCount);
+  const catalogHydrating = usePlannerCatalogStore((s) => s.catalogHydrating);
   const purposeFilter = usePlannerCatalogStore((s) => s.purposeFilter);
   const recentIds = usePlannerCatalogStore((s) => s.recentIds);
 
@@ -166,7 +169,18 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
   return (
     <aside className="pw-catalog">
       <div className={`pw-catalog-header${embedded ? "" : " pw-catalog-header--standalone"}`}>
-        {!embedded ? <h2 className="pw-catalog-title">Element library</h2> : null}
+        {!embedded ? (
+          <div className="pw-catalog-header-row">
+            <h2 className="pw-catalog-title">Element library</h2>
+            {catalogHydrating ? (
+              <span className="pw-catalog-source-badge" aria-live="polite">Syncing…</span>
+            ) : managedCount > 0 ? (
+              <span className="pw-catalog-source-badge" title={`Source: ${catalogSource}`}>
+                +{managedCount} managed
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <div className="pw-catalog-search-wrap">
           <Search size={14} className="pw-catalog-search-icon" aria-hidden />
           <input

@@ -3,6 +3,7 @@ import "./globals.css";
 import "@/app/css/core/site/bundles/footer.css";
 import "@/app/css/core/site/bundles/contact.css";
 import "@/app/css/core/site/bundles/site-marketing.css";
+import "@/app/css/core/site/bundles/workspace-hub.css";
 import "@/app/css/core/site/bundles/legal.css";
 import "@/app/css/core/site/bundles/error.css";
 import { NextIntlClientProvider } from "next-intl";

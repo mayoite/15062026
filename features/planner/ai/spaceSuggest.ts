@@ -17,6 +17,7 @@ import {
 
 import { buildSpaceSuggestUserPrompt, SPACE_SUGGEST_SYSTEM_PROMPT } from "./prompts";
 import type { SpaceSuggestInput, SuggestedLayoutJson } from "./types";
+import { browserApiFetch } from "@/lib/api/browserApi";
 
 const AISLE_MM = 1200;
 const BENCH_SEATS = 4;
@@ -251,18 +252,20 @@ export async function suggestLayout(
   signal?: AbortSignal,
 ): Promise<SuggestLayoutResult> {
   try {
-    const response = await fetch("/api/planner/ai-advisor", {
+    const response = await browserApiFetch("/api/planner/ai-advisor", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         mode: "space-suggest",
-        seatCount: input.seatCount,
-        purpose: input.purpose,
-        floorAreaSqFt: input.floorAreaSqFt,
         messages: [
           { role: "system", content: SPACE_SUGGEST_SYSTEM_PROMPT },
           { role: "user", content: buildSpaceSuggestUserPrompt(input) },
         ],
+        context: {
+          seatCount: input.seatCount,
+          purpose: input.purpose,
+          floorAreaSqFt: input.floorAreaSqFt,
+        },
       }),
       signal,
     });

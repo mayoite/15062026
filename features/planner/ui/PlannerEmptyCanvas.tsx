@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutTemplate, MousePointerClick, Sparkles } from "lucide-react";
+import { ImageUp, LayoutTemplate, MousePointerClick, Sparkles } from "lucide-react";
 
 interface PlannerEmptyCanvasProps {
   guestMode?: boolean;
@@ -9,6 +9,7 @@ interface PlannerEmptyCanvasProps {
   onDrawWalls: () => void;
   onOpenTemplates: () => void;
   onQuickLayout?: () => void;
+  onUploadFloorPlan?: () => void;
 }
 
 export function PlannerEmptyCanvas({
@@ -17,6 +18,7 @@ export function PlannerEmptyCanvas({
   onDrawWalls,
   onOpenTemplates,
   onQuickLayout,
+  onUploadFloorPlan,
 }: PlannerEmptyCanvasProps) {
   return (
     <div
@@ -40,12 +42,22 @@ export function PlannerEmptyCanvas({
         <h2 className="pw-empty-canvas-title">Start your layout</h2>
         <p className="pw-empty-canvas-copy">
           {guestMode
-            ? "Draw walls, drop catalog furniture, or open a template. Your work autosaves in this browser."
-            : "Draw walls, drop catalog furniture, or open a template to get moving fast."}
+            ? "Upload a hand sketch or floor plan, draw walls, or drop catalog furniture. Your work autosaves in this browser."
+            : "Upload a hand sketch or floor plan, draw walls, or drop catalog furniture to get started."}
         </p>
 
         <div className="pw-empty-canvas-actions">
-          <button type="button" onClick={onDrawWalls} className="pw-empty-canvas-primary btn-primary">
+          {onUploadFloorPlan ? (
+            <button
+              type="button"
+              onClick={onUploadFloorPlan}
+              className="pw-empty-canvas-primary btn-primary"
+            >
+              <ImageUp size={14} aria-hidden />
+              Upload sketch or plan
+            </button>
+          ) : null}
+          <button type="button" onClick={onDrawWalls} className="pw-empty-canvas-secondary btn-outline">
             Draw walls
           </button>
           <button type="button" onClick={onOpenTemplates} className="pw-empty-canvas-secondary btn-outline">

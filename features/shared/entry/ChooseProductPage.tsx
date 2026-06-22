@@ -53,7 +53,7 @@ export function ChooseProductPage({
             {guestMode ? "Guest path" : authenticated ? "Member path" : "Access check pending"}
           </span>
           <span className="typ-chip rounded-full border border-soft bg-panel px-4 py-2 text-strong">
-            Portal · CRM · Admin stay separate
+            One account · one sign-in
           </span>
         </div>
       </motion.div>

@@ -9,6 +9,7 @@ describe("ai provider chain", () => {
   beforeEach(() => {
     process.env = { ...originalEnv };
     delete process.env.GOOGLE_API_KEY;
+    delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     delete process.env.NOVA_ACT_API_KEY;
     delete process.env.AWS_BEARER_TOKEN_BEDROCK;
     delete process.env.OPENROUTER_API_KEY;
@@ -28,6 +29,15 @@ describe("ai provider chain", () => {
       "aws-nova",
       "openrouter",
     ]);
+  });
+
+  test("accepts the documented Gemini key alias", () => {
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY = "google-generative-key";
+
+    expect(resolveProviderChain().map((entry) => entry.provider)).toEqual([
+      "google",
+    ]);
+    expect(resolveProviderChain()[0]?.apiKey).toBe("google-generative-key");
   });
 
   test("builds the expected bedrock mantle base url", () => {

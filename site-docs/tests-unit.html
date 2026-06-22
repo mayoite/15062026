@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Testing - Platform Docs</title>
+    <style>
+
+:root {
+    --bg-base: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-surface-hover: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --border: #334155;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow: hidden;
+}
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    width: 280px;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+}
+.sidebar-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+}
+.sidebar-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+.sidebar-nav {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+}
+.nav-link {
+    display: block;
+    padding: 10px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+.nav-link:hover {
+    background-color: var(--bg-surface-hover);
+    color: var(--text-primary);
+}
+.nav-link.active {
+    background-color: rgba(56, 189, 248, 0.1);
+    color: var(--accent);
+    font-weight: 500;
+}
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.topbar {
+    height: 72px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    background-color: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    z-index: 10;
+}
+.search-box input {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 10px 16px;
+    border-radius: 20px;
+    width: 300px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+.search-box input:focus {
+    border-color: var(--accent);
+}
+.mobile-only { display: none; }
+.content-body {
+    flex: 1;
+    padding: 48px;
+    overflow-y: auto;
+    max-width: 900px;
+}
+h1 { font-size: 2.5rem; margin-bottom: 24px; letter-spacing: -0.02em; }
+h2 { font-size: 1.5rem; margin-top: 32px; margin-bottom: 16px; color: var(--text-primary); }
+p { margin-bottom: 16px; color: var(--text-secondary); font-size: 1.05rem; }
+ul { margin-bottom: 16px; padding-left: 24px; color: var(--text-secondary); }
+li { margin-bottom: 8px; }
+code {
+    background-color: var(--bg-surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #e2e8f0;
+}
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+}
+.card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    border-color: var(--bg-surface-hover);
+}
+.card h2 { margin-top: 0; font-size: 1.25rem; }
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: var(--accent);
+    color: var(--bg-base);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    margin-top: 16px;
+    transition: background-color 0.2s ease;
+}
+.btn:hover { background-color: var(--accent-hover); }
+.cmd-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-size: 0.95rem;
+}
+.cmd-table th, .cmd-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+.cmd-table th { color: var(--accent); font-weight: 500; }
+.cmd-table tr:hover td { background-color: rgba(255, 255, 255, 0.02); }
+@media (max-width: 768px) {
+    .sidebar { position: fixed; z-index: 20; transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .mobile-only { display: block; background: none; border: none; color: white; font-size: 1.2rem; margin-right: 16px; cursor: pointer; }
+    .content-body { padding: 24px; }
+}
+
+</style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Platform Docs</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-link ">Overview & Dashboard</a><a href="workflow-overview.html" class="nav-link ">Workflow Overview</a><a href="site-architecture.html" class="nav-link ">Site Architecture</a><a href="html-structure.html" class="nav-link ">HTML & UI Structure</a><a href="npm-commands-core.html" class="nav-link ">Core NPM Commands</a><a href="scripts-database.html" class="nav-link ">Database Scripts</a><a href="scripts-assets.html" class="nav-link ">Asset & CDN Scripts</a><a href="scripts-catalog.html" class="nav-link ">Catalog Scripts</a><a href="scripts-supabase.html" class="nav-link ">Supabase Scripts</a><a href="scripts-docs.html" class="nav-link ">Documentation Scripts</a><a href="scripts-audit.html" class="nav-link ">Audit Scripts</a><a href="tests-overview.html" class="nav-link ">Testing Overview</a><a href="tests-unit.html" class="nav-link active">Unit Testing</a><a href="tests-integration.html" class="nav-link ">Integration Testing</a><a href="tests-e2e.html" class="nav-link ">E2E Testing</a><a href="tests-planner.html" class="nav-link ">Planner Tests</a><a href="ci-cd.html" class="nav-link ">CI/CD Pipeline</a><a href="local-development.html" class="nav-link ">Local Development</a><a href="troubleshooting.html" class="nav-link ">Troubleshooting</a><a href="misc.html" class="nav-link ">Miscellaneous Scripts</a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <button id="mobile-menu-btn" class="mobile-only">☰ Menu</button>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search documentation...">
+                </div>
+            </header>
+            <div class="content-body" id="main-content-body">
+                <h1>Unit Testing</h1><p>Our unit tests are located in <code>tests/unit/</code>.</p><h2>Execution</h2><p>Run <code>npm run test:unit</code>. We use Vitest for blazing fast execution.</p>
+            </div>
+        </main>
+    </div>
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const sidebar = document.querySelector('.sidebar');
+    if(menuBtn) {
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    }
+
+    const searchInput = document.getElementById('search-input');
+    if(searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const contentBody = document.getElementById('main-content-body');
+            if(term.length > 2) {
+                // simple highlight simulation
+                document.querySelectorAll('p, li, td').forEach(el => {
+                    if(el.textContent.toLowerCase().includes(term)) {
+                        el.style.color = '#38bdf8';
+                    } else {
+                        el.style.color = '';
+                    }
+                });
+            } else {
+                document.querySelectorAll('p, li, td').forEach(el => {
+                    el.style.color = '';
+                });
+            }
+        });
+    }
+});
+
+</script>
+</body>
+</html>

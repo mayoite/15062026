@@ -73,6 +73,10 @@ export type FloorplanCanvasApi = {
   setObjectRotation: (shapeId: string, angleDeg: number) => void;
   setObjectLock: (shapeId: string, locked: boolean) => void;
   clientToSceneUnits: (clientX: number, clientY: number) => { x: number; y: number } | null;
+  setFloorPlanUnderlay: (
+    source: string,
+    options?: { opacity?: number; fileName?: string },
+  ) => Promise<void>;
 };
 
 type FloorplanContextValue = {
@@ -137,6 +141,10 @@ type FloorplanContextValue = {
   setObjectRotation: (shapeId: string, angleDeg: number) => void;
   setObjectLock: (shapeId: string, locked: boolean) => void;
   clientToSceneUnits: (clientX: number, clientY: number) => { x: number; y: number } | null;
+  setFloorPlanUnderlay: (
+    source: string,
+    options?: { opacity?: number; fileName?: string },
+  ) => Promise<void>;
 };
 
 const FloorplanContext = createContext<FloorplanContextValue | null>(null);
@@ -368,6 +376,15 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
     return apiRef.current?.clientToSceneUnits(clientX, clientY) ?? null;
   }, []);
 
+  const setFloorPlanUnderlay = useCallback(
+    async (source: string, options?: { opacity?: number; fileName?: string }) => {
+      const api = apiRef.current;
+      if (!api) return;
+      await api.setFloorPlanUnderlay(source, options);
+    },
+    [],
+  );
+
   const zoomIn = useCallback(() => {
     setZoomState((z) => {
       if (z >= PLANNER_VIEWPORT.zoomMaxPercent) return z;
@@ -454,6 +471,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       setObjectRotation,
       setObjectLock,
       clientToSceneUnits,
+      setFloorPlanUnderlay,
     }),
     [
       roomEdit,
@@ -498,6 +516,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       setObjectRotation,
       setObjectLock,
       clientToSceneUnits,
+      setFloorPlanUnderlay,
     ],
   );
 

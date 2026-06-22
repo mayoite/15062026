@@ -44,23 +44,20 @@ export function syncSelectionFromEditor(
 
 export function applyInspectorChanges(
   _editor: null,
-  shapeId: string,
+  _shapeId: string,
   changes: Partial<InspectorData>,
 ): void {
   const runtime = getPlannerFabricRuntime();
   if (!runtime) return;
 
-  const current = shapeToInspectorData(
-    getPlannerFabricRuntimeState().selections.find(
-      (sel) => String((sel as Record<string, unknown>).id ?? (sel as Record<string, unknown>).name) === shapeId,
-    ) ?? null,
-  );
+  const selected = getPlannerFabricRuntimeState().selections[0];
+  const current = shapeToInspectorData(selected);
   if (!current) return;
 
   const widthMm = changes.widthMm ?? current.widthMm;
   const heightMm = changes.heightMm ?? current.heightMm;
   if (widthMm > 0 && heightMm > 0) {
-    runtime.resizeObject(shapeId, widthMm, heightMm);
+    runtime.resizeObject(current.id, widthMm, heightMm);
   }
 }
 
