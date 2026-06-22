@@ -203,8 +203,6 @@ export function wireFabricDrawTools(options: {
       stroke: activeColor,
       strokeWidth: 2,
       fill: "",
-      originX: "center",
-      originY: "center",
     });
     commitAnnotation(line);
     if (asMeasure) {

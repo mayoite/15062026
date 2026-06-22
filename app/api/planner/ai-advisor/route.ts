@@ -146,6 +146,7 @@ async function handlePlannerAdvisor(req: NextRequest): Promise<NextResponse> {
 
   let aiResponse: string | undefined;
   let suggestion: { type: string; description: string; actionLabel: string } | undefined;
+  let degraded = false;
 
   try {
     const { resolveProviderChain, requestProviderText } = await import(
@@ -166,6 +167,7 @@ async function handlePlannerAdvisor(req: NextRequest): Promise<NextResponse> {
       try {
         aiResponse = await requestProviderText(provider, chatMessages, {
           temperature: mode === "space-suggest" ? 0.2 : 0.7,
+          jsonMode: mode === "space-suggest",
         });
         lastError = undefined;
         break;
@@ -220,9 +222,10 @@ async function handlePlannerAdvisor(req: NextRequest): Promise<NextResponse> {
     console.error("[planner/ai-advisor] provider error:", err);
     const lastUserMsg = messages.filter((m) => m.role === "user").pop();
     aiResponse = generateFallbackResponse(lastUserMsg?.content || "");
+    degraded = true;
   }
 
-  return success({ content: aiResponse, suggestion });
+  return success({ content: aiResponse, suggestion, degraded });
 }
 
 /** AI Layout Advisor. Guest auth; rate-limited. */

@@ -37,7 +37,7 @@ export const PLANNER_HERO = {
 } as const;
 
 export const PLANNER_PROOF = [
-  { value: "Import sketch", label: "PDF or trace" },
+  { value: "Import sketch", label: "JPG or PNG upload" },
   { value: "Export plan", label: "Branded PDF" },
   { value: "Start free", label: "No payment" },
 ] as const;

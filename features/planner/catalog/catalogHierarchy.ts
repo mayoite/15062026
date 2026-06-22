@@ -1,4 +1,4 @@
-import { normalizeCatalogMm } from "@/features/planner/catalog/catalogBlockBridge";
+import { resolveCatalogPlacementFootprintMm } from "@/features/planner/catalog/catalogBlockBridge";
 
 import type { PlannerPrimaryPurpose } from "@/features/planner/onboarding/projectSetup";
 
@@ -108,16 +108,16 @@ export function deriveCatalogUrl(item: CatalogItem): string {
 }
 
 export function formatCatalogSeatFootprint(item: CatalogItem): string {
-  const widthM = normalizeCatalogMm(item.widthMm) / 1000;
-  const depthM = normalizeCatalogMm(item.heightMm) / 1000;
+  const { widthMm, depthMm } = resolveCatalogPlacementFootprintMm(item);
+  const widthM = widthMm / 1000;
+  const depthM = depthMm / 1000;
   const fmt = (value: number) => (value >= 1 ? value.toFixed(1) : value.toFixed(2)).replace(/\.0$/, "");
   return `${fmt(widthM)}m × ${fmt(depthM)}m`;
 }
 
 export function formatCatalogDimensionsLabel(item: CatalogItem): string {
-  const w = Math.round(normalizeCatalogMm(item.widthMm));
-  const d = Math.round(normalizeCatalogMm(item.heightMm));
-  return `${w.toLocaleString("en-IN")} mm × ${d.toLocaleString("en-IN")} mm`;
+  const { widthMm, depthMm } = resolveCatalogPlacementFootprintMm(item);
+  return `${Math.round(widthMm).toLocaleString("en-IN")} mm × ${Math.round(depthMm).toLocaleString("en-IN")} mm`;
 }
 
 function tagBlob(item: CatalogItem): string {

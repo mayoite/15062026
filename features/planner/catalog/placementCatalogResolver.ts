@@ -14,7 +14,10 @@ import {
   isRoomCatalogShapeType,
   PlannerCatalogShapeType,
 } from "@/features/planner/catalog/shapeTypeRegistry";
-import { normalizeCatalogMm } from "@/features/planner/catalog/catalogBlockBridge";
+import {
+  normalizeCatalogMm,
+  resolveCatalogPlacementFootprintMm,
+} from "@/features/planner/catalog/catalogBlockBridge";
 
 export type PlacementCatalogItem = {
   id: string;
@@ -51,8 +54,9 @@ function workspaceItemToPlacement(item: WorkspaceCatalogItem): PlacementCatalogI
     return null;
   }
 
-  const widthMm = normalizeCatalogMm(item.widthMm, item.heightMm);
-  const depthMm = normalizeCatalogMm(item.heightMm, item.widthMm);
+  const footprint = resolveCatalogPlacementFootprintMm(item);
+  const widthMm = footprint.widthMm;
+  const depthMm = footprint.depthMm;
   const heightMm = item.depthMm > 0 ? normalizeCatalogMm(item.depthMm) : 750;
 
   return {

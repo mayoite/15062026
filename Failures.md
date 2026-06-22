@@ -4,10 +4,17 @@ This file documents critical blockers, failed parameters, and required follow-up
 
 ## Live Blockers & Failures
 
+### Planner AI assist + sketch upload (2026-06-22)
+- **Status:** `[~] Code fixed; env may still block live AI`
+- **Root cause (proved):** Default model `gemini-1.5-flash` returns 404; local `OPENROUTER_API_KEY` / `NOVA_ACT_API_KEY` return 401; `GOOGLE_API_KEY` hits 429 quota on `gemini-2.0-flash-lite`.
+- **Fixed:** Default model → `gemini-2.0-flash-lite`; OpenAI added to provider chain; space-suggest uses JSON mode; client uses `browserApiFetch` (trailing slash); degraded fallback surfaces a note in chat; ROOM inserts draw on Fabric (templates/AI apply); wall/line draw no longer jumps on mouse-up; **Upload sketch or plan** adds a locked-underlay image (JPG/PNG/WebP/GIF) — not branded as blueprint.
+- **Follow-up:** Code now also accepts the documented Gemini alias `GOOGLE_GENERATIVE_AI_API_KEY` so local env setup matches onboarding docs.
+- **Action:** Set a working `GOOGLE_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY` (with quota) or `OPENAI_API_KEY` in `.env.local`; optional `GOOGLE_MODEL=gemini-2.0-flash-lite`.
+
 ### Planner workspace interaction gaps (2026-06-22)
 - **Status:** `[~] Partially fixed`
-- **Fixed this pass:** Tool rail was never mounted; planner store tools did not reach Fabric; pan mode missing; catalog drops ignored cursor position; AI Assist “Apply to canvas” was hard-blocked by `!editor` (always null in Fabric shell).
-- **Still open:** Product/inventory management (admin `/admin/inventory` is route CSV only, not SKU stock). BOM/PDF export UI exists (`ExportModal` via subtopbar Export) but needs live verification with catalog placements. AI chat/LLM layout still needs provider env vars (`resolveProviderChain`); grid-pack fallback works offline. Wall/room architectural tools (`wc` walls controller) remain stubbed — draw tools create annotations/lines only.
+- **Fixed this pass:** Tool rail was never mounted; planner store tools did not reach Fabric; pan mode missing; catalog drops ignored cursor position; AI Assist “Apply to canvas” was hard-blocked by `!editor` (always null in Fabric shell). **Catalog footprint:** library cards and canvas placement now use `resolveCatalogPlacementFootprintMm` (seat bays × module length) instead of showing every desk as 1200 mm; properties panel dimension fields are editable (controlled inputs + active-selection resize).
+- **Still open:** Guest autosave still restores on load unless cleared via **New blank layout** (session dialog) or `?fresh=1` URL. Configurator catalog (`configurator_products`) not yet merged into workspace library (standard managed products are). BOM/PDF export needs live verification.
 
 ### Playwright e2e failures after path repair (2026-06-22)
 - **Status:** `[ ] Open`

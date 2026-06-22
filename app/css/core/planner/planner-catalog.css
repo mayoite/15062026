@@ -20,6 +20,30 @@
   background: color-mix(in srgb, var(--surface-soft) 92%, var(--surface-panel));
 }
 
+.planner-workspace .pw-catalog-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.planner-workspace .pw-catalog-header-row .pw-catalog-title {
+  margin: 0;
+}
+
+.planner-workspace .pw-catalog-source-badge {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+}
+
 .planner-workspace .pw-catalog-title {
   margin: 0 0 0.75rem;
   font-size: 0.6875rem;

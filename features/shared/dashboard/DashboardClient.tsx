@@ -3,12 +3,19 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowRight, Lock } from "lucide-react";
 import { PLANNER_GUEST_COOKIE } from "@/lib/auth/constants";
 import { createClient } from "@/lib/supabase/client";
 import { GlobalNavHeader } from "@/features/shared/shell/GlobalNavHeader";
+import {
+  WORKSPACE_HUB_SECTIONS,
+  canAccessWorkspaceItem,
+  type WorkspaceHubItem,
+} from "./workspaceHub";
 
 interface DashboardClientProps {
   userEmail: string;
+  isAdmin: boolean;
 }
 
 function readPlannerDraftCount(): number {
@@ -23,7 +30,67 @@ function readPlannerDraftCount(): number {
   }
 }
 
-export function DashboardClient({ userEmail }: DashboardClientProps) {
+function HubCard({
+  item,
+  enabled,
+}: {
+  item: WorkspaceHubItem;
+  enabled: boolean;
+}) {
+  const Icon = item.icon;
+  const className =
+    "workspace-hub-card group flex h-full flex-col rounded-[1.35rem] border p-5 transition-[border-color,box-shadow,transform] duration-200";
+
+  const inner = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <span
+          className="workspace-hub-card__icon inline-flex h-10 w-10 items-center justify-center rounded-xl"
+          aria-hidden
+        >
+          <Icon size={18} />
+        </span>
+        {!enabled ? (
+          <span className="workspace-hub-card__lock inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[0.625rem] font-bold uppercase tracking-[0.08em]">
+            <Lock size={10} aria-hidden />
+            Admin
+          </span>
+        ) : (
+          <ArrowRight
+            size={16}
+            className="workspace-hub-card__arrow shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+            aria-hidden
+          />
+        )}
+      </div>
+      <h3 className="workspace-hub-card__title mt-4 text-base font-semibold tracking-tight">{item.label}</h3>
+      <p className="workspace-hub-card__desc mt-2 flex-1 text-sm leading-6">{item.description}</p>
+      {enabled ? (
+        <span className="workspace-hub-card__cta mt-4 text-xs font-bold uppercase tracking-[0.1em]">Open</span>
+      ) : (
+        <span className="workspace-hub-card__locked mt-4 text-xs leading-5">
+          Your account does not have admin access.
+        </span>
+      )}
+    </>
+  );
+
+  if (!enabled) {
+    return (
+      <div className={`${className} workspace-hub-card--locked`} aria-disabled="true">
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <Link href={item.href} className={`${className} workspace-hub-card--link`}>
+      {inner}
+    </Link>
+  );
+}
+
+export function DashboardClient({ userEmail, isAdmin }: DashboardClientProps) {
   const router = useRouter();
   const [plannerDraftCount, setPlannerDraftCount] = useState(0);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -35,9 +102,19 @@ export function DashboardClient({ userEmail }: DashboardClientProps) {
   const plannerSummary = useMemo(
     () =>
       plannerDraftCount > 0
-        ? `${plannerDraftCount} saved local planner session${plannerDraftCount === 1 ? "" : "s"} ready to resume.`
-        : "No saved local planner sessions yet. Start a layout and the workspace will begin tracking resumable drafts.",
+        ? `${plannerDraftCount} local planner draft${plannerDraftCount === 1 ? "" : "s"} ready to resume.`
+        : "No local planner drafts yet — open the canvas to start a layout.",
     [plannerDraftCount],
+  );
+
+  const accessibleCount = useMemo(
+    () =>
+      WORKSPACE_HUB_SECTIONS.reduce(
+        (total, section) =>
+          total + section.items.filter((item) => canAccessWorkspaceItem(item.access, isAdmin)).length,
+        0,
+      ),
+    [isAdmin],
   );
 
   async function handleSignOut() {
@@ -49,118 +126,65 @@ export function DashboardClient({ userEmail }: DashboardClientProps) {
     router.refresh();
   }
 
-  const cards = [
-    {
-      title: "Planner",
-      eyebrow: "Spatial planning",
-      href: "/planner",
-      action: "Open planner",
-      summary: plannerSummary,
-      status: plannerDraftCount > 0 ? "Recent work available" : "Ready for first draft",
-    }
-  ] as const;
-
   return (
-    <section className="min-h-screen" style={{ background: "linear-gradient(180deg, var(--surface-soft) 0%, var(--surface-page) 48%, var(--surface-muted) 100%)" }}>
+    <section className="workspace-hub min-h-screen">
       <GlobalNavHeader />
 
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-8">
-        <div className="flex flex-col gap-5 rounded-[2rem] border p-8 lg:flex-row lg:items-end lg:justify-between" style={{ borderColor: "var(--border-soft)", background: "var(--overlay-panel-95)", boxShadow: "var(--shadow-panel)" }}>
-          <div className="max-w-3xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: "var(--color-accent-strong)" }}>
-              Suite workspace
-            </p>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight" style={{ color: "var(--text-heading)" }}>
-              Launch the unified planner from one neutral shell.
-            </h1>
-            <p className="mt-4 text-sm leading-7 sm:text-base" style={{ color: "var(--text-muted)" }}>
-              Signed in as {userEmail}. Choose the active product first, then move into Portal, CRM, or Admin from authenticated navigation instead of from the public front door.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link href="/choose-product" className="rounded-full px-5 py-3 text-sm font-semibold" style={{ background: "var(--color-primary)", color: "var(--text-inverse)" }}>
-              Choose product
-            </Link>
-            <button
-              type="button"
-              onClick={handleSignOut}
-              disabled={isSigningOut}
-              className="rounded-full border px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-              style={{ borderColor: "var(--border-soft)", color: "var(--text-body)", background: "var(--surface-page)" }}
-            >
-              {isSigningOut ? "Signing out..." : "Sign out"}
-            </button>
-          </div>
-        </div>
-
-        <div className="grid gap-5 lg:grid-cols-2">
-          {cards.map((card) => (
-            <article
-              key={card.title}
-              className="rounded-[2rem] border p-7"
-              style={{
-                borderColor: "var(--border-soft)",
-                background: "var(--overlay-panel-92)",
-                boxShadow: "var(--shadow-soft)",
-              }}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: "var(--color-primary)" }}>
-                    {card.eyebrow}
-                  </p>
-                  <h2 className="mt-4 text-3xl font-semibold tracking-tight" style={{ color: "var(--text-heading)" }}>
-                    {card.title}
-                  </h2>
-                </div>
-                <span className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em]" style={{ background: "var(--surface-soft)", color: "var(--text-subtle)" }}>
-                  {card.status}
-                </span>
-              </div>
-              <p className="mt-5 text-sm leading-7" style={{ color: "var(--text-muted)" }}>
-                {card.summary}
+      <div className="workspace-hub__frame mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-8">
+        <header className="workspace-hub__hero rounded-[2rem] border p-8 lg:p-10">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="workspace-hub__eyebrow text-[11px] font-semibold uppercase tracking-[0.3em]">
+                Workspace hub
               </p>
-              <div className="mt-8">
-                <Link href={card.href} className="text-sm font-semibold" style={{ color: "var(--color-primary)" }}>
-                  {card.action} →
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="grid gap-5 lg:grid-cols-[1fr_1fr_1fr]">
-          {[
-            {
-              title: "Portal",
-              body: "Logged-in review surface for member plan review and shared project context. It stays outside the chooser.",
-              href: "/portal",
-            },
-            {
-              title: "CRM",
-              body: "Internal-only clients, projects, and quotes. Kept low-prominence inside the authenticated shell.",
-              href: "/crm/clients",
-            },
-            {
-              title: "Admin",
-              body: "Internal oversight, flags, and catalog operations. Available downstream without crowding the front door.",
-              href: "/admin",
-            },
-          ].map((item) => (
-            <article key={item.title} className="rounded-[1.6rem] border p-6" style={{ borderColor: "var(--border-soft)", background: "var(--surface-page)" }}>
-              <h3 className="text-xl font-semibold tracking-tight" style={{ color: "var(--text-heading)" }}>
-                {item.title}
-              </h3>
-              <p className="mt-3 text-sm leading-7" style={{ color: "var(--text-muted)" }}>
-                {item.body}
+              <h1 className="workspace-hub__title mt-4 text-4xl font-semibold tracking-tight">
+                One dashboard for every tool
+              </h1>
+              <p className="workspace-hub__lead mt-4 text-sm leading-7 sm:text-base">
+                Signed in as <strong>{userEmail}</strong>. {plannerSummary} Pick any destination below — planner,
+                CRM, and admin use the same sign-in.
               </p>
-              <Link href={item.href} className="mt-5 inline-block text-sm font-semibold" style={{ color: "var(--color-primary)" }}>
-                Open {item.title} →
+              <p className="workspace-hub__meta mt-3 text-xs">
+                {accessibleCount} destinations available
+                {isAdmin ? " · admin access enabled" : " · admin tools shown but locked"}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link href="/planner/canvas" className="workspace-hub__primary-btn rounded-full px-5 py-3 text-sm font-semibold">
+                Open planner
               </Link>
-            </article>
-          ))}
-        </div>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+                className="workspace-hub__ghost-btn rounded-full border px-5 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSigningOut ? "Signing out..." : "Sign out"}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {WORKSPACE_HUB_SECTIONS.map((section) => (
+          <section key={section.title} className="workspace-hub__section" aria-labelledby={`hub-${section.title}`}>
+            <header className="workspace-hub__section-header mb-4">
+              <h2 id={`hub-${section.title}`} className="workspace-hub__section-title text-lg font-semibold tracking-tight">
+                {section.title}
+              </h2>
+              <p className="workspace-hub__section-copy mt-1 text-sm">{section.summary}</p>
+            </header>
+            <div className="workspace-hub__grid grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {section.items.map((item) => (
+                <HubCard
+                  key={item.href}
+                  item={item}
+                  enabled={canAccessWorkspaceItem(item.access, isAdmin)}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
     </section>
   );

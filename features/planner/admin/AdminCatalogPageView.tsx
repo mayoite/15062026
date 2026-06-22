@@ -6,7 +6,7 @@ export default function AdminCatalogPageView() {
   return (
     <AdminCatalogListView
       title="Standard catalog"
-      description="Planner managed products used by the canvas catalog sidebar."
+      description="Create and edit planner-managed products (dimensions, mesh type, visibility). Stored in Supabase planner_managed_products when configured."
       catalogType="standard"
     />
   );

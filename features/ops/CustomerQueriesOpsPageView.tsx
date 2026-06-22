@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RefreshCw, Save } from "lucide-react";
 import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
 
@@ -52,7 +52,7 @@ function formatDate(value: string): string {
 
 const tokenStorageKey = "customer_queries_admin_token";
 
-export default function CustomerQueriesOpsPage() {
+export default function CustomerQueriesOpsPageView({ embedded = false }: { embedded?: boolean }) {
   const [adminTokenInput, setAdminTokenInput] = useState("");
   const [adminToken, setAdminToken] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | QueryStatus>("all");
@@ -124,14 +124,14 @@ export default function CustomerQueriesOpsPage() {
 
   useEffect(() => {
     Promise.resolve().then(() => { void fetchItems(); });
-    if (!adminToken) return;
+    if (!embedded && !adminToken) return;
     const interval = window.setInterval(() => {
       void fetchItems();
     }, 10000);
     return () => window.clearInterval(interval);
-  }, [adminToken, fetchItems]);
+  }, [adminToken, embedded, fetchItems]);
 
-  const hasToken = useMemo(() => adminToken.length > 0, [adminToken]);
+  const canLoad = embedded || adminToken.length > 0;
 
   async function handleSave(id: string) {
     const draft = drafts[id];
@@ -181,48 +181,64 @@ export default function CustomerQueriesOpsPage() {
   }
 
   return (
-    <section className="container py-12">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="typ-h1 text-neutral-900">Customer queries</h1>
-          <p className="mt-2 text-sm text-neutral-600">
-            Live inbox with 10-second auto-refresh.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => void fetchItems()}
-          disabled={loading}
-          className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          Refresh
-        </button>
-      </div>
-
-      <div className="mb-6 grid gap-4 rounded-xl border border-neutral-200 bg-white p-4 md:grid-cols-3">
-        <div className="md:col-span-2">
-          <label className="mb-2 block text-xs uppercase tracking-wide text-neutral-500">
-            Admin token
-          </label>
-          <input
-            type="password"
-            value={adminTokenInput}
-            onChange={(event) => setAdminTokenInput(event.target.value)}
-            placeholder="Paste CUSTOMER_QUERIES_ADMIN_TOKEN or use admin session"
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-        </div>
-        <div className="flex items-end">
+    <section className={embedded ? "" : "container py-12"}>
+      {!embedded ? (
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="typ-h1 text-neutral-900">Customer queries</h1>
+            <p className="mt-2 text-sm text-neutral-600">
+              Live inbox with 10-second auto-refresh.
+            </p>
+          </div>
           <button
             type="button"
-            onClick={applyToken}
-            className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+            onClick={() => void fetchItems()}
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
           >
-            Apply token
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
           </button>
         </div>
-      </div>
+      ) : (
+        <div className="admin-page__actions mb-4 justify-end">
+          <button
+            type="button"
+            onClick={() => void fetchItems()}
+            disabled={loading}
+            className="btn-outline inline-flex items-center gap-2 px-3 py-2 text-sm"
+          >
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+            Refresh
+          </button>
+        </div>
+      )}
+
+      {!embedded ? (
+        <div className="mb-6 grid gap-4 rounded-xl border border-neutral-200 bg-white p-4 md:grid-cols-3">
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-xs uppercase tracking-wide text-neutral-500">
+              Admin token
+            </label>
+            <input
+              type="password"
+              value={adminTokenInput}
+              onChange={(event) => setAdminTokenInput(event.target.value)}
+              placeholder="Paste CUSTOMER_QUERIES_ADMIN_TOKEN or use admin session"
+              className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+          </div>
+          <div className="flex items-end">
+            <button
+              type="button"
+              onClick={applyToken}
+              className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-black"
+            >
+              Apply token
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <label className="text-xs uppercase tracking-wide text-neutral-500">Filter</label>
@@ -249,7 +265,7 @@ export default function CustomerQueriesOpsPage() {
         </div>
       ) : null}
 
-      {!hasToken && items.length === 0 && !loading && !error && !lastUpdatedAt ? (
+      {!canLoad && items.length === 0 && !loading && !error && !lastUpdatedAt ? (
         <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-6 text-sm text-neutral-600">
           Sign in as admin or enter the customer queries token to load queries.
         </div>

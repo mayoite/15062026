@@ -12,6 +12,7 @@ import {
   buildChatSuggestionChips,
 } from "./aiAdvisorConfig";
 import { extractCanvasPlacements } from "./extractCanvasPlacements";
+import { browserApiFetch } from "@/lib/api/browserApi";
 
 type ChatRole = "user" | "assistant" | "system";
 
@@ -88,7 +89,7 @@ export function AiAdvisorChatPane({
 
       try {
         const placementCount = editor ? extractCanvasPlacements(editor).length : 0;
-        const response = await fetch("/api/planner/ai-advisor", {
+        const response = await browserApiFetch("/api/planner/ai-advisor", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -112,14 +113,21 @@ export function AiAdvisorChatPane({
         const data = (await response.json()) as {
           content?: string;
           suggestion?: LayoutSuggestion;
+          degraded?: boolean;
         };
+
+        const assistantContent =
+          data.content || "I couldn't process that request. Try rephrasing?";
+        const degradedNote = data.degraded
+          ? "\n\n(Using offline tips — add a valid AI API key or check provider quota for live answers.)"
+          : "";
 
         setMessages((prev) => [
           ...prev,
           {
             id: createMessageId("assistant"),
             role: "assistant",
-            content: data.content || "I couldn't process that request. Try rephrasing?",
+            content: `${assistantContent}${degradedNote}`,
             timestamp: 0,
             suggestion: data.suggestion,
           },

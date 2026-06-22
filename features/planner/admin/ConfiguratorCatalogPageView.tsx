@@ -6,7 +6,7 @@ export default function ConfiguratorCatalogPageView() {
   return (
     <AdminCatalogListView
       title="Planner catalog"
-      description="Configurator products surfaced in the planner canvas catalog."
+      description="Full CRUD for parametric, discrete, and fixed configurator products (workstation JSON, footprints, materials)."
       catalogType="configurator"
     />
   );

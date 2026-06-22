@@ -17,6 +17,7 @@ import {
   PlannerCatalogShapeType,
   catalogShapeTypeToFurnitureType,
 } from "@/features/planner/catalog/shapeTypeRegistry";
+import { millimetersToCanvasUnits, PLANNER_MIN_CANVAS_UNIT } from "@/features/planner/lib/canvasBounds";
 import {
   isLShapedDesk,
   resolveFurnitureBlockKind,
@@ -92,6 +93,34 @@ export function straightWorkstationFootprintMm(item: BuddyCatalogItem): { L: num
   const sharing = isSharingCatalogItem(item);
   const depthMm = sharing ? 1200 : 600;
   return { L: seaters * moduleL, D: depthMm };
+}
+
+/**
+ * Real-world placement footprint in millimetres (seat bays × module length for desks).
+ * Single source of truth for catalog labels, placement, and AI layout.
+ */
+export function resolveCatalogPlacementFootprintMm(
+  item: BuddyCatalogItem,
+): { widthMm: number; depthMm: number } {
+  const straightFootprint =
+    item.category === "desks" && !isCatalogShapeType(item.shapeType, PlannerCatalogShapeType.desk)
+      ? straightWorkstationFootprintMm(item)
+      : null;
+  return {
+    widthMm: straightFootprint?.L ?? normalizeCatalogMm(item.widthMm, item.heightMm),
+    depthMm: straightFootprint?.D ?? normalizeCatalogMm(item.heightMm, item.widthMm),
+  };
+}
+
+/** Convert a catalog footprint in mm to planner canvas units (10 mm per unit). */
+export function catalogFootprintToCanvasUnits(footprint: {
+  widthMm: number;
+  depthMm: number;
+}): { width: number; depth: number } {
+  return {
+    width: Math.max(PLANNER_MIN_CANVAS_UNIT, millimetersToCanvasUnits(footprint.widthMm)),
+    depth: Math.max(PLANNER_MIN_CANVAS_UNIT, millimetersToCanvasUnits(footprint.depthMm)),
+  };
 }
 
 function syntheticProduct(

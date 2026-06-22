@@ -38,22 +38,39 @@ import {
 import { SyncQueueProcessor } from "@/features/planner/store/syncQueueProcessor";
 import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
 import { createClient, getBrowserSessionUser } from "@/lib/supabase/client";
+import {
+  deletePlannerManagedProduct,
+  listPlannerManagedProductsFromSupabase,
+  upsertPlannerManagedProduct,
+} from "@/features/planner/catalog/plannerManagedProducts.client";
+import type { PlannerManagedProductRow, PlannerManagedProductWrite } from "@/features/planner/model";
+import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
+import {
+  deleteProject,
+  getPlannerProjectId,
+} from "@/features/planner/persistence/persistence";
+
+const EMPTY_FABRIC_SNAPSHOT = JSON.stringify({ objects: [] });
 
 type UseSessionHandlersOptions = {
   /** Memoised current planner document (already built — do not re-serialise). */
   getCurrentPlannerDocument: () => ReturnType<typeof buildPlannerDocumentFromEditor>;
   importDraft: (json: string) => Promise<void>;
   planId?: string;
+  guestMode?: boolean;
   shapeCount: number;
   saveStatus: string;
+  fitToContent?: () => number;
 };
 
 export function usePlannerSessionHandlers({
   getCurrentPlannerDocument,
   importDraft,
   planId,
+  guestMode = false,
   shapeCount,
   saveStatus,
+  fitToContent,
 }: UseSessionHandlersOptions) {
   const [planNameOverride, setPlanNameOverride] = useState<string | null>(null);
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(planId ?? null);
@@ -62,6 +79,8 @@ export function usePlannerSessionHandlers({
   const [localDraftVersion, setLocalDraftVersion] = useState(0);
 
   const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [authRole, setAuthRole] = useState<"customer" | "admin" | null>(null);
+  const [plannerManagedProducts, setPlannerManagedProducts] = useState<PlannerManagedProductRow[]>([]);
   const [cloudPlans, setCloudPlans] = useState<PlannerSaveSummary[]>([]);
   const [cloudInventoryVersion, setCloudInventoryVersion] = useState(0);
   const [sessionBusy, setSessionBusy] = useState(false);
@@ -73,15 +92,38 @@ export function usePlannerSessionHandlers({
 
   // Load user session on mount
   useEffect(() => {
-    getBrowserSessionUser()
-      .then((user) => {
-        if (user?.id) {
-          setAuthUserId(user.id);
+    const supabase = createClient();
+    void (async () => {
+      try {
+        const user = await getBrowserSessionUser(supabase);
+        if (!user?.id) {
+          setAuthUserId(null);
+          setAuthRole(null);
+          setPlannerManagedProducts([]);
+          return;
         }
-      })
-      .catch((err) => {
+        setAuthUserId(user.id);
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
+        const profileRole =
+          profileData && typeof profileData === "object" && "role" in profileData
+            ? String((profileData as { role?: string }).role ?? "")
+            : "";
+        const role = profileRole === "admin" ? "admin" : "customer";
+        setAuthRole(role);
+        if (role === "admin") {
+          const managed = await listPlannerManagedProductsFromSupabase(supabase);
+          setPlannerManagedProducts(managed);
+        } else {
+          setPlannerManagedProducts([]);
+        }
+      } catch (err) {
         console.error("Failed to retrieve browser session user:", err);
-      });
+      }
+    })();
   }, []);
 
   const syncCloudInventory = useCallback(async () => {
@@ -776,6 +818,83 @@ export function usePlannerSessionHandlers({
     [cloudPlans, currentOfflinePlan, localDraftSessions],
   );
 
+  const handleUpsertManagedProduct = useCallback(
+    async (product: PlannerManagedProductWrite) => {
+      if (authRole !== "admin") {
+        setSessionErrorMessage("Admin role is required to manage planner products.");
+        return;
+      }
+      const supabase = createClient();
+      setSessionBusy(true);
+      try {
+        const saved = await upsertPlannerManagedProduct(supabase, product);
+        setPlannerManagedProducts((current) =>
+          [...current.filter((entry) => entry.id !== saved.id), saved].sort((a, b) =>
+            b.updated_at.localeCompare(a.updated_at),
+          ),
+        );
+        await usePlannerCatalogStore.getState().hydrateCatalog();
+        setSessionStatusMessage(`Catalog product saved: ${saved.name}`);
+        setSessionErrorMessage(null);
+      } catch (error) {
+        setSessionErrorMessage(
+          error instanceof Error ? error.message : "Unable to save planner-managed product.",
+        );
+      } finally {
+        setSessionBusy(false);
+      }
+    },
+    [authRole],
+  );
+
+  const handleDeleteManagedProduct = useCallback(
+    async (id: string) => {
+      if (authRole !== "admin") {
+        setSessionErrorMessage("Admin role is required to manage planner products.");
+        return;
+      }
+      const supabase = createClient();
+      setSessionBusy(true);
+      try {
+        const deleted = await deletePlannerManagedProduct(supabase, id);
+        if (deleted) {
+          setPlannerManagedProducts((current) => current.filter((entry) => entry.id !== id));
+          await usePlannerCatalogStore.getState().hydrateCatalog();
+        }
+        setSessionStatusMessage(deleted ? "Catalog product removed." : "Product was not found.");
+        setSessionErrorMessage(null);
+      } catch (error) {
+        setSessionErrorMessage(
+          error instanceof Error ? error.message : "Unable to delete planner-managed product.",
+        );
+      } finally {
+        setSessionBusy(false);
+      }
+    },
+    [authRole],
+  );
+
+  const handleStartFreshLayout = useCallback(async () => {
+    const projectId = getPlannerProjectId(guestMode, planId);
+    setSessionBusy(true);
+    try {
+      await deleteProject(projectId);
+      await importDraft(EMPTY_FABRIC_SNAPSHOT);
+      fitToContent?.();
+      setPlanNameOverride("Workspace Plan");
+      setActiveDocumentId(null);
+      setSessionStatusMessage("Started a new blank layout.");
+      setSessionErrorMessage(null);
+      setLocalDraftVersion((v) => v + 1);
+    } catch (error) {
+      setSessionErrorMessage(
+        error instanceof Error ? error.message : "Unable to start a fresh layout.",
+      );
+    } finally {
+      setSessionBusy(false);
+    }
+  }, [fitToContent, guestMode, importDraft, planId]);
+
   return {
     // state
     planNameOverride,
@@ -792,6 +911,9 @@ export function usePlannerSessionHandlers({
     draftPlanName,
     draftNameKey,
     authUserId,
+    authRole,
+    isAdmin: authRole === "admin",
+    plannerManagedProducts,
     // actions
     applyPlannerDocument,
     handleSaveCloud,
@@ -803,5 +925,8 @@ export function usePlannerSessionHandlers({
     handleImportFileChange,
     handleExportJson,
     buildSavedEntries,
+    handleUpsertManagedProduct,
+    handleDeleteManagedProduct,
+    handleStartFreshLayout,
   };
 }

@@ -9,6 +9,7 @@
 
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import {
   Suspense,
   useCallback,
@@ -17,6 +18,7 @@ import {
   useRef,
   useState,
   type ComponentProps,
+  type ChangeEvent,
   type DragEvent,
 } from "react";
 import { PanelRightClose } from "lucide-react";
@@ -31,6 +33,7 @@ const Planner3DViewer = dynamic(
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
 import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 import { queueQuickStarterLayout } from "@/features/planner/ai/quickStarterLayout";
+import { readFloorPlanImageFile } from "@/features/planner/lib/floorPlanImageImport";
 import { PlannerToolRail } from "@/features/planner/editor/PlannerToolRail";
 import { PlannerToolFabricSync } from "@/features/planner/editor/PlannerToolFabricSync";
 import { plannerToolToToolId } from "@/features/planner/editor/plannerToolFabricBridge";
@@ -47,9 +50,14 @@ import {
 } from "@/features/planner/editor/plannerWorkspacePreferences";
 import { PlannerChromeHost } from "@/features/planner/editor/chrome/PlannerChromeHost";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
-import { resolveCatalogItemBlock2D, shapePropsToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
+import {
+  catalogFootprintToCanvasUnits,
+  resolveCatalogItemBlock2D,
+  resolveCatalogPlacementFootprintMm,
+} from "@/features/planner/catalog/catalogBlockBridge";
 import { blockToSvg } from "@/lib/catalog/blocks2d";
 import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
+import { usePlannerCatalogHydration } from "@/features/planner/catalog/usePlannerCatalogHydration";
 import {
   getDefaultPlacementCatalogItemId,
   isFurniturePlacementCatalogItem,
@@ -219,6 +227,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     resizeObject,
     fitToContent,
     clientToSceneUnits,
+    setFloorPlanUnderlay,
     redoStates,
     roomEditRedoStates,
     roomEditStates,
@@ -262,6 +271,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const selectionOpenedRightPanelRef = useRef(false);
 
   const importInputRef = useRef<HTMLInputElement | null>(null);
+  const floorPlanInputRef = useRef<HTMLInputElement | null>(null);
   const plannerStep = usePlannerWorkspaceStore((s) => s.plannerStep);
   const setPlannerStep = usePlannerWorkspaceStore((s) => s.setPlannerStep);
   const workspaceUnitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
@@ -271,6 +281,9 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const plannerTool = usePlannerStore((s) => s.tool);
   const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
+  usePlannerCatalogHydration();
+  const searchParams = useSearchParams();
+  const didBootstrapRef = useRef(false);
 
   useEffect(() => {
     Promise.resolve().then(() => {
@@ -294,8 +307,10 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     item: CatalogItem & { left?: number; top?: number },
     scene?: { x: number; y: number },
   ) => {
-    const { widthCm, depthCm } = shapePropsToCanvasCm(item.widthMm, item.heightMm);
+    const footprint = resolveCatalogPlacementFootprintMm(item);
+    const { width: widthCu, depth: depthCu } = catalogFootprintToCanvasUnits(footprint);
     const block = resolveCatalogItemBlock2D(item);
+    const instanceId = `fi-${item.id}-${Date.now().toString(36)}`;
     const variant = isRoomCatalogShapeType(item.shapeType)
       ? "room"
       : isCatalogShapeType(item.shapeType, PlannerCatalogShapeType.zone)
@@ -304,14 +319,15 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     insertObject({
       type: "GENERIC",
       object: {
-        id: item.id,
+        id: instanceId,
+        catalogItemId: item.id,
         left: scene?.x ?? item.left,
         top: scene?.y ?? item.top,
         name: item.shortName || item.name || "Catalog Item",
         title: item.shortName || item.name || "Catalog Item",
         variant,
-        width: widthCm,
-        height: depthCm,
+        width: widthCu,
+        height: depthCu,
         svg: block ? blockToSvg(block) : undefined,
       },
     });
@@ -362,6 +378,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       endEditRoom,
       fitToContent,
       clientToSceneUnits,
+      setFloorPlanUnderlay,
     });
     // BUG-05: use generation-scoped cleanup so strict-mode double-mount does
     // not let the first mount's cleanup wipe the second mount's runtime.
@@ -379,6 +396,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     resizeObject,
     fitToContent,
     clientToSceneUnits,
+    setFloorPlanUnderlay,
   ]);
 
   useEffect(() => {
@@ -418,8 +436,10 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     getCurrentPlannerDocument: buildCurrentPlannerDocument,
     importDraft,
     planId,
+    guestMode,
     shapeCount,
     saveStatus,
+    fitToContent,
   });
 
   const {
@@ -434,6 +454,11 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     draftPlanName,
     draftNameKey,
     authUserId,
+    isAdmin,
+    plannerManagedProducts,
+    handleUpsertManagedProduct,
+    handleDeleteManagedProduct,
+    handleStartFreshLayout,
     handleSaveCloud: sessionHandleSaveCloud,
     handleSaveDraft: sessionHandleSaveDraft,
     handleSaveAsNewSession: sessionHandleSaveAsNewSession,
@@ -583,6 +608,9 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   }, [insertObject, placeCatalogIntoFabric, shapeCount, setSessionStatusMessage]);
 
   useEffect(() => {
+    if (didBootstrapRef.current) return;
+    didBootstrapRef.current = true;
+
     const initialBinding = getStepToolBinding(usePlannerWorkspaceStore.getState().plannerStep);
     setPlannerTool(initialBinding.plannerTool);
 
@@ -590,9 +618,15 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       if (!guestMode && planId?.trim()) {
         await hydrateCloudPlanIntoIndexedDb(planId, guestMode);
       }
+      if (searchParams.get("fresh") === "1") {
+        await handleStartFreshLayout();
+        return;
+      }
       await restoreSnapshot(importDraft);
     })();
-  }, [guestMode, importDraft, planId, restoreSnapshot, setPlannerTool]);
+    // One-shot bootstrap on mount — do not re-run when handlers change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const clearCatalogDrag = useCallback(() => {
     setDragItem(null);
@@ -766,6 +800,30 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     importInputRef.current?.click();
   }, []);
 
+  const handleFloorPlanUploadRequest = useCallback(() => {
+    floorPlanInputRef.current?.click();
+  }, []);
+
+  const handleFloorPlanFileChange = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.currentTarget.value = "";
+      if (!file) return;
+      try {
+        const payload = await readFloorPlanImageFile(file);
+        await setFloorPlanUnderlay(payload.dataUrl, {
+          fileName: payload.fileName,
+        });
+        setSessionStatusMessage(`Floor plan image loaded: ${payload.fileName}`);
+      } catch (err) {
+        setSessionErrorMessage(
+          err instanceof Error ? err.message : "Could not load the floor plan image.",
+        );
+      }
+    },
+    [setFloorPlanUnderlay, setSessionErrorMessage, setSessionStatusMessage],
+  );
+
   const topBar = (
     <PlannerTopBar
       guestMode={guestMode}
@@ -779,6 +837,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       onOpenSession={() => setIsSessionOpen(true)}
       onSaveDraft={handleSaveDraft}
       onImport={handleImportRequest}
+      onUploadFloorPlan={handleFloorPlanUploadRequest}
       onOpenTemplates={() => setIsTemplateOpen(true)}
       onOpenAi={handleOpenAiAssist}
       isOnline={isOnline}
@@ -861,6 +920,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       applyToolBinding={applyToolBinding}
       setIsTemplateOpen={setIsTemplateOpen}
       onQuickLayout={handleQuickLayout}
+      onUploadFloorPlan={handleFloorPlanUploadRequest}
       toolRail={toolRail}
       plannerChromeHost={<PlannerChromeHost />}
       statusBar={
@@ -882,6 +942,13 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         accept="application/json,.json"
         className="hidden"
         onChange={(e) => handleImportFileChange(e, planName)}
+      />
+      <input
+        ref={floorPlanInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden"
+        onChange={handleFloorPlanFileChange}
       />
       <PlannerWorkspaceLayout
         topBar={topBar}
@@ -919,6 +986,8 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
             statusMessage={sessionStatusMessage}
             errorMessage={sessionErrorMessage}
             canOpen3d={shapeCount > 0}
+            isAdmin={isAdmin}
+            managedProducts={plannerManagedProducts}
             onSaveCloud={handleSaveCloud}
             onSaveDraft={handleSaveDraft}
             onSaveAsNewSession={handleSaveAsNewSession}
@@ -928,6 +997,9 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
             onImport={handleImportRequest}
             onExportJson={handleExportJson}
             onOpen3d={handleOpen3dSession}
+            onUpsertManagedProduct={handleUpsertManagedProduct}
+            onDeleteManagedProduct={handleDeleteManagedProduct}
+            onStartFreshLayout={handleStartFreshLayout}
             onDismissError={() => setSessionErrorMessage(null)}
             isOnline={isOnline}
           />

@@ -9,5 +9,5 @@ export default async function DashboardPage() {
     redirect("/access?next=%2Fdashboard");
   }
 
-  return <DashboardClient userEmail={user.email || "workspace user"} />;
+  return <DashboardClient userEmail={user.email || "workspace user"} isAdmin={user.role === "owner"} />;
 }

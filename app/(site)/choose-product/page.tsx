@@ -12,7 +12,11 @@ export default async function ChooseProductRoute({
   const guestMode = resolvedSearchParams?.mode === "guest";
 
   if (!user && !guestMode) {
-    redirect("/access?next=%2Fchoose-product");
+    redirect("/access?next=%2Fdashboard");
+  }
+
+  if (user && !guestMode) {
+    redirect("/dashboard");
   }
 
   return <ChooseProductPage guestMode={guestMode} authenticated={Boolean(user)} />;

@@ -40,7 +40,7 @@ npm.cmd run dev
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon/public key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | Service role key for admin operations |
 | `OPENAI_API_KEY` | Optional | For AI advisor features |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Optional | For Gemini-powered features |
+| `GOOGLE_API_KEY` / `GOOGLE_GENERATIVE_AI_API_KEY` | Optional | For Gemini-powered features |
 | `RESEND_API_KEY` | Optional | For transactional email |
 
 ## Common Commands

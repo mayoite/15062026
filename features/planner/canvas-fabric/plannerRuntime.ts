@@ -19,6 +19,10 @@ export type PlannerFabricRuntime = {
   endEditRoom: () => void;
   fitToContent: (padding?: number) => number;
   clientToSceneUnits: (clientX: number, clientY: number) => { x: number; y: number } | null;
+  setFloorPlanUnderlay: (
+    source: string,
+    options?: { opacity?: number; fileName?: string },
+  ) => Promise<void>;
 };
 
 export type PlannerFabricRuntimeState = {

@@ -9,7 +9,7 @@ export type ServerChatMessage = {
   content: string;
 };
 
-export type ProviderId = "google" | "aws-nova" | "openrouter";
+export type ProviderId = "google" | "openai" | "aws-nova" | "openrouter";
 
 type GoogleProvider = {
   provider: "google";
@@ -18,7 +18,7 @@ type GoogleProvider = {
 };
 
 type OpenAiCompatibleProvider = {
-  provider: "aws-nova" | "openrouter";
+  provider: "openai" | "aws-nova" | "openrouter";
   model: string;
   apiKey: string;
   baseURL: string;
@@ -35,7 +35,8 @@ type RequestProviderTextOptions = {
   onDelta?: (delta: string) => void;
 };
 
-const DEFAULT_GOOGLE_MODEL = env.GOOGLE_MODEL || "gemini-1.5-flash";
+const DEFAULT_GOOGLE_MODEL = env.GOOGLE_MODEL || "gemini-2.0-flash-lite";
+const DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
 const DEFAULT_NOVA_MODEL = env.AWS_NOVA_MODEL || "us.amazon.nova-lite-v1:0";
 const DEFAULT_BEDROCK_REGION = env.AWS_BEDROCK_REGION || "us-east-1";
 const DEFAULT_OPENROUTER_MODEL = env.OPENROUTER_MODEL || "openrouter/auto";
@@ -44,6 +45,10 @@ export function getBedrockMantleBaseUrl(
   region = DEFAULT_BEDROCK_REGION,
 ): string {
   return `https://bedrock-mantle.${region}.api.aws/v1`;
+}
+
+function resolveGoogleApiKey(): string | undefined {
+  return env.GOOGLE_API_KEY?.trim() || env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
 }
 
 function createOpenRouterClient(apiKey: string) {
@@ -67,12 +72,22 @@ function createBedrockNovaClient(apiKey: string, region = DEFAULT_BEDROCK_REGION
 export function resolveProviderChain(): ResolvedProvider[] {
   const providers: ResolvedProvider[] = [];
 
-  const googleKey = env.GOOGLE_API_KEY?.trim();
+  const googleKey = resolveGoogleApiKey();
   if (googleKey) {
     providers.push({
       provider: "google",
       apiKey: googleKey,
       model: DEFAULT_GOOGLE_MODEL,
+    });
+  }
+
+  const openAiKey = env.OPENAI_API_KEY?.trim();
+  if (openAiKey) {
+    providers.push({
+      provider: "openai",
+      apiKey: openAiKey,
+      baseURL: "https://api.openai.com/v1",
+      model: DEFAULT_OPENAI_MODEL,
     });
   }
 
@@ -180,7 +195,9 @@ async function requestOpenAiCompatibleText(
   const client =
     provider.provider === "openrouter"
       ? createOpenRouterClient(provider.apiKey)
-      : createBedrockNovaClient(provider.apiKey, DEFAULT_BEDROCK_REGION);
+      : provider.provider === "openai"
+        ? new OpenAI({ apiKey: provider.apiKey })
+        : createBedrockNovaClient(provider.apiKey, DEFAULT_BEDROCK_REGION);
   const requestBody = {
     model: provider.model,
     messages,

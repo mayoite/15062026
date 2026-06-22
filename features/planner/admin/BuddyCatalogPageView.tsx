@@ -6,7 +6,7 @@ export default function BuddyCatalogPageView() {
   return (
     <AdminCatalogListView
       title="Buddy catalog"
-      description="Buddy alias of the configurator catalog (same API source)."
+      description="Same configurator API as Planner catalog — parametric product CRUD with all sizing fields."
       catalogType="buddy"
     />
   );

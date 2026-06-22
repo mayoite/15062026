@@ -5,15 +5,17 @@
  */
 import {
   Canvas as FabricCanvas,
+  FabricImage,
   Group,
   Point,
   ActiveSelection,
   FabricText,
   Pattern,
+  Rect,
   loadSVGFromString,
   util as fabricUtil,
 } from 'fabric';
-import type { Rect, FabricObject, Line } from 'fabric';
+import type { FabricObject, Line } from 'fabric';
 import { saveAs as saveFile } from 'file-saver';
 import { formatDate } from '../lib/formatDate';
 import * as _ from '../lib/helpers';
@@ -75,15 +77,17 @@ export function createFloorplanCanvasApi(
   let drawFillColor: string = DEFAULT_FABRIC_FILL_COLOR;
   let contextMenuListener: ((state: FabricContextMenuState | null) => void) | null = null;
   let drawToolsController: ReturnType<typeof wireFabricDrawTools> | null = null;
+  let floorPlanUnderlay: FabricImage | null = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wc: any = null;
 
   const {
     RL_FOOT,
     RL_AISLEGAP,
-    RL_ROOM_OUTER_SPACING,
-    RL_ROOM_INNER_SPACING,
-    RL_UNGROUPABLES,
+  RL_ROOM_OUTER_SPACING,
+  RL_ROOM_INNER_SPACING,
+  RL_CORNER_FILL,
+  RL_UNGROUPABLES,
     RL_CREDIT_TEXT,
     RL_CREDIT_TEXT_PARAMS
   } = _;
@@ -513,7 +517,44 @@ export function createFloorplanCanvasApi(
     const payloadObj = object as InsertPayloadObj;
 
     if (type === 'ROOM') {
-      wc?.setRoom(payloadObj as { width: number; height: number });
+      const { width, height, title } = payloadObj as {
+        width: number;
+        height: number;
+        title?: string;
+      };
+      const { Rect, FabricText } = await import('fabric');
+      const origin = roomOrigin();
+      const room = new Rect({
+        left: origin,
+        top: origin,
+        width,
+        height,
+        fill: 'rgba(148, 163, 184, 0.08)',
+        stroke: '#334155',
+        strokeWidth: 2,
+        originX: 'left',
+        originY: 'top',
+        selectable: true,
+        evented: true,
+      });
+      const roomLabel = title || 'Room';
+      room.set('name', `ROOM:${roomLabel}`);
+      view.add(room);
+      if (roomLabel) {
+        const label = new FabricText(roomLabel, {
+          left: origin + 8,
+          top: origin + 8,
+          fontSize: 14,
+          fontFamily: 'Arial, sans-serif',
+          fill: '#334155',
+          selectable: false,
+          evented: false,
+          name: `ROOM-LABEL:${roomLabel}`,
+        });
+        view.add(label);
+      }
+      view.sendObjectToBack(room);
+      view.setActiveObject(room);
       saveState();
       return;
     }
@@ -525,8 +566,6 @@ export function createFloorplanCanvasApi(
         stroke: '#1f2937',
         strokeWidth: 2,
         fill: '',
-        originX: 'center',
-        originY: 'center',
         selectable: true,
         evented: true,
         hasControls: true,
@@ -639,6 +678,12 @@ export function createFloorplanCanvasApi(
     view.discardActiveObject();
     view.renderAll();
     corners = view.getObjects().filter((obj) => (obj as PlannerFabricObject).name === 'CORNER') as Rect[];
+    floorPlanUnderlay =
+      (view
+        .getObjects()
+        .find((obj) => String((obj as PlannerFabricObject).name ?? '').startsWith('FLOORPLAN:')) as
+        | FabricImage
+        | undefined) ?? null;
     wc?.drawRoom();
     ctxRef.current.setSelections([]);
     ctxRef.current.setUngroupable(false);
@@ -964,6 +1009,49 @@ export function createFloorplanCanvasApi(
     }
   }
 
+  async function setFloorPlanUnderlay(
+    source: string,
+    options?: { opacity?: number; fileName?: string },
+  ) {
+    if (!view) return;
+
+    if (floorPlanUnderlay) {
+      view.remove(floorPlanUnderlay);
+      floorPlanUnderlay = null;
+    }
+
+    const image = await FabricImage.fromURL(source, { crossOrigin: 'anonymous' });
+    const origin = roomOrigin();
+    const maxWidthUnits = Math.min(PLANNER_MAX_CANVAS_UNITS * 0.75, 6000);
+    const naturalWidth = image.width || 1;
+    const scale = maxWidthUnits / naturalWidth;
+
+    image.set({
+      left: origin,
+      top: origin,
+      scaleX: scale,
+      scaleY: scale,
+      opacity: options?.opacity ?? 0.55,
+      selectable: true,
+      evented: true,
+      hasControls: true,
+      hasBorders: true,
+      originX: 'left',
+      originY: 'top',
+      name: `FLOORPLAN:${options?.fileName || 'underlay'}`,
+    });
+
+    view.add(image);
+    view.sendObjectToBack(image);
+    floorPlanUnderlay = image;
+    view.setActiveObject(image);
+    clampFabricObjectToCanvas(image);
+    saveState();
+    const zoomPct = fitToContent();
+    ctxRef.current.syncZoom(zoomPct);
+    view.requestRenderAll();
+  }
+
   function setLayerVisibility(layerVisible: Record<string, boolean>) {
     if (!view) return;
     view.getObjects().forEach((obj) => {
@@ -981,7 +1069,19 @@ export function createFloorplanCanvasApi(
 
   function resizeObject(shapeId: string, widthMm: number, heightMm: number) {
     if (!view) return;
-    const target = view.getObjects().find((obj) => String((obj as PlannerFabricObject).id ?? (obj as PlannerFabricObject).name ?? '') === shapeId);
+    const active = view.getActiveObject();
+    let target: FabricObject | undefined;
+    if (active && !(active instanceof ActiveSelection)) {
+      const activeId = String((active as PlannerFabricObject).id ?? (active as PlannerFabricObject).name ?? "");
+      if (!shapeId || activeId === shapeId) {
+        target = active as FabricObject;
+      }
+    }
+    if (!target) {
+      target = view.getObjects().find(
+        (obj) => String((obj as PlannerFabricObject).id ?? (obj as PlannerFabricObject).name ?? "") === shapeId,
+      ) as FabricObject | undefined;
+    }
     if (!target) return;
     const newWidth = widthMm / FABRIC_TO_MM;
     const newHeight = heightMm / FABRIC_TO_MM;
@@ -1314,6 +1414,7 @@ export function createFloorplanCanvasApi(
     setObjectRotation,
     setObjectLock,
     clientToSceneUnits,
+    setFloorPlanUnderlay,
   };
   return api;
 }
