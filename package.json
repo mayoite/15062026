@@ -177,7 +177,7 @@
     "@types/file-saver": "^2.0.7",
     "@types/istanbul-lib-report": "^3.0.3",
     "@types/istanbul-reports": "^3.0.4",
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.0.0",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
