@@ -2,6 +2,7 @@
 
 import {
   Eraser,
+  Hand,
   Minus,
   Cursor,
   PaintBucket,
@@ -16,6 +17,8 @@ import {
   FABRIC_DRAW_TOOL_COLORS,
   type FabricDrawTool,
 } from "./fabricDrawToolTypes";
+import { fabricToolToPlannerSelection } from "@/features/planner/editor/plannerToolFabricBridge";
+import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { PlannerTooltip } from "@/features/planner/ui/PlannerTooltip";
 
 function DrawToolButton({
@@ -54,6 +57,7 @@ const DRAW_TOOLS: Array<{
   icon: React.ReactNode;
 }> = [
   { id: "select", title: "Select", icon: <Cursor size={18} weight="bold" /> },
+  { id: "pan", title: "Pan (H)", icon: <Hand size={18} weight="bold" /> },
   { id: "line", title: "Line", icon: <Minus size={18} weight="bold" /> },
   { id: "measure", title: "Measure", icon: <Ruler size={18} weight="bold" /> },
   { id: "curve", title: "Curved line", icon: <BezierCurve size={18} weight="bold" /> },
@@ -63,7 +67,8 @@ const DRAW_TOOLS: Array<{
 ];
 
 const DRAW_TOOL_HELP: Record<FabricDrawTool, string> = {
-  select: "Select and move existing items.",
+  select: "Select and move existing items. Hold Space or middle-mouse to pan.",
+  pan: "Drag to move the canvas. Shortcut: H",
   line: "Click and drag to place a straight line.",
   measure: "Click and drag to place a measurement label.",
   curve: "Click three points to place a curved line.",
@@ -75,7 +80,13 @@ const DRAW_TOOL_HELP: Record<FabricDrawTool, string> = {
 
 export function FabricDrawToolsBar({ disabled = false }: { disabled?: boolean }) {
   const { drawTool, drawColor, drawFillColor, setDrawTool, setDrawColor, setDrawFillColor } = useFloorplan();
+  const setPlannerTool = usePlannerStore((s) => s.setTool);
   const fillPickerValue = drawFillColor === "transparent" ? "#ffffff" : drawFillColor;
+
+  const selectDrawTool = (toolId: FabricDrawTool) => {
+    setDrawTool(toolId);
+    setPlannerTool(fabricToolToPlannerSelection(toolId).plannerTool);
+  };
 
   return (
     <div className="fcw-toolbar-group fcw-toolbar-group--draw" role="group" aria-label="Drawing tools">
@@ -86,7 +97,7 @@ export function FabricDrawToolsBar({ disabled = false }: { disabled?: boolean })
             title={tool.title}
             active={drawTool === tool.id}
             disabled={disabled}
-            onClick={() => setDrawTool(tool.id)}
+            onClick={() => selectDrawTool(tool.id)}
           >
             {tool.icon}
           </DrawToolButton>

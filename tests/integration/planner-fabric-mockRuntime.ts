@@ -69,6 +69,7 @@ export function seedFabricRuntime(options: {
     setLayerVisibility,
     editRoom: vi.fn(),
     endEditRoom: vi.fn(),
+    clientToSceneUnits: vi.fn(() => null),
     ...options.runtime,
   });
 

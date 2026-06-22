@@ -4,6 +4,11 @@ This file documents critical blockers, failed parameters, and required follow-up
 
 ## Live Blockers & Failures
 
+### Planner workspace interaction gaps (2026-06-22)
+- **Status:** `[~] Partially fixed`
+- **Fixed this pass:** Tool rail was never mounted; planner store tools did not reach Fabric; pan mode missing; catalog drops ignored cursor position; AI Assist “Apply to canvas” was hard-blocked by `!editor` (always null in Fabric shell).
+- **Still open:** Product/inventory management (admin `/admin/inventory` is route CSV only, not SKU stock). BOM/PDF export UI exists (`ExportModal` via subtopbar Export) but needs live verification with catalog placements. AI chat/LLM layout still needs provider env vars (`resolveProviderChain`); grid-pack fallback works offline. Wall/room architectural tools (`wc` walls controller) remain stubbed — draw tools create annotations/lines only.
+
 ### Playwright e2e failures after path repair (2026-06-22)
 - **Status:** `[ ] Open`
 - **Finding:** `npm run test:e2e:nav` — 3 passed / 5 failed (products nav, mega menu, planner hero CTA timeout). `npm run test:planner-catalog` — 35 failed (mostly `page.goto` timeouts to `/planner/` and guest workspace).

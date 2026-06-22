@@ -19,6 +19,7 @@ type PlannerCanvasConfig = {
     wheelZoomMin: number;
     wheelZoomMax: number;
     defaultZoomPercent: number;
+    emptyViewportFitMeters: number;
   };
 };
 
@@ -42,6 +43,53 @@ export const PLANNER_LAYOUT_ORIGIN_UNITS = config.layout.defaultOriginCanvasUnit
 
 export const PLANNER_VIEWPORT = config.viewport;
 
+export function plannerWorldBoundsRect(): CanvasRect {
+  return {
+    left: PLANNER_MIN_CANVAS_UNIT,
+    top: PLANNER_MIN_CANVAS_UNIT,
+    width: PLANNER_MAX_CANVAS_UNITS,
+    height: PLANNER_MAX_CANVAS_UNITS,
+  };
+}
+
+/**
+ * Keep the Fabric viewport inside the configured world extent (0 … max canvas units).
+ * Prevents pan/zoom from drifting into an infinite grey void.
+ */
+export function clampViewportTransform(
+  viewportWidthPx: number,
+  viewportHeightPx: number,
+  zoom: number,
+  translateX: number,
+  translateY: number,
+  paddingPx: number = PLANNER_VIEWPORT.fitPaddingPx,
+): { translateX: number; translateY: number } {
+  const max = PLANNER_MAX_CANVAS_UNITS;
+  const pad = paddingPx;
+
+  const minTx = viewportWidthPx - (max + pad) * zoom;
+  const maxTx = pad * zoom;
+  const minTy = viewportHeightPx - (max + pad) * zoom;
+  const maxTy = pad * zoom;
+
+  let tx = translateX;
+  let ty = translateY;
+
+  if (minTx <= maxTx) {
+    tx = Math.max(minTx, Math.min(maxTx, tx));
+  } else {
+    tx = (viewportWidthPx - max * zoom) / 2;
+  }
+
+  if (minTy <= maxTy) {
+    ty = Math.max(minTy, Math.min(maxTy, ty));
+  } else {
+    ty = (viewportHeightPx - max * zoom) / 2;
+  }
+
+  return { translateX: tx, translateY: ty };
+}
+
 export function canvasUnitsToMillimeters(units: number): number {
   return Math.round(units * PLANNER_MM_PER_CANVAS_UNIT);
 }
@@ -49,6 +97,11 @@ export function canvasUnitsToMillimeters(units: number): number {
 export function millimetersToCanvasUnits(mm: number): number {
   return Math.round(mm / PLANNER_MM_PER_CANVAS_UNIT);
 }
+
+/** Default world square (in canvas units) framed when the plan is empty. */
+export const PLANNER_EMPTY_VIEWPORT_FIT_UNITS = millimetersToCanvasUnits(
+  config.viewport.emptyViewportFitMeters * 1000,
+);
 
 export function clampCanvasScalar(
   value: number,

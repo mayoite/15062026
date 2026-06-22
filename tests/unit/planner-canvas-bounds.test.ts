@@ -8,6 +8,7 @@ import {
   clampCanvasPoint,
   clampCanvasRect,
   capMillimetersToCanvas,
+  clampViewportTransform,
   isWithinCanvasBounds,
   millimetersToCanvasUnits,
 } from "@/features/planner/lib/canvasBounds";
@@ -45,5 +46,17 @@ describe("canvasBounds", () => {
     expect(capMillimetersToCanvas(500)).toBe(plannerCanvasConfig.bounds.minRoomDimensionMm);
     expect(capMillimetersToCanvas(PLANNER_MAX_CANVAS_MM + 1)).toBe(PLANNER_MAX_CANVAS_MM);
     expect(capMillimetersToCanvas(5000)).toBe(5000);
+  });
+
+  it("clamps viewport pan inside the world extent", () => {
+    const max = PLANNER_MAX_CANVAS_UNITS;
+    const zoom = 0.5;
+    const farPan = { translateX: -max * zoom, translateY: -max * zoom };
+    const clamped = clampViewportTransform(800, 600, zoom, farPan.translateX, farPan.translateY, 0);
+    expect(clamped.translateX).toBeGreaterThan(farPan.translateX);
+    expect(clamped.translateY).toBeGreaterThan(farPan.translateY);
+    const farRight = clampViewportTransform(800, 600, zoom, max * zoom, 0, 0);
+    expect(farRight.translateX).toBeLessThan(max * zoom);
+    expect(farRight.translateX).toBeGreaterThanOrEqual(800 - max * zoom);
   });
 });

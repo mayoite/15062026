@@ -21,6 +21,7 @@ export interface PlannerCanvasStageProps {
   setIsTemplateOpen: (open: boolean) => void;
   onQuickLayout?: () => void;
   plannerChromeHost: ReactNode;
+  toolRail?: ReactNode;
   statusBar: ReactNode;
 }
 
@@ -40,11 +41,14 @@ export function PlannerCanvasStage({
   setIsTemplateOpen,
   onQuickLayout,
   plannerChromeHost,
+  toolRail,
   statusBar,
 }: PlannerCanvasStageProps) {
   return (
     <section className="pw-canvas-stage">
-      <section className="pw-canvas-area" aria-label="Workspace canvas">
+      <div className="pw-canvas-stage-inner">
+        {toolRail}
+        <section className="pw-canvas-area" aria-label="Workspace canvas">
         <div className="pw-canvas-body" data-view-mode={viewMode}>
           <div ref={chromeLayerRef} className="pw-canvas-chrome-layer">
             {plannerChromeHost}
@@ -80,6 +84,7 @@ export function PlannerCanvasStage({
         </div>
         {statusBar}
       </section>
+      </div>
     </section>
   );
 }

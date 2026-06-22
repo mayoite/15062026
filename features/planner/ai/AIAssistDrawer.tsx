@@ -6,7 +6,7 @@ import { ChevronDown, Loader2, MessageSquare, Sparkles, Wand2 } from "lucide-rea
 
 import { CatalogBlockPreview } from "@/features/planner/catalog/CatalogBlockPreview";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
-import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
+import { getPlannerFabricRuntime, subscribePlannerFabricRuntimeState } from "@/features/planner/canvas-fabric";
 
 import {
   PLANNER_PRIMARY_PURPOSE_OPTIONS,
@@ -28,9 +28,9 @@ import type { PlannerProjectMetadata } from "@/features/planner/onboarding/proje
 
 import type { CatalogMatchResult, SuggestedLayoutJson } from "./types";
 
-function useCanvasPlacementCount(_editor?: null): number {
+function useCanvasPlacementCount(): number {
   return useSyncExternalStore(
-    () => () => {},
+    subscribePlannerFabricRuntimeState,
     () => extractCanvasPlacements(null).length,
     () => 0,
   );
@@ -54,7 +54,7 @@ export function AIAssistDrawer({
 
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [tab, setTab] = useState<AiAssistTab>("suggest-layout");
-  const placementCount = useCanvasPlacementCount(editor);
+  const placementCount = useCanvasPlacementCount();
 
   const [matchBusy, setMatchBusy] = useState(false);
   const [matchResults, setMatchResults] = useState<CatalogMatchResult[]>([]);
@@ -62,11 +62,11 @@ export function AIAssistDrawer({
 
   const handleScanCanvas = useCallback(() => {
     setMatchBusy(true);
-    const placements = extractCanvasPlacements(editor);
+    const placements = extractCanvasPlacements(null);
     setMatchResults(matchCatalogForPlacements(placements));
     setMatchScanned(true);
     setMatchBusy(false);
-  }, [editor]);
+  }, []);
 
   const handleApplyCatalogMatch = useCallback(
     (_shapeId: string, catalogItemId: string) => {
@@ -77,7 +77,7 @@ export function AIAssistDrawer({
     [],
   );
 
-  const emptyCanvasHint = !editor || placementCount === 0;
+  const emptyCanvasHint = placementCount === 0;
 
   const showBody = embedded || expanded;
 
@@ -163,7 +163,7 @@ export function AIAssistDrawer({
               <button
                 type="button"
                 className="pw-ai-drawer-primary"
-                disabled={matchBusy || !editor}
+                disabled={matchBusy}
                 onClick={handleScanCanvas}
               >
                 {matchBusy ? (
@@ -311,10 +311,11 @@ function SuggestLayoutPane({
   }, [floorAreaSqFt, purpose, seatCount]);
 
   const handleApplyLayout = useCallback(() => {
-    if (!editor || !previewLayout) return;
-    applySuggestedLayout(editor, previewLayout);
+    if (!previewLayout) return;
+    applySuggestedLayout(null, previewLayout);
     setLayoutError(null);
-  }, [editor, previewLayout]);
+    getPlannerFabricRuntime()?.fitToContent();
+  }, [previewLayout]);
 
   return (
     <div className="pw-ai-drawer-pane" role="tabpanel">
@@ -398,7 +399,7 @@ function SuggestLayoutPane({
           <button
             type="button"
             className="pw-ai-drawer-secondary"
-            disabled={!editor}
+            disabled={!previewLayout}
             onClick={handleApplyLayout}
           >
             Apply to canvas

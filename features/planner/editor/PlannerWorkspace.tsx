@@ -29,8 +29,13 @@ const Planner3DViewer = dynamic(
   { ssr: false },
 );
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
-import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
+import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 import { queueQuickStarterLayout } from "@/features/planner/ai/quickStarterLayout";
+import { PlannerToolRail } from "@/features/planner/editor/PlannerToolRail";
+import { PlannerToolFabricSync } from "@/features/planner/editor/PlannerToolFabricSync";
+import { plannerToolToToolId } from "@/features/planner/editor/plannerToolFabricBridge";
+import { readPlannerToolVisibilityMode } from "@/features/planner/editor/plannerToolVisibility";
+import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
 import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
@@ -186,6 +191,7 @@ function Fabric2DWith3DSync({
 
   return (
     <div className="relative flex h-full min-h-0 w-full flex-col fabric-canvas-host">
+      <PlannerToolFabricSync />
       <RoomPresetsOnOpen />
       <FabricCanvasWorkspace />
     </div>
@@ -212,6 +218,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     setLayerVisibility,
     resizeObject,
     fitToContent,
+    clientToSceneUnits,
     redoStates,
     roomEditRedoStates,
     roomEditStates,
@@ -261,6 +268,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
   const [leftTab, setLeftTab] = useState<PlannerLeftTab>(getStepLeftTab(plannerStep));
   const setPlannerTool = usePlannerStore((s) => s.setTool);
+  const plannerTool = usePlannerStore((s) => s.tool);
   const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
 
@@ -282,7 +290,10 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     writePlannerWorkspacePreferences({ catalogQuery: state.query });
   }), []);
 
-  const placeCatalogIntoFabric = useCallback((item: CatalogItem & { left?: number; top?: number }) => {
+  const placeCatalogIntoFabric = useCallback((
+    item: CatalogItem & { left?: number; top?: number },
+    scene?: { x: number; y: number },
+  ) => {
     const { widthCm, depthCm } = shapePropsToCanvasCm(item.widthMm, item.heightMm);
     const block = resolveCatalogItemBlock2D(item);
     const variant = isRoomCatalogShapeType(item.shapeType)
@@ -294,8 +305,8 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       type: "GENERIC",
       object: {
         id: item.id,
-        left: item.left,
-        top: item.top,
+        left: scene?.x ?? item.left,
+        top: scene?.y ?? item.top,
         name: item.shortName || item.name || "Catalog Item",
         title: item.shortName || item.name || "Catalog Item",
         variant,
@@ -350,6 +361,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       editRoom,
       endEditRoom,
       fitToContent,
+      clientToSceneUnits,
     });
     // BUG-05: use generation-scoped cleanup so strict-mode double-mount does
     // not let the first mount's cleanup wipe the second mount's runtime.
@@ -366,6 +378,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     setLayerVisibility,
     resizeObject,
     fitToContent,
+    clientToSceneUnits,
   ]);
 
   useEffect(() => {
@@ -643,7 +656,8 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     }
     try {
       const item = JSON.parse(raw) as CatalogItem;
-      placeCatalogIntoFabric(item);
+      const scene = getPlannerFabricRuntime()?.clientToSceneUnits(e.clientX, e.clientY) ?? undefined;
+      placeCatalogIntoFabric(item, scene ?? undefined);
       recordRecentPlacement(item.id);
       setDropFlash({ x: e.clientX, y: e.clientY });
     } catch {
@@ -788,6 +802,19 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     queueQuickStarterLayout();
   }, []);
 
+  const toolVisibilityMode = useMemo(() => readPlannerToolVisibilityMode(), []);
+  const activeToolId = useMemo(() => plannerToolToToolId(plannerTool), [plannerTool]);
+
+  const toolRail = isCompact ? null : (
+    <PlannerToolRail
+      activeTool={activeToolId}
+      activePlannerTool={plannerTool}
+      step={plannerStep}
+      visibilityMode={toolVisibilityMode}
+      onSelect={(toolId, storeTool) => applyToolBinding({ toolId, plannerTool: storeTool })}
+    />
+  );
+
   const rightPanel = (
     <aside
       className="pw-right-panel"
@@ -834,6 +861,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       applyToolBinding={applyToolBinding}
       setIsTemplateOpen={setIsTemplateOpen}
       onQuickLayout={handleQuickLayout}
+      toolRail={toolRail}
       plannerChromeHost={<PlannerChromeHost />}
       statusBar={
         <PlannerStatusBarWithFabricGrid
@@ -936,6 +964,7 @@ export function PlannerWorkspace(props: PlannerWorkspaceProps) {
   return (
     <FloorplanProvider>
       <FabricGridBridge />
+      <PlannerToolFabricSync />
       <PlannerWorkspaceContent {...props} />
     </FloorplanProvider>
   );
