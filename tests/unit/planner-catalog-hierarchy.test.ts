@@ -8,7 +8,6 @@ import {
   deriveCatalogShortName,
   deriveCatalogMaterial,
   formatCatalogSeatFootprint,
-  formatCatalogDimensionsLabel,
   resolveCatalogPurposeTab,
   resolveCatalogSubCategory,
   enrichCatalogItem,
@@ -226,3 +225,4 @@ describe("CATALOG_SUB_CATEGORIES", () => {
     }
   });
 });
+

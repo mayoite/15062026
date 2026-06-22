@@ -200,3 +200,4 @@ describe("catalog adapter helpers", () => {
     expect(items[0]).toEqual(expect.objectContaining({ id: expect.any(String), name: expect.any(String) }));
   });
 });
+

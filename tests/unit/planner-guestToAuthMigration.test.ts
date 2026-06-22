@@ -132,3 +132,4 @@ describe("migrateGuestProjectToMember", () => {
     expect(saveCalls).toBe(0);
   });
 });
+

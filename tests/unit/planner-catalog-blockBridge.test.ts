@@ -137,3 +137,4 @@ describe("straightWorkstationFootprintMm", () => {
     expect(D).toBe(600);
   });
 });
+

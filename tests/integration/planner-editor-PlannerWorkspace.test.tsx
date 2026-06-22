@@ -1,47 +1,26 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CURATED_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
+import { usePlannerStore } from "@/features/planner/store/plannerStore";
+import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
 import { resetFabricRuntimeState } from "./planner-fabric-mockRuntime";
 
-const setPlannerTool = vi.fn();
-const insertObject = vi.fn();
-const exportDraft = vi.fn(() => JSON.stringify({ objects: [] }));
-
-vi.mock("@/features/planner/canvas-fabric/FabricCanvasSubToolbar", () => ({
-  FabricCanvasSubToolbar: () => null,
+vi.mock("fabric", () => ({
+  Canvas: class MockCanvas {
+    on() {}
+    off() {}
+    dispose() {}
+    add() {}
+    remove() {}
+    setDimensions() {}
+    requestRenderAll() {}
+    getObjects() { return []; }
+    clear() {}
+    calcOffset() {}
+  }
 }));
-
-vi.mock("@/features/planner/canvas-fabric", async () => {
-  const actual = await vi.importActual<Record<string, unknown>>(
-    "@/features/planner/canvas-fabric",
-  );
-  return {
-    ...actual,
-    FabricCanvasWorkspace: () => <div data-testid="fabric-canvas" />,
-    RoomPresetsOnOpen: () => null,
-    useFloorplan: () => ({
-      editRoom: vi.fn(),
-      endEditRoom: vi.fn(),
-      exportDraft,
-      exportSvg: vi.fn(() => null),
-      exportPngBlob: vi.fn(async () => null),
-      importDraft: vi.fn(async () => undefined),
-      insertObject,
-      setLayerVisibility: vi.fn(),
-      redoStates: [],
-      roomEditRedoStates: [],
-      roomEditStates: [],
-      selections: [],
-      states: ["{}"],
-      gridEnabled: true,
-      toggleGrid: vi.fn(),
-      refitCanvas: vi.fn(),
-    }),
-    FloorplanProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-});
 
 vi.mock("next/link", () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
@@ -52,61 +31,6 @@ vi.mock("next/link", () => ({
 vi.mock("@/components/ui/Logo", () => ({
   OneAndOnlyLogo: () => <span data-testid="logo" />,
 }));
-
-vi.mock("@/features/planner/viewer/PlannerViewer", () => ({
-  PlannerViewer: () => <div data-testid="planner-3d" />,
-}));
-
-vi.mock("@/features/planner/shared/components/SplitViewLayout", () => ({
-  SplitViewLayout: ({ children2D }: { children2D: React.ReactNode }) => <div>{children2D}</div>,
-}));
-
-vi.mock("@/features/planner/hooks/usePlannerFabricAutosave", () => ({
-  usePlannerFabricAutosave: () => ({
-    status: "saved",
-    lastSavedAt: null,
-    restoreSnapshot: vi.fn(async () => undefined),
-    retrySave: vi.fn(),
-  }),
-}));
-
-vi.mock("@/features/planner/components/WorkspaceThemeProvider", () => ({
-  useTheme: () => ({ resolvedTheme: "light" }),
-}));
-
-vi.mock("@/features/planner/store/plannerStore", () => ({
-  usePlannerStore: (selector: (state: { setTool: typeof setPlannerTool }) => unknown) =>
-    selector({ setTool: setPlannerTool }),
-}));
-
-vi.mock("@/features/planner/persistence/cloudPlanHydration", () => ({
-  hydrateCloudPlanIntoIndexedDb: vi.fn(async () => undefined),
-}));
-
-vi.mock("@/features/planner/persistence/plannerDraft", () => ({
-  LOCAL_CURRENT_DRAFT_ID: "current",
-  loadPlannerDraftDocument: vi.fn(() => null),
-  savePlannerDraftDocument: vi.fn(() => ({ savedAt: "2026-06-15T10:00:00.000Z" })),
-  deletePlannerDraftDocument: vi.fn(() => true),
-  listPlannerDraftDocuments: vi.fn(() => []),
-}));
-
-vi.mock("@/features/planner/persistence/plannerImport", () => ({
-  parsePlannerDocumentImportFile: vi.fn(async () => ({ ok: false, errors: ["Invalid planner JSON"] })),
-}));
-
-vi.mock("@/features/planner/lib/compliance", () => ({
-  runPlannerComplianceCheck: vi.fn(() => []),
-}));
-
-vi.mock("@/features/planner/catalog/shapeTypeRegistry", async () => {
-  const actual = await vi.importActual("@/features/planner/catalog/shapeTypeRegistry");
-  return {
-    ...actual,
-    acceptsCatalogDrag: vi.fn(() => true),
-    readCatalogDragPayload: vi.fn(() => JSON.stringify(CURATED_CATALOG_ITEMS[0])),
-  };
-});
 
 import { PlannerWorkspace } from "@/features/planner/editor/PlannerWorkspace";
 
@@ -124,51 +48,60 @@ describe("PlannerWorkspace", () => {
         measurements: true,
       },
     });
-  });
-
-  afterEach(() => {
-    resetFabricRuntimeState();
+    usePlannerStore.setState({ activeTool: "select" });
+    usePlannerCatalogStore.setState({ recentPlacements: [] });
   });
 
   it("mounts the Fabric workspace shell and handles tool keyboard shortcuts", async () => {
     render(<PlannerWorkspace guestMode />);
-    expect(screen.getByTestId("fabric-canvas")).toBeInTheDocument();
+    
+    // Wait for the canvas region to be rendered
+    const canvasWrap = await screen.findByRole("application");
+    expect(canvasWrap).toBeInTheDocument();
 
     fireEvent.keyDown(document.body, { key: "w" });
-    await waitFor(() => expect(setPlannerTool).toHaveBeenCalledWith("wall"));
+    await waitFor(() => {
+      expect(usePlannerStore.getState().activeTool).toBe("wall");
+    });
   });
 
-  it("opens templates and export modals from the top bar", () => {
+  it("opens templates and export modals from the top bar", async () => {
     render(<PlannerWorkspace guestMode />);
     fireEvent.click(screen.getByRole("button", { name: "Templates" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Export" }));
+    const exportBtn = await screen.findByRole("button", { name: "Export" });
+    fireEvent.click(exportBtn);
     expect(screen.getByRole("dialog", { name: "Export your plan" })).toBeInTheDocument();
   });
 
   it("handles catalog drop on the canvas surface", async () => {
     render(<PlannerWorkspace guestMode />);
-    const surface = document.querySelector(".pw-canvas-surface") as HTMLElement;
+    const surface = await waitFor(() => document.querySelector(".canvas-wrap") as HTMLElement);
     const item = CURATED_CATALOG_ITEMS[0]!;
 
     fireEvent.drop(surface, {
       clientX: 200,
       clientY: 200,
       dataTransfer: {
-        getData: () => JSON.stringify(item),
+        types: ["application/planner-catalog-item"],
+        getData: (mime: string) => mime === "application/planner-catalog-item" ? JSON.stringify(item) : "",
       },
     });
 
-    await waitFor(() => expect(insertObject).toHaveBeenCalled());
+    await waitFor(() => {
+      expect(usePlannerCatalogStore.getState().recentPlacements).toContain(item.id);
+    });
   });
 
-  it("shows blank canvas guidance and starter actions on an empty canvas", () => {
+  it("shows blank canvas guidance and starter actions on an empty canvas", async () => {
     render(<PlannerWorkspace guestMode />);
 
-    expect(screen.getByRole("region", { name: "Empty canvas guidance" })).toBeInTheDocument();
+    const region = await screen.findByRole("region", { name: "Empty canvas guidance" });
+    expect(region).toBeInTheDocument();
+    
     fireEvent.click(screen.getByRole("button", { name: "Draw walls" }));
-    expect(setPlannerTool).toHaveBeenCalledWith("wall");
+    expect(usePlannerStore.getState().activeTool).toBe("wall");
 
     fireEvent.click(screen.getByRole("button", { name: "Use template" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();

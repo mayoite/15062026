@@ -7,8 +7,8 @@ import type { PlannerToolBinding } from "@/features/planner/editor/plannerKeyboa
 
 export interface PlannerCanvasStageProps {
   viewMode: "2d" | "3d" | "split";
-  chromeLayerRef: React.RefObject<HTMLDivElement>;
-  canvasSurfaceRef: React.RefObject<HTMLDivElement>;
+  chromeLayerRef: React.RefObject<HTMLDivElement | null>;
+  canvasSurfaceRef: React.RefObject<HTMLDivElement | null>;
   dragItem: CatalogItem | null;
   isCatalogOverCanvas: boolean;
   handleCanvasDragOver: (e: React.DragEvent<HTMLDivElement>) => void;

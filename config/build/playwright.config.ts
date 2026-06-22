@@ -19,9 +19,8 @@ export default defineConfig({
 
   // DYNAMIC REPORTER: 'list' for terminals, 'html' for CI UI, and ALWAYS 'json' for the Ops Portal telemetry.
   reporter: [
-    isCI
-      ? ["html", { outputFolder: "../../results/playwright-report" }]
-      : ["list"],
+    ["list"],
+    ["html", { outputFolder: "../../results/playwright-report", open: "never" }],
     ["json", { outputFile: "../../results/audits/raw-playwright.json" }]
   ],
 

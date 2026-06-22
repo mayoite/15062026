@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import { useFloorplan } from "@/features/planner/canvas-fabric/context/FloorplanContext";
 import type { PlannerToolBinding } from "./plannerKeyboardShortcuts";
-import { usePlannerStore } from "@/features/planner/store/plannerStore";
 
 export function usePlannerViewMode() {
   const [viewMode, setViewMode] = useState<"2d" | "3d" | "split">("2d");
@@ -14,7 +13,7 @@ export function usePlannerViewMode() {
   return { viewMode, handleViewModeChange, setViewMode };
 }
 
-export function usePlannerCatalogDrop(canvasSurfaceRef: React.RefObject<HTMLDivElement>) {
+export function usePlannerCatalogDrop(_canvasSurfaceRef: React.RefObject<HTMLDivElement>) {
   const [dragItem, setDragItem] = useState<CatalogItem | null>(null);
   const [isCatalogOverCanvas, setIsCatalogOverCanvas] = useState(false);
   const { insertObject } = useFloorplan();
@@ -22,7 +21,7 @@ export function usePlannerCatalogDrop(canvasSurfaceRef: React.RefObject<HTMLDivE
   const handleCanvasDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    const item = (e.dataTransfer as any).catalogItem;
+    const item = (e.dataTransfer as DataTransfer & { catalogItem?: CatalogItem }).catalogItem;
     if (item) {
       setIsCatalogOverCanvas(true);
       setDragItem(item);
@@ -34,7 +33,7 @@ export function usePlannerCatalogDrop(canvasSurfaceRef: React.RefObject<HTMLDivE
       e.preventDefault();
       e.stopPropagation();
       setIsCatalogOverCanvas(false);
-      const item = (e.dataTransfer as any).catalogItem;
+      const item = (e.dataTransfer as DataTransfer & { catalogItem?: CatalogItem }).catalogItem;
       if (item) {
         insertObject({
           type: "CATALOG",

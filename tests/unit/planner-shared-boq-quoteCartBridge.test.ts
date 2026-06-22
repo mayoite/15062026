@@ -99,3 +99,4 @@ describe("boqToQuoteCart", () => {
     expect(a.id).not.toBe(b.id);
   });
 });
+

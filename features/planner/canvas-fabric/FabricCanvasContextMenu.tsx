@@ -4,10 +4,6 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useFloorplan } from "./context/FloorplanContext";
 
-function isWallTarget(target: Record<string, unknown> | null): boolean {
-  if (!target) return false;
-  return String(target.name ?? "").includes("WALL");
-}
 
 export function FabricCanvasContextMenu() {
   const menuRef = useRef<HTMLDivElement>(null);

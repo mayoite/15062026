@@ -1,5 +1,4 @@
 import { getPlannerFabricRuntimeState } from "@/features/planner/canvas-fabric";
-import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 
 export interface PlanMetrics {
   shapeCount: number;

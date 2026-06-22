@@ -5,7 +5,6 @@ import {
   Layers3,
   Ruler,
   Sparkles,
-  Upload,
 } from "lucide-react";
 
 export type PlannerFeaturePage = {

@@ -40,3 +40,4 @@ describe("fabric layer visibility bridge", () => {
     expect(() => applyLayerVisibility(null, allVisible)).not.toThrow();
   });
 });
+

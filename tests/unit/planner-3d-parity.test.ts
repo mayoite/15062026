@@ -5,7 +5,7 @@ import path from "path";
 
 describe("WS3 — 3D parity coordinate contract", () => {
   it("converts 2D Fabric coordinates to 3D scene centerMm correctly", () => {
-    const fixtureFile = path.join(__dirname, "../../fixtures/planner-3d-parity.json");
+    const fixtureFile = path.join(__dirname, "../fixtures/planner-3d-parity.json");
     const fixture = JSON.parse(fs.readFileSync(fixtureFile, "utf-8"));
     
     const doc = buildPlannerDocumentFromFabric(JSON.stringify(fixture), {
@@ -80,7 +80,7 @@ describe("WS3 — 3D parity coordinate contract", () => {
   });
 
   it("furniture items have defined centerMm within bounds", () => {
-    const fixtureFile = path.join(__dirname, "../../fixtures/planner-3d-parity.json");
+    const fixtureFile = path.join(__dirname, "../fixtures/planner-3d-parity.json");
     const fixture = JSON.parse(fs.readFileSync(fixtureFile, "utf-8"));
     
     const doc = buildPlannerDocumentFromFabric(JSON.stringify(fixture), {
@@ -98,3 +98,4 @@ describe("WS3 — 3D parity coordinate contract", () => {
     });
   });
 });
+

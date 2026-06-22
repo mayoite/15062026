@@ -9,7 +9,7 @@ describe("LayerManagerPanel", () => {
     resetFabricRuntimeState();
   });
 
-  it("renders Fabric object rows from runtime state", () => {
+  it("renders Fabric object rows from runtime state", async () => {
     seedFabricRuntime({
       objects: [
         { name: "WALL:North", width: 100, height: 4 },
@@ -20,13 +20,13 @@ describe("LayerManagerPanel", () => {
 
     render(<LayerManagerPanel unitSystem="metric" />);
 
-    expect(screen.getByText("Desk")).toBeInTheDocument();
+    expect(await screen.findByText("Desk")).toBeInTheDocument();
     expect(screen.getByText("GENERIC")).toBeInTheDocument();
   });
 
-  it("shows an empty state when no canvas objects exist", () => {
+  it("shows an empty state when no canvas objects exist", async () => {
     seedFabricRuntime({ objects: [] });
     render(<LayerManagerPanel unitSystem="metric" />);
-    expect(screen.getByText(/No canvas objects yet/i)).toBeInTheDocument();
+    expect(await screen.findByText(/No canvas objects yet/i)).toBeInTheDocument();
   });
 });

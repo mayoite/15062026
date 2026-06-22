@@ -105,31 +105,31 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 13516,
+                      "duration": 25303,
                       "error": {
-                        "message": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation\n Please check out https://github.com/dequelabs/axe-core-npm/blob/develop/packages/playwright/error-handling.md",
-                        "stack": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation\n Please check out https://github.com/dequelabs/axe-core-npm/blob/develop/packages/playwright/error-handling.md\n    at AxeBuilder.analyze (E:\\16062026\\node_modules\\@axe-core\\playwright\\dist\\index.js:253:13)\n    at E:\\16062026\\tests\\accessibility.spec.ts:33:38",
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n    at E:\\16062026\\tests\\accessibility.spec.ts:31:46",
                         "location": {
                           "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                          "column": 38,
-                          "line": 33
+                          "column": 46,
+                          "line": 31
                         },
-                        "snippet": "\u001b[0m \u001b[90m 31 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m\".pw-topbar\"\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m25000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 32 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 33 |\u001b[39m     \u001b[36mconst\u001b[39m accessibilityScanResults \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAxeBuilder\u001b[39m({ page })\u001b[33m.\u001b[39manalyze()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 34 |\u001b[39m     expect(accessibilityScanResults\u001b[33m.\u001b[39mviolations)\u001b[33m.\u001b[39mtoEqual([])\u001b[33m;\u001b[39m\n \u001b[90m 35 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 36 |\u001b[39m\u001b[0m"
+                        "snippet": "\u001b[0m \u001b[90m 29 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/Start placing furniture/i\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m 30 |\u001b[39m     }\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 31 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m\".pw-topbar\"\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m25000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 32 |\u001b[39m\n \u001b[90m 33 |\u001b[39m     \u001b[36mconst\u001b[39m accessibilityScanResults \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAxeBuilder\u001b[39m({ page })\u001b[33m.\u001b[39manalyze()\u001b[33m;\u001b[39m\n \u001b[90m 34 |\u001b[39m     expect(accessibilityScanResults\u001b[33m.\u001b[39mviolations)\u001b[33m.\u001b[39mtoEqual([])\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
                           "location": {
                             "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                            "column": 38,
-                            "line": 33
+                            "column": 46,
+                            "line": 31
                           },
-                          "message": "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation\n Please check out https://github.com/dequelabs/axe-core-npm/blob/develop/packages/playwright/error-handling.md\n\n  31 |     await expect(page.locator(\".pw-topbar\")).toBeVisible({ timeout: 25000 });\n  32 |\n> 33 |     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();\n     |                                      ^\n  34 |     expect(accessibilityScanResults.violations).toEqual([]);\n  35 |   });\n  36 |\n    at AxeBuilder.analyze (E:\\16062026\\node_modules\\@axe-core\\playwright\\dist\\index.js:253:13)\n    at E:\\16062026\\tests\\accessibility.spec.ts:33:38"
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n\n  29 |       await page.getByRole(\"button\", { name: /Start placing furniture/i }).click();\n  30 |     }\n> 31 |     await expect(page.locator(\".pw-topbar\")).toBeVisible({ timeout: 25000 });\n     |                                              ^\n  32 |\n  33 |     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();\n  34 |     expect(accessibilityScanResults.violations).toEqual([]);\n    at E:\\16062026\\tests\\accessibility.spec.ts:31:46"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-20T16:32:38.339Z",
+                      "startTime": "2026-06-22T03:50:24.598Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -140,8 +140,8 @@
                       ],
                       "errorLocation": {
                         "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                        "column": 38,
-                        "line": 33
+                        "column": 46,
+                        "line": 31
                       }
                     }
                   ],
@@ -168,29 +168,32 @@
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
-                      "status": "timedOut",
-                      "duration": 30034,
+                      "status": "failed",
+                      "duration": 25300,
                       "error": {
-                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n    at E:\\16062026\\tests\\accessibility.spec.ts:45:46",
+                        "location": {
+                          "file": "E:\\16062026\\tests\\accessibility.spec.ts",
+                          "column": 46,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/Start placing furniture/i\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m 44 |\u001b[39m     }\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m\".pw-topbar\"\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m25000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m\n \u001b[90m 47 |\u001b[39m     \u001b[90m// Open export modal\u001b[39m\n \u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m\"Open Export\"\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
                       },
                       "errors": [
                         {
-                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                        },
-                        {
                           "location": {
                             "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                            "column": 61,
-                            "line": 48
+                            "column": 46,
+                            "line": 45
                           },
-                          "message": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Open Export' })\u001b[22m\n\n\n  46 |\n  47 |     // Open export modal\n> 48 |     await page.getByRole(\"button\", { name: \"Open Export\" }).click();\n     |                                                             ^\n  49 |     await expect(page.getByRole(\"dialog\", { name: /Export Plan/i })).toBeVisible({ timeout: 10000 });\n  50 |\n  51 |     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();\n    at E:\\16062026\\tests\\accessibility.spec.ts:48:61"
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n\n  43 |       await page.getByRole(\"button\", { name: /Start placing furniture/i }).click();\n  44 |     }\n> 45 |     await expect(page.locator(\".pw-topbar\")).toBeVisible({ timeout: 25000 });\n     |                                              ^\n  46 |\n  47 |     // Open export modal\n  48 |     await page.getByRole(\"button\", { name: \"Open Export\" }).click();\n    at E:\\16062026\\tests\\accessibility.spec.ts:45:46"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-20T16:32:38.532Z",
+                      "startTime": "2026-06-22T03:50:24.602Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -198,7 +201,12 @@
                           "contentType": "text/markdown",
                           "path": "E:\\16062026\\results\\test-results\\accessibility-Accessibilit-2aad6-lity-issues-in-export-modal-chromium\\error-context.md"
                         }
-                      ]
+                      ],
+                      "errorLocation": {
+                        "file": "E:\\16062026\\tests\\accessibility.spec.ts",
+                        "column": 46,
+                        "line": 45
+                      }
                     }
                   ],
                   "status": "unexpected"
@@ -216,8 +224,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-20T16:32:21.827Z",
-    "duration": 47126.548,
+    "startTime": "2026-06-22T03:49:52.578Z",
+    "duration": 57755.618,
     "expected": 0,
     "skipped": 0,
     "unexpected": 2,

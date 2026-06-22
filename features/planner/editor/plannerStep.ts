@@ -28,10 +28,10 @@ export function countMeasurementShapes(): number {
   try {
     const serializedDraft = getPlannerFabricRuntimeState().serializedDraft;
     if (!serializedDraft) return 0;
-    const snapshot = JSON.parse(serializedDraft) as { objects?: any[] };
+    const snapshot = JSON.parse(serializedDraft) as { objects?: Record<string, unknown>[] };
     const objects = snapshot.objects;
     if (!Array.isArray(objects)) return 0;
-    return objects.filter((obj: any) => String(obj.name || "").startsWith("DRAW:measure")).length;
+    return objects.filter((obj) => String(obj.name || "").startsWith("DRAW:measure")).length;
   } catch {
     return 0;
   }

@@ -5,6 +5,7 @@ import {
   enforceAdminRateLimit,
   requireAdminSession,
 } from "@/app/api/admin/_lib/server";
+import { validateCsrfRequest } from "@/lib/security/csrf";
 import {
   deletePlannerDocument,
   isPlannerDatabaseConfigured,
@@ -78,6 +79,14 @@ export async function PATCH(req: NextRequest) {
   const authError = await requireAdminSession();
   if (authError) return authError;
 
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
+    );
+  }
+
   if (!isPlannerDatabaseConfigured()) {
     return NextResponse.json({ error: "Admin storage is not configured" }, { status: 503 });
   }
@@ -136,6 +145,14 @@ export async function DELETE(req: NextRequest) {
 
   const authError = await requireAdminSession();
   if (authError) return authError;
+
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
+    );
+  }
 
   if (!isPlannerDatabaseConfigured()) {
     return NextResponse.json({ error: "Admin storage is not configured" }, { status: 503 });

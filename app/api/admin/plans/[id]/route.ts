@@ -5,6 +5,7 @@ import {
   enforceAdminRateLimit,
   requireAdminSession,
 } from "@/app/api/admin/_lib/server";
+import { validateCsrfRequest } from "@/lib/security/csrf";
 import {
   isPlannerDatabaseConfigured,
   loadPlannerDocumentAdmin,
@@ -48,6 +49,14 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
   const authError = await requireAdminSession();
   if (authError) return authError;
+
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
+    );
+  }
 
   const { id } = await context.params;
   const planId = id?.trim();

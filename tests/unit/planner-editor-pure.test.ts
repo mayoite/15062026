@@ -87,3 +87,4 @@ describe("plan metrics", () => {
     expect(result.furnitureCount).toBe(1);
   });
 });
+

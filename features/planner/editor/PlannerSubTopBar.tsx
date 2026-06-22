@@ -19,11 +19,11 @@ interface PlannerSubTopBarProps {
 export function PlannerSubTopBar({
   viewMode,
   onViewModeChange,
-  leftCollapsed,
-  rightCollapsed,
-  onToggleLeftCollapsed,
-  onToggleRightCollapsed,
-  onResetLayout,
+  leftCollapsed: _leftCollapsed,
+  rightCollapsed: _rightCollapsed,
+  onToggleLeftCollapsed: _onToggleLeftCollapsed,
+  onToggleRightCollapsed: _onToggleRightCollapsed,
+  onResetLayout: _onResetLayout,
   onOpenExport,
 }: PlannerSubTopBarProps) {
   const { zoom, setZoom } = useFloorplan();

@@ -24,3 +24,4 @@ describe("canvas-fabric formatDate", () => {
     expect(formatDate(date, "yyyy-MM-dd", "en")).toBe("2026-11-25");
   });
 });
+

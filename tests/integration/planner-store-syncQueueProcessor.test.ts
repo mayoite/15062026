@@ -2,16 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createPlannerDocument } from "@/features/planner/model";
 
-vi.mock("@/features/planner/store/plannerPersistence", () => ({
-  savePlannerDocument: vi.fn(),
-  deletePlannerDocument: vi.fn(),
-}));
-
 import * as offlineStorageModule from "@/features/planner/store/offlineStorage";
-import {
-  deletePlannerDocument,
-  savePlannerDocument,
-} from "@/features/planner/store/plannerPersistence";
 import {
   SyncQueueProcessor,
   useSyncQueueProcessor,
@@ -44,13 +35,13 @@ describe("syncQueueProcessor", () => {
     vi.spyOn(offlineStorageModule.offlineStorage, "listPlans").mockResolvedValue([]);
     vi.spyOn(offlineStorageModule.offlineStorage, "listPendingPlans").mockResolvedValue([]);
     vi.spyOn(offlineStorageModule.offlineStorage, "deletePlan").mockResolvedValue(undefined);
-    vi.mocked(savePlannerDocument).mockResolvedValue({
-      success: true,
-      id: "remote-1",
-      document,
-    });
-    vi.mocked(deletePlannerDocument).mockResolvedValue({ success: true });
     vi.spyOn(offlineStorageModule, "markPlanAsSynced").mockResolvedValue(undefined);
+    
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: "remote-1" }),
+      text: async () => "",
+    }) as unknown as typeof fetch;
   });
 
   it("rejects concurrent sync and missing userId", async () => {
@@ -149,9 +140,14 @@ describe("syncQueueProcessor", () => {
       makeQueueItem({ id: "update-missing-remote", operation: "update", document }),
       makeQueueItem({ id: "delete-missing-remote", operation: "delete", document: undefined, remoteId: null }),
     ]);
-    vi.mocked(savePlannerDocument).mockResolvedValueOnce({
-      success: false,
-      error: { message: "save failed" } as never,
+    
+    let fetchCount = 0;
+    vi.mocked(globalThis.fetch).mockImplementation(async () => {
+      fetchCount++;
+      if (fetchCount === 1) {
+        return { ok: false, status: 500, text: async () => "save failed" } as unknown as Response;
+      }
+      return { ok: true, json: async () => ({ id: "remote-1" }), text: async () => "" } as unknown as Response;
     });
 
     const result = await processor.processSyncQueue();
@@ -182,14 +178,13 @@ describe("syncQueueProcessor", () => {
         lastAttempt: null,
       }),
     ]);
-    vi.mocked(savePlannerDocument).mockResolvedValueOnce({
-      success: false,
-      error: { message: "update failed" } as never,
-    });
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      ok: false, status: 500, text: async () => "update failed"
+    } as unknown as Response);
 
     const itemResult = await processor.processSyncQueue();
     expect(itemResult.failed).toBe(1);
-    expect(itemResult.errors[0]?.error).toBe("Update failed: update failed");
+    expect(itemResult.errors[0]?.error).toMatch(/Update failed.*update failed/);
 
     vi.mocked(offlineStorageModule.offlineStorage.listSyncQueue).mockResolvedValue([
       makeQueueItem({ id: "create-ok", operation: "create" }),

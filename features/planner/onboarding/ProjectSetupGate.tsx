@@ -2,14 +2,10 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
-
 import { ProjectSetupStep } from "./ProjectSetupStep";
 import { StartingPointStep } from "./StartingPointStep";
 import {
   isProjectSetupCompleteInStorage,
-  projectSetupStorageKey,
-  type PlannerProjectMetadata,
 } from "./projectSetup";
 
 type ProjectSetupGateProps = {
@@ -29,12 +25,15 @@ export function ProjectSetupGate({ guestMode = false, planId, children }: Projec
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setIsHydrated(true);
     
-    // If it's already complete in storage, bypass the wizard entirely
-    if (isProjectSetupCompleteInStorage(guestMode, planId)) {
-      setIsFullyComplete(true);
-    }
+    // Defer state update to avoid synchronous setState inside useEffect warning
+    const timer = setTimeout(() => {
+      setIsHydrated(true);
+      if (isProjectSetupCompleteInStorage(guestMode, planId)) {
+        setIsFullyComplete(true);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [guestMode, planId]);
 
   if (!isHydrated) return null;

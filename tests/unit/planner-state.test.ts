@@ -8,6 +8,9 @@ import {
   buildUndoState,
   buildRedoState,
 } from '@/features/planner/store/plannerHistoryUtils'
+import type { Wall, Room, DoorItem, WindowItem, Zone, TextLabel, StructuralType, Snapshot } from '@/features/planner/store/plannerTypes'
+import type { FurnitureItem } from '@/features/planner/store/plannerFurnitureStore'
+
 describe('buildClearedPlannerState', () => {
   it('returns geometry with all empty arrays and null drawingWall', () => {
     const state = buildClearedPlannerState()
@@ -97,95 +100,105 @@ describe('snapPointToGrid', () => {
 
 describe('plannerHasContent', () => {
   const emptyState = {
-    walls: [] as any[],
-    rooms: [] as any[],
-    furniture: [] as any[],
-    doors: [] as any[],
-    windows: [] as any[],
-    zones: [] as any[],
-    textLabels: [] as any[],
-    structuralElements: [] as any[],
+    walls: [] as Wall[],
+    rooms: [] as Room[],
+    furniture: [] as FurnitureItem[],
+    doors: [] as DoorItem[],
+    windows: [] as WindowItem[],
+    zones: [] as Zone[],
+    textLabels: [] as TextLabel[],
+    structuralElements: [] as Array<{ id: string; type: StructuralType; points: {x:number, y:number}[] }>,
   }
+
+  const dummyPoint = { x: 0, y: 0 };
 
   it('returns false when all arrays are empty', () => {
     expect(plannerHasContent(emptyState)).toBe(false)
   })
 
   it('returns true when walls has content', () => {
-    expect(plannerHasContent({ ...emptyState, walls: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, walls: [{ id: 'w', start: dummyPoint, end: dummyPoint, thickness: 1, color: '' }] })).toBe(true)
   })
 
   it('returns true when rooms has content', () => {
-    expect(plannerHasContent({ ...emptyState, rooms: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, rooms: [{ id: 'r', points: [], name: '', color: '', area: 0 }] })).toBe(true)
   })
 
   it('returns true when furniture has content', () => {
-    expect(plannerHasContent({ ...emptyState, furniture: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, furniture: [{ id: 'f', productId: 'p', position: dummyPoint, rotation: 0, boundingBox: { width: 1, depth: 1, height: 1 } }] })).toBe(true)
   })
 
   it('returns true when doors has content', () => {
-    expect(plannerHasContent({ ...emptyState, doors: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, doors: [{ id: 'd', wallId: 'w', position: 0, width: 1, swing: 90, style: 'single', x: 0, y: 0, rotation: 0 }] })).toBe(true)
   })
 
   it('returns true when windows has content', () => {
-    expect(plannerHasContent({ ...emptyState, windows: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, windows: [{ id: 'w', wallId: 'w', position: 0, width: 1, style: 'casement', x: 0, y: 0, rotation: 0 }] })).toBe(true)
   })
 
   it('returns true when zones has content', () => {
-    expect(plannerHasContent({ ...emptyState, zones: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, zones: [{ id: 'z', type: 'Open Plan', points: [], name: '', color: '', area: 0 }] })).toBe(true)
   })
 
   it('returns true when textLabels has content', () => {
-    expect(plannerHasContent({ ...emptyState, textLabels: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, textLabels: [{ id: 't', position: dummyPoint, text: '', fontSize: 12, color: '' }] })).toBe(true)
   })
 
   it('returns true when structuralElements has content', () => {
-    expect(plannerHasContent({ ...emptyState, structuralElements: [{}] as any })).toBe(true)
+    expect(plannerHasContent({ ...emptyState, structuralElements: [{ id: 's', type: 'column', points: [dummyPoint] }] })).toBe(true)
   })
 })
 
 describe('buildUndoState', () => {
+  const createSnapshot = (id: string): Snapshot => ({
+    timestamp: Date.now(),
+    description: id,
+    geometry: buildClearedPlannerState().geometry,
+    furniture: buildClearedPlannerState().furniture,
+    ui: buildClearedPlannerState().ui
+  })
+
   it('returns null when undoStack is empty', () => {
-    const result = buildUndoState({ undoStack: [], redoStack: [] }, { id: 'current' } as any)
+    const result = buildUndoState({ undoStack: [], redoStack: [] }, createSnapshot('current'))
     expect(result).toBeNull()
   })
 
   it('pops the last item from undoStack as snapshot', () => {
-    const snap1 = { id: 'snap1' } as any
-    const snap2 = { id: 'snap2' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const snap2 = createSnapshot('snap2')
+    const current = createSnapshot('current')
     const result = buildUndoState({ undoStack: [snap1, snap2], redoStack: [] }, current)
     expect(result).not.toBeNull()
     expect(result!.snapshot).toBe(snap2)
   })
 
   it('removes the last item from undoStack', () => {
-    const snap1 = { id: 'snap1' } as any
-    const snap2 = { id: 'snap2' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const snap2 = createSnapshot('snap2')
+    const current = createSnapshot('current')
     const result = buildUndoState({ undoStack: [snap1, snap2], redoStack: [] }, current)
     expect(result!.undoStack).toEqual([snap1])
   })
 
   it('pushes currentSnapshot onto redoStack', () => {
-    const snap1 = { id: 'snap1' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const current = createSnapshot('current')
     const result = buildUndoState({ undoStack: [snap1], redoStack: [] }, current)
     expect(result!.redoStack).toEqual([current])
   })
 
   it('preserves existing redoStack items when pushing', () => {
-    const snap1 = { id: 'snap1' } as any
-    const existing = { id: 'existing' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const existing = createSnapshot('existing')
+    const current = createSnapshot('current')
     const result = buildUndoState({ undoStack: [snap1], redoStack: [existing] }, current)
     expect(result!.redoStack).toEqual([existing, current])
   })
 
   it('does not mutate the original stacks', () => {
-    const undoStack = [{ id: 'snap1' } as any]
-    const redoStack = [{ id: 'r1' } as any]
-    const current = { id: 'current' } as any
+    const undoStack = [createSnapshot('snap1')]
+    const redoStack = [createSnapshot('r1')]
+    const current = createSnapshot('current')
     buildUndoState({ undoStack, redoStack }, current)
     expect(undoStack).toHaveLength(1)
     expect(redoStack).toHaveLength(1)
@@ -193,47 +206,55 @@ describe('buildUndoState', () => {
 })
 
 describe('buildRedoState', () => {
+  const createSnapshot = (id: string): Snapshot => ({
+    timestamp: Date.now(),
+    description: id,
+    geometry: buildClearedPlannerState().geometry,
+    furniture: buildClearedPlannerState().furniture,
+    ui: buildClearedPlannerState().ui
+  })
+
   it('returns null when redoStack is empty', () => {
-    const result = buildRedoState({ undoStack: [], redoStack: [] }, { id: 'current' } as any)
+    const result = buildRedoState({ undoStack: [], redoStack: [] }, createSnapshot('current'))
     expect(result).toBeNull()
   })
 
   it('pops the last item from redoStack as snapshot', () => {
-    const snap1 = { id: 'snap1' } as any
-    const snap2 = { id: 'snap2' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const snap2 = createSnapshot('snap2')
+    const current = createSnapshot('current')
     const result = buildRedoState({ undoStack: [], redoStack: [snap1, snap2] }, current)
     expect(result).not.toBeNull()
     expect(result!.snapshot).toBe(snap2)
   })
 
   it('removes the last item from redoStack', () => {
-    const snap1 = { id: 'snap1' } as any
-    const snap2 = { id: 'snap2' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const snap2 = createSnapshot('snap2')
+    const current = createSnapshot('current')
     const result = buildRedoState({ undoStack: [], redoStack: [snap1, snap2] }, current)
     expect(result!.redoStack).toEqual([snap1])
   })
 
   it('pushes currentSnapshot onto undoStack', () => {
-    const snap1 = { id: 'snap1' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const current = createSnapshot('current')
     const result = buildRedoState({ undoStack: [], redoStack: [snap1] }, current)
     expect(result!.undoStack).toEqual([current])
   })
 
   it('preserves existing undoStack items when pushing', () => {
-    const snap1 = { id: 'snap1' } as any
-    const existing = { id: 'existing' } as any
-    const current = { id: 'current' } as any
+    const snap1 = createSnapshot('snap1')
+    const existing = createSnapshot('existing')
+    const current = createSnapshot('current')
     const result = buildRedoState({ undoStack: [existing], redoStack: [snap1] }, current)
     expect(result!.undoStack).toEqual([existing, current])
   })
 
   it('does not mutate the original stacks', () => {
-    const undoStack = [{ id: 'u1' } as any]
-    const redoStack = [{ id: 'snap1' } as any]
-    const current = { id: 'current' } as any
+    const undoStack = [createSnapshot('u1')]
+    const redoStack = [createSnapshot('snap1')]
+    const current = createSnapshot('current')
     buildRedoState({ undoStack, redoStack }, current)
     expect(undoStack).toHaveLength(1)
     expect(redoStack).toHaveLength(1)

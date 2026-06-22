@@ -66,7 +66,7 @@ interface PlannerLeftPanelProps {
 }
 
 export function PlannerLeftPanel({
-  guestMode,
+  guestMode: _guestMode,
   editor = null,
   plannerStep = "draw",
   panelOpen = true,

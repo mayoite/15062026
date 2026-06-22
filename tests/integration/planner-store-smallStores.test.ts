@@ -136,6 +136,7 @@ describe("planner small stores", () => {
     it("serializes and hydrates persisted workspace slices", () => {
       const serialized = serializeWorkspaceState();
       hydrateWorkspaceState(serialized);
+      expect(serializeWorkspaceState()).toEqual(serialized);
     });
   });
 

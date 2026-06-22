@@ -5,6 +5,7 @@ import {
   enforceAdminRateLimit,
   requireAdminSession,
 } from "@/app/api/admin/_lib/server";
+import { validateCsrfRequest } from "@/lib/security/csrf";
 
 function isThemeName(value: unknown): value is string {
   return typeof value === "string" && /^[a-z0-9][a-z0-9-_]{1,63}$/i.test(value.trim());
@@ -19,6 +20,14 @@ export async function POST(req: NextRequest) {
   if (rateError) return rateError;
   const authError = await requireAdminSession();
   if (authError) return authError;
+
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
+    );
+  }
 
   try {
     const body = await req.json().catch(() => ({}));

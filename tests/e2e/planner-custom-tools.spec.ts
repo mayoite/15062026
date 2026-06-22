@@ -50,6 +50,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Wall tool creates a wall shape", async ({ page }) => {
+    expect(page).toBeDefined();
     const before = await getObjectCount(page);
     await selectPlannerTool(page, "Wall");
     await dragOnCanvas(page, { rx: 0.32, ry: 0.5 }, { rx: 0.68, ry: 0.5 });
@@ -57,6 +58,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Wall tool supports dragging up and left", async ({ page }) => {
+    expect(page).toBeDefined();
     const before = await getObjectCount(page);
     await selectPlannerTool(page, "Wall");
     await dragOnCanvas(page, { rx: 0.65, ry: 0.62 }, { rx: 0.35, ry: 0.32 });
@@ -64,6 +66,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Room tool supports dragging up and left", async ({ page }) => {
+    expect(page).toBeDefined();
     const before = await getObjectCount(page);
     await selectPlannerTool(page, "Room");
     await dragOnCanvas(page, { rx: 0.7, ry: 0.7 }, { rx: 0.4, ry: 0.4 });
@@ -71,6 +74,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Room tool creates a room shape", async ({ page }) => {
+    expect(page).toBeDefined();
     const before = await getObjectCount(page);
     await selectPlannerTool(page, "Room");
     await dragOnCanvas(page, { rx: 0.25, ry: 0.3 }, { rx: 0.55, ry: 0.55 });
@@ -78,6 +82,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Furniture tool places catalog item on canvas", async ({ page }) => {
+    expect(page).toBeDefined();
     const before = await getObjectCount(page);
     await selectPlannerTool(page, "Furniture");
     await clickOnCanvas(page, 0.45, 0.42);
@@ -135,6 +140,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Zone tool creates a zone shape", async ({ page }) => {
+    expect(page).toBeDefined();
     const before = await getObjectCount(page);
     await selectPlannerTool(page, "Zone");
     await dragOnCanvas(page, { rx: 0.58, ry: 0.28 }, { rx: 0.78, ry: 0.48 });
@@ -166,6 +172,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Pan tool activates without breaking the canvas", async ({ page }) => {
+    expect(page).toBeDefined();
     await selectPlannerTool(page, "Wall");
     await dragOnCanvas(page, { rx: 0.15, ry: 0.4 }, { rx: 0.85, ry: 0.4 });
     const countAfterWall = await getObjectCount(page);
@@ -189,6 +196,7 @@ test.describe("Planner custom tools — Playwright", () => {
   });
 
   test("Erase tool removes a shape", async ({ page }) => {
+    expect(page).toBeDefined();
     await selectPlannerTool(page, "Furniture");
     await clickOnCanvas(page, 0.45, 0.42);
     await expectObjectCountAtLeast(page, 1);

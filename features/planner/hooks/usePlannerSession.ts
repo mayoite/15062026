@@ -243,6 +243,10 @@ export function usePlannerSession({
   }, [syncSessionInventory]);
 
   const handleSaveCloud = useCallback(async () => {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      reportSessionError("You are offline. Cloud save is unavailable.");
+      return;
+    }
     if (!isAuthenticated) {
       reportSessionError("Sign in is required for cloud save.");
       return;

@@ -12,9 +12,8 @@ import {
 } from "@/features/planner/store/plannerCatalogCore";
 import { getPlannerCatalogProducts } from "@/features/planner/store/plannerCatalog";
 
-const { getCatalogMock, listPlannerManagedProductsForPlannerCatalogMock } = vi.hoisted(() => ({
+const { getCatalogMock } = vi.hoisted(() => ({
   getCatalogMock: vi.fn(),
-  listPlannerManagedProductsForPlannerCatalogMock: vi.fn(),
 }));
 
 vi.mock('@/features/catalog/getProducts', () => ({
@@ -23,9 +22,7 @@ vi.mock('@/features/catalog/getProducts', () => ({
 
 vi.mock("server-only", () => ({}));
 
-vi.mock("@/features/planner/store/plannerManagedProducts", () => ({
-  listPlannerManagedProductsForPlannerCatalog: listPlannerManagedProductsForPlannerCatalogMock,
-}));
+import * as plannerManagedProductsMod from "@/features/planner/store/plannerManagedProducts";
 
 describe("planner catalog adapter", () => {
   const catalog: CompatCategory[] = [
@@ -79,10 +76,10 @@ describe("planner catalog adapter", () => {
   ];
 
   beforeEach(() => {
+    vi.restoreAllMocks();
     getCatalogMock.mockReset();
     getCatalogMock.mockResolvedValue(catalog);
-    listPlannerManagedProductsForPlannerCatalogMock.mockReset();
-    listPlannerManagedProductsForPlannerCatalogMock.mockResolvedValue([]);
+    vi.spyOn(plannerManagedProductsMod, "listPlannerManagedProductsForPlannerCatalog").mockResolvedValue([]);
   });
 
   function buildManagedProduct(
@@ -192,7 +189,7 @@ describe("planner catalog adapter", () => {
 
   it("tolerates legacy and managed source failures while merging available products", async () => {
     getCatalogMock.mockRejectedValueOnce("catalog down");
-    listPlannerManagedProductsForPlannerCatalogMock.mockRejectedValueOnce(
+    vi.spyOn(plannerManagedProductsMod, "listPlannerManagedProductsForPlannerCatalog").mockRejectedValueOnce(
       new Error("managed down"),
     );
 
@@ -347,7 +344,7 @@ describe("planner catalog adapter", () => {
   });
 
   it("uses the planner-managed product source when present in the write-side store", async () => {
-    listPlannerManagedProductsForPlannerCatalogMock.mockResolvedValueOnce([
+    const listSpy = vi.spyOn(plannerManagedProductsMod, "listPlannerManagedProductsForPlannerCatalog").mockResolvedValueOnce([
       buildManagedProduct(normalizePlannerCatalogProducts(catalog)[0]),
     ]);
 
@@ -358,8 +355,6 @@ describe("planner catalog adapter", () => {
     expect(resolvePlannerCatalogProductById(products, "prod-1")?.id).toBe(
       "managed-prod-1",
     );
-    expect(
-      listPlannerManagedProductsForPlannerCatalogMock,
-    ).toHaveBeenCalledTimes(1);
+    expect(listSpy).toHaveBeenCalledTimes(1);
   });
 });

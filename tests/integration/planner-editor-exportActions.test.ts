@@ -9,22 +9,18 @@ import {
 } from "@/features/planner/editor/exportActions";
 import { resetFabricRuntimeState, seedFabricRuntime } from "./planner-fabric-mockRuntime";
 
-vi.mock("@/features/planner/document/plannerDocumentBridge", () => ({
-  buildPlannerDocumentFromEditor: vi.fn(() => ({ version: 1, shapes: [] })),
-}));
+import * as plannerDocumentBridge from "@/features/planner/document/plannerDocumentBridge";
+import * as plannerSession from "@/features/planner/persistence/plannerSession";
+import * as pdfExport from "@/features/planner/shared/export/pdfExport";
 
-vi.mock("@/features/planner/persistence/plannerSession", () => ({
-  buildSessionEnvelope: vi.fn((snapshot) => ({ snapshot, savedAt: "now" })),
-}));
-
-vi.mock("@/features/planner/shared/export/pdfExport", () => ({
-  exportBoqToPdf: vi.fn(async () => undefined),
-}));
 
 describe("exportActions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     document.body.innerHTML = '<div class="pw-canvas-surface"></div>';
+    vi.spyOn(plannerDocumentBridge, "buildPlannerDocumentFromEditor").mockReturnValue({ version: 1, shapes: [] } as unknown as ReturnType<typeof plannerDocumentBridge.buildPlannerDocumentFromEditor>);
+    vi.spyOn(plannerSession, "buildSessionEnvelope").mockImplementation((snapshot) => ({ snapshot, savedAt: "now" } as ReturnType<typeof plannerSession.buildSessionEnvelope>));
+    vi.spyOn(pdfExport, "exportBoqToPdf").mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -73,13 +69,12 @@ describe("exportActions", () => {
   });
 
   it("downloads BOQ pdf through the shared exporter", async () => {
-    const { exportBoqToPdf } = await import("@/features/planner/shared/export/pdfExport");
     seedFabricRuntime({
       objects: [{ name: "GENERIC:Desk", left: 0, top: 0, width: 120, height: 60 }],
     });
 
-    await downloadPlannerBoqPdf(null, "Workspace Plan");
-    expect(exportBoqToPdf).toHaveBeenCalled();
+    await downloadPlannerBoqPdf(null as unknown as Document, "Workspace Plan");
+    expect(pdfExport.exportBoqToPdf).toHaveBeenCalled();
   });
 
   it("throws when SVG export is requested without a room shell", async () => {

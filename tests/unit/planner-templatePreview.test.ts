@@ -61,3 +61,4 @@ describe("buildTemplatePreview", () => {
     expect(furnitureCount).toBe(8);
   });
 });
+

@@ -26,3 +26,4 @@ describe("planner landing data", () => {
     expect(PLANNER_PROOF[0]?.label).toBe("Furniture items ready to place");
   });
 });
+

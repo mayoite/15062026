@@ -15,6 +15,7 @@ import { SITE_VIEWPORT } from "@/lib/siteViewport";
 import { RouteChrome } from "@/components/site/RouteChrome";
 import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { SiteErrorBoundary } from "@/components/site/SiteErrorBoundary";
 
 export const metadata: Metadata = buildSiteMetadata(SITE_URL);
 
@@ -55,13 +56,15 @@ export default async function RootLayout({
         >
           Skip to main content
         </a>
-        <NextIntlClientProvider messages={messages}>
-          <QueryProvider>
-            <RouteChrome position="top" />
-            <main id="main-content">{children}</main>
-            <RouteChrome position="bottom" />
-          </QueryProvider>
-        </NextIntlClientProvider>
+        <SiteErrorBoundary>
+          <NextIntlClientProvider messages={messages}>
+            <QueryProvider>
+              <RouteChrome position="top" />
+              <main id="main-content">{children}</main>
+              <RouteChrome position="bottom" />
+            </QueryProvider>
+          </NextIntlClientProvider>
+        </SiteErrorBoundary>
       </body>
     </html>
   );

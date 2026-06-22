@@ -66,6 +66,16 @@
   overflow: hidden;
 }
 
+.planner-workspace .pw-shell[data-offline="true"] {
+  --pw-topbar-h: 5.5rem;
+}
+
+@media (max-width: 767px) {
+  .planner-workspace .pw-shell[data-offline="true"] {
+    --pw-topbar-h: 6.75rem;
+  }
+}
+
 .planner-workspace .pw-topbar {
   display: grid;
   align-items: center;

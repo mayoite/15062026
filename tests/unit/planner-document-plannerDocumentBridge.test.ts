@@ -8,7 +8,7 @@ import { createPlannerExportPayload } from "@/features/planner/lib/sessionState"
 import { getPlannerSceneEnvelope, normalizePlannerDocument } from "@/features/planner/model";
 import { applyProjectSetup } from "@/features/planner/onboarding/projectSetup";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
-import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../../features/planner/integration/planner-fabric-mockRuntime";
 
 describe("planner document editor bridge", () => {
   beforeEach(() => {
@@ -79,3 +79,4 @@ describe("planner document editor bridge", () => {
     expect(importDraft).toHaveBeenCalledTimes(1);
   });
 });
+

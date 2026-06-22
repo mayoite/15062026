@@ -8,10 +8,7 @@ import {
   markPlanAsSynced,
   type SyncQueueItem,
 } from "./offlineStorage";
-import {
-  savePlannerDocument,
-  deletePlannerDocument,
-} from "./plannerPersistence";
+
 
 // Sync configuration
 const MAX_RETRY_COUNT = 3;
@@ -197,15 +194,18 @@ export class SyncQueueProcessor {
       throw new Error("Document required for create operation");
     }
 
-    const result = await savePlannerDocument(
-      this.options.userId,
-      item.document,
-      undefined // New document
-    );
+    const response = await fetch("/api/plans", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item.document),
+    });
 
-    if (!result.success) {
-      throw new Error(`Save failed: ${result.error.message}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Save failed: ${response.status} ${errorText}`);
     }
+
+    const result = await response.json();
 
     // Mark plan as synced with remote ID
     await markPlanAsSynced(item.planId, result.id);
@@ -223,14 +223,15 @@ export class SyncQueueProcessor {
       throw new Error("Remote ID required for update operation");
     }
 
-    const result = await savePlannerDocument(
-      this.options.userId,
-      item.document,
-      item.remoteId // Update existing
-    );
+    const response = await fetch(`/api/plans/${item.remoteId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item.document),
+    });
 
-    if (!result.success) {
-      throw new Error(`Update failed: ${result.error.message}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Update failed: ${response.status} ${errorText}`);
     }
 
     // Mark plan as synced
@@ -245,10 +246,13 @@ export class SyncQueueProcessor {
       throw new Error("Remote ID required for delete operation");
     }
 
-    const result = await deletePlannerDocument(item.remoteId);
+    const response = await fetch(`/api/plans/${item.remoteId}`, {
+      method: "DELETE",
+    });
 
-    if (!result.success) {
-      throw new Error(`Delete failed: ${result.error.message}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Delete failed: ${response.status} ${errorText}`);
     }
 
     // Remove from offline storage

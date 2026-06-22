@@ -114,3 +114,4 @@ describe("fabricSerializedToViewerShapes", () => {
     expect(shapes[0]?.label).toBe("STANDALONE");
   });
 });
+

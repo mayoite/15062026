@@ -148,3 +148,4 @@ describe("planner measurements", () => {
     expect(deriveViewportState(editor, [wallId, createShapeId("other")], "mm").selectedMetrics).toContain("W");
   });
 });
+

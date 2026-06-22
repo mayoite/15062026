@@ -10,6 +10,7 @@ import {
   MEMBER_PROJECT_ID,
   type PlannerProject,
 } from "@/features/planner/persistence/persistence";
+import type * as Persistence from "@/features/planner/persistence/persistence";
 
 function makeProject(id: string, snapshot = ""): PlannerProject {
   return { id, name: id, createdAt: 1, updatedAt: 2, snapshot };
@@ -18,26 +19,11 @@ function makeProject(id: string, snapshot = ""): PlannerProject {
 // ─── createAutoSaver ──────────────────────────────────────────────────────────
 
 describe("createAutoSaver", () => {
-  let saveProject: ReturnType<typeof vi.fn>;
-  let loadProject: ReturnType<typeof vi.fn>;
   const snap = JSON.stringify({ version: 1 });
 
   beforeEach(() => {
     vi.useFakeTimers();
-    // Mock the IDB calls used inside createAutoSaver's setTimeout callback
-    saveProject = vi.fn().mockResolvedValue(undefined);
-    loadProject = vi.fn().mockResolvedValue(undefined);
 
-    // Patch module-level loadProject and saveProject via vi.mock is not
-    // needed here since we test the AutoSaver factory output directly.
-    // createAutoSaver uses the module-level loadProject / saveProject
-    // so we mock those at module level.
-    vi.mock("@/features/planner/persistence/persistence", async (importOriginal) => {
-      const actual = await importOriginal<typeof import("@/features/planner/persistence/persistence")>();
-      return {
-        ...actual,
-      };
-    });
   });
 
   afterEach(() => {
@@ -57,7 +43,6 @@ describe("createAutoSaver", () => {
   });
 
   it("calling scheduleSave twice only keeps the latest call (debounce)", async () => {
-    const saved: string[] = [];
     // Intercept at lower level — spy on the real idb via stubbing indexedDB
     // For a pure unit test just verify the saver object structure exists:
     const saver = createAutoSaver("debounce-test");
@@ -93,3 +78,4 @@ describe("shouldMigrateGuestPlan quick regression", () => {
     ).toBe(false);
   });
 });
+

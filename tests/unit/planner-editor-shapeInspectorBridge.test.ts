@@ -8,7 +8,7 @@ import {
   shapeToInspectorData,
   syncSelectionFromEditor,
 } from "@/features/planner/editor/shapeInspectorBridge";
-import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../../features/planner/integration/planner-fabric-mockRuntime";
 
 describe("shapeInspectorBridge", () => {
   afterEach(() => {
@@ -64,3 +64,4 @@ describe("shapeInspectorBridge", () => {
     expect(() => duplicateInspectorShape(null, "desk-1")).not.toThrow();
   });
 });
+

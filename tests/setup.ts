@@ -7,11 +7,23 @@ afterEach(() => {
   cleanup();
 });
 
+// Mock Next.js font modules — they use Node APIs unavailable in happy-dom
+vi.mock("next/font/local", () => ({
+  default: () => ({ className: "mock-font", style: { fontFamily: "mock" } }),
+}));
+vi.mock("next/font/google", () => ({
+  Inter: () => ({ className: "mock-font", style: { fontFamily: "mock" } }),
+  Outfit: () => ({ className: "mock-font", style: { fontFamily: "mock" } }),
+}));
+
+// server-only is a no-op in tests
+vi.mock("server-only", () => ({}));
+
 import enMessages from "../messages/en.json";
 
 vi.mock("next-intl", () => {
   const getNestedValue = (obj: any, path: string) => {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+    return path.split('.').reduce((acc: any, part: string) => acc && acc[part], obj);
   };
 
   return {
@@ -20,7 +32,7 @@ vi.mock("next-intl", () => {
       let text = getNestedValue(enMessages, fullKey) || fullKey;
       if (typeof text === 'string' && values) {
         Object.entries(values).forEach(([k, v]) => {
-          text = text.replace(`{${k}}`, String(v));
+          text = (text as string).replace(`{${k}}`, String(v));
         });
       }
       return text;

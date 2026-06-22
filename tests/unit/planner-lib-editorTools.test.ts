@@ -280,3 +280,4 @@ describe("planner editor tools", () => {
     expect(distributeShapes).toHaveBeenCalledWith([deskA, deskB, deskC], "horizontal");
   });
 });
+

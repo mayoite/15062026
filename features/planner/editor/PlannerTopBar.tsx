@@ -34,6 +34,7 @@ interface PlannerTopBarProps {
   onImport: () => void;
   onOpenTemplates: () => void;
   onOpenAi: () => void;
+  isOnline?: boolean;
 }
 
 export function PlannerTopBar({
@@ -50,6 +51,7 @@ export function PlannerTopBar({
   onImport,
   onOpenTemplates,
   onOpenAi,
+  isOnline = true,
 }: PlannerTopBarProps) {
   const { resolvedTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -95,7 +97,13 @@ export function PlannerTopBar({
       </div>
 
       <div className="pw-topbar-actions">
-        <div className="pw-topbar-actions-primary">
+        <div className="pw-topbar-actions-primary flex items-center gap-2">
+          {!isOnline && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 typ-caption font-semibold uppercase tracking-[0.1em] text-amber-600 dark:text-amber-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+              Offline
+            </span>
+          )}
           <PlannerThemeToggle />
           <PlannerSaveIndicator
             status={saveStatus}

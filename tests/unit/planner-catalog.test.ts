@@ -55,3 +55,4 @@ describe("unifiedCatalog", () => {
     expect(results.some((item) => item.name === "Executive Desk")).toBe(true);
   });
 });
+

@@ -80,3 +80,4 @@ describe("planner/catalog/catalogStore", () => {
     expect(recentIds).not.toContain("a");
   });
 });
+

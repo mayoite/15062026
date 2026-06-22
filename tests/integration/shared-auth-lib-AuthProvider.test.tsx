@@ -229,6 +229,7 @@ describe("AuthProvider", () => {
         },
       });
     });
+    expect(authMocks.getSession).toHaveBeenCalled();
   });
 
   it("unsubscribes on unmount", async () => {

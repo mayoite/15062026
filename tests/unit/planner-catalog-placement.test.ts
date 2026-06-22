@@ -125,3 +125,4 @@ describe("isFurniturePlacementCatalogItem", () => {
     expect(isFurniturePlacementCatalogItem(makeItem("infrastructure", "planner-desk"))).toBe(false);
   });
 });
+

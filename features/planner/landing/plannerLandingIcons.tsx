@@ -3,7 +3,6 @@ import {
   Export,
   Layout,
   Sparkle,
-  UploadSimple,
   type IconProps,
 } from "@phosphor-icons/react";
 

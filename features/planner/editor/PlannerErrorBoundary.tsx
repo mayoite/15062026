@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { logClientError } from "@/lib/errorLogger";
 
 interface PlannerErrorBoundaryProps {
   children: ReactNode;
@@ -30,7 +31,11 @@ export class PlannerErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
-    console.error("[planner-error-boundary]", this.props.label ?? "planner", error, info);
+    void logClientError({
+      error,
+      label: this.props.label ?? "planner",
+      componentStack: info?.componentStack ?? "",
+    });
   }
 
   private handleReset = () => {

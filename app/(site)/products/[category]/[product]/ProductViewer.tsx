@@ -67,7 +67,7 @@ const LazyThreeViewer = dynamic(() => import("@/components/ThreeViewer"), {
 
 export function sanitizeDisplayText(value: string): string {
   return String(value || "")
-    .replace(/[�]+/g, "")
+    .replace(/[\uFFFD]+/g, "")
     .replace(/â€”/g, "—")
     .replace(/â€“/g, "–")
     .replace(/â€˜|â€™/g, "'")
@@ -76,9 +76,30 @@ export function sanitizeDisplayText(value: string): string {
     .trim();
 }
 
+export function escapeHtmlAttribute(value: string): string {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 function sanitizeDisplayList(values: string[]): string[] {
   return values.map((item) => normalizeDisplayText(item)).filter(Boolean);
 }
+
+const ModelViewer = "model-viewer" as unknown as React.ComponentType<{
+  src: string;
+  ar?: boolean;
+  "ios-src"?: string;
+  "camera-controls"?: boolean;
+  "shadow-intensity"?: string;
+  "draco-decoder-location"?: string;
+  "ktx2-transcoder-location"?: string;
+  alt?: string;
+  style?: React.CSSProperties;
+}>;
 
 export function ProductViewer({
   product,
@@ -566,22 +587,16 @@ export function ProductViewer({
                   </div>
                   <div className="block h-full w-full md:hidden">
                     {isModelViewerReady ? (
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: `
-                        <model-viewer
-                          src="${modelPath}"
-                          ar
-                          ios-src="${modelPath.replace(".glb", ".usdz")}"
-                          camera-controls
-                          shadow-intensity="1"
-                          draco-decoder-location="${modelViewerDecoderDirs.draco}"
-                          ktx2-transcoder-location="${modelViewerDecoderDirs.ktx2}"
-                          alt="3D model of ${displayName}"
-                          style="width: 100%; height: 100%;"
-                        ></model-viewer>
-                      `,
-                        }}
+                      <ModelViewer
+                        src={modelPath}
+                        ar
+                        ios-src={modelPath.replace(".glb", ".usdz")}
+                        camera-controls
+                        shadow-intensity="1"
+                        draco-decoder-location={modelViewerDecoderDirs.draco}
+                        ktx2-transcoder-location={modelViewerDecoderDirs.ktx2}
+                        alt={`3D model of ${displayName}`}
+                        style={{ width: "100%", height: "100%" }}
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center bg-soft">

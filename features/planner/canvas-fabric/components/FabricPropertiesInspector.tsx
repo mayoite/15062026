@@ -2,16 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useFloorplan } from "../context/FloorplanContext";
-import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
-import { plannerUnitSystemToMeasurementUnit, formatLength } from "@/features/planner/lib/measurements";
 import { Trash2, Lock, Unlock } from "lucide-react";
 
 const FABRIC_TO_MM = 10;
 
 export function FabricPropertiesInspector() {
   const app = useFloorplan();
-  const unitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
-  const measurementUnit = plannerUnitSystemToMeasurementUnit(unitSystem);
   const [localAngles, setLocalAngles] = useState<Record<string, string>>({});
   const [localDimensions, setLocalDimensions] = useState<Record<string, { w: string; d: string }>>({});
 
@@ -26,8 +22,13 @@ export function FabricPropertiesInspector() {
         d: String(Math.round((Number(sel.height) || 0) * Number(sel.scaleY ?? 1) * FABRIC_TO_MM)),
       };
     });
-    setLocalAngles(angles);
-    setLocalDimensions(dims);
+    
+    // Defer state update to avoid synchronous setState inside useEffect warning
+    const timer = setTimeout(() => {
+      setLocalAngles(angles);
+      setLocalDimensions(dims);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [app.selections]);
 
   if (app.selections.length === 0) {

@@ -49,3 +49,4 @@ describe("countShapesByLayer", () => {
     expect(counts.walls).toBe(0);
   });
 });
+

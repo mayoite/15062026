@@ -6,16 +6,14 @@
 import {
   Canvas as FabricCanvas,
   Group,
-  Line,
   Point,
   ActiveSelection,
   FabricText,
   Pattern,
   loadSVGFromString,
   util as fabricUtil,
-  Image as FabricImage,
 } from 'fabric';
-import type { Rect, FabricObject } from 'fabric';
+import type { Rect, FabricObject, Line } from 'fabric';
 import { saveAs as saveFile } from 'file-saver';
 import { formatDate } from '../lib/formatDate';
 import * as _ from '../lib/helpers';
@@ -53,15 +51,13 @@ export function createFloorplanCanvasApi(
 } {
   let view!: FabricCanvas;
   let corners: Rect[] = [];
-  let walls: Line[] = [];
+  const walls: Line[] = [];
   let lastObjectDefinition: InsertPayloadObj | null = null;
   let lastObject: PlannerFabricObject | null = null;
   let copied: PlannerFabricObject | null = null;
   let selections: FabricObject[] = [];
   let CTRL_KEY_DOWN = false;
-  /** Sync flag — React ctxRef.roomEdit lags one frame after editRoom(). */
-  let roomEditMode = false;
-  let ROOM_SIZE = { width: 960, height: 480 };
+  const ROOM_SIZE = { width: 960, height: 480 };
   let DEFAULT_CHAIR: Record<string, unknown> | null = null;
   let REMOVE_DW = false;
   let gridPattern: Pattern | null = null;
@@ -70,6 +66,7 @@ export function createFloorplanCanvasApi(
   let drawFillColor: string = DEFAULT_FABRIC_FILL_COLOR;
   let contextMenuListener: ((state: FabricContextMenuState | null) => void) | null = null;
   let drawToolsController: ReturnType<typeof wireFabricDrawTools> | null = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wc: any = null;
 
   const {
@@ -86,11 +83,7 @@ export function createFloorplanCanvasApi(
 
   // ─── convenience aliases that delegate to wc (available after setCanvasView) ─
 
-  function isWallLine(obj: unknown): obj is Line {
-    return false;
-  }
-
-  function isWallOrCorner(obj: unknown): boolean {
+  function isWallOrCorner(_obj: unknown): boolean {
     return false;
   }
 
@@ -386,22 +379,13 @@ export function createFloorplanCanvasApi(
   }
 
 
-  function locateDW(dw: Group, wall: Line, x: number, y: number) {
-    return dw;
-  }
-
   /**********************************************************************************************************/
 
   function editRoom() {
     // No-op: fabricWalls is removed
   }
 
-  function endEditRoom() {
-    // No-op: fabricWalls is removed
-  }
-
   function cancelRoomEdition() {
-    roomEditMode = false;
     drawToolsController?.applyCanvasMode();
     wc?.refreshRoomEditObjectModes(false);
     selections = [];
@@ -508,8 +492,8 @@ export function createFloorplanCanvasApi(
       const spacing = 40;
       while (attempts < 50) {
         const collision = view.getObjects().some(obj => 
-          !(obj as any).name?.includes('WALL') && 
-          (obj as any).name !== 'CORNER' &&
+          !(obj as PlannerFabricObject).name?.includes('WALL') && 
+          (obj as PlannerFabricObject).name !== 'CORNER' &&
           Math.abs((obj.left || 0) - (group.left || 0)) < 5 && 
           Math.abs((obj.top || 0) - (group.top || 0)) < 5
         );
@@ -1008,7 +992,7 @@ export function createFloorplanCanvasApi(
     saveState();
   }
 
-  function filterObjects(names: string[]) {
+  function _filterObjects(names: string[]) {
     return view.getObjects().filter((obj) => {
       const name = String((obj as PlannerFabricObject).name ?? '');
       return names.some((n) => name.includes(n));
