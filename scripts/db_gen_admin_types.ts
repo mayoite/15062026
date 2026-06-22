@@ -5,6 +5,7 @@
  * Used because `supabase gen types --db-url` requires Docker.
  */
 import { config } from "dotenv";
+import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { writeFileSync } from "node:fs";
 import postgres from "postgres";
@@ -226,8 +227,10 @@ ${viewBlocks.length ? viewBlocks.join("\n") : "      [_ in never]: never"}
 }
 `;
 
-  writeFileSync(resolve("types", "database.admin.types.ts"), out, "utf8");
-  console.log(`Wrote types/database.admin.types.ts (${out.length} bytes)`);
+  const outPath = resolve("config", "database", "types", "database.admin.types.ts");
+  mkdirSync(resolve("config", "database", "types"), { recursive: true });
+  writeFileSync(outPath, out, "utf8");
+  console.log(`Wrote config/database/types/database.admin.types.ts (${out.length} bytes)`);
   await sql.end({ timeout: 5 });
 }
 

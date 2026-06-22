@@ -545,12 +545,20 @@ function logPlannerDocumentParseFailure(context: string, error: unknown, data: u
   });
 }
 
+function newPlannerDocumentId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `00000000-0000-4000-8000-${Math.random().toString(16).slice(2, 14).padEnd(12, "0")}`;
+}
+
 function buildSafeFallbackPlannerDocument(source?: Record<string, unknown> | null): PlannerDocument {
   const loose = source ?? {};
 
   return {
     schemaVersion: PLANNER_DOCUMENT_SCHEMA_VERSION,
-    id: normalizeUuid(loose.id),
+    id: normalizeUuid(loose.id) ?? newPlannerDocumentId(),
     name: normalizeLooseText(loose.name ?? loose.title) ?? "Untitled plan",
     title: normalizeLooseText(loose.title ?? loose.name) ?? "Untitled plan",
     projectName: normalizeLooseText(loose.projectName ?? loose.project_name),
@@ -642,7 +650,7 @@ export function createPlannerDocument(defaults: PlannerDocumentDefaults = {}): P
     parsePlannerDocumentOrFallback(
       {
         schemaVersion: PLANNER_DOCUMENT_SCHEMA_VERSION,
-        id: defaults.id,
+        id: defaults.id ?? newPlannerDocumentId(),
         name: defaults.name ?? defaults.title,
         title: defaults.title ?? defaults.name,
         projectName: defaults.projectName ?? null,

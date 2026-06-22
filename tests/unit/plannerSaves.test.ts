@@ -7,6 +7,7 @@ import {
   PlannerStorageError,
 } from "@/features/planner/persistence/plannerSaves";
 import { createPlannerDocument } from "../../features/planner/model";
+import { TEST_USER_ID } from "../fixtures/plannerTestUuids";
 import type { SupabaseClient, UserResponse, User } from "@supabase/supabase-js";
 
 describe("plannerSaves", () => {
@@ -18,7 +19,7 @@ describe("plannerSaves", () => {
     mockSupabase = {
       auth: {
         getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: "test-user-id" } as User },
+          data: { user: { id: TEST_USER_ID } as User },
           error: null,
         } as UserResponse),
       } as unknown as SupabaseClient["auth"],
@@ -70,7 +71,7 @@ describe("plannerSaves", () => {
         new Response(JSON.stringify({ document: doc }), { status: 200 })
       );
 
-      const result = await loadPlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-0000-0000-000000000001");
+      const result = await loadPlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-4000-8000-000000000001");
       expect(result).not.toBeNull();
       expect(result?.id).toBe(doc.id);
     });
@@ -81,7 +82,7 @@ describe("plannerSaves", () => {
       );
 
       await expect(
-        loadPlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-0000-0000-000000000001")
+        loadPlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-4000-8000-000000000001")
       ).rejects.toThrow(PlannerStorageError);
     });
   });
@@ -90,8 +91,8 @@ describe("plannerSaves", () => {
     it("lists owner plans via api", async () => {
       const mockDocuments = [
         {
-          id: "00000000-0000-0000-0000-000000000001",
-          user_id: "test-user-id",
+          id: "00000000-0000-4000-8000-000000000001",
+          user_id: "00000000-0000-4000-8000-000000000099",
           name: "Test Plan",
           project_name: null,
           client_name: null,
@@ -112,14 +113,14 @@ describe("plannerSaves", () => {
 
       const result = await listPlannerDocumentsFromSupabase(mockSupabase as SupabaseClient);
       expect(result.length).toBe(1);
-      expect(result[0]?.id).toBe("00000000-0000-0000-0000-000000000001");
+      expect(result[0]?.id).toBe("00000000-0000-4000-8000-000000000001");
     });
 
     it("lists admin plans via api when accessMode is admin", async () => {
       const mockPlans = [
         {
-          id: "00000000-0000-0000-0000-000000000003",
-          user_id: "00000000-0000-0000-0000-000000000002",
+          id: "00000000-0000-4000-8000-000000000003",
+          user_id: "00000000-0000-4000-8000-000000000002",
           name: "Admin Test Plan",
           unit_system: "imperial",
           created_at: new Date().toISOString(),
@@ -134,7 +135,7 @@ describe("plannerSaves", () => {
         accessMode: "admin",
       });
       expect(result.length).toBe(1);
-      expect(result[0]?.id).toBe("00000000-0000-0000-0000-000000000003");
+      expect(result[0]?.id).toBe("00000000-0000-4000-8000-000000000003");
     });
   });
 
@@ -146,14 +147,14 @@ describe("plannerSaves", () => {
 
       const result = await deletePlannerDocumentFromSupabase(
         mockSupabase as SupabaseClient,
-        "00000000-0000-0000-0000-000000000001"
+        "00000000-0000-4000-8000-000000000001"
       );
       expect(result).toBe(true);
     });
 
     it("throws PlannerStorageError if accessMode is admin", async () => {
       await expect(
-        deletePlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-0000-0000-000000000001", {
+        deletePlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-4000-8000-000000000001", {
           accessMode: "admin",
         })
       ).rejects.toThrow(PlannerStorageError);
@@ -163,7 +164,7 @@ describe("plannerSaves", () => {
       vi.mocked(fetch).mockResolvedValueOnce(new Response(null, { status: 401 }));
 
       await expect(
-        deletePlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-0000-0000-000000000001")
+        deletePlannerDocumentFromSupabase(mockSupabase as SupabaseClient, "00000000-0000-4000-8000-000000000001")
       ).rejects.toThrow(PlannerStorageError);
     });
   });

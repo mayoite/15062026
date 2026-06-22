@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "@/app/css/core/site/bundles/homepage-only.css";
 import { HomepageHero } from "@/components/home/HomepageHero";
 import { PartnershipBanner } from "@/components/home/PartnershipBanner";
 import { Collections } from "@/components/home/Collections";
@@ -11,8 +10,8 @@ import { ContactTeaser } from "@/components/shared/ContactTeaser";
 
 import { SITE_BRAND } from "@/lib/analytics/seo";
 import { buildPageJsonLd, buildPageMetadata } from "@/lib/analytics/seo";
-import { buildLocalBusinessJsonLd } from "@/data/site/seo";
-import { HOMEPAGE_SHOWCASE_CONTENT } from "@/data/site/homepage";
+import { buildLocalBusinessJsonLd } from "@/lib/site-data/seo";
+import { HOMEPAGE_SHOWCASE_CONTENT } from "@/lib/site-data/homepage";
 import { getBusinessStats } from "@/features/crm/businessStats";
 import { SITE_URL } from "@/lib/siteUrl";
 import { sanitizeJsonForScript } from "@/lib/security/sanitize";

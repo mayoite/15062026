@@ -37,7 +37,7 @@ import {
   SUSTAINABILITY_PAGE_COPY,
   TRACKING_PAGE_COPY,
   TRUSTED_BY_PAGE_COPY,
-} from "@/data/site/routeCopy";
+} from "@/lib/site-data/routeCopy";
 
 describe("route copy — page heroes", () => {
   it("about page has structured sections and CTAs", () => {

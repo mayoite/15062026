@@ -414,9 +414,11 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     setSessionStatusMessage,
     sessionErrorMessage,
     setSessionErrorMessage,
+    sessionBusy,
     draftPlanName,
     draftNameKey,
     authUserId,
+    handleSaveCloud: sessionHandleSaveCloud,
     handleSaveDraft: sessionHandleSaveDraft,
     handleSaveAsNewSession: sessionHandleSaveAsNewSession,
     handleLoadPlan,
@@ -451,6 +453,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
 
   // Wrap session handlers to pass planName (resolved here)
   const handleSaveDraft = useCallback(() => sessionHandleSaveDraft(planName), [sessionHandleSaveDraft, planName]);
+  const handleSaveCloud = useCallback(() => sessionHandleSaveCloud(planName), [sessionHandleSaveCloud, planName]);
   const handleSaveAsNewSession = useCallback(() => sessionHandleSaveAsNewSession(planName), [sessionHandleSaveAsNewSession, planName]);
   const handleExportJson = useCallback(() => sessionHandleExportJson(buildCurrentPlannerDocument, planName), [sessionHandleExportJson, buildCurrentPlannerDocument, planName]);
 
@@ -907,16 +910,11 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
             onPlanNameChange={setPlanNameOverride}
             plans={plannerSavedEntries}
             isAuthenticated={!!authUserId}
+            isBusy={sessionBusy}
             statusMessage={sessionStatusMessage}
             errorMessage={sessionErrorMessage}
             canOpen3d={shapeCount > 0}
-            onSaveCloud={() => {
-              if (!isOnline) {
-                setSessionErrorMessage("Cloud save is unavailable while offline.");
-                return;
-              }
-              handleSaveDraft();
-            }}
+            onSaveCloud={handleSaveCloud}
             onSaveDraft={handleSaveDraft}
             onSaveAsNewSession={handleSaveAsNewSession}
             onLoadPlan={handleLoadPlan}

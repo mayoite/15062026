@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 import { GET, PATCH, DELETE } from '@/app/api/admin/plans/route';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 vi.mock('server-only', () => ({}));
 

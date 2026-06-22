@@ -84,6 +84,23 @@
   }
 }
 
+.home-hero-title-route {
+  max-width: min(100%, 36rem);
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8.5vw, 3.75rem);
+  font-weight: var(--font-weight-display-light, 300);
+  line-height: var(--type-leading-title, 1.08);
+  letter-spacing: var(--type-letter-title, -0.04em);
+  text-shadow: 0 2px 28px rgb(0 0 0 / 0.42);
+  text-wrap: balance;
+}
+
+@media (min-width: 768px) {
+  .home-hero-title-route {
+    font-size: clamp(3.5rem, 5.8vw, 4.75rem);
+  }
+}
+
 .home-solutions-title {
   max-width: 48rem;
   font-family: var(--font-display);

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseAuthAdminClient } from '@/platform/supabase/auth-admin';
 import { createServerClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rateLimit";
+import { validateCsrfRequest } from "@/lib/security/csrf";
 
 type QueryStatus = "new" | "in_progress" | "closed" | "spam";
 type FollowUpChannel = "email" | "whatsapp" | "phone" | "none";
@@ -134,6 +135,14 @@ export async function PATCH(req: NextRequest) {
 
   const unauthorized = await ensureAuthorized(req);
   if (unauthorized) return unauthorized;
+
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
+    );
+  }
 
   let payload: PatchPayload = {};
   try {

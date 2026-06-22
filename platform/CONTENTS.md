@@ -8,6 +8,7 @@ Protected layer for DB and third-party SDKs. App code imports from here, not raw
 
 - supabase/ — clients, migrations, edge functions
 - drizzle/ — schema, db.ts, migrations
+- appwrite/ — legacy/alternate backend
 
 ## Rules
 

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
-import { PRODUCTS_PAGE_COPY } from "@/data/site/routeCopy";
-import { buildPageJsonLd, buildPageMetadata } from "@/data/site/seo";
+import { PRODUCTS_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { buildPageJsonLd, buildPageMetadata } from "@/lib/site-data/seo";
 import { SITE_URL } from "@/lib/siteUrl";
 import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 

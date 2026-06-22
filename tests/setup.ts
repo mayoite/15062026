@@ -19,7 +19,7 @@ vi.mock("next/font/google", () => ({
 // server-only is a no-op in tests
 vi.mock("server-only", () => ({}));
 
-import enMessages from "../messages/en.json";
+import enMessages from "../i18n/messages/en.json";
 
 vi.mock("next-intl", () => {
   const getNestedValue = (obj: any, path: string) => {

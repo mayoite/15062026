@@ -1,15 +1,14 @@
 {
   "extends": "../config/build/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "..",
     "paths": {
-      "@/types/*": ["config/database/types/*"],
-      "@/app/*": ["app/*"],
-      "@/components/*": ["components/*"],
-      "@/data/*": ["data/*"],
-      "@/features/*": ["features/*"],
-      "@/lib/*": ["lib/*"],
-      "@/*": ["*"]
+      "@/types/*": ["../config/database/types/*"],
+      "@/app/*": ["../app/*"],
+      "@/components/*": ["../components/*"],
+      "@/lib/site-data/*": ["../lib/site-data/*"],
+      "@/features/*": ["../features/*"],
+      "@/lib/*": ["../lib/*"],
+      "@/*": ["../*"]
     },
     "types": ["node", "react", "react-dom", "vitest/globals", "@testing-library/jest-dom"]
   },

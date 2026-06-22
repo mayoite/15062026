@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 
-import { CATEGORY_ROUTE_COPY } from "@/data/site/routeCopy";
-import { buildPageMetadata } from "@/data/site/seo";
+import { CATEGORY_ROUTE_COPY } from "@/lib/site-data/routeCopy";
+import { buildPageMetadata } from "@/lib/site-data/seo";
 import {
   Catalog_CATEGORY_ORDER,
   buildRequestedCategoryCatalog,

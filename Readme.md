@@ -40,6 +40,21 @@ Flat-root Next.js app. Furniture company site at `oando.co.in` with one workspac
 
 Historical cleanup now lives in git history and `findingsnew/`. Dev stays on the canvas replacement.
 
+## Static data
+
+- Site copy, nav trees, and the local catalog index live in `lib/site-data/`.
+- `data/` is legacy and should not receive new app-facing content.
+- Mirror CSS only for UI-owned folders; do not mirror `data/`, `lib/`, or `api/` into a parallel style tree.
+
+## Config
+
+- Route contract metadata lives in `config/route-contract.json`.
+
+## i18n
+
+- Locale message files live in `i18n/messages/`.
+- `i18n/request.ts` loads the active locale JSON from that folder.
+
 ## CSS
 
 - **Base:** `app/css/base/` for global primitives such as `animations.css`.

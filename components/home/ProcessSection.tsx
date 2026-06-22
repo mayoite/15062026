@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { HOMEPAGE_PROCESS_CONTENT } from "@/data/site/homepage";
+import { HOMEPAGE_PROCESS_CONTENT } from "@/lib/site-data/homepage";
 
 interface ProcessSectionProps {
   dark?: boolean;

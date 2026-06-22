@@ -3,7 +3,7 @@ import { Briefcase, GraduationCap, Users } from "lucide-react";
 import { Hero } from "@/components/home/Hero";
 import { JobCard } from "@/components/career/JobCard";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
-import { CAREER_PAGE_COPY, CAREER_PAGE_JOBS } from "@/data/site/routeCopy";
+import { CAREER_PAGE_COPY, CAREER_PAGE_JOBS } from "@/lib/site-data/routeCopy";
 
 const CAREER_PILLAR_ICONS = {
   users: Users,

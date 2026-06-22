@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, CompassTool } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
-import { PRODUCT_SUITE } from "@/data/site/productSuite";
+import { PRODUCT_SUITE } from "@/lib/site-data/productSuite";
 
 interface ChooseProductPageProps {
   guestMode: boolean;

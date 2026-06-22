@@ -9,7 +9,7 @@ Single design system for site + planner. Tokens and bundles avoid hardcoded colo
 - base/ — animations, resets
 - core/tokens/ — @theme source of truth
 - core/site/ — marketing bundles
-- core/planner/ — workspace chrome bundles
+- core/planner/ — workspace chrome, side panels, and bundles
 
 ## See also
 

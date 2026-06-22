@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AdvancedBot } from "@/features/site-assistant/AdvancedBot";
-import { SITE_CONTACT } from "@/data/site/contact";
+import { SITE_CONTACT } from "@/lib/site-data/contact";
 
 function openBot() {
   fireEvent.click(

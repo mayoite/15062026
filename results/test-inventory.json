@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-06-22T11:27:23.138Z",
+  "source": "tests/",
+  "counts": {
+    "total": 5,
+    "vitest": 3,
+    "vitestExcluded": 0,
+    "playwright": 1,
+    "helpers": 1
+  },
+  "vitestExclude": [],
+  "files": [
+    {
+      "name": "accessibility.spec.ts",
+      "path": "tests/accessibility.spec.ts",
+      "kind": "playwright",
+      "runner": "playwright"
+    },
+    {
+      "name": "proxy.test.ts",
+      "path": "tests/proxy.test.ts",
+      "kind": "site-unit",
+      "runner": "vitest"
+    },
+    {
+      "name": "root-configs.test.ts",
+      "path": "tests/root-configs.test.ts",
+      "kind": "site-unit",
+      "runner": "vitest"
+    },
+    {
+      "name": "scripts.test.ts",
+      "path": "tests/scripts.test.ts",
+      "kind": "site-unit",
+      "runner": "vitest"
+    },
+    {
+      "name": "setup.ts",
+      "path": "tests/setup.ts",
+      "kind": "helper",
+      "runner": "helper"
+    }
+  ],
+  "byKind": {
+    "playwright": [
+      "accessibility.spec.ts"
+    ],
+    "site-unit": [
+      "proxy.test.ts",
+      "root-configs.test.ts",
+      "scripts.test.ts"
+    ]
+  }
+}

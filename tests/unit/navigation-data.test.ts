@@ -5,7 +5,7 @@ import {
   SITE_FOOTER_NAV,
   SITE_NAV_FEATURED_CARDS,
   SITE_NAV_SEARCH_FALLBACK_LINKS,
-} from "@/data/site/navigation";
+} from "@/lib/site-data/navigation";
 
 describe("SITE_NAV_LINKS", () => {
   it("has at least 5 items", () => {

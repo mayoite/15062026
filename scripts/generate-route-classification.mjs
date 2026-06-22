@@ -103,7 +103,7 @@ const lines = [
   "",
   ...LEGACY_REDIRECTS.map(([src, dest]) => `- \`${src}\` → \`${dest}\``),
   "",
-  "See also: `project/route-contract.json`, `proxy.ts`, `docs/Handover.md`.",
+  "See also: `config/route-contract.json`, `proxy.ts`, `docs/Handover.md`.",
   "",
 ];
 

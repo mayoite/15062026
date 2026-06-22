@@ -1,3 +1,13 @@
 ﻿"use client";
-/** Stub */
-export default function AdminCatalogPageView() { return <div className="p-8">Catalog — coming soon.</div>; }
+
+import { AdminCatalogListView } from "./AdminCatalogListView";
+
+export default function AdminCatalogPageView() {
+  return (
+    <AdminCatalogListView
+      title="Standard catalog"
+      description="Planner managed products used by the canvas catalog sidebar."
+      catalogType="standard"
+    />
+  );
+}

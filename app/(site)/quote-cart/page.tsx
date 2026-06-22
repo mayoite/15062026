@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useMemo } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useQuoteCart } from "@/lib/store/quoteCart";
-import { QUOTE_CART_ROUTE_COPY } from "@/data/site/routeCopy";
+import { QUOTE_CART_ROUTE_COPY } from "@/lib/site-data/routeCopy";
 import { normalizeAssetPath } from "@/lib/assetPaths";
 
 function getCompareHref(items: Array<{ href?: string }>) {

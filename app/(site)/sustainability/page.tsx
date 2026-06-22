@@ -3,8 +3,8 @@ import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { Newsletter } from "@/components/shared/Newsletter";
 import { RouteActionCard } from "@/components/shared/RouteActionCard";
 import { SectionIntro } from "@/components/shared/SectionIntro";
-import { SUSTAINABILITY_PAGE_COPY } from "@/data/site/routeCopy";
-import { SUSTAINABILITY_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { SUSTAINABILITY_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { SUSTAINABILITY_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = SUSTAINABILITY_PAGE_METADATA;
 

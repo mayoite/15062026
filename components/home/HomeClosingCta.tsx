@@ -1,8 +1,8 @@
 "use client";
 
 import { RouteCtaBand } from "@/components/shared/RouteCtaBand";
-import { buildWhatsAppHref, SITE_CONTACT, toTelHref } from "@/data/site/contact";
-import { HOMEPAGE_CLOSING_CTA_CONTENT } from "@/data/site/homepage";
+import { buildWhatsAppHref, SITE_CONTACT, toTelHref } from "@/lib/site-data/contact";
+import { HOMEPAGE_CLOSING_CTA_CONTENT } from "@/lib/site-data/homepage";
 
 export function HomeClosingCta() {
   const { actions, description, kicker, titleLead, titleAccent } =

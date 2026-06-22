@@ -20,11 +20,11 @@ vi.mock('@/features/planner/store/plannerSaves', () => ({
 }));
 
 vi.mock('@/lib/rateLimit', () => ({
-  rateLimit: vi.fn().mockReturnValue(null),
+  rateLimit: vi.fn().mockResolvedValue({ success: true }),
 }));
 
 vi.mock('@/lib/security/csrf', () => ({
-  validateCsrfRequest: vi.fn().mockReturnValue(false),
+  validateCsrfRequest: vi.fn().mockResolvedValue(false),
 }));
 
 test('GET API returns 401 when unauthenticated', async () => {

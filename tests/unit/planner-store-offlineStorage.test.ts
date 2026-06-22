@@ -271,7 +271,7 @@ describe("OfflineStorageManager", () => {
     expect(await manager.getPlanByLocalId("remote-1")).toEqual(plan);
 
     await manager.deletePlan("plan-1");
-    expect(await manager.getPlan("plan-1")).toBeUndefined();
+    expect(await manager.getPlan("plan-1")).toBeNull();
   });
 
   it("manages sync queue items", async () => {
@@ -433,7 +433,7 @@ describe("offlineStorage singleton workflows", () => {
     await markPlanAsSynced(created.id, "remote-del");
 
     await deleteOfflinePlan(created.id);
-    expect(await offlineStorage.getPlan(created.id)).toBeUndefined();
+    expect(await offlineStorage.getPlan(created.id)).toBeNull();
 
     const queue = await offlineStorage.listSyncQueue();
     expect(queue.some((item) => item.operation === "delete")).toBe(true);
@@ -443,7 +443,7 @@ describe("offlineStorage singleton workflows", () => {
     const created = await createOfflinePlan(sampleDocument);
     await deleteOfflinePlan(created.id);
 
-    expect(await offlineStorage.getPlan(created.id)).toBeUndefined();
+    expect(await offlineStorage.getPlan(created.id)).toBeNull();
     const queue = await offlineStorage.listSyncQueue();
     expect(queue.some((item) => item.operation === "delete")).toBe(false);
     expect(queue.some((item) => item.operation === "create")).toBe(true);

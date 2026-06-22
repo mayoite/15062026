@@ -46,7 +46,7 @@ import {
   trackQuoteCartAdded,
   trackSiteCtaClick,
 } from "@/lib/analytics/siteEvents";
-import { PDP_ROUTE_COPY } from "@/data/site/routeCopy";
+import { PDP_ROUTE_COPY } from "@/lib/site-data/routeCopy";
 
 interface ProductViewerProps {
   product: Product;

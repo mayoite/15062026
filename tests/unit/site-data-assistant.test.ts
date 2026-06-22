@@ -8,7 +8,7 @@ import {
   AI_CHATBOT_COPY,
   GUIDED_PLANNER_COPY,
   MOBILE_ASSISTANT_COPY,
-} from "@/data/site/assistant";
+} from "@/lib/site-data/assistant";
 
 describe("assistant welcome and starters", () => {
   it("welcome message introduces the workspace assistant", () => {

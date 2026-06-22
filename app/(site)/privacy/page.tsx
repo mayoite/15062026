@@ -1,9 +1,9 @@
 ﻿import Link from "next/link";
 import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
-import { LEGAL_PAGE_COPY } from "@/data/site/routeCopy";
-import { SITE_CONTACT } from "@/data/site/contact";
-import { PRIVACY_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { LEGAL_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { SITE_CONTACT } from "@/lib/site-data/contact";
+import { PRIVACY_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = PRIVACY_PAGE_METADATA;
 

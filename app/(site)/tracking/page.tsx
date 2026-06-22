@@ -2,8 +2,8 @@ import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { RouteCtaBand } from "@/components/shared/RouteCtaBand";
 import { SectionIntro } from "@/components/shared/SectionIntro";
-import { TRACKING_PAGE_COPY } from "@/data/site/routeCopy";
-import { TRACKING_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { TRACKING_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { TRACKING_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = TRACKING_PAGE_METADATA;
 

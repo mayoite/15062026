@@ -2,7 +2,7 @@
 
 ## Why this folder exists
 
-Fabric-based 2D canvas: walls, furniture, layers, measurements.
+tldraw-based 2D canvas: walls, furniture, layers, measurements, blueprint import.
 
 ## What is here
 

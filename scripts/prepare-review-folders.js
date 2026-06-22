@@ -70,14 +70,14 @@ const folders = {
       { dir: "features/planner/ui", filter: (p) => isCodeFile(p) },
       { dir: "lib/theme", filter: (p) => isCodeFile(p) },
       { dir: "lib/ui", filter: (p) => isCodeFile(p) },
-      { dir: "data/site", filter: (p) => isCodeFile(p) },
+      { dir: "lib/site-data", filter: (p) => isCodeFile(p) },
       { dir: "public", filter: (p) => p.endsWith(".svg") || p.endsWith(".html") },
     ],
   },
   "Route-Engineer": {
     description: "Routing, API, proxy, auth, navigation",
     sources: [
-      { dir: "project/route-contract.json", single: true },
+      { dir: "config/route-contract.json", single: true },
       { dir: "proxy.ts", single: true },
       { dir: "config/build/next.config.js", single: true },
       { dir: "app", filter: (p) => isRouteFile(p) },
@@ -92,11 +92,11 @@ const folders = {
     ],
   },
   "Code-Expert-Frontend": {
-    description: "Marketing app — app/(site), components, data/site",
+    description: "Marketing app — app/(site), components, lib/site-data",
     sources: [
       { dir: "app/(site)", filter: (p) => isCodeFile(p) },
       { dir: "components", filter: (p) => isCodeFile(p) },
-      { dir: "data/site", filter: (p) => isCodeFile(p) },
+      { dir: "lib/site-data", filter: (p) => isCodeFile(p) },
       { dir: "features/site-assistant", filter: (p) => isCodeFile(p) },
       { dir: "package.json", single: true },
       { dir: "tsconfig.json", single: true },
@@ -130,7 +130,7 @@ const folders = {
 const briefIntro = {
   "UX-UI-Critic": "Pages, layouts, FOCSS (`app/css/`), marketing components, theme tokens, and static copy.",
   "Route-Engineer": "App Router tree, API handlers, `proxy.ts`, auth guards, navigation data, route classification.",
-  "Code-Expert-Frontend": "Public marketing surface: `app/(site)/`, `components/`, `data/site/`, site assistant.",
+  "Code-Expert-Frontend": "Public marketing surface: `app/(site)/`, `components/`, `lib/site-data/`, site assistant.",
   "Code-Expert-Packages": "All `features/`, `lib/`, and `data/` — domain logic for planner, catalog, auth, ops.",
   "Code-Expert-Platform": "`platform/`, `config/`, flat `tests/`, maintenance `scripts/`, build configs.",
 };
@@ -144,7 +144,7 @@ ${briefIntro[folderName]}
 ## Repo layout
 - Live code: \`app/\`, \`features/\`, \`components/\`, \`lib/\`, \`data/\`
 - Tests: flat \`tests/\` only — see \`docs/TESTING.md\`
-- Plans: \`plans/REPO-STRUCTURE-PLAN.md\`, \`plans/TESTING-PLAN.md\`
+- Plans: \`docs/plans/01-hardcoding.md\`, \`docs/plans/02-docs.md\`, \`docs/plans/03-guardrails.md\`
 
 ## Deliverable
 Executive summary (1–10), critical/major/minor issues, strengths, file-referenced recommendations.

@@ -46,15 +46,9 @@ export function PlannerFeaturesHubPage() {
 
               <div className="pfp-hero-layout">
                 <div className="pfp-hero-copy">
-                  <p className="typ-eyebrow text-[color:var(--color-bronze-300)]">
-                    {PLANNER_HERO.kicker}
-                  </p>
                   <h1 className="home-hero-title-homepage mt-3 text-inverse">
-                    {PLANNER_HERO.lines[0]}
-                    <br />
-                    {PLANNER_HERO.lines[1]}
-                    <br />
-                    <span className="text-accent-italic-on-dark">{PLANNER_HERO.lines[2]}</span>
+                    {PLANNER_HERO.titleLead}
+                    <span className="text-accent-italic-on-dark">{PLANNER_HERO.titleAccent}</span>
                   </h1>
                   <p className="hero-subtitle mt-5 max-w-xl text-inverse-body">
                     {PLANNER_HERO.description}
@@ -161,7 +155,6 @@ export function PlannerFeaturesHubPage() {
                 >
                   <p className="planner-landing-step__num">{item.step}</p>
                   <h3 className="typ-h3 mt-3 text-strong">{item.title}</h3>
-                  <p className="page-copy-sm mt-2 text-muted">{item.body}</p>
                 </motion.div>
               ))}
             </div>

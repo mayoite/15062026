@@ -2,9 +2,9 @@ import Link from "next/link";
 import { MapPin, Phone, Mail } from "lucide-react";
 import { Hero } from "@/components/home/Hero";
 import { CustomerQueryForm } from "@/components/contact/CustomerQueryForm";
-import { SITE_CONTACT } from "@/data/site/contact";
-import { CONTACT_PAGE_COPY } from "@/data/site/routeCopy";
-import { buildPageJsonLd } from "@/data/site/seo";
+import { SITE_CONTACT } from "@/lib/site-data/contact";
+import { CONTACT_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { buildPageJsonLd } from "@/lib/site-data/seo";
 import { SITE_URL } from "@/lib/siteUrl";
 
 export interface ContactPageViewProps {

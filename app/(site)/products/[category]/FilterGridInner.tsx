@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { CompareDock } from "@/components/products/CompareDock";
-import { CATEGORY_ROUTE_COPY } from "@/data/site/routeCopy";
+import { CATEGORY_ROUTE_COPY } from "@/lib/site-data/routeCopy";
 import {
   DEFAULT_FILTERS,
   buildFilterParams,

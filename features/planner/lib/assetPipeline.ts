@@ -14,8 +14,8 @@ export interface FurnitureAsset {
 
 /**
  * Registry mapping catalogId -> FurnitureAsset metadata.
- * Paths reference future GLB conversions of the .max/.dwg source files
- * stored under public/models/chairs/.
+ * GLB/thumbnail files are served from the R2 asset CDN in production; local
+ * `/models/chairs/` paths are bounding-box metadata for the dev catalog subset.
  */
 export const FURNITURE_ASSET_REGISTRY: Map<string, FurnitureAsset> = new Map([
   [

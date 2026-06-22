@@ -6,8 +6,9 @@
 import { cookies } from "next/headers";
 import { timingSafeEqual } from "crypto";
 
-export const CSRF_COOKIE_NAME = "csrf-token";
-export const CSRF_HEADER_NAME = "x-csrf-token";
+import { CSRF_COOKIE_NAME, CSRF_HEADER_NAME } from "./csrfConstants";
+
+export { CSRF_COOKIE_NAME, CSRF_HEADER_NAME };
 
 /**
  * Generate a cryptographically secure CSRF token.

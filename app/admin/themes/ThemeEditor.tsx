@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { apiPath, browserApiFetch } from '@/lib/api/browserApi';
  
 import { Save, UploadCloud, AlertCircle } from 'lucide-react';
 
@@ -45,7 +46,7 @@ export function ThemeEditor() {
         "shadowColorHeavy": "rgba(15,23,42,0.25)"
       };
       
-      const res = await fetch('/api/admin/themes/publish', {
+      const res = await browserApiFetch(apiPath('/api/admin/themes/publish'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ themeName: 'premium-light', tokens: dummyTokens })

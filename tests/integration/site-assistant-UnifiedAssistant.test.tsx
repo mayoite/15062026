@@ -7,7 +7,7 @@ import {
   AI_CHATBOT_COPY,
   GUIDED_PLANNER_COPY,
   MOBILE_ASSISTANT_COPY,
-} from "@/data/site/assistant";
+} from "@/lib/site-data/assistant";
 
 const mockPathname = vi.fn(() => "/");
 const mockHasConsentChoice = vi.fn(() => true);

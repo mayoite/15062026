@@ -6,7 +6,8 @@
       "test",
       "-c",
       "config/build/playwright.config.ts",
-      "tests/accessibility.spec.ts"
+      "tests/e2e/site-navigation-smoke.spec.ts",
+      "tests/e2e/navigation-smoke.spec.ts"
     ],
     "configFile": "E:\\16062026\\config\\build\\playwright.config.ts",
     "rootDir": "E:/16062026/tests",
@@ -42,7 +43,7 @@
           "**/*.spec.ts",
           "**/*.spec.tsx"
         ],
-        "timeout": 30000
+        "timeout": 60000
       }
     ],
     "quiet": false,
@@ -50,6 +51,13 @@
       [
         "list",
         null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "../../results/playwright-report",
+          "open": "never"
+        }
       ],
       [
         "json",
@@ -67,7 +75,7 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.61.0",
-    "workers": 8,
+    "workers": 2,
     "webServer": {
       "command": "npm run build && npm run start",
       "url": "http://localhost:3000",
@@ -77,89 +85,233 @@
   },
   "suites": [
     {
-      "title": "accessibility.spec.ts",
-      "file": "accessibility.spec.ts",
+      "title": "e2e\\navigation-smoke.spec.ts",
+      "file": "e2e/navigation-smoke.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "planner landing opens the planner canvas",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 45771,
+                  "error": {
+                    "message": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"domcontentloaded\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n============================================================",
+                    "stack": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"domcontentloaded\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n============================================================\n    at E:\\16062026\\tests\\e2e\\navigation-smoke.spec.ts:10:14",
+                    "location": {
+                      "file": "E:\\16062026\\tests\\e2e\\navigation-smoke.spec.ts",
+                      "column": 14,
+                      "line": 10
+                    },
+                    "snippet": "   8 |   await expect(page.getByRole(\"heading\", { level: 1 })).toContainText(/Plan your office/i);\n   9 |   await page.locator(\"#planner-hero\").getByRole(\"link\", { name: /Start free/i }).click();\n> 10 |   await page.waitForURL(/\\/planner\\/guest\\/?/, { timeout: 30_000, waitUntil: \"domcontentloaded\" });\n     |              ^\n  11 |   await enterGuestPlannerWorkspace(page, { navigate: false });\n  12 |   await expect(page.locator(\"canvas\").first()).toBeVisible({ timeout: 30_000 });\n  13 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "E:\\16062026\\tests\\e2e\\navigation-smoke.spec.ts",
+                        "column": 14,
+                        "line": 10
+                      },
+                      "message": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"domcontentloaded\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n  navigated to \"http://localhost:3000/planner/\"\n============================================================\n\n   8 |   await expect(page.getByRole(\"heading\", { level: 1 })).toContainText(/Plan your office/i);\n   9 |   await page.locator(\"#planner-hero\").getByRole(\"link\", { name: /Start free/i }).click();\n> 10 |   await page.waitForURL(/\\/planner\\/guest\\/?/, { timeout: 30_000, waitUntil: \"domcontentloaded\" });\n     |              ^\n  11 |   await enterGuestPlannerWorkspace(page, { navigate: false });\n  12 |   await expect(page.locator(\"canvas\").first()).toBeVisible({ timeout: 30_000 });\n  13 | });\n    at E:\\16062026\\tests\\e2e\\navigation-smoke.spec.ts:10:14"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-06-22T09:22:01.306Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "E:\\16062026\\results\\test-results\\e2e-navigation-smoke-plann-4de5c-ng-opens-the-planner-canvas-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "E:\\16062026\\tests\\e2e\\navigation-smoke.spec.ts",
+                    "column": 14,
+                    "line": 10
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c0ca104f4578a4563ea0-55ae3cfb7b43be7a8208",
+          "file": "e2e/navigation-smoke.spec.ts",
+          "line": 5,
+          "column": 5
+        }
+      ]
+    },
+    {
+      "title": "e2e\\site-navigation-smoke.spec.ts",
+      "file": "e2e/site-navigation-smoke.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Accessibility baseline",
-          "file": "accessibility.spec.ts",
-          "line": 4,
+          "title": "site navigation smoke",
+          "file": "e2e/site-navigation-smoke.spec.ts",
+          "line": 5,
           "column": 6,
           "specs": [
             {
-              "title": "should not have any automatically detectable accessibility issues in guest planner",
-              "ok": false,
+              "title": "homepage loads with hero and progress dots",
+              "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 25303,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n    at E:\\16062026\\tests\\accessibility.spec.ts:31:46",
-                        "location": {
-                          "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                          "column": 46,
-                          "line": 31
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 29 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/Start placing furniture/i\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m 30 |\u001b[39m     }\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 31 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m\".pw-topbar\"\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m25000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 32 |\u001b[39m\n \u001b[90m 33 |\u001b[39m     \u001b[36mconst\u001b[39m accessibilityScanResults \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mAxeBuilder\u001b[39m({ page })\u001b[33m.\u001b[39manalyze()\u001b[33m;\u001b[39m\n \u001b[90m 34 |\u001b[39m     expect(accessibilityScanResults\u001b[33m.\u001b[39mviolations)\u001b[33m.\u001b[39mtoEqual([])\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                            "column": 46,
-                            "line": 31
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n\n  29 |       await page.getByRole(\"button\", { name: /Start placing furniture/i }).click();\n  30 |     }\n> 31 |     await expect(page.locator(\".pw-topbar\")).toBeVisible({ timeout: 25000 });\n     |                                              ^\n  32 |\n  33 |     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();\n  34 |     expect(accessibilityScanResults.violations).toEqual([]);\n    at E:\\16062026\\tests\\accessibility.spec.ts:31:46"
-                        }
-                      ],
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4315,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-22T03:50:24.598Z",
+                      "startTime": "2026-06-22T09:22:01.301Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "E:\\16062026\\results\\test-results\\accessibility-Accessibilit-90f0a-ity-issues-in-guest-planner-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                        "column": 46,
-                        "line": 31
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "ddd864604af8a6a0198f-1434c98afdc36f87a383",
-              "file": "accessibility.spec.ts",
-              "line": 23,
+              "id": "37be57452db53390bd67-100e0f3c96cd8390c212",
+              "file": "e2e/site-navigation-smoke.spec.ts",
+              "line": 6,
               "column": 7
             },
             {
-              "title": "should not have any accessibility issues in export modal",
+              "title": "homepage hero exposes product and quote CTAs plus trusted-by glass proof",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 10573,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-22T09:22:05.816Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "37be57452db53390bd67-dd8abee8b0b5f9f64b51",
+              "file": "e2e/site-navigation-smoke.spec.ts",
+              "line": 18,
+              "column": 7
+            },
+            {
+              "title": "homepage shows Final0704-inspired sections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3565,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-22T09:22:16.402Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "37be57452db53390bd67-2604d4c0403be1396335",
+              "file": "e2e/site-navigation-smoke.spec.ts",
+              "line": 38,
+              "column": 7
+            },
+            {
+              "title": "/planning service page loads with workflow section",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4735,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-22T09:22:19.981Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "37be57452db53390bd67-5f8cbb92b769634f8f70",
+              "file": "e2e/site-navigation-smoke.spec.ts",
+              "line": 67,
+              "column": 7
+            },
+            {
+              "title": "/products catalog loads with first category card visible",
               "ok": false,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -169,52 +321,180 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "failed",
-                      "duration": 25300,
+                      "duration": 8284,
                       "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n    at E:\\16062026\\tests\\accessibility.spec.ts:45:46",
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: /Browse by workspace need/i, level: 2 })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: /Browse by workspace need/i, level: 2 })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: /Browse by workspace need/i, level: 2 })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: /Browse by workspace need/i, level: 2 })\u001b[22m\n\n    at E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts:80:94",
                         "location": {
-                          "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                          "column": 46,
-                          "line": 45
+                          "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                          "column": 94,
+                          "line": 80
                         },
-                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[35m/Start placing furniture/i\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m 44 |\u001b[39m     }\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m\".pw-topbar\"\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible({ timeout\u001b[33m:\u001b[39m \u001b[35m25000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m\n \u001b[90m 47 |\u001b[39m     \u001b[90m// Open export modal\u001b[39m\n \u001b[90m 48 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m\"button\"\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m\"Open Export\"\u001b[39m })\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\u001b[0m"
+                        "snippet": "  78 |\n  79 |     await expect(page.getByRole(\"heading\", { level: 1 })).toContainText(/Products selected for performance/i);\n> 80 |     await expect(page.getByRole(\"heading\", { level: 2, name: /Browse by workspace need/i })).toBeVisible();\n     |                                                                                              ^\n  81 |\n  82 |     const firstCategoryCard = page.locator('a[href^=\"/products/\"]').first();\n  83 |     await expect(firstCategoryCard).toBeVisible();"
                       },
                       "errors": [
                         {
                           "location": {
-                            "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                            "column": 46,
-                            "line": 45
+                            "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                            "column": 94,
+                            "line": 80
                           },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.pw-topbar')\nExpected: visible\nTimeout: 25000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 25000ms\u001b[22m\n\u001b[2m  - waiting for locator('.pw-topbar')\u001b[22m\n\n\n  43 |       await page.getByRole(\"button\", { name: /Start placing furniture/i }).click();\n  44 |     }\n> 45 |     await expect(page.locator(\".pw-topbar\")).toBeVisible({ timeout: 25000 });\n     |                                              ^\n  46 |\n  47 |     // Open export modal\n  48 |     await page.getByRole(\"button\", { name: \"Open Export\" }).click();\n    at E:\\16062026\\tests\\accessibility.spec.ts:45:46"
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: /Browse by workspace need/i, level: 2 })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: /Browse by workspace need/i, level: 2 })\u001b[22m\n\n\n  78 |\n  79 |     await expect(page.getByRole(\"heading\", { level: 1 })).toContainText(/Products selected for performance/i);\n> 80 |     await expect(page.getByRole(\"heading\", { level: 2, name: /Browse by workspace need/i })).toBeVisible();\n     |                                                                                              ^\n  81 |\n  82 |     const firstCategoryCard = page.locator('a[href^=\"/products/\"]').first();\n  83 |     await expect(firstCategoryCard).toBeVisible();\n    at E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts:80:94"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-22T03:50:24.602Z",
+                      "startTime": "2026-06-22T09:22:24.731Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "error-context",
                           "contentType": "text/markdown",
-                          "path": "E:\\16062026\\results\\test-results\\accessibility-Accessibilit-2aad6-lity-issues-in-export-modal-chromium\\error-context.md"
+                          "path": "E:\\16062026\\results\\test-results\\e2e-site-navigation-smoke--a12bf-first-category-card-visible-chromium\\error-context.md"
                         }
                       ],
                       "errorLocation": {
-                        "file": "E:\\16062026\\tests\\accessibility.spec.ts",
-                        "column": 46,
-                        "line": 45
+                        "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                        "column": 94,
+                        "line": 80
                       }
                     }
                   ],
                   "status": "unexpected"
                 }
               ],
-              "id": "ddd864604af8a6a0198f-c3afb2a9158e94b95cdf",
-              "file": "accessibility.spec.ts",
-              "line": 37,
+              "id": "37be57452db53390bd67-036114b82ad522cadb31",
+              "file": "e2e/site-navigation-smoke.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "desktop header All Products link reaches /products",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 11275,
+                      "error": {
+                        "message": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#products-mega-menu') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#products-mega-menu') to be visible\u001b[22m\n\n    at E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts:94:20",
+                        "location": {
+                          "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                          "column": 20,
+                          "line": 94
+                        },
+                        "snippet": "  92 |     await page.getByRole(\"button\", { name: \"Products\" }).hover();\n  93 |     const megaMenu = page.locator(\"#products-mega-menu\");\n> 94 |     await megaMenu.waitFor({ state: \"visible\", timeout: 10_000 });\n     |                    ^\n  95 |     await megaMenu.getByRole(\"link\", { name: \"All Products >\" }).click();\n  96 |\n  97 |     await expect(page).toHaveURL(/\\/products\\/?$/);"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                            "column": 20,
+                            "line": 94
+                          },
+                          "message": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#products-mega-menu') to be visible\u001b[22m\n\n\n  92 |     await page.getByRole(\"button\", { name: \"Products\" }).hover();\n  93 |     const megaMenu = page.locator(\"#products-mega-menu\");\n> 94 |     await megaMenu.waitFor({ state: \"visible\", timeout: 10_000 });\n     |                    ^\n  95 |     await megaMenu.getByRole(\"link\", { name: \"All Products >\" }).click();\n  96 |\n  97 |     await expect(page).toHaveURL(/\\/products\\/?$/);\n    at E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts:94:20"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-22T09:22:33.612Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "E:\\16062026\\results\\test-results\\e2e-site-navigation-smoke--83be8-ducts-link-reaches-products-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                        "column": 20,
+                        "line": 94
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "37be57452db53390bd67-01508ea3c5f09b70bb26",
+              "file": "e2e/site-navigation-smoke.spec.ts",
+              "line": 87,
+              "column": 7
+            },
+            {
+              "title": "mobile drawer opens and All Products closes drawer on /products",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 22821,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('navigation', { name: 'Mobile primary navigation' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('navigation', { name: 'Mobile primary navigation' })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('navigation', { name: 'Mobile primary navigation' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('navigation', { name: 'Mobile primary navigation' })\u001b[22m\n\n    at E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts:107:29",
+                        "location": {
+                          "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                          "column": 29,
+                          "line": 107
+                        },
+                        "snippet": "  105 |     await page.getByRole(\"button\", { name: \"Open menu\" }).click();\n  106 |     const mobileNav = page.getByRole(\"navigation\", { name: \"Mobile primary navigation\" });\n> 107 |     await expect(mobileNav).toBeVisible();\n      |                             ^\n  108 |\n  109 |     await mobileNav.getByRole(\"button\", { name: \"Products\" }).click();\n  110 |     const allProducts = mobileNav.getByRole(\"link\", { name: \"All Products\", exact: true });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                            "column": 29,
+                            "line": 107
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('navigation', { name: 'Mobile primary navigation' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('navigation', { name: 'Mobile primary navigation' })\u001b[22m\n\n\n  105 |     await page.getByRole(\"button\", { name: \"Open menu\" }).click();\n  106 |     const mobileNav = page.getByRole(\"navigation\", { name: \"Mobile primary navigation\" });\n> 107 |     await expect(mobileNav).toBeVisible();\n      |                             ^\n  108 |\n  109 |     await mobileNav.getByRole(\"button\", { name: \"Products\" }).click();\n  110 |     const allProducts = mobileNav.getByRole(\"link\", { name: \"All Products\", exact: true });\n    at E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts:107:29"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-22T09:22:45.547Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "E:\\16062026\\results\\test-results\\e2e-site-navigation-smoke--2e0b0-s-closes-drawer-on-products-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "E:\\16062026\\tests\\e2e\\site-navigation-smoke.spec.ts",
+                        "column": 29,
+                        "line": 107
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "37be57452db53390bd67-ee731dcc1cd9a49cd79f",
+              "file": "e2e/site-navigation-smoke.spec.ts",
+              "line": 101,
               "column": 7
             }
           ]
@@ -224,11 +504,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-22T03:49:52.578Z",
-    "duration": 57755.618,
-    "expected": 0,
+    "startTime": "2026-06-22T09:21:28.732Z",
+    "duration": 99883.761,
+    "expected": 4,
     "skipped": 0,
-    "unexpected": 2,
+    "unexpected": 4,
     "flaky": 0
   }
 }

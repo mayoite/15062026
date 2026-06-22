@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CaretDown } from "@phosphor-icons/react";
-import { HOMEPAGE_FAQ_CONTENT } from "@/data/site/homepage";
+import { HOMEPAGE_FAQ_CONTENT } from "@/lib/site-data/homepage";
 import { fadeUp, staggerContainer, staggerItem } from "@/lib/helpers/motion";
 
 export function HomeFAQ() {

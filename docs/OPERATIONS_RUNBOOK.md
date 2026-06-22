@@ -16,7 +16,7 @@ npm.cmd run release:gate
 npm.cmd run vercel:prod
 ```
 
-The release gate runs: `lint:secrets → lint → typecheck → test → build → test:a11y → test:e2e:nav → test:planner-catalog → test:coverage:planner → test:coverage:site`
+The release gate runs: `lint:secrets → lint → typecheck → test → build → test:a11y → test:e2e:nav → test:planner-catalog → test:coverage → test:coverage:site`
 
 ### Preview Deployment
 

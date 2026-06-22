@@ -4,67 +4,75 @@ This file documents critical blockers, failed parameters, and required follow-up
 
 ## Live Blockers & Failures
 
-### 1. Broken Keyboard Navigation on Canvas (Parameter 9)
-- **File:** [floorplanCanvas.ts](file:///e:/16062026/features/planner/canvas-fabric/hooks/floorplanCanvas.ts#L130-L165)
-- **Status:** `[!] Blocked`
-- **Description:** Keyboard-only shortcuts and canvas manipulations are completely non-functional in modern browsers. The `onKeyDown` listener retrieves `code = event.key || event.keyCode` (resolving to string names like `'Delete'` or `'ArrowLeft'`) but compares them using strict equality `===` to numeric keycode constants (e.g. `46`, `37`, `38`, `39`, `40`).
-- **Remediation:** Refactor `onKeyDown` to compare `event.key` to standard string literals:
-  ```typescript
-  // Replace:
-  if (code === 46) deleteOp();
-  // With:
-  if (event.key === 'Delete' || event.key === 'Backspace') deleteOp();
-  ```
-
-### 2. Missing Skip-to-Content Link in Admin Layout (Parameter 7)
-- **File:** [app/admin/layout.tsx](file:///e:/16062026/app/admin/layout.tsx)
-- **Status:** `[~] In Progress`
-- **Description:** The admin route uses the `AdminLayoutShell` component which is currently a stub and has no skip-to-content accessibility link.
-- **Remediation:** Add a visible-on-focus skip link matching the pattern used in the site and planner layouts once `AdminLayoutShell` is implemented.
-
-### 3. Missing ARIA Input Label in Catalog search (Parameter 8)
-- **File:** [CatalogPanel.tsx](file:///e:/16062026/features/planner/ui/CatalogPanel.tsx#L281)
-- **Status:** `[~] In Progress`
-- **Description:** The product catalog search input relies solely on a placeholder and lacks an accessibility label for screen readers.
-- **Remediation:** Add `aria-label="Search products"` to the `<input>` element.
+### Playwright e2e failures after path repair (2026-06-22)
+- **Status:** `[ ] Open`
+- **Finding:** `npm run test:e2e:nav` — 3 passed / 5 failed (products nav, mega menu, planner hero CTA timeout). `npm run test:planner-catalog` — 35 failed (mostly `page.goto` timeouts to `/planner/` and guest workspace).
+- **Note:** Spec paths are fixed (`tests/e2e/...`); failures are app/test assertions, not missing spec files.
+- **Action:** Triage flaky timeouts vs UI regressions; ensure production `npm run start` server is healthy under parallel load.
 
 ---
 
 ## Performance & UX Follow-ups
 
 ### 1. Font Format Compression Optimization (Parameter 12)
-- **File:** [fonts.ts](file:///e:/16062026/lib/fonts.ts)
-- **Description:** Several weights of Helvetica Neue use `.otf` format and Cisco Sans uses `.ttf` formats. These are uncompressed compared to `.woff2` files, leading to slower page load times.
+- **File:** `lib/fonts.ts`
+- **Status:** `[ ] Open`
+- **Description:** Several weights use `.otf` / `.ttf` instead of `.woff2`.
 - **Action:** Convert local font assets to WOFF2 and update paths in `fonts.ts`.
+
+## Repo Hygiene Follow-ups
+
+### Planner panel orchestrator refactor completed
+- **Status:** `[x] Resolved` (2026-06-22)
+- **Files:** `features/planner/ui/PlannerDesktopPanels.tsx`, `features/planner/ui/PlannerMobilePanels.tsx`
+- **Note:** Rewrapped the desktop/mobile planner panel orchestrators to reduce wrapper noise without changing catalog, inspector, layers, or session dialog code. Verification was not run because explicit permission was not given.
+
+### Generated hardcoded audit CSV refreshed successfully
+- **Status:** `[x] Resolved` (2026-06-22)
+- **File:** `results/hardcoded-audit-detail.csv`, `results/hardcoded-audit-summary.csv`
+- **Note:** The audit was regenerated after the lock cleared, and the stale `data/site/*` hit now points at `lib/site-data/*` in the generated output.
+- **Action:** Keep the generator on the atomic temp-file write path so future refreshes survive transient file locks.
+
+### 1. Stale root test/typecheck artifacts
+- **Status:** `[x] Resolved` (2026-06-22)
+- **Guards:** `.gitignore` scratch patterns; `npm run test:clean` + `pretest`; coverage/Playwright scripts call `test:clean`; `tests/root-configs.test.ts` + `tests/unit/clean-test-artifacts.test.ts`; `docs/TESTING.md`.
+- **Canonical outputs:** `results/tests/` (Vitest), `results/test-results/` (Playwright), `results/coverage*`.
+
+### 5. Test folder docs are out of sync with the live tree
+- **Status:** `[x] Resolved` (2026-06-22)
+- **Action:** Removed stale `tests/CONTENTS.md` and `tests/INVENTORY.md`; layout guarded by `npm run test:layout:check`.
+
+### 6. Planner asset pipeline still references separate `/models/chairs` GLB assets
+- **Status:** `[ ] Open`
+- **Files:** `features/planner/lib/assetPipeline.ts`, `tests/unit/planner-lib-assetPipeline.test.ts`
+- **Finding:** The planner asset pipeline still points at `/models/chairs/*.glb` and `*-thumb.webp`, but the duplicate cleanup in this pass only removed identical `.dwg`/`.max` files from `public/models/chairs/`.
+- **Action:** Audit whether the GLB/thumb asset set is missing, needs generation, or should be repointed to a different canonical location.
 
 ## Security & Resilience Audits Follow-ups (Parameters 31-40)
 
-### 1. HTML Attribute Injection XSS in Product Viewer (Parameter 31)
-- **File:** [ProductViewer.tsx](file:///e:/16062026/app/%28site%29/products/%5Bcategory%5D/%5Bproduct%5D/ProductViewer.tsx#L570-L584)
-- **Status:** `[!] Vulnerable`
-- **Description:** Double quotes or other attribute breakers in product display names are interpolated directly into the raw HTML `<model-viewer>` string rendered via `dangerouslySetInnerHTML`.
-- **Action:** Escape model attributes or transition to rendering `<model-viewer>` as a standard React custom element.
-
 ### 2. Unused CSRF Protection on Mutating Endpoints (Parameter 32)
-- **File:** [csrf.ts](file:///e:/16062026/lib/security/csrf.ts)
-- **Status:** `[!] Vulnerable`
-- **Description:** Double-submit cookie CSRF validation utilities exist but are never executed in any route handlers or middleware.
-- **Action:** Incorporate `validateCsrfRequest(req)` validation check inside mutating API handlers (e.g. `plans/route.ts`).
-
-### 3. API Routes Excluded from Edge Security Headers (Parameter 35)
-- **File:** [proxy.ts](file:///e:/16062026/proxy.ts#L138-L153)
-- **Status:** `[~] Open`
-- **Description:** The edge proxy's middleware route matcher completely excludes `/api/` paths, exposing API responses to lacking CSP, frame-injection, or MIME-sniffing protection headers.
-- **Action:** Update middleware matching strategy or inject headers into API responses.
+- **File:** `lib/security/csrf.ts`, `lib/api/browserApi.ts`, `app/api/csrf/route.ts`
+- **Status:** `[x] Resolved` (2026-06-22)
+- **Protected (session/admin mutations):** `app/api/plans/route.ts` POST; `app/api/plans/[id]/route.ts` PUT/DELETE; `app/api/admin/plans/**`; `app/api/admin/themes/publish/route.ts`; `app/api/theme/manage/route.ts` POST; `app/api/audit/route.ts` POST; `app/api/customer-queries/manage/route.ts` PATCH.
+- **Client wiring:** `GET /api/csrf/` issues cookie + token; `browserApiFetch` sends `x-csrf-token`; `CsrfBootstrap` prefetches on site/planner/crm/ops/admin layouts.
+- **Intentionally unprotected (public/rate-limited/anonymous):** `customer-queries` POST, `tracking` POST, `log-error` POST, `nav-search` POST, `filter` POST, `recommendations` POST, `generate-alt` POST, `configurator/smart-wizard` POST.
 
 ### 4. Unused IndexedDB Storage & Sync Queue (Parameter 38)
-- **File:** [offlineStorage.ts](file:///e:/16062026/features/planner/store/offlineStorage.ts) and [syncQueueProcessor.ts](file:///e:/16062026/features/planner/store/syncQueueProcessor.ts)
-- **Status:** `[~] Open`
-- **Description:** IndexedDB offline storage layer and batch queue sync processor are written but completely unused in client planner handlers.
-- **Action:** Integrate offline storage manager into save and load handlers.
+- **Files:** `features/planner/store/offlineStorage.ts`, `features/planner/store/syncQueueProcessor.ts`, `features/planner/editor/usePlannerSessionHandlers.ts`
+- **Status:** `[~] Partial` (2026-06-22)
+- **Enabled:** `supabaseSync` + `offlineMode` default flags on; cloud save/load/delete wired in session handlers; offline queue syncs on reconnect.
 
 ### 5. Missing Internet Connectivity Monitoring (Parameter 40)
-- **File:** [usePlannerSession.ts](file:///e:/16062026/features/planner/hooks/usePlannerSession.ts)
-- **Status:** `[~] Open`
-- **Description:** No navigator online/offline event listeners or status checks exist in client controllers.
-- **Action:** Implement a `useOnlineStatus` hook and display status warnings in the planner toolbar.
+- **File:** `features/planner/hooks/usePlannerSession.ts`
+- **Status:** `[ ] Open`
+- **Description:** No online/offline status surfaced in planner chrome.
+- **Action:** Add `useOnlineStatus` hook and toolbar warning when offline.
+
+## Spreadsheet Work Follow-up
+
+- **File:** `outputs/2026-06-22-scripts-inventory/scripts-inventory.xlsx`
+- **Status:** `[~] Verified structurally`
+- **Note:** The workbook package was checked and opens as a valid XLSX with 3 sheets, but the visual render pass was skipped because the spreadsheet artifact tool is not available in this environment.
+- **File:** `outputs/2026-06-22-txt-inventory/txt-files-inventory.xlsx`
+- **Status:** `[~] Verified structurally`
+- **Note:** The workbook package was checked and opens as a valid XLSX with 2 sheets, but the visual render pass was skipped for the same reason.

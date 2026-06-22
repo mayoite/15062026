@@ -2,11 +2,12 @@ import type { Viewport } from "next";
 import "@/app/(site)/globals.css";
 import "@/app/css/core/site/bundles/footer.css";
 import "@/app/css/core/site/bundles/contact.css";
-import "@/app/css/core/site/bundles/site-surfaces.css";
+import "@/app/css/core/site/bundles/site-marketing.css";
 import "@/app/css/core/site/bundles/legal.css";
 import "@/app/css/core/site/bundles/error.css";
 import QueryProvider from "@/app/(site)/providers/QueryProvider";
 import { RouteChrome } from "@/components/site/RouteChrome";
+import { CsrfBootstrap } from "@/components/security/CsrfBootstrap";
 import { ciscoSans, helveticaNeue } from "@/lib/fonts";
 
 import { SITE_VIEWPORT } from "@/lib/siteViewport";
@@ -27,6 +28,7 @@ export default function crmLayout({ children }: { children: React.ReactNode }) {
         >
           Skip to main content
         </a>
+        <CsrfBootstrap />
         <QueryProvider>
           <RouteChrome position="top" />
           <main id="main-content">{children}</main>

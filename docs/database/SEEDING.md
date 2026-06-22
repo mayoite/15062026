@@ -101,7 +101,7 @@ Use this when you've changed the canonical-field functions and want to re-seed i
 ## 4. Visual preview — `seed-catalog-preview.ts`
 
 **Script**: `scripts/seed-catalog-preview.ts`.
-**Output**: `docs/plans/planner-overview/seed-catalog.svg` and `.png`.
+**Output**: `docs/plans/planner-overhaul/seed-catalog.svg` and `.png`.
 
 Renders a sample of the configurator seed blocks (linear workstation, L-shape panel, pedestal, storage unit, cabin/meeting/discussion tables) to an SVG sheet via `lib/catalog/blocks2d` and rasterizes to PNG with `sharp`. No DB access — purely for visual QA of the seed shapes.
 

@@ -61,7 +61,7 @@ async function run() {
   const assetPaths = new Set<string>();
 
   // 1. Read from localCatalogIndex.json
-  const localIndex = path.resolve(process.cwd(), "data/site/localCatalogIndex.json");
+  const localIndex = path.resolve(process.cwd(), "lib/site-data/localCatalogIndex.json");
   if (fs.existsSync(localIndex)) {
     try {
       const content = fs.readFileSync(localIndex, "utf8");

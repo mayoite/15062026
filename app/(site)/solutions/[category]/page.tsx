@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { SectionIntro } from "@/components/shared/SectionIntro";
-import { buildPageMetadata } from "@/data/site/seo";
+import { buildPageMetadata } from "@/lib/site-data/seo";
 import { SITE_URL } from "@/lib/siteUrl";
 
 const SOLUTION_COPY: Record<string, { title: string; description: string }> = {

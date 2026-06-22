@@ -34,7 +34,7 @@ The following components properly return cleanup functions from `useEffect`:
 
 | File | Issue | Fix |
 |------|-------|-----|
-| `Planner3DViewer.tsx` | No explicit WebGL context disposal on unmount | Added `useEffect` cleanup that calls `WEBGL_lose_context` to release GPU memory when the 3D viewer unmounts. R3f's `<Canvas>` handles scene graph disposal, but the WebGLRenderer context must be explicitly lost. |
+| `Planner3DViewer.tsx` | No explicit WebGL context disposal on unmount | Added `useEffect` cleanup that calls `forceContextLoss()` before `dispose()` to release GPU memory when the 3D viewer unmounts. R3f's `<Canvas>` handles scene graph disposal, but the WebGLRenderer context must be explicitly lost. |
 
 ## Patterns Verified
 
@@ -42,7 +42,7 @@ The following components properly return cleanup functions from `useEffect`:
 2. **All `setTimeout`/`setInterval` calls have matching `clearTimeout`/`clearInterval`** in cleanup returns
 3. **ResizeObserver instances have `.disconnect()`** in cleanup returns
 4. **Pointer capture is released** via setPointerCapture / releasePointerCapture patterns
-5. **WebGL context is now explicitly lost** on 3D viewer unmount
+5. **WebGL context is now explicitly lost** on 3D viewer unmount via renderer cleanup
 
 ## Recommendations
 

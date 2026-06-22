@@ -1,9 +1,8 @@
 "use client";
 
-
-
 import type { BoqItem, CatalogProduct, PlannerStep, RoomPreset } from "@/features/planner/shared/types/planner";
 import type { PlannerSelectionDimensions } from "../lib/editorTools";
+import type { ReactNode } from "react";
 
 import { CatalogPanel } from "./CatalogPanel";
 import { InspectorPanel } from "./InspectorPanel";
@@ -45,6 +44,26 @@ interface PlannerMobilePanelsProps {
   onAdvanceBoqFlow: () => void;
 }
 
+interface PlannerMobileDrawerProps {
+  children: ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+}
+
+function PlannerMobileDrawer({
+  children,
+  open,
+  onOpenChange,
+  title,
+}: PlannerMobileDrawerProps) {
+  return (
+    <MobileDrawerSheet open={open} onOpenChange={onOpenChange} title={title} trigger={<span />}>
+      {open ? children : null}
+    </MobileDrawerSheet>
+  );
+}
+
 export function PlannerMobilePanels({
   editor,
   catalogProducts,
@@ -79,92 +98,91 @@ export function PlannerMobilePanels({
   onUnitSystemChange,
   onAdvanceBoqFlow,
 }: PlannerMobilePanelsProps) {
+  const closeCatalog = () => onOpenCatalogChange(false);
+  const closeLayers = () => onOpenLayersChange(false);
+  const closeInspector = () => onOpenInspectorChange(false);
+
+  const handleCatalogDropFurniture = (product: CatalogProduct | { name: string; category: string }) => {
+    onDropFurniture(product);
+    closeCatalog();
+  };
+
+  const handleAdvanceBoqFlow = () => {
+    onAdvanceBoqFlow();
+    closeInspector();
+  };
+
   return (
     <>
-      <MobileDrawerSheet
+      <PlannerMobileDrawer
         open={mobileCatalogOpen}
         onOpenChange={onOpenCatalogChange}
         title={currentStep === "room" ? "Room Builder" : "Catalog"}
-        trigger={<span />}
       >
-        {mobileCatalogOpen ? (
-          <CatalogPanel
-            products={catalogProducts}
-            editor={editor}
-            currentStep={currentStep}
-            canPlaceFurniture={currentStep === "catalog"}
-            roomPresets={roomPresets}
-            unitSystem={unitSystem}
-            onApplyRoomPreset={onApplyRoomPreset}
-            onActivateWallTool={onActivateWallTool}
-            onActivateBasicShapeTool={onActivateBasicShapeTool}
-            onAddWallSegment={onAddWallSegment}
-            onAddDoorOpening={onAddDoorOpening}
-            onResolveWallJoins={onResolveWallJoins}
-            onDropFurniture={(product) => {
-              onDropFurniture(product);
-              onOpenCatalogChange(false);
-            }}
-            onClose={() => onOpenCatalogChange(false)}
-            pinned={false}
-            onTogglePin={() => {}}
-            showPinToggle={false}
-          />
-        ) : null}
-      </MobileDrawerSheet>
+        <CatalogPanel
+          products={catalogProducts}
+          editor={editor}
+          currentStep={currentStep}
+          canPlaceFurniture={currentStep === "catalog"}
+          roomPresets={roomPresets}
+          unitSystem={unitSystem}
+          onApplyRoomPreset={onApplyRoomPreset}
+          onActivateWallTool={onActivateWallTool}
+          onActivateBasicShapeTool={onActivateBasicShapeTool}
+          onAddWallSegment={onAddWallSegment}
+          onAddDoorOpening={onAddDoorOpening}
+          onResolveWallJoins={onResolveWallJoins}
+          onDropFurniture={handleCatalogDropFurniture}
+          onClose={closeCatalog}
+          pinned={false}
+          onTogglePin={() => {}}
+          showPinToggle={false}
+        />
+      </PlannerMobileDrawer>
 
-      <MobileDrawerSheet
+      <PlannerMobileDrawer
         open={mobileLayersOpen}
         onOpenChange={onOpenLayersChange}
         title="Layers"
-        trigger={<span />}
       >
-        {mobileLayersOpen ? (
-          <LayersPanel
-            editor={editor}
-            unitSystem={unitSystem}
-            onFitSelection={onFitSelection}
-            onAlignSelection={onAlignSelection}
-            onDistributeSelection={onDistributeSelection}
-            onClose={() => onOpenLayersChange(false)}
-            pinned={false}
-            onTogglePin={() => {}}
-            showPinToggle={false}
-          />
-        ) : null}
-      </MobileDrawerSheet>
+        <LayersPanel
+          editor={editor}
+          unitSystem={unitSystem}
+          onFitSelection={onFitSelection}
+          onAlignSelection={onAlignSelection}
+          onDistributeSelection={onDistributeSelection}
+          onClose={closeLayers}
+          pinned={false}
+          onTogglePin={() => {}}
+          showPinToggle={false}
+        />
+      </PlannerMobileDrawer>
 
-      <MobileDrawerSheet
+      <PlannerMobileDrawer
         open={mobileInspectorOpen}
         onOpenChange={onOpenInspectorChange}
         title="Inspector"
-        trigger={<span />}
       >
-        {mobileInspectorOpen ? (
-          <InspectorPanel
-            boqItems={boqItems}
-            totalBoq={totalBoq}
-            currentStep={currentStep}
-            canContinueFromRoom={canContinueFromRoom}
-            roomMetrics={roomMetrics}
-            selectedMetrics={selectedMetrics}
-            selectionDimensions={selectionDimensions}
-            unitSystem={unitSystem}
-            onUnitSystemChange={onUnitSystemChange}
-            isSnapMode={isSnapMode}
-            onToggleSnap={onToggleSnap}
-            onUpdateSelectionDimensions={onUpdateSelectionDimensions}
-            onAdvanceBoqFlow={() => {
-              onAdvanceBoqFlow();
-              onOpenInspectorChange(false);
-            }}
-            onClose={() => onOpenInspectorChange(false)}
-            pinned={false}
-            onTogglePin={() => {}}
-            showPinToggle={false}
-          />
-        ) : null}
-      </MobileDrawerSheet>
+        <InspectorPanel
+          boqItems={boqItems}
+          totalBoq={totalBoq}
+          currentStep={currentStep}
+          canContinueFromRoom={canContinueFromRoom}
+          roomMetrics={roomMetrics}
+          selectedMetrics={selectedMetrics}
+          selectionDimensions={selectionDimensions}
+          unitSystem={unitSystem}
+          onUnitSystemChange={onUnitSystemChange}
+          isSnapMode={isSnapMode}
+          onToggleSnap={onToggleSnap}
+          onUpdateSelectionDimensions={onUpdateSelectionDimensions}
+          onAdvanceBoqFlow={handleAdvanceBoqFlow}
+          onClose={closeInspector}
+          pinned={false}
+          onTogglePin={() => {}}
+          showPinToggle={false}
+        />
+      </PlannerMobileDrawer>
     </>
   );
 }

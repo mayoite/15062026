@@ -16,7 +16,7 @@ const folders = {
       "AGENTS.md — agent rules",
       "CONTENTS.md — generated repo map (npm run docs:sync:all)",
       "docs/ — Handover.md, Failures.md, TESTING, SCRIPTS, DOC-MAP, CSS",
-      "plans/ — phased roadmaps",
+      "docs/plans/ — phased roadmaps",
       "app/, features/, components/, lib/, tests/, scripts/, platform/, config/, results/, archive/",
     ],
     see: ["Readme.md", "AGENTS.md", "docs/DOC-MAP.md", "docs/Handover.md"],
@@ -49,7 +49,7 @@ const folders = {
   "app/css": {
     title: "Shared CSS (FOCSS)",
     why: "Single design system for site + planner. Tokens and bundles avoid hardcoded colors in TSX.",
-    contains: ["base/ — animations, resets", "core/tokens/ — @theme source of truth", "core/site/ — marketing bundles", "core/planner/ — workspace chrome bundles"],
+    contains: ["base/ — animations, resets", "core/tokens/ — @theme source of truth", "core/site/ — marketing bundles", "core/planner/ — workspace chrome, side panels, and bundles"],
     see: ["docs/CSS-ARCHITECTURE.md"],
   },
   "app/css/base": {
@@ -60,7 +60,20 @@ const folders = {
   "app/css/core": {
     title: "FOCSS core layers",
     why: "Tokens, utilities, chrome, and per-surface bundles (site vs planner).",
-    contains: ["tokens/ — theme.css", "chrome/ — shell chrome", "site/bundles/ — homepage, catalog, etc.", "planner/bundles/ — workspace UI", "utilities/, typography/, layout/"],
+    contains: ["tokens/ — theme.css", "chrome/ — shell chrome", "site/bundles/ — homepage, catalog, etc.", "planner/ — direct planner CSS files and bundles", "utilities/, typography/, layout/"],
+  },
+  "app/css/core/planner": {
+    title: "Planner CSS",
+    why: "Workspace-specific CSS for the planner editor, side panels, and bundle entrypoints.",
+    contains: [
+      "bundles/ — workspace.css and marketing.css imports",
+      "planner-shell.css, planner-canvas-layout.css, planner-controls.css",
+      "planner-overlays.css, planner-catalog.css, planner-responsive.css",
+      "planner-typography.css, editor-chrome.css, fabric-* files",
+      "session-dialog.css, side-panels.css, workspace.css",
+      "landing/ — planner landing CSS",
+    ],
+    rules: ["Import through bundles/workspace.css or bundles/marketing.css", "Keep planner-only selectors under .planner-workspace"],
   },
   "app/planner": {
     title: "Planner routes",
@@ -101,7 +114,7 @@ const folders = {
       },
       {
         area: "Marketing copy & local catalog index",
-        canonical: "data/site/",
+        canonical: "lib/site-data/",
         consumers: "features/catalog, components/home, lib/helpers/seo",
         doNotDuplicate: "features/catalog/ — no hardcoded nav/copy",
       },
@@ -366,7 +379,7 @@ const folders = {
   config: {
     title: "Configuration",
     why: "Build tooling, generated types, and deployment manifests — not runtime app code.",
-    contains: ["build/ — eslint, tsconfig, playwright, postcss", "database/types/ — generated Supabase types", "deployment/, environment/"],
+    contains: ["build/ — eslint, tsconfig, playwright, postcss", "database/types/ — generated Supabase types", "deployment/, environment/", "route-contract.json — expected routes and classifications"],
   },
   "config/build": {
     title: "Build & test config",
@@ -393,7 +406,7 @@ const folders = {
     why: "JSON/TS data files that ship with the app (copy, indexes, planner fixtures).",
     contains: ["site/ — navigation, homepage copy, localCatalogIndex.json"],
   },
-  "data/site": {
+  "lib/site-data": {
     title: "Site static data",
     why: "Marketing copy, nav trees, and local catalog index for SSG.",
     contains: ["localCatalogIndex.json, navigation-data, homepage content modules"],
@@ -401,7 +414,7 @@ const folders = {
 
   docs: {
     title: "Reference documentation",
-    why: "How the repo works today — not phased roadmaps (those live in plans/).",
+    why: "How the repo works today — not phased roadmaps (those live in docs/plans/).",
     contains: [
       "DOC-MAP.md — index + live vs reference vs archive rules",
       "Handover.md, Failures.md — live ops (open issues only in Failures)",
@@ -409,27 +422,25 @@ const folders = {
       "workflow/ — asset, CDN, database how-to (START-HERE.md)",
       "ops/context/ — reference tables (audits → results/audits/)",
     ],
-    see: ["Readme.md", "docs/DOC-MAP.md", "plans/CONTENTS.md"],
-    rules: ["No phased plans here — use plans/", "Retired docs: archive/docs/"],
+    see: ["Readme.md", "docs/DOC-MAP.md", "docs/plans/CONTENTS.md"],
+    rules: ["No phased plans here — use docs/plans/", "Retired docs: archive/docs/"],
   },
-  plans: {
+  "docs/plans": {
     title: "Active plans",
     why: "Phased roadmaps with acceptance criteria. Reference how-to stays in docs/. Completed plans archived under archive/docs/plans/completed-*/.",
     contains: [
-      "MASTER-PLAN.md — program dashboard, metrics, critical path",
-      "TESTING-PLAN.md — Vitest/Playwright phases, dual coverage tracks",
-      "COVERAGE-PLAN.md — planner 75% + site 50% strategy",
-      "HARDCODING-PLAN.md — literal remediation steps 00–06",
-      "ARCHIVE-MAP.md — crosswalk of archived plans → live plans/ owners",
-      "PLANNER-COVERAGE-75.md — detailed planner coverage execution slices to 75%",
-      "SITE-COVERAGE.md — main site (catalog/marketing/shared) coverage execution to 50% (S4 remaining)",
+      "README.md — plan index",
+      "01-hardcoding.md — phase 1 hardcoding cleanup",
+      "02-docs.md — phase 2 docs and structure",
+      "03-guardrails.md — phase 3 guardrails and drift checks",
+      "CHECKLIST.md — working checklist for the cleanup pass",
     ],
     see: ["docs/DOC-MAP.md", "docs/TESTING.md", "docs/Handover.md"],
     rules: [
       "One top-level plan (or subdir for multi-file execution detail) per initiative",
       "Historical plans: archive/docs/plans/",
       "Do not duplicate docs/TESTING.md or docs/SCRIPTS.md content",
-      "Keep plans/ index truthful — edit manifest here then rerun docs:sync:all",
+      "Keep docs/plans/ index truthful — edit manifest here then rerun docs:sync:all",
     ],
   },
   "docs/workflow": {
@@ -545,8 +556,8 @@ const folders = {
   },
   project: {
     title: "Architectural contracts",
-    why: "Machine-readable project metadata (route contracts, governance JSON).",
-    contains: ["route-contract.json — expected routes and classifications"],
+    why: "Legacy bucket for machine-readable project metadata. Route contract moved to config/route-contract.json.",
+    contains: ["route-contract.json moved to config/route-contract.json"],
   },
 };
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { buildPageMetadata } from "@/data/site/seo";
+import { buildPageMetadata } from "@/lib/site-data/seo";
 import { SITE_URL } from "@/lib/siteUrl";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,9 +8,9 @@ import { ClientBadge } from "@/components/ClientBadge";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { HomeFAQ } from "@/components/home/HomeFAQ";
 import { RouteCtaBand } from "@/components/shared/RouteCtaBand";
-import { DEFAULT_HERO_FALLBACK } from "@/data/site/homepage";
-import { ABOUT_PAGE_COPY } from "@/data/site/routeCopy";
-import { TRUSTED_BY_CLIENTS, TRUSTED_BY_STATS } from "@/data/site/proof";
+import { DEFAULT_HERO_FALLBACK } from "@/lib/site-data/homepage";
+import { ABOUT_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { TRUSTED_BY_CLIENTS, TRUSTED_BY_STATS } from "@/lib/site-data/proof";
 
 export const metadata: Metadata = buildPageMetadata(SITE_URL, {
   title: "About One&Only",

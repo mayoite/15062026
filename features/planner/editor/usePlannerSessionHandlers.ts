@@ -13,12 +13,21 @@ import {
   formatPlannerSavedPlanTimestamp,
   sanitizePlannerPlanName,
 } from "@/features/planner/lib/sessionState";
+import { formatDimensionPair, plannerUnitSystemToMeasurementUnit } from "@/features/planner/lib/measurements";
+import { isFeatureEnabled } from "@/features/planner/lib/featureFlags";
 import { parsePlannerDocumentImportFile } from "@/features/planner/persistence/plannerImport";
 import { normalizePlannerDocument } from "@/features/planner/model";
+import type { PlannerSaveSummary } from "@/features/planner/model";
 import type { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
 import { loadPlannerDocumentIntoFabric } from "@/features/planner/lib/fabricDocumentBridge";
 import type { PlannerSavedEntry } from "@/features/planner/ui/PlannerSessionDialog";
 import type { ChangeEvent } from "react";
+import {
+  deletePlannerDocumentFromSupabase,
+  listPlannerDocumentsFromSupabase,
+  loadPlannerDocumentFromSupabase,
+  savePlannerDocumentToSupabase,
+} from "@/features/planner/persistence/plannerSaves";
 
 import {
   offlineStorage,
@@ -28,7 +37,7 @@ import {
 } from "@/features/planner/store/offlineStorage";
 import { SyncQueueProcessor } from "@/features/planner/store/syncQueueProcessor";
 import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
-import { getBrowserSessionUser } from "@/lib/supabase/client";
+import { createClient, getBrowserSessionUser } from "@/lib/supabase/client";
 
 type UseSessionHandlersOptions = {
   /** Memoised current planner document (already built — do not re-serialise). */
@@ -53,6 +62,9 @@ export function usePlannerSessionHandlers({
   const [localDraftVersion, setLocalDraftVersion] = useState(0);
 
   const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [cloudPlans, setCloudPlans] = useState<PlannerSaveSummary[]>([]);
+  const [cloudInventoryVersion, setCloudInventoryVersion] = useState(0);
+  const [sessionBusy, setSessionBusy] = useState(false);
   const [draftPlanName, setDraftPlanName] = useState("Workspace Plan");
   const [localDraftSessions, setLocalDraftSessions] = useState<OfflinePlan[]>([]);
   const [currentOfflinePlan, setCurrentOfflinePlan] = useState<OfflinePlan | null>(null);
@@ -71,6 +83,27 @@ export function usePlannerSessionHandlers({
         console.error("Failed to retrieve browser session user:", err);
       });
   }, []);
+
+  const syncCloudInventory = useCallback(async () => {
+    if (!authUserId || !isFeatureEnabled("supabaseSync")) {
+      setCloudPlans([]);
+      return;
+    }
+    try {
+      const supabase = createClient();
+      const plans = await listPlannerDocumentsFromSupabase(supabase, {
+        userId: authUserId,
+        accessMode: "owner",
+      });
+      setCloudPlans(plans);
+    } catch (err) {
+      console.error("Failed to load cloud planner documents:", err);
+    }
+  }, [authUserId]);
+
+  useEffect(() => {
+    void syncCloudInventory();
+  }, [syncCloudInventory, cloudInventoryVersion]);
 
   // Synchronize IndexedDB plans when localDraftVersion changes
   useEffect(() => {
@@ -232,6 +265,55 @@ export function usePlannerSessionHandlers({
     [activeDocumentId, getCurrentPlannerDocument, handleSyncQueue],
   );
 
+  const handleSaveCloud = useCallback(
+    async (planName: string) => {
+      if (!isOnline) {
+        setSessionErrorMessage("Cloud save is unavailable while offline.");
+        return;
+      }
+      if (!authUserId) {
+        setSessionErrorMessage("Sign in is required for cloud save.");
+        return;
+      }
+      if (!isFeatureEnabled("supabaseSync")) {
+        setSessionErrorMessage("Cloud save is not enabled in this environment.");
+        return;
+      }
+
+      setSessionBusy(true);
+      try {
+        const supabase = createClient();
+        const draftDocument = getCurrentPlannerDocument();
+        const namedDocumentId = activeDocumentId ?? draftDocument.id ?? crypto.randomUUID();
+        const normalizedName = sanitizePlannerPlanName(planName);
+        const normalizedDraft = normalizePlannerDocument({
+          ...draftDocument,
+          id: namedDocumentId,
+          name: normalizedName,
+          title: normalizedName,
+        });
+
+        const saved = await savePlannerDocumentToSupabase(supabase, normalizedDraft, {
+          userId: authUserId,
+          saveId: namedDocumentId,
+        });
+
+        setActiveDocumentId(saved.id ?? namedDocumentId);
+        setPlanNameOverride(saved.title ?? saved.name);
+        setSessionErrorMessage(null);
+        setSessionStatusMessage(`Cloud save updated: ${saved.name}`);
+        setCloudInventoryVersion((v) => v + 1);
+      } catch (err) {
+        setSessionErrorMessage(
+          err instanceof Error ? err.message : "Unable to save planner document to cloud.",
+        );
+      } finally {
+        setSessionBusy(false);
+      }
+    },
+    [activeDocumentId, authUserId, getCurrentPlannerDocument, isOnline],
+  );
+
   const handleSaveAsNewSession = useCallback(
     async (planName: string) => {
       const draftDocument = getCurrentPlannerDocument();
@@ -315,17 +397,45 @@ export function usePlannerSessionHandlers({
 
   const handleLoadPlan = useCallback(
     async (plan: PlannerSavedEntry) => {
-      if (plan.source !== "local") {
-        setSessionErrorMessage(
-          "Only local draft loading is enabled in this planner session.",
-        );
-        return;
-      }
       if (shapeCount > 0 && saveStatus !== "saved") {
         const confirmed = window.confirm(
           `You have unsaved changes (${shapeCount} object${shapeCount !== 1 ? "s" : ""}). Load "${plan.name}" and discard?`,
         );
         if (!confirmed) return;
+      }
+
+      if (plan.source === "cloud") {
+        if (!authUserId) {
+          setSessionErrorMessage("Sign in is required to load cloud plans.");
+          return;
+        }
+        if (!isFeatureEnabled("supabaseSync")) {
+          setSessionErrorMessage("Cloud plan loading is not enabled.");
+          return;
+        }
+
+        setSessionBusy(true);
+        try {
+          const supabase = createClient();
+          const cloudDocument = await loadPlannerDocumentFromSupabase(supabase, plan.id, {
+            userId: authUserId,
+            ownerUserId: plan.ownerUserId,
+            accessMode: plan.accessMode,
+          });
+          if (!cloudDocument) {
+            setSessionErrorMessage("Cloud plan not found.");
+            return;
+          }
+          applyPlannerDocument(cloudDocument);
+          setSessionStatusMessage(`Loaded cloud plan: ${cloudDocument.name}`);
+        } catch (err) {
+          setSessionErrorMessage(
+            err instanceof Error ? err.message : "Unable to load cloud plan.",
+          );
+        } finally {
+          setSessionBusy(false);
+        }
+        return;
       }
 
       try {
@@ -342,14 +452,44 @@ export function usePlannerSessionHandlers({
         setSessionErrorMessage("Local draft not found.");
       }
     },
-    [applyPlannerDocument, saveStatus, shapeCount],
+    [applyPlannerDocument, authUserId, saveStatus, shapeCount],
   );
 
   // ── Delete / rename ───────────────────────────────────────────────────────
 
   const handleDeletePlan = useCallback(
     async (plan: PlannerSavedEntry) => {
-      if (plan.source !== "local" || plan.id === LOCAL_CURRENT_DRAFT_ID) {
+      if (plan.source === "cloud") {
+        if (!authUserId) {
+          setSessionErrorMessage("Sign in is required to delete cloud plans.");
+          return;
+        }
+        if (plan.accessMode === "admin") {
+          setSessionErrorMessage("Admin oversight does not allow browser-side delete for other users' plans.");
+          return;
+        }
+
+        setSessionBusy(true);
+        try {
+          const supabase = createClient();
+          const deleted = await deletePlannerDocumentFromSupabase(supabase, plan.id, {
+            userId: authUserId,
+          });
+          if (activeDocumentId === plan.id) setActiveDocumentId(null);
+          setSessionErrorMessage(null);
+          setSessionStatusMessage(deleted ? "Cloud plan removed." : "Cloud plan was not found.");
+          setCloudInventoryVersion((v) => v + 1);
+        } catch (err) {
+          setSessionErrorMessage(
+            err instanceof Error ? err.message : "Unable to delete cloud plan.",
+          );
+        } finally {
+          setSessionBusy(false);
+        }
+        return;
+      }
+
+      if (plan.id === LOCAL_CURRENT_DRAFT_ID) {
         setSessionErrorMessage("Only named local sessions can be deleted here.");
         return;
       }
@@ -367,12 +507,55 @@ export function usePlannerSessionHandlers({
         setSessionErrorMessage("Local session could not be deleted.");
       }
     },
-    [activeDocumentId, handleSyncQueue],
+    [activeDocumentId, authUserId, handleSyncQueue],
   );
 
   const handleRenamePlan = useCallback(
     async (plan: PlannerSavedEntry, nextNameInput: string) => {
-      if (plan.source !== "local" || plan.id === LOCAL_CURRENT_DRAFT_ID) {
+      const nextName = sanitizePlannerPlanName(nextNameInput);
+
+      if (plan.source === "cloud") {
+        if (!authUserId) {
+          setSessionErrorMessage("Sign in is required to rename cloud plans.");
+          return;
+        }
+
+        setSessionBusy(true);
+        try {
+          const supabase = createClient();
+          const existing = await loadPlannerDocumentFromSupabase(supabase, plan.id, {
+            userId: authUserId,
+          });
+          if (!existing) {
+            setSessionErrorMessage("Cloud plan not found.");
+            return;
+          }
+          const renamed = normalizePlannerDocument({
+            ...existing,
+            name: nextName,
+            title: nextName,
+          });
+          await savePlannerDocumentToSupabase(supabase, renamed, {
+            userId: authUserId,
+            saveId: plan.id,
+          });
+          if (activeDocumentId === plan.id) {
+            setPlanNameOverride(nextName);
+          }
+          setSessionErrorMessage(null);
+          setSessionStatusMessage(`Renamed cloud plan to ${nextName}`);
+          setCloudInventoryVersion((v) => v + 1);
+        } catch (err) {
+          setSessionErrorMessage(
+            err instanceof Error ? err.message : "Cloud plan could not be renamed.",
+          );
+        } finally {
+          setSessionBusy(false);
+        }
+        return;
+      }
+
+      if (plan.id === LOCAL_CURRENT_DRAFT_ID) {
         setSessionErrorMessage("Only named local sessions can be renamed here.");
         return;
       }
@@ -545,28 +728,52 @@ export function usePlannerSessionHandlers({
           entry.document.unitSystem === "imperial" ? "Imperial units" : "Metric units",
       }));
 
-      if (!currentOfflinePlan) return namedEntries;
+      const cloudEntries: PlannerSavedEntry[] = isFeatureEnabled("supabaseSync")
+        ? cloudPlans.map((plan) => ({
+            id: plan.id,
+            name: plan.name,
+            source: "cloud" as const,
+            isActive: activeDocId === plan.id,
+            canDelete: true,
+            canRename: true,
+            updatedAtLabel: formatPlannerSavedPlanTimestamp(plan.updated_at),
+            itemCount: plan.item_count,
+            detail: formatDimensionPair(
+              plan.room_width_mm,
+              plan.room_depth_mm,
+              plannerUnitSystemToMeasurementUnit(plan.unit_system),
+            ),
+            subtitle: plan.project_name ?? "Cloud saved plan",
+          }))
+        : [];
 
-      return [
-        {
-          id: LOCAL_CURRENT_DRAFT_ID,
-          name: `${currentOfflinePlan.document.title ?? currentOfflinePlan.document.name} (Current Draft)`,
-          source: "local" as const,
-          isActive: !activeDocId || activeDocId === LOCAL_CURRENT_DRAFT_ID,
-          canDelete: false,
-          canRename: false,
-          updatedAtLabel: formatPlannerSavedPlanTimestamp(
-            currentOfflinePlan.updatedAt ?? currentOfflinePlan.createdAt,
-          ),
-          itemCount: currentOfflinePlan.document.itemCount,
-          detail: `${currentOfflinePlan.document.roomWidthMm}mm x ${currentOfflinePlan.document.roomDepthMm}mm`,
-          subtitle: currentOfflinePlan.document.projectName ?? "Rolling browser draft",
-          statusLabel: currentOfflinePlan.document.unitSystem === "imperial" ? "Imperial units" : "Metric units",
-        },
-        ...namedEntries,
-      ];
+      const localEntries = !currentOfflinePlan
+        ? namedEntries
+        : [
+            {
+              id: LOCAL_CURRENT_DRAFT_ID,
+              name: `${currentOfflinePlan.document.title ?? currentOfflinePlan.document.name} (Current Draft)`,
+              source: "local" as const,
+              isActive: !activeDocId || activeDocId === LOCAL_CURRENT_DRAFT_ID,
+              canDelete: false,
+              canRename: false,
+              updatedAtLabel: formatPlannerSavedPlanTimestamp(
+                currentOfflinePlan.updatedAt ?? currentOfflinePlan.createdAt,
+              ),
+              itemCount: currentOfflinePlan.document.itemCount,
+              detail: `${currentOfflinePlan.document.roomWidthMm}mm x ${currentOfflinePlan.document.roomDepthMm}mm`,
+              subtitle: currentOfflinePlan.document.projectName ?? "Rolling browser draft",
+              statusLabel:
+                currentOfflinePlan.document.unitSystem === "imperial"
+                  ? "Imperial units"
+                  : "Metric units",
+            },
+            ...namedEntries,
+          ];
+
+      return [...localEntries, ...cloudEntries];
     },
-    [currentOfflinePlan, localDraftSessions],
+    [cloudPlans, currentOfflinePlan, localDraftSessions],
   );
 
   return {
@@ -579,6 +786,7 @@ export function usePlannerSessionHandlers({
     setSessionStatusMessage,
     sessionErrorMessage,
     setSessionErrorMessage,
+    sessionBusy,
     localDraftVersion,
     currentDraftScope: { documentId: LOCAL_CURRENT_DRAFT_ID },
     draftPlanName,
@@ -586,6 +794,7 @@ export function usePlannerSessionHandlers({
     authUserId,
     // actions
     applyPlannerDocument,
+    handleSaveCloud,
     handleSaveDraft,
     handleSaveAsNewSession,
     handleLoadPlan,

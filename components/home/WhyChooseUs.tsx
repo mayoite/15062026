@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Gauge, Plant, ShieldCheck, Stack } from "@phosphor-icons/react";
-import { HOMEPAGE_WHY_CHOOSE_US_CONTENT } from "@/data/site/homepage";
+import { HOMEPAGE_WHY_CHOOSE_US_CONTENT } from "@/lib/site-data/homepage";
 import { fadeUp, hoverLift, staggerContainer, staggerItem } from "@/lib/helpers/motion";
 
 const features = [

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { HOMEPAGE_TRUST_CONTENT } from "@/data/site/homepage";
+import { HOMEPAGE_TRUST_CONTENT } from "@/lib/site-data/homepage";
 
 export function HomeTrustStrip() {
   const trackLogos = [...HOMEPAGE_TRUST_CONTENT.logos, ...HOMEPAGE_TRUST_CONTENT.logos];

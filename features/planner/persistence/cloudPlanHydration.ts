@@ -1,3 +1,4 @@
+import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
 import { getPlannerSceneEnvelope } from "@/features/planner/model";
 import type { PlannerDocument } from "@/features/planner/model/plannerDocument";
 import { buildSessionEnvelope } from "@/features/planner/persistence/plannerSession";
@@ -26,7 +27,10 @@ export async function hydrateCloudPlanIntoIndexedDb(
   const existing = await loadProject(projectId).catch(() => undefined);
   if (existing?.snapshot?.trim()) return true;
 
-  const response = await fetch(`/api/plans/${encodeURIComponent(trimmed)}`);
+  const response = await browserApiFetch(
+    apiPath(`/api/plans/${encodeURIComponent(trimmed)}`),
+    { method: "GET" },
+  );
   if (!response.ok) return false;
 
   const body = (await response.json()) as { document?: PlannerDocument };

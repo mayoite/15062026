@@ -7,6 +7,9 @@
 @import "../planner-controls.css";
 @import "../planner-overlays.css";
 @import "../planner-catalog.css";
+@import "../catalog-panel.css";
+@import "../session-dialog.css";
+@import "../side-panels.css";
 @import "../planner-responsive.css";
 @import "../workspace.css";
 @import "../editor-chrome.css";

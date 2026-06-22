@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import localCatalogIndex from "@/data/site/localCatalogIndex.json";
+import localCatalogIndex from "@/lib/site-data/localCatalogIndex.json";
 
 type LocalCatalogIndexItem = {
   id: string;

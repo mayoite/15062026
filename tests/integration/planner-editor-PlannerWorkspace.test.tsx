@@ -7,20 +7,10 @@ import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerCatalogStore } from "@/features/planner/catalog/catalogStore";
 import { resetFabricRuntimeState } from "./planner-fabric-mockRuntime";
 
-vi.mock("fabric", () => ({
-  Canvas: class MockCanvas {
-    on() {}
-    off() {}
-    dispose() {}
-    add() {}
-    remove() {}
-    setDimensions() {}
-    requestRenderAll() {}
-    getObjects() { return []; }
-    clear() {}
-    calcOffset() {}
-  }
-}));
+vi.mock("fabric", async () => {
+  const { createPlannerFabricModuleMock } = await import("./planner-fabric-moduleMock");
+  return createPlannerFabricModuleMock();
+});
 
 vi.mock("next/link", () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
@@ -48,7 +38,7 @@ describe("PlannerWorkspace", () => {
         measurements: true,
       },
     });
-    usePlannerStore.setState({ activeTool: "select" });
+    usePlannerStore.setState({ tool: "select" });
     usePlannerCatalogStore.setState({ recentPlacements: [] });
   });
 
@@ -59,9 +49,9 @@ describe("PlannerWorkspace", () => {
     const canvasWrap = await screen.findByRole("application");
     expect(canvasWrap).toBeInTheDocument();
 
-    fireEvent.keyDown(document.body, { key: "w" });
+    fireEvent.keyDown(window, { key: "w" });
     await waitFor(() => {
-      expect(usePlannerStore.getState().activeTool).toBe("wall");
+      expect(usePlannerStore.getState().tool).toBe("wall");
     });
   });
 
@@ -77,17 +67,15 @@ describe("PlannerWorkspace", () => {
 
   it("handles catalog drop on the canvas surface", async () => {
     render(<PlannerWorkspace guestMode />);
-    const surface = await waitFor(() => document.querySelector(".canvas-wrap") as HTMLElement);
+    const surface = await waitFor(() => document.querySelector(".pw-canvas-surface") as HTMLElement);
     const item = CURATED_CATALOG_ITEMS[0]!;
+    const dataTransfer = {
+      types: ["application/planner-catalog-item"],
+      getData: (mime: string) => (mime === "application/planner-catalog-item" ? JSON.stringify(item) : ""),
+    };
 
-    fireEvent.drop(surface, {
-      clientX: 200,
-      clientY: 200,
-      dataTransfer: {
-        types: ["application/planner-catalog-item"],
-        getData: (mime: string) => mime === "application/planner-catalog-item" ? JSON.stringify(item) : "",
-      },
-    });
+    fireEvent.dragOver(surface, { dataTransfer });
+    fireEvent.drop(surface, { dataTransfer });
 
     await waitFor(() => {
       expect(usePlannerCatalogStore.getState().recentPlacements).toContain(item.id);
@@ -101,7 +89,7 @@ describe("PlannerWorkspace", () => {
     expect(region).toBeInTheDocument();
     
     fireEvent.click(screen.getByRole("button", { name: "Draw walls" }));
-    expect(usePlannerStore.getState().activeTool).toBe("wall");
+    expect(usePlannerStore.getState().tool).toBe("wall");
 
     fireEvent.click(screen.getByRole("button", { name: "Use template" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();

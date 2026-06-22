@@ -1,5 +1,6 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -39,5 +40,18 @@ do {
   token = out.IsTruncated ? out.NextContinuationToken : undefined;
 } while (token);
 
+const report = {
+  scannedAt: new Date().toISOString(),
+  bucket,
+  objectCount: total,
+  sampleKeys: samples,
+};
+
+const outDir = path.join(root, "results", "audits");
+fs.mkdirSync(outDir, { recursive: true });
+const outPath = path.join(outDir, "r2-object-count.json");
+fs.writeFileSync(outPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
 console.log(`bucket=${bucket} objects=${total}`);
+console.log(`wrote ${outPath}`);
 for (const key of samples) console.log(`  ${key}`);

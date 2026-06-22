@@ -4,7 +4,7 @@ import { unstable_cache } from "next/cache";
 import { supabase } from '@/platform/drizzle/db';
 import { buildLocalCatalogFallbackProducts } from "@/lib/catalog/fallback";
 import { summarizeSupabaseError } from '@/platform/supabase/safe';
-import { CATALOG_REVALIDATE_SECONDS } from "@/data/site/fallbacks";
+import { CATALOG_REVALIDATE_SECONDS } from "@/lib/site-data/fallbacks";
 
 type SupabaseErrorLike = {
   code?: string | null;

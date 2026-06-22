@@ -16,6 +16,10 @@ Work only in this repository.
 - Log failures, skips, blockers, and follow-ups in `Failures.md`.
 - Prefer archiving over deleting unless deletion is explicitly requested.
 - Do not run playwright or any other test  before taking explicit permisssion from the user.
+- Keep site static data in `lib/site-data/`; `data/` is legacy and should not get new app-facing files.
+- Mirror CSS only for UI-owned folders; do not create parallel CSS trees for `data/`, `lib/`, or `api/`.
+- Keep locale message JSON in `i18n/messages/`; `i18n/request.ts` is the canonical loader.
+- Keep route contract metadata in `config/route-contract.json`.
 
 ## Read First
 Before non-trivial work, read:

@@ -116,16 +116,30 @@ export function Hero({
 
       {/* Content Container */}
       <div className="absolute inset-0 z-10 flex flex-col justify-end">
-        <div className="container h-full flex flex-col items-start justify-center pb-20 pt-32 text-left">
+        <div
+          className={
+            isSmall
+              ? "home-hero__layout relative z-10 min-h-full justify-center py-16 md:py-20"
+              : "container flex h-full flex-col items-start justify-center pb-20 pt-32 text-left"
+          }
+        >
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="w-full max-w-[44rem] self-start space-y-7 text-left"
+            className={
+              isSmall
+                ? "w-full max-w-[44rem] space-y-5 text-left lg:justify-self-start"
+                : "w-full max-w-[44rem] self-start space-y-7 text-left"
+            }
           >
             <motion.div variants={titleVariants} className="overflow-hidden">
               <h1
-                className={`hero-title text-inverse text-left ${isSmall ? "home-hero-title-small text-4xl md:text-5xl lg:text-6xl" : "home-hero-title-default"}`}
+                className={
+                  isSmall
+                    ? "home-hero-title-route text-inverse text-left"
+                    : "hero-title home-hero-title-default text-inverse text-left"
+                }
               >
                 {title || (
                   <>

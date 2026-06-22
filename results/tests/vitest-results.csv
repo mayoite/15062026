@@ -1,0 +1,17 @@
+"suite","test","status","duration_ms","failure_message"
+"E:/16062026/tests/unit/planner-landing-data.test.ts","planner landing data hero leads with guest canvas","passed","1.090599999999995",""
+"E:/16062026/tests/unit/planner-landing-data.test.ts","planner landing data landing shows four feature pillars with short titles","passed","1.3265000000001237",""
+"E:/16062026/tests/unit/planner-landing-data.test.ts","planner landing data proof surfaces three guest-friendly usps","passed","0.28729999999995925",""
+
+"summary"
+"total_tests=3"
+"passed_tests=3"
+"failed_tests=0"
+"success=true"
+
+"coverage_summary"
+"lines_total=17132;lines_covered=0;lines_skipped=0;lines_pct=0"
+"statements_total=19312;statements_covered=0;statements_skipped=0;statements_pct=0"
+"functions_total=4851;functions_covered=0;functions_skipped=0;functions_pct=0"
+"branches_total=14393;branches_covered=0;branches_skipped=0;branches_pct=0"
+"coverage_report=E:\16062026\results\coverage-reports\planner\coverage-report.json"

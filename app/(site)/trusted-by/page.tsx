@@ -2,9 +2,9 @@
 import { Hero } from "@/components/home/Hero";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
-import { TRUSTED_BY_CLIENTS, TRUSTED_BY_STATS } from "@/data/site/proof";
-import { TRUSTED_BY_PAGE_COPY } from "@/data/site/routeCopy";
-import { TRUSTED_BY_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { TRUSTED_BY_CLIENTS, TRUSTED_BY_STATS } from "@/lib/site-data/proof";
+import { TRUSTED_BY_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { TRUSTED_BY_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = TRUSTED_BY_PAGE_METADATA;
 
@@ -18,7 +18,7 @@ export default function TrustedByPage() {
         title={TRUSTED_BY_PAGE_COPY.heroTitle}
         subtitle={TRUSTED_BY_PAGE_COPY.heroSubtitle}
         showButton={false}
-        backgroundImage="/images/hero/franklin-hero.webp"
+        backgroundImage="/images/projects/FranklinTempleton/hero.webp"
       />
 
       <section className="container px-6 2xl:px-0 section-y">

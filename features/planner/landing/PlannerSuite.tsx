@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
 
-import { HOMEPAGE_PLANNER_SUITE_CONTENT } from "@/data/site/homepage";
+import { HOMEPAGE_PLANNER_SUITE_CONTENT } from "@/lib/site-data/homepage";
 
 import { PlannerLayoutGraphic } from "./PlannerLayoutGraphic";
 

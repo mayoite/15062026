@@ -47,10 +47,10 @@
 
 @utility typ-section {
   font-family: var(--font-display);
-  font-size: var(--type-title-lg-size);
+  font-size: clamp(2rem, 3.6vw, 2.9rem);
   font-weight: var(--font-weight-display-light);
   letter-spacing: var(--type-letter-title);
-  line-height: var(--type-leading-title);
+  line-height: 1.08;
   font-kerning: normal;
   overflow-wrap: anywhere;
   text-wrap: balance;

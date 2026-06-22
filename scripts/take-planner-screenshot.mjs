@@ -2,7 +2,7 @@ import { chromium } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 
-const outDir = path.join(process.cwd(), "screenshots");
+const outDir = path.join(process.cwd(), "results", "screenshots");
 fs.mkdirSync(outDir, { recursive: true });
 
 const browser = await chromium.launch();
