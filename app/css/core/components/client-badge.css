@@ -1,15 +1,73 @@
 /* Client roster badges — trusted-by, projects, about */
 
+.client-badge-group {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 40rem) {
+  .client-badge-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .client-badge-group {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .client-badge {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 0.875rem;
   padding: 1.25rem;
   border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
   background: var(--surface-card);
   transition:
     border-color var(--motion-fast) var(--ease-standard),
     box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.client-badge__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.client-badge__mark {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 3rem;
+}
+
+.client-badge__logo {
+  width: auto;
+  max-width: 8.75rem;
+  height: 2.5rem;
+  object-fit: contain;
+  object-position: left center;
+  opacity: 0.92;
+}
+
+.client-badge__monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.65rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  font-size: var(--type-label-size);
+  font-weight: var(--font-weight-copy-semibold);
+  letter-spacing: 0.08em;
 }
 
 .client-badge:hover {
@@ -17,13 +75,17 @@
   box-shadow: var(--shadow-soft);
 }
 
+.client-badge:hover .client-badge__logo {
+  opacity: 1;
+}
+
 .client-badge--featured {
   border-color: var(--border-muted);
 }
 
 .client-badge__sector {
-  display: inline-block;
-  margin-bottom: 1rem;
+  display: inline-flex;
+  align-self: flex-start;
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-accent);

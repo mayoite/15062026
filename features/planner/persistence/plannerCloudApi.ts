@@ -1,3 +1,5 @@
+import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
+
 import type { PlannerDocument, PlannerSaveSummary } from "../model";
 import { plannerDocumentSchema, plannerSaveSummarySchema } from "../model";
 
@@ -41,7 +43,7 @@ function normalizeSummaryRows(rows: unknown[]): PlannerSaveSummary[] {
 }
 
 export async function listOwnerPlansFromApi(): Promise<PlannerSaveSummary[]> {
-  const response = await fetch("/api/plans", { method: "GET", credentials: "include" });
+  const response = await browserApiFetch(apiPath("/api/plans"), { method: "GET" });
   if (response.status === 401) {
     throw new PlannerCloudApiError("Authentication required.", "planner:no-auth", 401);
   }
@@ -60,9 +62,8 @@ export async function listOwnerPlansFromApi(): Promise<PlannerSaveSummary[]> {
 }
 
 export async function listAdminPlansFromApi(): Promise<PlannerSaveSummary[]> {
-  const response = await fetch("/api/admin/plans?limit=100", {
+  const response = await browserApiFetch(apiPath("/api/admin/plans?limit=100"), {
     method: "GET",
-    credentials: "include",
   });
   if (response.status === 401 || response.status === 403) {
     throw new PlannerCloudApiError("Admin access required.", "planner:no-auth", response.status);
@@ -110,10 +111,10 @@ export async function loadPlanFromApi(
     throw new PlannerCloudApiError("Planner document id is required.", "planner:load-failed");
   }
 
-  const response = await fetch(`/api/plans/${encodeURIComponent(normalizedSaveId)}`, {
-    method: "GET",
-    credentials: "include",
-  });
+  const response = await browserApiFetch(
+    apiPath(`/api/plans/${encodeURIComponent(normalizedSaveId)}`),
+    { method: "GET" },
+  );
 
   if (response.status === 404) return null;
   if (response.status === 401) {
@@ -146,9 +147,8 @@ export async function savePlanToApi(
   const saveId = (options.saveId ?? normalized.id ?? crypto.randomUUID()).trim();
   const ownerUserId = options.ownerUserId?.trim();
 
-  const response = await fetch(`/api/plans/${encodeURIComponent(saveId)}`, {
+  const response = await browserApiFetch(apiPath(`/api/plans/${encodeURIComponent(saveId)}`), {
     method: "PUT",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       document: { ...normalized, id: saveId },
@@ -178,10 +178,10 @@ export async function savePlanToApi(
 }
 
 export async function deletePlanFromApi(saveId: string): Promise<boolean> {
-  const response = await fetch(`/api/plans/${encodeURIComponent(saveId.trim())}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
+  const response = await browserApiFetch(
+    apiPath(`/api/plans/${encodeURIComponent(saveId.trim())}`),
+    { method: "DELETE" },
+  );
 
   if (response.status === 401) {
     throw new PlannerCloudApiError("Authentication required.", "planner:no-auth", 401);

@@ -6,7 +6,7 @@ export {
   buildPageMetadata,
   buildSiteMetadata,
   canonicalPath,
-} from "@/data/site/seo";
+} from "@/lib/site-data/seo";
 
 export type BreadcrumbItem = {
   name: string;

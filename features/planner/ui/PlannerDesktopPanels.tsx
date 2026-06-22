@@ -1,9 +1,8 @@
 "use client";
 
-
-
 import type { PlannerSelectionDimensions } from "../lib/editorTools";
 import type { BoqItem, CatalogProduct, PlannerStep, RoomPreset } from "@/features/planner/shared/types/planner";
+import type { ReactNode } from "react";
 
 import { CatalogPanel } from "./CatalogPanel";
 import { InspectorPanel } from "./InspectorPanel";
@@ -61,6 +60,42 @@ interface PlannerDesktopPanelsProps {
   panelDockedSpanPx?: number;
 }
 
+interface PlannerDesktopPanelShellProps {
+  children: ReactNode;
+  id: string;
+  side: "left" | "right";
+  docked: boolean;
+  isActive: boolean;
+  onFocus: () => void;
+  topPx: number;
+  offsetPx?: number;
+}
+
+function PlannerDesktopPanelShell({
+  children,
+  id,
+  side,
+  docked,
+  isActive,
+  onFocus,
+  topPx,
+  offsetPx,
+}: PlannerDesktopPanelShellProps) {
+  return (
+    <WorkspacePanel
+      id={id}
+      side={side}
+      docked={docked}
+      isActive={isActive}
+      onFocus={onFocus}
+      offsetPx={offsetPx}
+      topPx={topPx}
+    >
+      {children}
+    </WorkspacePanel>
+  );
+}
+
 export function PlannerDesktopPanels({
   editor,
   catalogProducts,
@@ -112,7 +147,7 @@ export function PlannerDesktopPanels({
   return (
     <>
       {showCatalog ? (
-        <WorkspacePanel
+        <PlannerDesktopPanelShell
           id="catalog-panel"
           side="left"
           docked={catalogPinned}
@@ -138,11 +173,11 @@ export function PlannerDesktopPanels({
             pinned={catalogPinned}
             onTogglePin={onToggleCatalogPin}
           />
-        </WorkspacePanel>
+        </PlannerDesktopPanelShell>
       ) : null}
 
       {showInspector ? (
-        <WorkspacePanel
+        <PlannerDesktopPanelShell
           id="inspector-panel"
           side="right"
           docked={inspectorPinned}
@@ -168,11 +203,11 @@ export function PlannerDesktopPanels({
             pinned={inspectorPinned}
             onTogglePin={onToggleInspectorPin}
           />
-        </WorkspacePanel>
+        </PlannerDesktopPanelShell>
       ) : null}
 
       {showLayers ? (
-        <WorkspacePanel
+        <PlannerDesktopPanelShell
           id="layers-panel"
           side="right"
           docked={layersPinned}
@@ -191,7 +226,7 @@ export function PlannerDesktopPanels({
             pinned={layersPinned}
             onTogglePin={onToggleLayersPin}
           />
-        </WorkspacePanel>
+        </PlannerDesktopPanelShell>
       ) : null}
     </>
   );

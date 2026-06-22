@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RefreshCw, Save } from "lucide-react";
+import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
 
 type QueryStatus = "new" | "in_progress" | "closed" | "spam";
 type FollowUpChannel = "email" | "whatsapp" | "phone" | "none";
@@ -96,10 +97,13 @@ export default function CustomerQueriesOpsPage() {
       const params = new URLSearchParams({ limit: "200" });
       if (statusFilter !== "all") params.set("status", statusFilter);
 
-      const response = await fetch(`/api/customer-queries/manage?${params.toString()}`, {
-        headers: adminToken ? { "x-admin-token": adminToken } : undefined,
-        cache: "no-store",
-      });
+      const response = await browserApiFetch(
+        apiPath(`/api/customer-queries/manage?${params.toString()}`),
+        {
+          headers: adminToken ? { "x-admin-token": adminToken } : undefined,
+          cache: "no-store",
+        },
+      );
       const json = (await response.json()) as { items?: CustomerQuery[]; error?: string };
       if (!response.ok) {
         setError(json.error || "Unable to load queries.");
@@ -136,7 +140,7 @@ export default function CustomerQueriesOpsPage() {
     setSavingId(id);
     setError("");
     try {
-      const response = await fetch("/api/customer-queries/manage", {
+      const response = await browserApiFetch(apiPath("/api/customer-queries/manage"), {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

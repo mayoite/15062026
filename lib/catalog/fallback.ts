@@ -1,5 +1,5 @@
 import { normalizeRequestedCategoryId } from '@/features/catalog/categories';
-import localCatalogIndex from "@/data/site/localCatalogIndex.json";
+import localCatalogIndex from "@/lib/site-data/localCatalogIndex.json";
 import type { Product } from "./types";
 import { normalizeProducts } from "./adapters";
 

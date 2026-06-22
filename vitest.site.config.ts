@@ -1,43 +1,49 @@
 import { defineConfig } from 'vitest/config';
 import path from 'path';
 
+import {
+  VITEST_COMMON_COVERAGE_REPORTERS,
+  VITEST_COMMON_EXCLUDE,
+  VITEST_COVERAGE_DIRS,
+  VITEST_REPORT_PATHS,
+  VITEST_REPO_ROOT,
+  VITEST_SETUP_FILE,
+} from './vitest.shared';
+
 export default defineConfig({
   resolve: {
     alias: {
-      '@/types': path.resolve(__dirname, 'config/database/types'),
-      '@/app': path.resolve(__dirname, 'app'),
-      '@/components': path.resolve(__dirname, 'components'),
-      '@/data': path.resolve(__dirname, 'data'),
-      '@/features': path.resolve(__dirname, 'features'),
-      '@/lib': path.resolve(__dirname, 'lib'),
-      '@/stores': path.resolve(__dirname, 'archive/state/state'),
-      '@': path.resolve(__dirname),
+      '@/types': path.resolve(VITEST_REPO_ROOT, 'config/database/types'),
+      '@/app': path.resolve(VITEST_REPO_ROOT, 'app'),
+      '@/components': path.resolve(VITEST_REPO_ROOT, 'components'),
+      '@/data': path.resolve(VITEST_REPO_ROOT, 'data'),
+      '@/features': path.resolve(VITEST_REPO_ROOT, 'features'),
+      '@/lib': path.resolve(VITEST_REPO_ROOT, 'lib'),
+      '@/stores': path.resolve(VITEST_REPO_ROOT, 'archive/state/state'),
+      '@': VITEST_REPO_ROOT,
     },
   },
   test: {
     pool: 'forks',
     globals: true,
     environment: 'happy-dom',
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: [VITEST_SETUP_FILE],
     reporters: ['default', 'json'],
     outputFile: {
-      json: path.resolve(__dirname, 'results/tests/vitest-site-results.json'),
+      json: VITEST_REPORT_PATHS.site.json,
     },
     include: [
       'tests/**/*.test.ts',
       'tests/**/*.test.tsx',
     ],
-    exclude: [
-      'node_modules',
-      'archive',
-      '.next',
-    ],
+    exclude: [...VITEST_COMMON_EXCLUDE],
     coverage: {
       provider: 'v8',
-      reportsDirectory: './results/coverage-site',
+      reportsDirectory: VITEST_COVERAGE_DIRS.site,
+      reporter: [...VITEST_COMMON_COVERAGE_REPORTERS],
       // Site-logic scope (see plans/SITE-COVERAGE.md).
       include: [
-        'data/site/**/*.{ts,tsx}',
+        'lib/site-data/**/*.{ts,tsx}',
         'lib/catalog/**/*.{ts,tsx}',
         'lib/configurator/**/*.ts',
         'features/catalog/**/*.{ts,tsx}',

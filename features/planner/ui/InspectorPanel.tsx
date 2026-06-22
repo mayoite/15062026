@@ -130,28 +130,26 @@ export function InspectorPanel({
   const area = roomDims ? fmtArea(roomDims.wMm, roomDims.hMm) : null;
 
   return (
-    <div className="flex h-full flex-col bg-[color:var(--planner-panel)] font-sans">
-
-      {/* Header */}
-      <div data-panel-drag-handle="true"
-        className="flex h-9 shrink-0 items-center justify-between border-b border-[color:var(--planner-border-soft)] px-3">
-        <span className="pw-ui-2xs font-bold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Inspector</span>
+    <div className="pwx-panel-shell">
+      <div data-panel-drag-handle="true" className="pwx-panel-header">
+        <div>
+          <span className="pwx-panel-title">Inspector</span>
+        </div>
         <div className="flex items-center gap-0.5">
           {showPinToggle && (
             <button type="button" onClick={onTogglePin}
               aria-label={pinned ? "Float panel" : "Dock panel"} title={pinned ? "Float panel" : "Dock panel"}
-              className={`flex h-6 w-6 items-center justify-center transition-colors ${pinned ? "text-[color:var(--planner-primary)]" : "text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-text-body)]"}`}>
+              className={`pwx-panel-icon-btn ${pinned ? "text-[color:var(--planner-primary)]" : ""}`}>
               {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
             </button>
           )}
           <button type="button" onClick={onClose} aria-label="Close"
-            className="flex h-6 w-6 items-center justify-center text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-text-body)] transition-colors">
+            className="pwx-panel-icon-btn">
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Tabs — flat, no rounded */}
       <div className="flex shrink-0 border-b border-[color:var(--planner-border-soft)]">
         {(["items", "settings"] as const).map((t) => (
           <button key={t} type="button" onClick={() => setTab(t)}
@@ -167,14 +165,14 @@ export function InspectorPanel({
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="pwx-panel-content">
 
         {/* ── ITEMS TAB ─────────────────────────────────────────────────────── */}
         {tab === "items" && (
           <div className="flex h-full flex-col">
             <div className="flex-1 overflow-y-auto divide-y divide-[color:var(--planner-border-soft)]">
               {boqItems.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-10 px-4 text-center">
+                <div className="pwx-panel-empty flex flex-col items-center justify-center gap-2 py-10 px-4">
                   <MousePointer2 className="h-6 w-6 text-[color:var(--planner-text-subtle)]" />
                   <p className="text-[14px] font-semibold text-[color:var(--planner-text-strong)]">No items yet</p>
                   <p className="pw-ui-xs leading-5 text-[color:var(--planner-text-muted)]">{emptyBody}</p>
@@ -200,11 +198,11 @@ export function InspectorPanel({
               {hasBoqData && (
                 <div className="mb-2 flex items-baseline justify-between">
                   <span className="pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">BOQ Lines</span>
-                  <span className="text-[14px] font-bold text-[color:var(--planner-primary)]">{boqItems.length}</span>
+                  <span className="pwx-panel-count text-[14px]">{boqItems.length}</span>
                 </div>
               )}
               <button onClick={onAdvanceBoqFlow} disabled={primaryDisabled}
-                className="flex w-full items-center justify-center gap-2 bg-[color:var(--planner-primary)] py-2.5 pw-ui-xs font-semibold text-white transition-colors hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-border-soft)] disabled:text-[color:var(--planner-text-subtle)]">
+                className="pwx-panel-action w-full bg-[color:var(--planner-primary)] py-2.5 pw-ui-xs text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-border-soft)] disabled:text-[color:var(--planner-text-subtle)]">
                 <FileText className="h-4 w-4" /> {primaryActionLabel}
               </button>
             </div>
@@ -215,7 +213,6 @@ export function InspectorPanel({
         {tab === "settings" && (
           <div className="divide-y divide-[color:var(--planner-border-soft)]">
 
-            {/* Room Shell — centered, with area */}
             <div className="px-3 py-3 text-center">
               <p className="mb-2 pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Room Shell</p>
               <p className="font-mono text-[13px] font-semibold text-[color:var(--planner-text-strong)]">{roomMetrics}</p>
@@ -228,7 +225,6 @@ export function InspectorPanel({
               )}
             </div>
 
-            {/* Selection Metrics */}
             <div className="px-3 py-3">
               <p className="mb-1.5 pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Selection</p>
               <p className="font-mono pw-ui-xs font-semibold text-[color:var(--planner-text-strong)]">
@@ -236,7 +232,6 @@ export function InspectorPanel({
               </p>
             </div>
 
-            {/* Inspector Edit — W × H inputs */}
             <div className="px-3 py-3">
               <p className="mb-2 pw-ui-2xs font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Edit Size</p>
               {selectionDimensions ? (
@@ -263,7 +258,7 @@ export function InspectorPanel({
                         className="w-full border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-2 py-1.5 pw-ui-xs text-[color:var(--planner-text-body)] outline-none transition focus:border-[color:var(--planner-primary)] disabled:opacity-40" />
                     </div>
                   </div>
-                  <button type="button" disabled={!canApply}
+                    <button type="button" disabled={!canApply}
                     onClick={() => {
                       if (widthValueMm === null) return;
                       if (selectionDimensions.mode === "box" && heightValueMm === null) return;

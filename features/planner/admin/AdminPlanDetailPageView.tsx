@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, ExternalLink, Loader2 } from "lucide-react";
 
+import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
+import { buildPlannerCanvasHref } from "@/features/planner/admin/plannerAdminLinks";
 import {
   getPlannerSceneEnvelope,
   type PlannerSceneEnvelope,
@@ -70,7 +72,9 @@ export default function AdminPlanDetailPageView() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/plans/${encodeURIComponent(planId)}`);
+      const response = await browserApiFetch(
+        apiPath(`/api/admin/plans/${encodeURIComponent(planId)}`),
+      );
       if (!response.ok) {
         throw new Error(`Failed to load plan (${response.status})`);
       }
@@ -105,11 +109,14 @@ export default function AdminPlanDetailPageView() {
     setStatusMessage(null);
     setError(null);
     try {
-      const response = await fetch(`/api/admin/plans/${encodeURIComponent(planId)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
+      const response = await browserApiFetch(
+        apiPath(`/api/admin/plans/${encodeURIComponent(planId)}`),
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status }),
+        },
+      );
       if (!response.ok) {
         throw new Error(`Failed to update plan (${response.status})`);
       }
@@ -163,9 +170,16 @@ export default function AdminPlanDetailPageView() {
               {plan.project_name ?? "No project"} · {plan.client_name ?? "No client"} · Updated {formatTimestamp(plan.updated_at)}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
+              <Link
+                href={buildPlannerCanvasHref(plan.id)}
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                <ExternalLink size={14} aria-hidden />
+                Open in canvas
+              </Link>
               <button
                 type="button"
-                className="btn-primary px-3 py-2 text-sm disabled:opacity-60"
+                className="btn-outline disabled:opacity-60"
                 disabled={saving || plan.status === "active"}
                 onClick={() => void updateStatus("active")}
               >
@@ -173,7 +187,7 @@ export default function AdminPlanDetailPageView() {
               </button>
               <button
                 type="button"
-                className="btn-outline px-3 py-2 text-sm disabled:opacity-60"
+                className="btn-outline disabled:opacity-60"
                 disabled={saving || plan.status === "draft"}
                 onClick={() => void updateStatus("draft")}
               >
@@ -181,7 +195,7 @@ export default function AdminPlanDetailPageView() {
               </button>
               <button
                 type="button"
-                className="btn-outline px-3 py-2 text-sm disabled:opacity-60"
+                className="btn-outline disabled:opacity-60"
                 disabled={saving || plan.status === "archived"}
                 onClick={() => void updateStatus("archived")}
               >

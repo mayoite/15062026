@@ -5,9 +5,9 @@ import {
   buildPageJsonLd,
   buildBreadcrumbJsonLd,
   buildGlobalJsonLd,
-} from '@/data/site/seo';
-import { SITE_BRAND } from '@/data/site/brand';
-import { SITE_CONTACT } from '@/data/site/contact';
+} from '@/lib/site-data/seo';
+import { SITE_BRAND } from '@/lib/site-data/brand';
+import { SITE_CONTACT } from '@/lib/site-data/contact';
 
 const TEST_SITE_URL = 'https://example.com';
 

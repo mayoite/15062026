@@ -16,7 +16,7 @@ Feature-sliced design: each product area owns hooks, stores, and UI tied to its 
 | Area | Canonical owner | Typical consumers | Do not duplicate in |
 |------|-----------------|-------------------|---------------------|
 | Catalog filters & product resolution | `features/catalog/` | app/(site)/products, components/products, features/planner/catalog | lib/catalog/ — SSG merge, blocks2d, seed scripts only |
-| Marketing copy & local catalog index | `data/site/` | features/catalog, components/home, lib/helpers/seo | features/catalog/ — no hardcoded nav/copy |
+| Marketing copy & local catalog index | `lib/site-data/` | features/catalog, components/home, lib/helpers/seo | features/catalog/ — no hardcoded nav/copy |
 | Auth UI & session types | `features/shared/auth/` | app/(site)/login, app/(site)/access | lib/auth/ — server session, cookies, redirects |
 | Marketing presentational sections | `components/home, components/site` | app/(site) routes | features/ — domain state belongs in features/, not components/ |
 

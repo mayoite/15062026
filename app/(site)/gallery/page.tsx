@@ -1,9 +1,9 @@
 ﻿import Image from "next/image";
 import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
-import { GALLERY_PAGE_COPY, GALLERY_PROJECTS } from "@/data/site/routeCopy";
+import { GALLERY_PAGE_COPY, GALLERY_PROJECTS } from "@/lib/site-data/routeCopy";
 import { Masonry, MasonryItem } from "@/components/ui/Masonry";
-import { GALLERY_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { GALLERY_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = GALLERY_PAGE_METADATA;
 

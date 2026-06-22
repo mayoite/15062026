@@ -4,8 +4,8 @@ import path from "node:path";
 import Image from "next/image";
 import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
-import { PORTFOLIO_CLIENTS, PORTFOLIO_PAGE_COPY } from "@/data/site/routeCopy";
-import { PORTFOLIO_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { PORTFOLIO_CLIENTS, PORTFOLIO_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { PORTFOLIO_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = PORTFOLIO_PAGE_METADATA;
 

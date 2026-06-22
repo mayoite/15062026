@@ -6,7 +6,7 @@ describe("catalog fallback branches", () => {
   });
 
   it("parses folder-style ids and defaults empty categories to seating", async () => {
-    vi.doMock("@/data/site/localCatalogIndex.json", () => ({
+    vi.doMock("@/lib/site-data/localCatalogIndex.json", () => ({
       default: [
         {
           id: "oando-seating--sway",
@@ -43,7 +43,7 @@ describe("catalog fallback branches", () => {
   });
 
   it("handles non-array catalog index input", async () => {
-    vi.doMock("@/data/site/localCatalogIndex.json", () => ({
+    vi.doMock("@/lib/site-data/localCatalogIndex.json", () => ({
       default: null,
     }));
 

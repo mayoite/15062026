@@ -7,7 +7,7 @@ import {
   HOMEPAGE_PARTNERSHIP_CONTENT,
   HOMEPAGE_CONTACT_CONTENT,
   HOMEPAGE_WHY_CHOOSE_US_CONTENT,
-} from "@/data/site/homepage";
+} from "@/lib/site-data/homepage";
 
 describe("homepage data", () => {
   it("hero leads with products not planner", () => {

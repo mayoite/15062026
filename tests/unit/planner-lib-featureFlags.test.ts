@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { invalidateCsrfToken } from "@/lib/api/browserApi";
 import {
   areAllFlagsInGroupEnabled,
   DEFAULT_FLAGS,
@@ -17,10 +18,31 @@ import {
   updateMultipleFeatureFlagsInSupabase,
 } from "@/features/planner/lib/featureFlags";
 
+function mockFetch(
+  handler: (url: string, init?: RequestInit) => Promise<Response>,
+) {
+  return vi.spyOn(globalThis, "fetch").mockImplementation((input, init) =>
+    handler(String(input), init),
+  );
+}
+
+function csrfThen(handler: (url: string, init?: RequestInit) => Promise<Response>) {
+  return mockFetch(async (url, init) => {
+    if (url.includes("/api/csrf")) {
+      return {
+        ok: true,
+        json: async () => ({ token: "test-csrf" }),
+      } as Response;
+    }
+    return handler(url, init);
+  });
+}
+
 describe("planner feature flags", () => {
   beforeEach(() => {
     localStorage.clear();
     resetFeatureFlags();
+    invalidateCsrfToken();
   });
 
   afterEach(() => {
@@ -64,25 +86,25 @@ describe("planner feature flags", () => {
   });
 
   it("handles failed remote fetch and patch operations", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    mockFetch(async () => ({
       ok: false,
       statusText: "Forbidden",
       json: async () => ({}),
-    } as Response);
+    } as Response));
     expect(await fetchFeatureFlagsFromSupabase()).toBeNull();
 
-    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    csrfThen(async () => ({
       ok: true,
       json: async () => ({}),
-    } as Response);
+    } as Response));
     expect(await updateFeatureFlagInSupabase("exportSvg", false)).toEqual({ success: true });
     expect(isFeatureEnabled("exportSvg")).toBe(false);
 
-    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    csrfThen(async () => ({
       ok: false,
       statusText: "Bad Request",
       json: async () => ({ error: "Invalid flag" }),
-    } as Response);
+    } as Response));
     expect(await updateMultipleFeatureFlagsInSupabase({ exportBoq: false })).toEqual({
       success: false,
       error: "Invalid flag",
@@ -99,13 +121,13 @@ describe("planner feature flags", () => {
     setFeatureFlags({ exportPanorama: false });
     expect(areAllFlagsInGroupEnabled("export")).toBe(false);
 
-    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    csrfThen(async () => ({
       ok: false,
       statusText: "Server Error",
       json: async () => {
         throw new Error("bad json");
       },
-    } as Response);
+    } as Response));
     expect(await updateFeatureFlagInSupabase("exportBoq", true)).toEqual({
       success: false,
       error: "Server Error",
@@ -151,10 +173,10 @@ describe("planner feature flags", () => {
     expect(remote).toEqual({ exportBoq: false, aiFurnish: false });
     expect(isFeatureEnabled("exportBoq")).toBe(false);
 
-    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+    csrfThen(async () => ({
       ok: true,
       json: async () => ({}),
-    } as Response);
+    } as Response));
     expect(await updateMultipleFeatureFlagsInSupabase({ exportSvg: true, exportPng: false })).toEqual({
       success: true,
     });

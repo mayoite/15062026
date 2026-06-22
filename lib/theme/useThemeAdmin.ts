@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
 
 export type ThemePresetSummary = {
   id: string;
@@ -77,7 +78,7 @@ export function useThemeAdmin(): ThemeAdminState {
     setIsSwitching(true);
     setError(null);
     try {
-      const res = await fetch("/api/theme/manage/", {
+      const res = await browserApiFetch(apiPath("/api/theme/manage/"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ presetId }),

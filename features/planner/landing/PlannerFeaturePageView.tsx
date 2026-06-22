@@ -149,9 +149,6 @@ export function PlannerFeaturePageView({ slug }: { slug: PlannerFeatureSlug }) {
               <h2 id="feature-cta" className="typ-subsection-title text-inverse">
                 {PLANNER_HERO.bottomCta.title}
               </h2>
-              <p className="page-copy-sm mt-2 text-inverse-body">
-                {PLANNER_HERO.bottomCta.body}
-              </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href={feature.tryPath} className="btn-primary typ-cta px-6 py-3">

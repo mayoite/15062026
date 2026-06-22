@@ -50,7 +50,7 @@ SEO implementation is comprehensive across all routes. All critical elements are
 - ✅ Custom 404 page at `app/(site)/not-found.tsx`
 - ✅ Product error boundary at `app/(site)/products/error.tsx`
 - ✅ Site error boundary at `app/(site)/error.tsx`
-- ✅ Centralized route metadata in `data/site/routeMetadata.ts`
+- ✅ Centralized route metadata in `lib/site-data/routeMetadata.ts`
 - ✅ Skip-to-content link for accessibility
 
 ## Score Justification: 9.5/10

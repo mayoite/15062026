@@ -150,47 +150,47 @@ export function LayersPanel({
   };
 
   return (
-    <div className="flex h-full flex-col bg-transparent">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div data-panel-drag-handle="true" className="border-b border-[color:var(--planner-border-soft)] px-4 py-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Layers</span>
-            <p className="mt-1 text-[11px] leading-[1.4] text-[color:var(--planner-text-body)]">{selectionHint}</p>
-            <p className="mt-0.5 text-[10px] leading-[1.35] text-[color:var(--planner-text-muted)]">{unitHint}</p>
-          </div>
+    <div className="pwx-panel-shell bg-transparent">
+      <div data-panel-drag-handle="true" className="pwx-panel-header">
+        <div>
+          <span className="pwx-panel-title">Layers</span>
+          <p className="pwx-panel-subtitle">{selectionHint}</p>
+          <p className="mt-0.5 text-[10px] leading-[1.35] text-[color:var(--planner-text-muted)]">{unitHint}</p>
+        </div>
 
-          <div className="flex items-center gap-1">
-            {showPinToggle ? (
-              <button
-                type="button"
-                onClick={onTogglePin}
-                aria-label={pinned ? "Float panel" : "Dock panel"}
-                title={pinned ? "Float panel" : "Dock panel"}
-                className={`border p-1.5 transition-colors ${
-                  pinned
-                    ? "border-[color:var(--planner-primary-soft)] bg-[color:var(--planner-primary-soft)] text-[color:var(--planner-primary)]"
-                    : "border-[color:var(--planner-border-soft)] text-[color:var(--planner-text-subtle)] hover:bg-[color:var(--planner-primary-soft)] hover:text-[color:var(--planner-primary)]"
-                }`}
-              >
-                {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
-              </button>
-            ) : null}
+        <div className="flex items-center gap-1">
+          {showPinToggle ? (
             <button
               type="button"
-              onClick={onClose}
-              className="border border-transparent p-1.5 text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-text-body)] transition-colors"
-              aria-label="Close layers panel"
+              onClick={onTogglePin}
+              aria-label={pinned ? "Float panel" : "Dock panel"}
+              title={pinned ? "Float panel" : "Dock panel"}
+              className={`pwx-panel-icon-btn ${pinned ? "border-[color:var(--planner-primary-soft)] bg-[color:var(--planner-primary-soft)] text-[color:var(--planner-primary)]" : ""}`}
             >
-              <X className="h-3.5 w-3.5" />
+              {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
             </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={onClose}
+            className="pwx-panel-icon-btn border-transparent"
+            aria-label="Close layers panel"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="border-b border-[color:var(--planner-border-soft)] px-4 py-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Actions</span>
           </div>
         </div>
       </div>
 
-      {/* ── Action Buttons ──────────────────────────────────────────────────── */}
       <div className="border-b border-[color:var(--planner-border-soft)] p-3">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="pwx-panel-toolbar">
           <PanelActionButton
             icon={<MousePointer2 className="h-3.5 w-3.5" aria-hidden="true" />}
             label="Select All"
@@ -208,19 +208,14 @@ export function LayersPanel({
             onClick={handleToggleSelectionLock}
             disabled={!hasSelection}
           />
-          {/* Layer count badge */}
-          <div
-            className="flex h-10 items-center gap-2 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-3"
-            title={`${layerEntries.length} layers`}
-          >
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-surface-soft)] text-[10px] font-bold text-[color:var(--planner-primary)]">
+          <div className="flex h-10 items-center gap-2 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-3" title={`${layerEntries.length} layers`}>
+            <span className="pwx-panel-count">
               {layerEntries.length}
             </span>
             <span className="truncate text-[11px] font-semibold text-[color:var(--planner-text-subtle)]">Layers</span>
           </div>
         </div>
 
-        {/* Arrange Selection */}
         <div className="mt-3 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-3 py-2.5">
           <div className="flex items-center justify-between gap-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">Arrange Selection</p>
@@ -234,10 +229,9 @@ export function LayersPanel({
         </div>
       </div>
 
-      {/* ── Layer List ──────────────────────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="pwx-panel-content p-3">
         {layerEntries.length === 0 ? (
-          <div className="border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-4 py-5 text-center text-[11px] leading-5 text-[color:var(--planner-text-subtle)]">
+          <div className="pwx-panel-empty">
             No editable layers yet. Draw walls or place items to build the plan.
           </div>
         ) : (
@@ -245,7 +239,7 @@ export function LayersPanel({
             {layerEntries.map((layer) => (
               <div
                 key={layer.id}
-                className={`border px-3 py-2.5 transition-colors ${
+                className={`pwx-panel-card-item px-3 py-2.5 transition-colors ${
                   layer.isSelected
                     ? "border-[color:var(--planner-primary-soft)] bg-[color:var(--planner-primary-soft)]/72"
                     : "border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)]"
@@ -301,7 +295,7 @@ function PanelActionButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="group flex h-10 items-center gap-2 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-3 text-left transition-colors enabled:hover:border-[color:var(--planner-primary)] enabled:hover:text-[color:var(--planner-primary)] disabled:cursor-not-allowed disabled:opacity-35"
+      className="pwx-panel-action group flex h-10 items-center gap-2 px-3 text-left disabled:opacity-35"
     >
       <span className="flex h-6 w-6 shrink-0 items-center justify-center border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-surface-soft)] text-[color:var(--planner-primary)] transition-colors group-enabled:group-hover:border-[color:var(--planner-primary)]">
         {icon}

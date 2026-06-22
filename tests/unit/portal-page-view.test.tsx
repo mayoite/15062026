@@ -18,7 +18,7 @@ test('renders list of plans', () => {
   const plans: PlannerSaveSummary[] = [
     {
       id: 'plan-123',
-      user_id: '00000000-0000-0000-0000-000000000002',
+      user_id: '00000000-0000-4000-8000-000000000002',
       name: 'Office Alpha',
       project_name: 'HQ Reno',
       client_name: null,

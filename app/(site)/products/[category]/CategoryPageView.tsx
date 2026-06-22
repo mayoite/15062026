@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";import { Suspense } from "react";
 
-import { CATEGORY_ROUTE_COPY } from "@/data/site/routeCopy";
-import { buildBreadcrumbJsonLd, buildPageJsonLd } from "@/data/site/seo";
+import { CATEGORY_ROUTE_COPY } from "@/lib/site-data/routeCopy";
+import { buildBreadcrumbJsonLd, buildPageJsonLd } from "@/lib/site-data/seo";
 import {
   buildRequestedCategoryCatalog,
   getCatalogCategoryDescription,

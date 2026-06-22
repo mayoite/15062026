@@ -1,156 +1,98 @@
 /*
- * Planner marketing landing.
+ * Shared planner marketing landing primitives.
+ * Page-specific /planner/ layout lives in plannerpage.css.
  * Plain selectors only — this file is component-imported, so Tailwind
  * @utility directives are NOT compiled here.
  */
 
-.planner-landing-hero-proof {
+/* ─── Shared proof grids (features hub, tools band) ─────────────────────── */
+
+.planner-landing-hero-proof:not(.planner-landing-hero-proof--stack) {
   display: grid;
-  width: fit-content;
+  width: 100%;
   max-width: 100%;
-  gap: 0.75rem 1rem;
-  border-radius: 1.25rem;
-  border: 1px solid color-mix(in srgb, white 14%, transparent);
-  background: color-mix(in srgb, white 9%, transparent);
-  padding: 1rem 1.15rem;
-  box-shadow: 0 30px 80px -50px var(--surface-glass);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 479px) {
+  .planner-landing-hero-proof:not(.planner-landing-hero-proof--stack) {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-landing-hero-proof:not(.planner-landing-hero-proof--stack) .planner-landing-proof-cell:not(:last-child) {
+    border-bottom: 1px solid color-mix(in srgb, white 12%, transparent);
+    border-right: none;
+  }
+}
+
+@media (min-width: 480px) {
+  .planner-landing-hero-proof:not(.planner-landing-hero-proof--stack) .planner-landing-proof-cell:not(:last-child) {
+    border-right: 1px solid color-mix(in srgb, white 12%, transparent);
+  }
+}
+
+.planner-landing-proof-band {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-ecru-50) 55%, var(--surface-page)) 0%,
+    var(--surface-page) 100%
+  );
+}
+
+.planner-landing-proof-strip {
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  background: var(--surface-panel-strong);
+  box-shadow: var(--shadow-soft);
+}
+
+.planner-landing-proof-cell {
+  padding: 0.85rem 0.75rem;
+  text-align: center;
+}
+
+@media (max-width: 639px) {
+  .planner-landing-proof-cell:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .planner-landing-proof-cell:nth-child(odd) {
+    border-right: 1px solid var(--border-soft);
+  }
 }
 
 @media (min-width: 640px) {
-  .planner-landing-hero-proof {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.75rem 1.5rem;
+  .planner-landing-proof-cell:not(:last-child) {
+    border-right: 1px solid var(--border-soft);
   }
 }
 
 .planner-landing-proof__value {
   font-family: var(--font-display);
-  font-size: clamp(1.2rem, 1rem + 0.6vw, 1.65rem);
+  font-size: clamp(1.05rem, 0.9rem + 0.45vw, 1.45rem);
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--text-inverse);
 }
 
+.planner-landing-proof__value--light {
+  color: var(--text-strong);
+}
+
 .planner-landing-proof__label {
-  margin-top: 0.2rem;
-  font-size: 0.68rem;
+  margin-top: 0.35rem;
+  font-size: 0.62rem;
   font-weight: var(--font-weight-copy-semibold);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-inverse-body);
+  color: color-mix(in srgb, var(--text-inverse-body) 82%, transparent);
 }
 
-.planner-landing-features {
-  display: grid;
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .planner-landing-features {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.25rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .planner-landing-features {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-.planner-landing-feature {
-  display: flex;
-  min-height: 100%;
-  flex-direction: column;
-  gap: 0.85rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-soft);
-  background: var(--surface-panel-strong);
-  padding: 1.25rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.planner-landing-feature:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-soft));
-  box-shadow: var(--shadow-soft);
-}
-
-.planner-landing-feature__icon {
-  display: inline-flex;
-  height: 3rem;
-  width: 3rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-pill);
-  background: var(--surface-accent-wash);
-  color: var(--color-primary);
-}
-
-.planner-landing-steps {
-  display: grid;
-  gap: 1rem;
-}
-
-@media (min-width: 1024px) {
-  .planner-landing-steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.25rem;
-  }
-}
-
-.planner-landing-step {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--border-soft);
-  background: var(--surface-panel-strong);
-  padding: 1.35rem 1.25rem;
-}
-
-.planner-landing-step__num {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 300;
-  line-height: 1;
-  color: var(--color-bronze-600, var(--color-bronze-500));
-}
-
-.planner-landing-cta {
-  border-radius: var(--radius-xl);
-  border: 1px solid color-mix(in srgb, white 12%, transparent);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-primary) 88%, black) 0%,
-    color-mix(in srgb, var(--surface-inverse) 92%, black) 100%
-  );
-  padding: 2rem 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .planner-landing-cta {
-    padding: 2.25rem 2rem;
-  }
-}
-
-/* CTA micro-interaction: hover lift, scoped to the planner hero */
-#planner-hero .btn-hero-primary:hover,
-#planner-hero .btn-hero-secondary:hover {
-  transform: translateY(-2px);
-}
-
-#planner-hero .btn-hero-primary:active,
-#planner-hero .btn-hero-secondary:active {
-  transform: translateY(1px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #planner-hero .btn-hero-primary:hover,
-  #planner-hero .btn-hero-secondary:hover {
-    transform: none;
-  }
+.planner-landing-proof__label--light {
+  color: var(--text-muted);
 }
 
 /* ─── Immersive hero demo window ─────────────────────────────────────────── */

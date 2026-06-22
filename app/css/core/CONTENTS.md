@@ -9,7 +9,7 @@ Tokens, utilities, chrome, and per-surface bundles (site vs planner).
 - tokens/ — theme.css
 - chrome/ — shell chrome
 - site/bundles/ — homepage, catalog, etc.
-- planner/bundles/ — workspace UI
+- planner/ — direct planner CSS files and bundles
 - utilities/, typography/, layout/
 
 ---

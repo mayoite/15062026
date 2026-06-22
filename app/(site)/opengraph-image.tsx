@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { SITE_BRAND } from "@/data/site/brand";
+import { SITE_BRAND } from "@/lib/site-data/brand";
 
 export const runtime = "edge";
 export const alt = SITE_BRAND.defaultTitle;

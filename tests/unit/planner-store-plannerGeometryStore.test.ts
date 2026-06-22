@@ -101,7 +101,7 @@ describe("plannerGeometryStore", () => {
     const store = usePlannerGeometryStore.getState();
     store.addRoom([{x:0,y:0}, {x:10,y:0}, {x:10,y:10}, {x:0,y:10}], "Test Room");
 
-    let state = usePlannerGeometryStore.getState();
+    const state = usePlannerGeometryStore.getState();
     expect(state.rooms).toHaveLength(1);
     const roomId = state.rooms[0].id;
 
@@ -123,7 +123,7 @@ describe("plannerGeometryStore", () => {
 
     store.finishZone();
     
-    let state = usePlannerGeometryStore.getState();
+    const state = usePlannerGeometryStore.getState();
     expect(state.zones).toHaveLength(1);
     expect(state.drawingZone).toHaveLength(0);
 

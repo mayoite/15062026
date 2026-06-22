@@ -13,6 +13,8 @@ export default defineConfig({
   testIgnore: ["**/*.test.ts", "**/*.test.tsx"],
   outputDir: "../../results/test-results",
   fullyParallel: true,
+  workers: isCI ? 2 : 2,
+  timeout: 60_000,
 
   // DYNAMIC CI FIX: 0 retries locally for fast feedback, 2 retries in CI to prevent flaky pipeline failures.
   retries: isCI ? 2 : 0,
@@ -27,6 +29,8 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "on-first-retry",
+    navigationTimeout: 60_000,
+    actionTimeout: 15_000,
   },
   projects: [
     {

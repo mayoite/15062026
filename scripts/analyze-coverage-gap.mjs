@@ -71,7 +71,7 @@ for (const file of testFiles) {
     else if (imp.startsWith("@/lib/")) scopes.add("lib");
     else if (imp.startsWith("@/components/")) scopes.add("components");
     else if (imp.startsWith("@/app/")) scopes.add("app");
-    else if (imp.startsWith("@/data/")) scopes.add("data");
+    else if (imp.startsWith("@/lib/site-data/")) scopes.add("data");
   }
   if (scopes.has("planner")) importScopes.planner++;
   if (scopes.has("features-other")) importScopes["features-other"]++;

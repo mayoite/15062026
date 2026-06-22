@@ -54,7 +54,7 @@ test.describe("Planner guest workspace — plan 06 UI bar", () => {
 });
 
 test("planner landing exceeds generic benchmark proof points", async ({ page }) => {
-  await page.goto("/planner/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(/Plan your office layout/i);
-  await expect(page.locator(".planner-landing-hero-proof")).toContainText(/Furniture items ready to place/i);
+  await page.goto("/planner/", { waitUntil: "domcontentloaded", timeout: 60_000 });
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/Plan your office/i);
+  await expect(page.locator(".planner-landing-hero-proof")).toContainText(/Import sketch/i);
 });

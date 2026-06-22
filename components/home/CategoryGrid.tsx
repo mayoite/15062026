@@ -8,8 +8,8 @@ import {
   getCatalogCategoryHref,
   getCatalogCategoryLabel,
 } from "@/features/catalog/categories";
-import { DEFAULT_HERO_FALLBACK } from "@/data/site/homepage";
-import { PRODUCTS_PAGE_COPY } from "@/data/site/routeCopy";
+import { DEFAULT_HERO_FALLBACK } from "@/lib/site-data/homepage";
+import { PRODUCTS_PAGE_COPY } from "@/lib/site-data/routeCopy";
 
 const PILLAR_ICONS = {
   "check-circle": CheckCircle2,

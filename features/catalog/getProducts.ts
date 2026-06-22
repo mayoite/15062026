@@ -1,7 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { CATALOG_REVALIDATE_SECONDS } from "@/data/site/fallbacks";
+import { CATALOG_REVALIDATE_SECONDS } from "@/lib/site-data/fallbacks";
 import { buildCatalogLive as buildCatalogTreeLive } from "@/lib/catalog/catalogTree";
 import {
   fetchAllProductsLive as fetchAllProductsSource,

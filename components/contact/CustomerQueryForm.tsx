@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { usePathname } from "next/navigation";
-import { CONTACT_FORM_CONTEXT_COPY } from "@/data/site/routeCopy";
+import { CONTACT_FORM_CONTEXT_COPY } from "@/lib/site-data/routeCopy";
 import { trackContactSubmission } from "@/lib/analytics/siteEvents";
 
 type PreferredContact = "any" | "email" | "whatsapp" | "phone";

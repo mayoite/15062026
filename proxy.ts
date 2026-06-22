@@ -46,6 +46,18 @@ export function isProtectedPath(pathname: string): boolean {
   return false;
 }
 
+/** Fast edge check: Supabase SSR session cookies (and legacy Appwrite if present). */
+export function hasSessionAuthCookies(
+  cookies: Array<{ name: string; value: string }>,
+): boolean {
+  return cookies.some((cookie) => {
+    const name = cookie.name;
+    if (name.startsWith("a_session_")) return true;
+    if (name.startsWith("sb-") && name.includes("auth-token")) return true;
+    return false;
+  });
+}
+
 /**
  * NEXT.JS 16 PROXY
  * Must be named 'proxy' and placed at the root of the project.
@@ -66,9 +78,9 @@ export async function proxy(request: NextRequest) {
   const hasPlannerGuestPass = request.cookies.has(PLANNER_GUEST_COOKIE);
   const allowPlannerGuest = hasPlannerGuestPass && isPlannerGuestAllowedPath(pathname);
 
-  // OPTIMIZATION: Check if any Appwrite auth cookies exist.
-  // This prevents expensive network calls for completely anonymous traffic on public pages.
-  const hasAuthCookies = request.cookies.getAll().some((cookie) => cookie.name.startsWith("a_session_"));
+  // Fast cookie existence check — avoids network calls for anonymous traffic.
+  // Session validation still happens in layouts via getOptionalUser().
+  const hasAuthCookies = hasSessionAuthCookies(request.cookies.getAll());
 
   // Short-circuit: If they have no auth cookies, are not a guest, and the route is protected -> Boot them immediately.
   if (!hasAuthCookies && !allowPlannerGuest && isProtected) {
@@ -148,7 +160,7 @@ export const config = {
      * - _next/image (image optimisation)
      * - favicon.ico, sitemap.xml, robots.txt
      * - public folder assets (images, fonts, etc.)
-     * - API routes and internal Vercel paths (handled outside i18n)
+     * - API routes are matched separately via `/api/:path*` above
      */
     "/((?!_next|_vercel|api|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf|eot)$).*)",
   ],

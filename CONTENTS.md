@@ -10,7 +10,7 @@ Flat-root Next.js monolith. Hand-written root docs: Readme + AGENTS. This CONTEN
 - AGENTS.md — agent rules
 - CONTENTS.md — generated repo map (npm run docs:sync:all)
 - docs/ — Handover.md, Failures.md, TESTING, SCRIPTS, DOC-MAP, CSS
-- plans/ — phased roadmaps
+- docs/plans/ — phased roadmaps
 - app/, features/, components/, lib/, tests/, scripts/, platform/, config/, results/, archive/
 
 ## See also

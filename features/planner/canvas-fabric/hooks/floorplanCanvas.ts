@@ -121,37 +121,37 @@ export function createFloorplanCanvasApi(
   }
 
   function onKeyDown(event: KeyboardEvent) {
-    const code = event.key || event.keyCode;
-    // Ctrl Key is down
-    if (event.ctrlKey) {
+    const key = event.key;
+    const mod = event.ctrlKey || event.metaKey;
+
+    if (mod) {
       CTRL_KEY_DOWN = true;
-      // Ctrl + Shift + Z
-      if (event.shiftKey && code === 90)
+      if (event.shiftKey && (key === "z" || key === "Z")) {
         redo();
-      else if (code === 90)
+      } else if (key === "z" || key === "Z") {
         undo();
-      else if (code === 67)
+      } else if (key === "c" || key === "C") {
         copy();
-      else if (code === 86)
+      } else if (key === "v" || key === "V") {
         paste();
-      else if (code === 37)
+      } else if (key === "ArrowLeft") {
         rotate();
-      else if (code === 39)
+      } else if (key === "ArrowRight") {
         rotate(false);
-      else if (code === 71)
+      } else if (key === "g" || key === "G") {
         group();
-    }
-    else if (code === 46)
+      }
+    } else if (key === "Delete" || key === "Backspace") {
       deleteOp();
-    else if (code === 37)
-      move('LEFT');
-    else if (code === 38)
-      move('UP');
-    else if (code === 39)
-      move('RIGHT');
-    else if (code === 40)
-      move('DOWN');
-    else if (code === 'Escape' && ctxRef.current.roomEdit) {
+    } else if (key === "ArrowLeft") {
+      move("LEFT");
+    } else if (key === "ArrowUp") {
+      move("UP");
+    } else if (key === "ArrowRight") {
+      move("RIGHT");
+    } else if (key === "ArrowDown") {
+      move("DOWN");
+    } else if (key === "Escape" && ctxRef.current.roomEdit) {
       event.preventDefault();
       ctxRef.current.exitRoomEdit();
     }

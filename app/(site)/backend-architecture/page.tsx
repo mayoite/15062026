@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BackendArchitecturePageView } from "@/components/backend-architecture/BackendArchitecturePageView";
-import { buildPageMetadata } from "@/data/site/seo";
+import { buildPageMetadata } from "@/lib/site-data/seo";
 import { SITE_URL } from "@/lib/siteUrl";
 
 export const metadata: Metadata = buildPageMetadata(SITE_URL, {

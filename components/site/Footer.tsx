@@ -6,7 +6,7 @@ import {
   formatSitePostalAddress,
   SITE_CONTACT,
   toTelHref,
-} from "@/data/site/contact";
+} from "@/lib/site-data/contact";
 import { SITE_FOOTER_NAV, SITE_SOCIAL_LINKS } from "@/lib/siteNav";
 
 function FacebookIcon() {

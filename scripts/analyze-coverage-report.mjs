@@ -13,7 +13,7 @@ function relPath(filePath) {
   const markers = [
     "features/planner/",
     "features/",
-    "data/site/",
+    "lib/site-data/",
     "lib/catalog/",
     "lib/configurator/",
     "data/",
@@ -116,7 +116,7 @@ function plannerBucket(rel) {
 }
 
 const SITE_RULES = [
-  ["data/site", /^data\/site/],
+  ["lib/site-data", /^lib\/site-data/],
   ["lib/catalog", /^lib\/catalog/],
   ["lib/configurator", /^lib\/configurator/],
   ["features/catalog", /^features\/catalog/],
@@ -384,7 +384,7 @@ out.push(
   `5. **${planner.total.zeroStmtFiles} / ${planner.fileCount}** planner files and **${site.total.zeroStmtFiles} / ${site.fileCount}** site files have **0% statements** — target large zero-coverage modules first.`,
 );
 out.push(
-  "6. Product targets (75% planner / 50% site) are **not** CI thresholds yet; see `plans/MASTER-PLAN.md` critical path.",
+  "6. Product targets (75% planner / 50% site) are **not** CI thresholds yet; see `docs/plans/README.md` for the plan index.",
 );
 out.push("");
 out.push(...buildScopeSection("Planner track", planner, gatePlanner, PLANNER_BUCKETS));

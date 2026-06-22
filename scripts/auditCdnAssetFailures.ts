@@ -30,7 +30,7 @@ type FailureRow = {
 async function collectAssetPaths(): Promise<string[]> {
   const assetPaths = new Set<string>();
 
-  const localIndex = path.resolve(process.cwd(), "data/site/localCatalogIndex.json");
+  const localIndex = path.resolve(process.cwd(), "lib/site-data/localCatalogIndex.json");
   if (fs.existsSync(localIndex)) {
     const data = JSON.parse(fs.readFileSync(localIndex, "utf8")) as Array<Record<string, unknown>>;
     for (const item of data) {

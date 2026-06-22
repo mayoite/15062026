@@ -13,8 +13,8 @@ import {
   filterMeaningfulMaterialList,
 } from "@/lib/displayText";
 import { normalizeAssetPath } from "@/lib/assetPaths";
-import { COMPARE_ROUTE_COPY } from "@/data/site/routeCopy";
-import { COMPARE_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { COMPARE_ROUTE_COPY } from "@/lib/site-data/routeCopy";
+import { COMPARE_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = COMPARE_PAGE_METADATA;
 

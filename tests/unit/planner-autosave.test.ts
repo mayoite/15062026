@@ -10,7 +10,6 @@ import {
   MEMBER_PROJECT_ID,
   type PlannerProject,
 } from "@/features/planner/persistence/persistence";
-import type * as Persistence from "@/features/planner/persistence/persistence";
 
 function makeProject(id: string, snapshot = ""): PlannerProject {
   return { id, name: id, createdAt: 1, updatedAt: 2, snapshot };

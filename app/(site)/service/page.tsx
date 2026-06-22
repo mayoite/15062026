@@ -3,13 +3,13 @@ import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { RouteCtaBand } from "@/components/shared/RouteCtaBand";
 import { SectionIntro } from "@/components/shared/SectionIntro";
 import { TrackedLink } from "@/components/ui/TrackedLink";
-import { SITE_CONTACT } from "@/data/site/contact";
+import { SITE_CONTACT } from "@/lib/site-data/contact";
 import {
   SERVICE_PAGE_CHANNELS,
   SERVICE_PAGE_COPY,
   SERVICE_PAGE_PILLARS,
-} from "@/data/site/routeCopy";
-import { SERVICE_PAGE_METADATA } from "@/data/site/routeMetadata";
+} from "@/lib/site-data/routeCopy";
+import { SERVICE_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = SERVICE_PAGE_METADATA;
 

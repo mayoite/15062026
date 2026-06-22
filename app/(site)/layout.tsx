@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "@/app/css/core/site/bundles/footer.css";
 import "@/app/css/core/site/bundles/contact.css";
-import "@/app/css/core/site/bundles/site-surfaces.css";
+import "@/app/css/core/site/bundles/site-marketing.css";
 import "@/app/css/core/site/bundles/legal.css";
 import "@/app/css/core/site/bundles/error.css";
 import { NextIntlClientProvider } from "next-intl";
@@ -15,6 +15,7 @@ import { SITE_VIEWPORT } from "@/lib/siteViewport";
 import { RouteChrome } from "@/components/site/RouteChrome";
 import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { CsrfBootstrap } from "@/components/security/CsrfBootstrap";
 import { SiteErrorBoundary } from "@/components/site/SiteErrorBoundary";
 
 export const metadata: Metadata = buildSiteMetadata(SITE_URL);
@@ -50,6 +51,7 @@ export default async function RootLayout({
       </head>
       <body className="scheme-page antialiased selection:bg-primary selection:text-inverse">
         <ServiceWorkerRegister />
+        <CsrfBootstrap />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-9999 focus:bg-panel focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:outline-none focus:ring-2 focus:ring-primary"

@@ -182,7 +182,7 @@ async function main() {
   const retentionDays = parseRetentionDays();
   const maxRetries = parseMaxRetries();
   const runId = timestampFolder();
-  const backupRoot = path.join(process.cwd(), "backups", "supabase");
+  const backupRoot = path.join(process.cwd(), "results", "backups", "supabase");
   const runDir = path.join(backupRoot, runId);
   ensureDir(runDir);
 

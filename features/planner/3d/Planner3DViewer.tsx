@@ -628,7 +628,12 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
 
   useEffect(() => {
     return () => {
-      rendererRef.current?.dispose();
+      const renderer = rendererRef.current;
+      if (renderer) {
+        // Explicitly release the WebGL context before disposing the renderer.
+        renderer.forceContextLoss();
+        renderer.dispose();
+      }
       rendererRef.current = null;
     };
   }, []);

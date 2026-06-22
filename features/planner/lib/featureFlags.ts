@@ -2,6 +2,8 @@
 // Feature Flags System
 // ============================================================================
 
+import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
+
 // ============================================================================
 // Type Definitions
 // ============================================================================
@@ -111,8 +113,8 @@ export const DEFAULT_FLAGS: FeatureFlags = {
   exportPanorama: false,
   // Data
   sessionSave: true,
-  supabaseSync: false,
-  offlineMode: false,
+  supabaseSync: true,
+  offlineMode: true,
   // Mobile
   touchGestures: true,
   // Admin
@@ -295,7 +297,7 @@ export function areAllFlagsInGroupEnabled(group: keyof typeof FLAG_GROUPS): bool
 
 export async function fetchFeatureFlagsFromSupabase(): Promise<Partial<FeatureFlags> | null> {
   try {
-    const response = await fetch("/api/admin/features", {
+    const response = await browserApiFetch(apiPath("/api/admin/features"), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -327,7 +329,7 @@ export async function updateFeatureFlagInSupabase(
   enabled: boolean,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const response = await fetch("/api/admin/features", {
+    const response = await browserApiFetch(apiPath("/api/admin/features"), {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -367,7 +369,7 @@ export async function updateMultipleFeatureFlagsInSupabase(
   updates: Partial<Record<FeatureFlagName, boolean>>,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const response = await fetch("/api/admin/features", {
+    const response = await browserApiFetch(apiPath("/api/admin/features"), {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

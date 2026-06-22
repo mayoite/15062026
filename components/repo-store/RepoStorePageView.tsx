@@ -13,7 +13,7 @@ const auditFindings = [
   ["High", "Planner 3D", "features/planner/viewer/* + features/planner/3d/*", "Two R3F packages model and render the planner scene.", "Merge into one scene package and one document contract."],
   ["High", "Catalog ownership", "features/catalog + lib/catalog + features/planner/catalog + planner/store/catalog*", "Catalog schemas, loaders and adapters span four ownership zones.", "Make features/catalog canonical; retain planner placement adapters only."],
   ["High", "Document bridges", "documentBridge + fabricDocumentBridge + plannerDocumentBridge + shared/document", "Multiple bridge layers translate overlapping planner shapes.", "Reduce to one Fabric adapter and one public PlannerDocument API."],
-  ["Medium", "Site content", "data/site/* + components/home/* + route copy", "Content ownership is split between data modules and rendered components.", "Keep global constants shared; colocate feature-owned content."],
+  ["Medium", "Site content", "lib/site-data/* + components/home/* + route copy", "Content ownership is split between data modules and rendered components.", "Keep global constants shared; colocate feature-owned content."],
   ["Medium", "Stale repo truth", "Readme.md + planner CONTENTS files + canvas-fabric/index.ts", "Files still describe archived docs or tldraw as active.", "Update or remove stale indexes after consolidation."],
 ];
 

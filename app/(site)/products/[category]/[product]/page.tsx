@@ -18,8 +18,8 @@ import {
 import { buildProductStaticParams } from "@/lib/catalog/productStaticParams";
 import { resolveProductByUrlKey } from "@/lib/productSlugResolver";
 import { SITE_URL } from "@/lib/siteUrl";
-import { PDP_ROUTE_COPY } from "@/data/site/routeCopy";
-import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/data/site/seo";
+import { PDP_ROUTE_COPY } from "@/lib/site-data/routeCopy";
+import { buildBreadcrumbJsonLd, buildPageMetadata } from "@/lib/site-data/seo";
 import { sanitizeJsonForScript } from "@/lib/security/sanitize";
 
 const BASE_URL = SITE_URL;

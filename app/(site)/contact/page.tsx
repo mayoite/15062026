@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ContactPageView } from "@/components/contact/ContactPageView";
-import { CONTACT_PAGE_COPY } from "@/data/site/routeCopy";
-import { buildPageMetadata } from "@/data/site/seo";
+import { CONTACT_PAGE_COPY } from "@/lib/site-data/routeCopy";
+import { buildPageMetadata } from "@/lib/site-data/seo";
 import { SITE_URL } from "@/lib/siteUrl";
 
 export const metadata: Metadata = buildPageMetadata(SITE_URL, {

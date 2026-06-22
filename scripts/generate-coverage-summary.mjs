@@ -20,7 +20,7 @@ const COVERAGE_RUN_EXCLUDE = [];
 
 /** Paths aggregated into scopes["site"] — mirrors vitest.site.config.ts coverage.include. */
 const SITE_SCOPE_PREFIXES = [
-  "data/site/",
+  "lib/site-data/",
   "lib/catalog/",
   "lib/configurator/",
   "features/catalog/",

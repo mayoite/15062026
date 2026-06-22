@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
 
-import { HOMEPAGE_PROJECTS_CONTENT } from "@/data/site/homepage";
+import { HOMEPAGE_PROJECTS_CONTENT } from "@/lib/site-data/homepage";
 
 export function Projects() {
   const { titleLead, titleAccent, cta, cards } = HOMEPAGE_PROJECTS_CONTENT;

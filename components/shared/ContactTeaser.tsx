@@ -4,8 +4,8 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { ArrowUpRight, ChatCircleDots, ChatText, PhoneCall } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
-import { buildWhatsAppHref, SITE_CONTACT, toTelHref } from "@/data/site/contact";
-import { HOMEPAGE_CONTACT_CONTENT } from "@/data/site/homepage";
+import { buildWhatsAppHref, SITE_CONTACT, toTelHref } from "@/lib/site-data/contact";
+import { HOMEPAGE_CONTACT_CONTENT } from "@/lib/site-data/homepage";
 import {
   trackContactSubmission,
   trackSiteCtaClick,

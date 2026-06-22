@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp, GitCompareArrows, ShoppingCart, X } from "lucid
 import { useState, type ReactNode } from "react";
 import clsx from "clsx";
 
-import { CATEGORY_ROUTE_COPY } from "@/data/site/routeCopy";
+import { CATEGORY_ROUTE_COPY } from "@/lib/site-data/routeCopy";
 import { SUSTAINABILITY_THRESHOLDS, type ActiveFilters } from "@/features/catalog/filters";
 import { trackCompareToggled, trackQuoteCartAdded } from "@/lib/analytics/siteEvents";
 import { sanitizeDisplayText } from "@/lib/displayText";

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { HOMEPAGE_TRUST_CONTENT } from "@/data/site/homepage";
+import { HOMEPAGE_TRUST_CONTENT } from "@/lib/site-data/homepage";
 
 export function FooterLogoMarquee() {
   const pathname = usePathname();

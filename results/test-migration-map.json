@@ -1,0 +1,139 @@
+{
+  "generatedAt": "2026-06-22T11:27:23.138Z",
+  "commit": "ba8b0f3",
+  "description": "Co-located features/**/*.test.* removed; flat tests/ copies",
+  "pairs": [
+    {
+      "from": "features/planner/3d/types.test.ts",
+      "to": "tests/planner-3d-types.test.ts"
+    },
+    {
+      "from": "features/planner/catalog/ingest/csvCatalogIngest.test.ts",
+      "to": "tests/planner-catalog-ingest-csvCatalogIngest.test.ts"
+    },
+    {
+      "from": "features/planner/catalog/plannerCatalog.test.ts",
+      "to": "tests/planner-store-plannerCatalog.test.ts"
+    },
+    {
+      "from": "features/planner/lib/assetPipeline.test.ts",
+      "to": "tests/planner-lib-assetPipeline.test.ts"
+    },
+    {
+      "from": "features/planner/lib/editorTools.test.ts",
+      "to": "tests/planner-lib-editorTools.test.ts"
+    },
+    {
+      "from": "features/planner/lib/measurements.test.ts",
+      "to": "tests/planner-lib-measurements.test.ts"
+    },
+    {
+      "from": "features/planner/lib/quoteBridge.test.ts",
+      "to": "tests/planner-lib-quoteBridge.test.ts"
+    },
+    {
+      "from": "features/planner/model/planner3dScene.test.ts",
+      "to": "tests/planner-model-planner3dScene.test.ts"
+    },
+    {
+      "from": "features/planner/model/plannerDocument.extra.test.ts",
+      "to": "tests/planner-model-plannerDocument.extra.test.ts"
+    },
+    {
+      "from": "features/planner/model/plannerDocument.test.ts",
+      "to": "tests/planner-model-plannerDocument.test.ts"
+    },
+    {
+      "from": "features/planner/model/plannerEnvelope.test.ts",
+      "to": "tests/planner-model-plannerEnvelope.test.ts"
+    },
+    {
+      "from": "features/planner/model/plannerIdentity.test.ts",
+      "to": "tests/planner-model-plannerIdentity.test.ts"
+    },
+    {
+      "from": "features/planner/model/plannerPermissions.test.ts",
+      "to": "tests/planner-model-plannerPermissions.test.ts"
+    },
+    {
+      "from": "features/planner/model/plannerPlacement.test.ts",
+      "to": "tests/planner-model-plannerPlacement.test.ts"
+    },
+    {
+      "from": "features/planner/persistence/plannerDraft.test.ts",
+      "to": "tests/planner-persistence-plannerDraft.test.ts"
+    },
+    {
+      "from": "features/planner/persistence/plannerSaves.test.ts",
+      "to": "tests/plannerCloudSaves.test.ts"
+    },
+    {
+      "from": "features/planner/shared/boq/quoteCartBridge.test.ts",
+      "to": "tests/planner-shared-boq-quoteCartBridge.test.ts"
+    },
+    {
+      "from": "features/planner/shared/catalog/catalogAdapter.test.ts",
+      "to": "tests/planner-shared-catalog-catalogAdapter.test.ts"
+    },
+    {
+      "from": "features/planner/shared/export/exportBoq.test.ts",
+      "to": "tests/planner-shared-export-exportBoq.test.ts"
+    },
+    {
+      "from": "features/planner/shared/plannerShared.test.tsx",
+      "to": "tests/planner-shared-plannerShared.test.tsx"
+    },
+    {
+      "from": "features/planner/store/catalogData.test.ts",
+      "to": "tests/planner-store-catalogData.test.ts"
+    },
+    {
+      "from": "features/planner/store/plannerCatalog.test.ts",
+      "to": "tests/planner-store-plannerCatalog.test.ts"
+    },
+    {
+      "from": "features/planner/store/plannerDraft.test.ts",
+      "to": "tests/planner-store-plannerDraft.test.ts"
+    },
+    {
+      "from": "features/planner/store/plannerFurnitureStore.test.ts",
+      "to": "tests/planner-store-plannerFurnitureStore.test.ts"
+    },
+    {
+      "from": "features/planner/store/plannerGeometryStore.test.ts",
+      "to": "tests/planner-store-plannerGeometryStore.test.ts"
+    },
+    {
+      "from": "features/planner/store/plannerProjectData.test.ts",
+      "to": "tests/planner-store-plannerProjectData.test.ts"
+    },
+    {
+      "from": "features/planner/tldraw/tools/__tests__/ClearanceChecker.test.ts",
+      "to": "tests/planner-tldraw-tools-ClearanceChecker.test.ts"
+    },
+    {
+      "from": "features/planner/ui/InspectorPanel.test.tsx",
+      "to": "tests/planner-ui-InspectorPanel.test.tsx"
+    },
+    {
+      "from": "features/ops/__tests__/CustomerQueriesOpsPageView.test.tsx",
+      "to": "tests/ops-CustomerQueriesOpsPageView.test.tsx"
+    },
+    {
+      "from": "features/shared/__tests__/providerChain.test.ts",
+      "to": "tests/shared-providerChain.test.ts"
+    },
+    {
+      "from": "features/shared/auth/components/__tests__/AuthShell.test.tsx",
+      "to": "tests/shared-auth-components-AuthShell.test.tsx"
+    },
+    {
+      "from": "features/shared/components/GuestBadge.test.tsx",
+      "to": "tests/shared-components-GuestBadge.test.tsx"
+    },
+    {
+      "from": "features/site-assistant/__tests__/AdvancedBot.test.tsx",
+      "to": "tests/site-assistant-AdvancedBot.test.tsx"
+    }
+  ]
+}

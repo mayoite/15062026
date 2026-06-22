@@ -12,6 +12,7 @@ import {
 } from "@/features/planner/store/plannerSaves";
 import { createServerClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/rateLimit";
+import { validateCsrfRequest } from "@/lib/security/csrf";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -84,6 +85,14 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     );
   }
 
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
+    );
+  }
+
   const { id } = await context.params;
   const planId = id?.trim();
   if (!planId) {
@@ -141,6 +150,14 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     return NextResponse.json(
       { error: "Too many requests" },
       { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
+    );
+  }
+
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
     );
   }
 

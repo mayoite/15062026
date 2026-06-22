@@ -10,10 +10,10 @@ import {
   SHOWROOMS_CLIENTS,
   SHOWROOMS_HIGHLIGHTS,
   SHOWROOMS_PAGE_COPY,
-} from "@/data/site/routeCopy";
+} from "@/lib/site-data/routeCopy";
 import { getBusinessStats } from '@/features/crm/businessStats';
 import { formatKpiAsOf, formatKpiValuePlus } from "@/lib/kpiFormat";
-import { SHOWROOMS_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { SHOWROOMS_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = SHOWROOMS_PAGE_METADATA;
 

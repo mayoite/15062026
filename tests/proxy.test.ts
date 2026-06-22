@@ -59,7 +59,7 @@ vi.mock('next-intl/middleware', () => {
   };
 });
 
-import { isPlannerGuestAllowedPath, isProtectedPath, proxy } from '../proxy';
+import { isPlannerGuestAllowedPath, isProtectedPath, hasSessionAuthCookies, proxy } from '../proxy';
 import { NextRequest } from 'next/server';
 import { PLANNER_GUEST_COOKIE } from '../lib/auth/constants';
 
@@ -124,6 +124,27 @@ describe('proxy.ts', () => {
       const response = await proxy(request as unknown as NextRequest);
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toContain('/access');
+    });
+
+    it('should allow protected paths when Supabase auth cookies are present', async () => {
+      const request = new NextRequest('http://localhost/admin/');
+      // @ts-expect-error test mock
+      request.cookies.set('sb-erpweaiypimorcunaimz-auth-token', 'session');
+      const response = await proxy(request as unknown as NextRequest);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('detects Supabase and legacy Appwrite session cookies', () => {
+      expect(
+        hasSessionAuthCookies([{ name: 'sb-project-auth-token', value: 'x' }]),
+      ).toBe(true);
+      expect(
+        hasSessionAuthCookies([{ name: 'a_session_legacy', value: 'x' }]),
+      ).toBe(true);
+      expect(
+        hasSessionAuthCookies([{ name: 'planner_guest', value: 'x' }]),
+      ).toBe(false);
     });
 
     it('should allow unauthenticated users with planner guest cookie to access guest paths', async () => {

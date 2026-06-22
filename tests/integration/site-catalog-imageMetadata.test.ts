@@ -17,7 +17,7 @@ vi.mock("node:fs", () => ({
   readdirSync: fsMocks.readdirSync,
 }));
 
-vi.mock("@/data/site/localCatalogIndex.json", () => ({
+vi.mock("@/lib/site-data/localCatalogIndex.json", () => ({
   default: [
     {
       id: "idx-1",

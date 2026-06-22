@@ -7,7 +7,7 @@ import {
   BUSINESS_STATS_FETCH_TIMEOUT_MS,
   BUSINESS_STATS_REVALIDATE_SECONDS,
   BUSINESS_STATS_SAFE_DEFAULTS,
-} from "@/data/site/fallbacks";
+} from "@/lib/site-data/fallbacks";
 
 interface BusinessStatsRow {
   projects_delivered: number;

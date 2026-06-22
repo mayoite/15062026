@@ -3,10 +3,10 @@ import { Hero } from "@/components/home/Hero";
 import { ClientBadge } from "@/components/ClientBadge";
 import { KpiIntegrityMonitor } from "@/components/analytics/KpiIntegrityMonitor";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
-import { PROJECTS_PAGE_CLIENTS, PROJECTS_PAGE_COPY } from "@/data/site/routeCopy";
+import { PROJECTS_PAGE_CLIENTS, PROJECTS_PAGE_COPY } from "@/lib/site-data/routeCopy";
 import { getBusinessStats } from '@/features/crm/businessStats';
 import { formatKpiAsOf, formatKpiValuePlus } from "@/lib/kpiFormat";
-import { PROJECTS_PAGE_METADATA } from "@/data/site/routeMetadata";
+import { PROJECTS_PAGE_METADATA } from "@/lib/site-data/routeMetadata";
 
 export const metadata = PROJECTS_PAGE_METADATA;
 

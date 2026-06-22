@@ -11,7 +11,6 @@
 @import "tailwindcss" source(none);
 @import "./core/tokens/theme.css";
 @import "./core/typography/type.css";
-
 @import "./core/utilities/layout.css";
 @import "./core/utilities/colors.css";
 @import "./core/utilities/schemes.css";

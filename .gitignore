@@ -20,6 +20,15 @@ BACKUP-README.txt
 coverage/
 playwright-report/
 test-results/
+# Stale root copies of tool output (canonical paths: results/tests/, results/test-results/)
+tsc-errors.txt
+errors.txt
+scripts_errors.txt
+lint-results.json
+test-results.json
+test-results2.json
+test-output.txt
+scratch_*
 results/reviews/
 results/coverage-site/
 tsconfig.tsbuildinfo

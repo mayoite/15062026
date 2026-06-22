@@ -1,20 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { SITE_BRAND } from "@/data/site/brand";
+import { SITE_BRAND } from "@/lib/site-data/brand";
 import {
   BUSINESS_STATS_FETCH_TIMEOUT_MS,
   BUSINESS_STATS_REVALIDATE_SECONDS,
   BUSINESS_STATS_SAFE_DEFAULTS,
   CATALOG_REVALIDATE_SECONDS,
-} from "@/data/site/fallbacks";
-import { HERO_CAROUSEL_SLIDES } from "@/data/site/heroCarousel";
+} from "@/lib/site-data/fallbacks";
+import { HERO_CAROUSEL_SLIDES } from "@/lib/site-data/heroCarousel";
 import {
   NEWS_PAGE_CONTENT,
   PRODUCT_CATEGORY_SECTION,
   SOCIAL_PAGE_CONTENT,
-} from "@/data/site/marketing";
-import { PRODUCT_SUITE, type ProductSuiteKey } from "@/data/site/productSuite";
-import { TRUSTED_BY_CLIENTS, TRUSTED_BY_STATS } from "@/data/site/proof";
-import { VISUAL_IVR_TREE } from "@/data/site/support";
+} from "@/lib/site-data/marketing";
+import { PRODUCT_SUITE, type ProductSuiteKey } from "@/lib/site-data/productSuite";
+import { TRUSTED_BY_CLIENTS, TRUSTED_BY_STATS } from "@/lib/site-data/proof";
+import { VISUAL_IVR_TREE } from "@/lib/site-data/support";
 
 describe("SITE_BRAND", () => {
   it("defines company identity and OG image", () => {

@@ -3,7 +3,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChangeEvent } from "react";
 
 import { createPlannerDocument } from "@/features/planner/model";
-import { LOCAL_CURRENT_DRAFT_ID, VIEWER_PREVIEW_DRAFT_ID } from "@/features/planner/lib/sessionState";
+import { VIEWER_PREVIEW_DRAFT_ID } from "@/features/planner/lib/sessionState";
+import {
+  TEST_CLOUD_PLAN_1,
+  TEST_CLOUD_PLAN_2,
+  TEST_SAVED_CLOUD_ID,
+  TEST_USER_ID,
+} from "../fixtures/plannerTestUuids";
 
 const { getBrowserSessionUser } = vi.hoisted(() => ({
   getBrowserSessionUser: vi.fn(),
@@ -30,7 +36,7 @@ function createMemoryStorage(): Storage {
 function createSupabaseClient(profileRole: "admin" | "customer" = "customer") {
   return {
     auth: {
-      getUser: vi.fn(async () => ({ data: { user: { id: "00000000-0000-0000-0000-000000000002" } }, error: null })),
+      getUser: vi.fn(async () => ({ data: { user: { id: TEST_USER_ID } }, error: null })),
     },
     from: vi.fn((table: string) => {
       if (table === "planner_managed_products") {
@@ -76,7 +82,7 @@ function createHookOptions(overrides: Partial<Parameters<typeof usePlannerSessio
 
   return {
     options: {
-      activeDocumentId: "cloud-plan-1",
+      activeDocumentId: TEST_CLOUD_PLAN_1,
       planName: "North Bay",
       setActiveDocumentId,
       setPlanName,
@@ -124,7 +130,7 @@ describe("usePlannerSession", () => {
   });
 
   it("syncs owner cloud plans for authenticated customers", async () => {
-    getBrowserSessionUser.mockResolvedValue({ id: "00000000-0000-0000-0000-000000000002" });
+    getBrowserSessionUser.mockResolvedValue({ id: TEST_USER_ID });
     
     global.fetch = vi.fn(async (input: RequestInfo | URL) => {
       const url = input.toString();
@@ -133,13 +139,19 @@ describe("usePlannerSession", () => {
            ok: true,
            status: 200,
            json: async () => ({ documents: [{
-              id: "cloud-plan-1",
-              user_id: "00000000-0000-0000-0000-000000000002",
+              id: TEST_CLOUD_PLAN_1,
+              user_id: TEST_USER_ID,
               name: "Cloud Plan",
+              project_name: null,
+              client_name: null,
+              prepared_by: null,
               room_width_mm: 5000,
               room_depth_mm: 4000,
+              seat_target: 0,
               unit_system: "metric",
               item_count: 3,
+              thumbnail_url: null,
+              created_at: "2026-06-14T12:00:00.000Z",
               updated_at: "2026-06-14T12:00:00.000Z",
            }] })
          } as unknown as Response;
@@ -154,36 +166,37 @@ describe("usePlannerSession", () => {
 
     expect(result.current.authRole).toBe("customer");
     expect(result.current.plannerSavedEntries.map((entry) => entry.id)).toEqual([
-      "cloud-plan-1",
+      TEST_CLOUD_PLAN_1,
     ]);
     expect(result.current.toolbarSessionModeLabel).toBe("Cloud + local drafts");
     expect(result.current.getDraftScope("draft-1")).toEqual({
       documentId: "draft-1",
-      userId: "00000000-0000-0000-0000-000000000002",
+      userId: TEST_USER_ID,
     });
   });
 
   it("handles cloud save, draft save, load, delete, import, export, and 3d preview flows", async () => {
-    getBrowserSessionUser.mockResolvedValue({ id: "00000000-0000-0000-0000-000000000002" });
+    getBrowserSessionUser.mockResolvedValue({ id: TEST_USER_ID });
     
     global.fetch = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = input.toString();
       if (init?.method === "PUT") {
+         const savedDoc = createPlannerDocument({ id: TEST_SAVED_CLOUD_ID, name: "Saved Cloud" });
          return {
-           ok: true, status: 200, json: async () => ({ document: { id: "saved-cloud", name: "Saved Cloud" } })
+           ok: true, status: 200, json: async () => ({ document: savedDoc })
          } as unknown as Response;
       }
       if (init?.method === "DELETE") {
          return { ok: true, status: 200, json: async () => ({ success: true }) } as unknown as Response;
       }
-      if (url.includes("/api/plans/cloud-plan-2")) {
+      if (url.includes(`/api/plans/${TEST_CLOUD_PLAN_2}`)) {
          return { ok: true, status: 200, json: async () => ({ document: createPlannerDocument({ name: "Loaded Cloud" }) }) } as unknown as Response;
       }
       return { ok: true, status: 200, json: async () => ({ documents: [], plans: [] }) } as unknown as Response;
     });
 
     const { options, setActiveDocumentId, setPlanName, applyPlannerDocument, router } = createHookOptions({
-      activeDocumentId: "cloud-plan-1",
+      activeDocumentId: TEST_CLOUD_PLAN_1,
     });
 
     const { result } = renderHook(() => usePlannerSession(options));
@@ -195,7 +208,7 @@ describe("usePlannerSession", () => {
     });
 
     expect(setPlanName).toHaveBeenCalledWith("Saved Cloud");
-    expect(setActiveDocumentId).toHaveBeenCalledWith("saved-cloud");
+    expect(setActiveDocumentId).toHaveBeenCalledWith(TEST_SAVED_CLOUD_ID);
 
     act(() => {
       result.current.handleSaveDraft();
@@ -205,7 +218,7 @@ describe("usePlannerSession", () => {
 
     await act(async () => {
       await result.current.handleLoadPlan({
-        id: "cloud-plan-2",
+        id: TEST_CLOUD_PLAN_2,
         name: "Cloud",
         source: "cloud",
         accessMode: "owner",

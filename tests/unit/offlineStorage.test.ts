@@ -195,7 +195,7 @@ class MockIDBDatabase {
 }
 
 const mockIndexedDB = {
-  open: vi.fn((name: string, version: number) => {
+  open: vi.fn((_name: string, _version: number) => {
     const request = new MockIDBOpenDBRequest();
     setTimeout(() => {
       const db = new MockIDBDatabase();

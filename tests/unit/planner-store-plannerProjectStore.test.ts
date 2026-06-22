@@ -1,9 +1,8 @@
 import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
 import { usePlannerProjectStore } from "@/features/planner/store/plannerProjectStore";
 import { usePlannerGeometryStore } from "@/features/planner/store/plannerGeometryStore";
-import { usePlannerFurnitureStore } from "@/features/planner/store/plannerFurnitureStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
-import { usePlannerHistoryStore } from "@/features/planner/store/plannerHistoryStore";
+import type { PlannerDocument } from "@/features/planner/store/plannerTypes";
 
 vi.mock("uuid", () => ({
   v4: () => "mock-uuid"
@@ -190,7 +189,7 @@ describe("plannerProjectStore", () => {
     };
     
     const store = usePlannerProjectStore.getState();
-    store.importProject(projectData as unknown as import("@/features/planner/store/plannerTypes").PlannerDocument);
+    store.importProject(projectData as unknown as PlannerDocument);
 
     const state = usePlannerProjectStore.getState();
     expect(state.projectName).toBe("Imported Payload");

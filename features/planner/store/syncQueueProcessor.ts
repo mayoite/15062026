@@ -8,6 +8,7 @@ import {
   markPlanAsSynced,
   type SyncQueueItem,
 } from "./offlineStorage";
+import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
 
 
 // Sync configuration
@@ -194,7 +195,7 @@ export class SyncQueueProcessor {
       throw new Error("Document required for create operation");
     }
 
-    const response = await fetch("/api/plans", {
+    const response = await browserApiFetch(apiPath("/api/plans"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(item.document),
@@ -223,7 +224,7 @@ export class SyncQueueProcessor {
       throw new Error("Remote ID required for update operation");
     }
 
-    const response = await fetch(`/api/plans/${item.remoteId}`, {
+    const response = await browserApiFetch(apiPath(`/api/plans/${item.remoteId}`), {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(item.document),
@@ -246,7 +247,7 @@ export class SyncQueueProcessor {
       throw new Error("Remote ID required for delete operation");
     }
 
-    const response = await fetch(`/api/plans/${item.remoteId}`, {
+    const response = await browserApiFetch(apiPath(`/api/plans/${item.remoteId}`), {
       method: "DELETE",
     });
 

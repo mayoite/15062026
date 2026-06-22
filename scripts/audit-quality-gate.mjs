@@ -85,7 +85,7 @@ try {
 // ─── Check 3: Route contract is valid JSON ──────────────────────────────────
 console.log("▶ Validating route contract...");
 
-const contractPath = join(ROOT, "project/route-contract.json");
+const contractPath = join(ROOT, "config/route-contract.json");
 if (existsSync(contractPath)) {
   try {
     const content = readFileSync(contractPath, "utf8");
@@ -94,7 +94,7 @@ if (existsSync(contractPath)) {
     error(`route-contract.json is invalid JSON: ${e.message}`);
   }
 } else {
-  warn("project/route-contract.json does not exist");
+  warn("config/route-contract.json does not exist");
 }
 
 // ─── Check 4: Theme presets have required tokens ────────────────────────────

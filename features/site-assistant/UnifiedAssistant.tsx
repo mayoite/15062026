@@ -31,7 +31,7 @@ import {
   AI_CHATBOT_COPY,
   GUIDED_PLANNER_COPY,
   MOBILE_ASSISTANT_COPY,
-} from "@/data/site/assistant";
+} from "@/lib/site-data/assistant";
 
 type UseCase =
   | "workstations"
@@ -101,6 +101,11 @@ const TIMELINE_LABEL: Record<Timeline, string> = {
 
 const FOCUS_RING =
   "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+const ASSISTANT_CHIP_CLASS = `rounded-full border px-3 py-1.5 text-xs`;
+const ASSISTANT_FIELD_CLASS = `w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`;
+const ASSISTANT_TEXT_BUTTON_CLASS = `text-xs font-semibold uppercase tracking-wide ${FOCUS_RING}`;
+const ASSISTANT_PRIMARY_ACTION_CLASS = `inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_RING}`;
+const ASSISTANT_CHOICE_BUTTON_CLASS = `rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-700 transition-colors hover:border-primary/50 hover:text-primary ${FOCUS_RING}`;
 
 function buildGuidedSummary(guided: GuidedState) {
   const lines = ["Guided planner intake"];
@@ -474,7 +479,7 @@ export function UnifiedAssistant() {
                   setMobileLauncherOpen(false);
                   setGuidedOpen(true);
                 }}
-                className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-normal text-white ${FOCUS_RING}`}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-normal text-white focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <MessageSquareText className="h-4 w-4" />
                 {MOBILE_ASSISTANT_COPY.planner}
@@ -485,7 +490,7 @@ export function UnifiedAssistant() {
                   setMobileLauncherOpen(false);
                   setChatOpen(true);
                 }}
-                className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-normal text-white ${FOCUS_RING}`}
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-normal text-white focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <Sparkles className="h-4 w-4" />
                 {MOBILE_ASSISTANT_COPY.chatbot}
@@ -554,14 +559,14 @@ export function UnifiedAssistant() {
                         setGuidedOpen(false);
                         setChatOpen(true);
                       }}
-                      className={`text-xs font-semibold uppercase tracking-wide text-neutral-900 underline ${FOCUS_RING}`}
+                      className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-neutral-900 underline`}
                     >
                       {GUIDED_PLANNER_COPY.submittedFollowUp}
                     </button>
                     <button
                       type="button"
                       onClick={resetGuided}
-                      className={`text-xs font-semibold uppercase tracking-wide text-neutral-500 underline ${FOCUS_RING}`}
+                      className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-neutral-500 underline`}
                     >
                       {GUIDED_PLANNER_COPY.submittedReset}
                     </button>
@@ -578,7 +583,7 @@ export function UnifiedAssistant() {
                             key={key}
                             type="button"
                             onClick={() => setGuided({ ...guided, useCase: key })}
-                            className={`rounded-full border px-3 py-1.5 text-xs ${FOCUS_RING} ${
+                            className={`${ASSISTANT_CHIP_CLASS} ${FOCUS_RING} ${
                               guided.useCase === key
                                 ? "border-neutral-900 bg-neutral-900 text-white"
                                 : "border-neutral-300 text-neutral-700"
@@ -593,7 +598,7 @@ export function UnifiedAssistant() {
                         placeholder={GUIDED_PLANNER_COPY.placeholders.seats}
                         value={guided.seats}
                         onChange={(event) => setGuided({ ...guided, seats: event.target.value })}
-                        className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={ASSISTANT_FIELD_CLASS}
                       />
                     </>
                   ) : null}
@@ -606,14 +611,14 @@ export function UnifiedAssistant() {
                         placeholder={GUIDED_PLANNER_COPY.placeholders.company}
                         value={guided.company}
                         onChange={(event) => setGuided({ ...guided, company: event.target.value })}
-                        className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={ASSISTANT_FIELD_CLASS}
                       />
                       <input
                         type="text"
                         placeholder={GUIDED_PLANNER_COPY.placeholders.city}
                         value={guided.city}
                         onChange={(event) => setGuided({ ...guided, city: event.target.value })}
-                        className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={ASSISTANT_FIELD_CLASS}
                       />
                       <div className="flex flex-wrap gap-2">
                         {(Object.keys(TIMELINE_LABEL) as Timeline[]).map((key) => (
@@ -621,7 +626,7 @@ export function UnifiedAssistant() {
                             key={key}
                             type="button"
                             onClick={() => setGuided({ ...guided, timeline: key })}
-                            className={`rounded-full border px-3 py-1.5 text-xs ${FOCUS_RING} ${
+                            className={`${ASSISTANT_CHIP_CLASS} ${FOCUS_RING} ${
                               guided.timeline === key
                                 ? "border-neutral-900 bg-neutral-900 text-white"
                                 : "border-neutral-300 text-neutral-700"
@@ -636,14 +641,14 @@ export function UnifiedAssistant() {
                         placeholder={GUIDED_PLANNER_COPY.placeholders.budget}
                         value={guided.budget}
                         onChange={(event) => setGuided({ ...guided, budget: event.target.value })}
-                        className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={ASSISTANT_FIELD_CLASS}
                       />
                       <textarea
                         rows={3}
                         placeholder={GUIDED_PLANNER_COPY.placeholders.notes}
                         value={guided.notes}
                         onChange={(event) => setGuided({ ...guided, notes: event.target.value })}
-                        className={`w-full resize-none rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={`${ASSISTANT_FIELD_CLASS} resize-none`}
                       />
                     </>
                   ) : null}
@@ -656,21 +661,21 @@ export function UnifiedAssistant() {
                         placeholder={GUIDED_PLANNER_COPY.placeholders.name}
                         value={guided.name}
                         onChange={(event) => setGuided({ ...guided, name: event.target.value })}
-                        className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={ASSISTANT_FIELD_CLASS}
                       />
                       <input
                         type="email"
                         placeholder={GUIDED_PLANNER_COPY.placeholders.email}
                         value={guided.email}
                         onChange={(event) => setGuided({ ...guided, email: event.target.value })}
-                        className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={ASSISTANT_FIELD_CLASS}
                       />
                       <input
                         type="tel"
                         placeholder={GUIDED_PLANNER_COPY.placeholders.phone}
                         value={guided.phone}
                         onChange={(event) => setGuided({ ...guided, phone: event.target.value })}
-                        className={`w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-neutral-900 ${FOCUS_RING}`}
+                        className={ASSISTANT_FIELD_CLASS}
                       />
                     </>
                   ) : null}
@@ -681,7 +686,7 @@ export function UnifiedAssistant() {
                     <button
                       type="button"
                       onClick={() => setGuidedStep((prev) => (prev > 0 ? prev - 1 : prev))}
-                      className={`text-xs font-semibold uppercase tracking-wide text-neutral-500 ${FOCUS_RING}`}
+                      className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-neutral-500`}
                       disabled={guidedStep === 0 || guidedSaving}
                     >
                       {GUIDED_PLANNER_COPY.back}
@@ -690,7 +695,7 @@ export function UnifiedAssistant() {
                       type="button"
                       onClick={handleGuidedNext}
                       disabled={!stepValid || guidedSaving}
-                      className={`inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white disabled:cursor-not-allowed disabled:opacity-50 ${FOCUS_RING}`}
+                      className={ASSISTANT_PRIMARY_ACTION_CLASS}
                     >
                       {guidedSaving ? (
                         <>
@@ -752,7 +757,7 @@ export function UnifiedAssistant() {
                     key={starter}
                     type="button"
                     onClick={() => applyStarter(starter)}
-                    className={`rounded-full border border-neutral-300 bg-white px-3 py-1.5 text-xs text-neutral-700 transition-colors hover:border-primary/50 hover:text-primary ${FOCUS_RING}`}
+                    className={ASSISTANT_CHOICE_BUTTON_CLASS}
                   >
                     {starter}
                   </button>
@@ -806,11 +811,11 @@ export function UnifiedAssistant() {
                     {message.result ? (
                       <div className="mt-3 space-y-3">
                         <div className="rounded-lg border border-neutral-200 bg-white p-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                            {message.result.pricingMode === "band"
-                              ? AI_CHATBOT_COPY.bandLabel
-                              : AI_CHATBOT_COPY.totalLabel}
-                          </p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                              {message.result.pricingMode === "band"
+                                ? AI_CHATBOT_COPY.bandLabel
+                                : AI_CHATBOT_COPY.totalLabel}
+                            </p>
                           <p className="mt-1 text-sm font-semibold text-neutral-900">
                             {message.result.totalBudget}
                           </p>
@@ -840,7 +845,7 @@ export function UnifiedAssistant() {
                               </p>
                               <Link
                                 href={recommendationHref(item)}
-                                className={`text-xs font-semibold uppercase tracking-wide text-primary underline ${FOCUS_RING}`}
+                                className={`${ASSISTANT_TEXT_BUTTON_CLASS} text-primary underline`}
                               >
                                 View
                               </Link>
@@ -876,7 +881,7 @@ export function UnifiedAssistant() {
                       key={refiner.label}
                       type="button"
                       onClick={() => void submitAiQuery(refiner.apply(lastUserQuery))}
-                      className={`rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-700 transition-colors hover:border-primary/50 hover:text-primary ${FOCUS_RING}`}
+                      className={ASSISTANT_CHOICE_BUTTON_CLASS}
                     >
                       {refiner.label}
                     </button>
@@ -887,14 +892,14 @@ export function UnifiedAssistant() {
                       setChatOpen(false);
                       setGuidedOpen(true);
                     }}
-                    className={`rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-700 transition-colors hover:border-primary/50 hover:text-primary ${FOCUS_RING}`}
+                    className={ASSISTANT_CHOICE_BUTTON_CLASS}
                   >
                     {AI_CHATBOT_COPY.switchToPlanner}
                   </button>
                   <button
                     type="button"
                     onClick={resetChatbot}
-                    className={`rounded-full border border-neutral-300 px-3 py-1.5 text-xs text-neutral-700 transition-colors hover:border-primary/50 hover:text-primary ${FOCUS_RING}`}
+                    className={ASSISTANT_CHOICE_BUTTON_CLASS}
                   >
                     {AI_CHATBOT_COPY.reset}
                   </button>

@@ -9,7 +9,7 @@ import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer
 import {
   HOMEPAGE_HERO_CONTENT,
   HOMEPAGE_HERO_IMAGES,
-} from "@/data/site/homepage";
+} from "@/lib/site-data/homepage";
 import {
   MOTION_EASE,
   MOTION_TOKENS,

@@ -1,0 +1,113 @@
+kind,route,file,area,render_mode,auth,caching,primary_view,how_it_works
+page,/about,app/(site)/about/page.tsx,site,server,public,static,Inline marketing layout (Hero stats model pillars process client badges FAQ ContactTeaser),About page with company story model pillars delivery process featured client badges FAQ and CTAs to planning/downloads. Copy from ABOUT_PAGE_COPY and TRUSTED_BY data; no DB fetch.
+page,/access,app/(site)/access/page.tsx,site,server,public,static,AccessForm + split layout,Sign-in gate. Reads optional user and next search param; redirects authenticated users to next path; otherwise renders email/password AccessForm with guest link to choose-product and decorative architectural panel.
+page,/backend-architecture,app/(site)/backend-architecture/page.tsx,site,server,public,static,BackendArchitecturePageView,Thin route delegating to components/backend-architecture for internal platform architecture documentation view.
+page,/brochure,app/(site)/brochure/page.tsx,site,server,public,static,redirect,Legacy URL; immediately redirects to /downloads. Unreachable fallback markup after redirect.
+page,/career,app/(site)/career/page.tsx,site,server,public,static,CareerPageView,Thin route rendering career listings and application content from components/career.
+page,/catalog,app/(site)/catalog/page.tsx,site,server,public,static,redirect,Legacy URL; immediately redirects to /downloads.
+page,/choose-product,app/(site)/choose-product/page.tsx,site,server,optional (guest),static,ChooseProductPage,Product suite chooser. Unauthenticated users without guest mode redirect to /access; passes guestMode and authenticated flags to ChooseProductPage for Planner vs other tools entry.
+page,/compare,app/(site)/compare/page.tsx,site,server,public,static,Inline compare table,Product comparison. Parses ?items= comma-separated product URL keys; loads each product from catalog via getProductByUrlKey; renders side-by-side spec rows with links to PDP and quote actions.
+page,/contact,app/(site)/contact/page.tsx,site,server,public,static,ContactPageView,Contact form page. Passes intent and source query params (e.g. quote-cart) into ContactPageView for pre-filled context and tracking.
+page,/dashboard,app/(site)/dashboard/page.tsx,site,server,redirect to access,static,DashboardClient,Authenticated workspace dashboard. Requires user via getOptionalUser; unauthenticated redirect to /access?next=/dashboard; shows DashboardClient with user email.
+page,/download-brochure,app/(site)/download-brochure/page.tsx,site,server,public,static,redirect,Legacy URL; immediately redirects to /downloads.
+page,/downloads,app/(site)/downloads/page.tsx,site,server,public,static,Inline marketing layout (Hero resource cards ContactTeaser),Resource desk listing downloadable brochures CAD packs and contact CTAs. Static copy from DOWNLOADS_PAGE_COPY; WhatsApp and contact links.
+page,/gallery,app/(site)/gallery/page.tsx,site,server,public,static,Inline masonry gallery (Hero Masonry ContactTeaser),Project photo gallery from static GALLERY_PROJECTS data in a masonry grid with hero and contact teaser.
+page,/imprint,app/(site)/imprint/page.tsx,site,server,public,static,Inline legal layout (Hero legal copy ContactTeaser),Legal imprint page with company registration details from LEGAL_PAGE_COPY.
+page,/login,app/(site)/login/page.tsx,site,server,public,static,SuiteLoginPage,Workspace login. Redirects signed-in users to sanitized next path; otherwise SuiteLoginPage with links to guest mode and product chooser.
+page,/news,app/(site)/news/page.tsx,site,server,public,static,Inline news listing (Hero article cards ContactTeaser),News and updates page from static NEWS_PAGE_COPY article list.
+page,/,app/(site)/page.tsx,site,server,public,static,Homepage sections (HomepageHero PartnershipBanner Collections TrustStrip InteractiveTools WhyChooseUs ShowcaseCarousel ContactTeaser),Marketing homepage. Server component fetches business stats via getBusinessStats; injects JSON-LD for WebPage and LocalBusiness; composes hero collections trust strip tools and contact teaser from static data and CRM stats.
+page,/planning,app/(site)/planning/page.tsx,site,server,public,static,Inline planning service page (Hero workflow steps deliverables CTAs ContactTeaser),Marketing page describing Oando planning service workflow deliverables and CTAs to contact products and /planner.
+page,/portal/[id],app/(site)/portal/[id]/page.tsx,site,server,required,static,PortalPlanPageView,Single plan viewer for signed-in user. Loads plan document by id and userId via loadPlannerDocumentFromStore; renders PortalPlanPageView.
+page,/portal/guest,app/(site)/portal/guest/page.tsx,site,server,redirect to access,static,redirect,Redirects unauthenticated portal visitors to /access?next=/portal.
+page,/portal/guest/view/[id],app/(site)/portal/guest/view/[id]/page.tsx,site,server,redirect to access,static,redirect,Redirects guest plan view attempts to /access with next=/portal/{id}.
+page,/portal,app/(site)/portal/page.tsx,site,server,required,static,PortalPageView,Authenticated planner portal list. requireAuthUser loads user's saved plans from planner store when DB configured; PortalPageView shows plan list and database status.
+page,/portfolio,app/(site)/portfolio/page.tsx,site,server,public,static,Inline portfolio grid,Portfolio gallery. Server reads public/images/projects/{folder} per client; filters clients with 2+ photos; renders image grid from filesystem + PORTFOLIO_CLIENTS data.
+page,/privacy,app/(site)/privacy/page.tsx,site,server,public,static,Inline legal layout (Hero privacy sections ContactTeaser),Privacy policy with structured sections from LEGAL_PAGE_COPY and contact details.
+page,/products/[category]/[product],app/(site)/products/[category]/[product]/page.tsx,site,server,public,static,ProductViewer (Suspense),Product detail page (PDP). Resolves product by URL key from Supabase; merges images specs variants; generateMetadata and breadcrumb JSON-LD; ProductViewer for 3D gallery and quote cart actions.
+page,/products/[category],app/(site)/products/[category]/page.tsx,site,server,public,static,CategoryPageView,Category listing page. Normalizes category slug; 404 or canonical redirect; fetches catalog from Supabase for SSG paths; CategoryPageView renders filterable product grid.
+page,/products/category/[slug],app/(site)/products/category/[slug]/page.tsx,site,server,public,static,CategoryPageView,Legacy category URL alias. Normalizes slug to canonical category id and reuses CategoryPageView (same as /products/[category]).
+page,/products,app/(site)/products/page.tsx,site,server,public,static,CategoryGrid + ContactTeaser,Product catalog hub. CategoryGrid lists all product categories; JSON-LD CollectionPage; static metadata from PRODUCTS_PAGE_COPY.
+page,/projects,app/(site)/projects/page.tsx,site,server,public,static,Inline projects showcase (Hero client grid KPI monitor ContactTeaser),Delivered projects page. Fetches business stats for KPI integrity monitor; static PROJECTS_PAGE_CLIENTS grid.
+page,/quote-cart,app/(site)/quote-cart/page.tsx,site,client,public,static,Inline quote cart UI,Client-side quote cart. useQuoteCart zustand store for items qty remove clear; builds compare link when 2+ products; CTAs to contact planning downloads.
+page,/refund-and-return-policy,app/(site)/refund-and-return-policy/page.tsx,site,server,public,static,Inline legal layout (Hero refund policy ContactTeaser),Refund and return policy from LEGAL_PAGE_COPY.
+page,/repo-store,app/(site)/repo-store/page.tsx,site,server,public,static,RepoStorePageView,Internal dev page showing repository map and target operating model via RepoStorePageView.
+page,/results,app/(site)/results/page.tsx,site,server,public,force-dynamic,ResultsHubPageView,Dev results hub. force-dynamic; loadResultsSnapshot reads filesystem for test coverage audit outputs; ResultsHubPageView lists linked artifacts.
+page,/service,app/(site)/service/page.tsx,site,server,public,static,Inline service page (Hero sections RouteCtaBand ContactTeaser),After-sales and service information from SERVICE_PAGE_COPY with tracked contact links.
+page,/showrooms,app/(site)/showrooms/page.tsx,site,server,public,static,Inline showroom page (Hero carousel brand sections KPIs ContactTeaser),Showroom locations and experience page. Fetches business stats for KPI strip; static copy and featured carousel components.
+page,/social,app/(site)/social/page.tsx,site,server,public,static,Inline social feed layout,Community/social page. Loads product catalog for featured items; static SOCIAL_PAGE_POSTS and copy; hero and CTA bands.
+page,/solutions/[category],app/(site)/solutions/[category]/page.tsx,site,server,public,static,Inline solution category page,Solution vertical pages (seating workstations tables etc.). Static SOLUTION_COPY lookup; 404 if unknown; hero description and product links per category.
+page,/solutions,app/(site)/solutions/page.tsx,site,server,public,static,Inline solutions hub (Hero category cards delivery steps ContactTeaser),Solutions overview linking to category pages; static SOLUTIONS_PAGE_COPY and delivery steps.
+page,/support-ivr,app/(site)/support-ivr/page.tsx,site,server,public,static,SupportIvrPageView,IVR/support routing page delegating to SupportIvrPageView component.
+page,/sustainability,app/(site)/sustainability/page.tsx,site,server,public,static,Inline sustainability page (Hero action cards newsletter ContactTeaser),Sustainability commitments and eco program content from SUSTAINABILITY_PAGE_COPY.
+page,/templates,app/(site)/templates/page.tsx,site,server,public,static,Inline coming-soon templates page,Workspace templates placeholder. Hero plus coming-soon card with CTAs to planning desk and contact; JSON-LD CollectionPage.
+page,/terms,app/(site)/terms/page.tsx,site,server,public,static,Inline legal layout (Hero terms sections ContactTeaser),Terms of service from LEGAL_PAGE_COPY.
+page,/tracking,app/(site)/tracking/page.tsx,site,server,public,static,Inline order tracking page (Hero sections RouteCtaBand ContactTeaser),Shipment/order tracking information page from TRACKING_PAGE_COPY.
+page,/trusted-by,app/(site)/trusted-by/page.tsx,site,server,public,static,Inline social proof page (Hero client badges stats WhyChooseUs ContactTeaser),Client logos and trust metrics from TRUSTED_BY_CLIENTS and TRUSTED_BY_STATS.
+page,/admin/analytics,app/admin/analytics/page.tsx,admin,client,admin (layout),static,AdminAnalyticsPageView,Admin analytics dashboard delegating to AdminAnalyticsPageView.
+page,/admin/buddy-catalog,app/admin/buddy-catalog/page.tsx,admin,client,admin (layout),static,BuddyCatalogPageView,Admin UI for buddy/assistant catalog management via BuddyCatalogPageView.
+page,/admin/catalog,app/admin/catalog/page.tsx,admin,client,admin (layout),static,AdminCatalogPageView,Admin product catalog management via AdminCatalogPageView.
+page,/admin/features,app/admin/features/page.tsx,admin,client,admin (layout),static,AdminFeatureFlagsPageView,Admin feature flag toggles via AdminFeatureFlagsPageView.
+layout,—,app/admin/layout.tsx,admin,server,required (admin),static,layout shell,Admin segment layout. requireAdminUser gate; CsrfBootstrap skip link; AdminLayoutShell nav wrapping main content.
+page,/admin,app/admin/page.tsx,admin,client,admin (layout),static,AdminDashboardPageView,Admin dashboard shell. Client component rendering AdminDashboardPageView from features/planner/admin; auth enforced by admin layout.
+page,/admin/planner-catalog,app/admin/planner-catalog/page.tsx,admin,client,admin (layout),static,ConfiguratorCatalogPageView,Admin planner/configurator catalog editor via ConfiguratorCatalogPageView.
+page,/admin/plans/[id],app/admin/plans/[id]/page.tsx,admin,client,admin (layout),static,AdminPlanDetailPageView,Admin single-plan inspector via AdminPlanDetailPageView (reads id from route client-side).
+page,/admin/plans,app/admin/plans/page.tsx,admin,client,admin (layout),static,AdminPlansPageView,Admin list of all user planner plans via AdminPlansPageView.
+page,/admin/themes,app/admin/themes/page.tsx,admin,server,admin (layout),static,ThemeEditor (inline page shell),Theme token manager. Server page with inline heading; ThemeEditor for planner rendering engine CSS token dictionaries.
+component,—,app/admin/themes/ThemeEditor.tsx,admin,client,admin (layout),static,ThemeEditor,Admin theme editor client component. Loads block_themes from Supabase; material tabs; publishes tokens via POST /api/admin/themes/publish.
+page,/crm/clients,app/crm/clients/page.tsx,crm,server,required (crm scope),force-dynamic,ClientsView,CRM clients list. requireAuthUser crm scope; force-dynamic; ClientsView for client records.
+layout,—,app/crm/layout.tsx,crm,server,public,static,layout shell,CRM root layout. Full html/body with site fonts CSS RouteChrome header/footer QueryProvider CsrfBootstrap.
+page,/crm,app/crm/page.tsx,crm,server,public,static,redirect,CRM index redirects to /crm/projects/.
+page,/crm/projects/[id],app/crm/projects/[id]/page.tsx,crm,server,required (crm scope),force-dynamic,ProjectDetailView,CRM project detail. requireAuthUser; passes projectId to ProjectDetailView.
+page,/crm/projects,app/crm/projects/page.tsx,crm,server,required (crm scope),force-dynamic,ProjectsView,CRM projects list. requireAuthUser crm scope; force-dynamic; ProjectsView.
+page,/crm/quotes,app/crm/quotes/page.tsx,crm,server,required (crm scope),force-dynamic,QuotesView,CRM quotes list. requireAuthUser crm scope; force-dynamic; QuotesView.
+layout,—,app/offline/layout.tsx,offline,server,public,static,layout shell,Minimal html/body wrapper for PWA offline page; placeholder metadata.
+page,/offline,app/offline/page.tsx,offline,server,public,static,Inline offline message + ReloadButton,PWA offline fallback. noindex metadata; static message when service worker cannot reach network; ReloadButton retries navigation.
+component,—,app/offline/ReloadButton.tsx,offline,client,public,static,ReloadButton,Client button on offline page; calls window.location.reload() to retry after network recovery.
+page,/ops/customer-queries,app/ops/customer-queries/page.tsx,ops,client,public,static,CustomerQueriesOpsPageView,Ops surface for managing customer inquiry queue; thin client route to features/ops/CustomerQueriesOpsPageView.
+page,/planner/features/[slug],app/planner/(marketing)/features/[slug]/page.tsx,planner,server,public,SSG,PlannerFeaturePageView,Individual planner feature detail. Static params from PLANNER_FEATURE_PAGES; 404 invalid slug; per-feature metadata and PlannerFeaturePageView.
+page,/planner/features,app/planner/(marketing)/features/page.tsx,planner,server,public,static,PlannerFeaturesHubPage,Planner capabilities hub listing all feature pages with JSON-LD CollectionPage.
+page,/planner/help,app/planner/(marketing)/help/page.tsx,planner,server,public,static,PlannerHelpPage,Planner help center with tutorials and FAQ via PlannerHelpPage.
+page,/planner,app/planner/(marketing)/page.tsx,planner,server,public,static,PlannerLandingPage,Planner product landing. SEO metadata JSON-LD; PlannerLandingPage with features pricing and CTA to canvas.
+page,/planner/canvas,app/planner/(workspace)/canvas/page.tsx,planner,server,optional (guest),force-dynamic,PlannerWorkspaceRoute,Main planner editor. force-dynamic; optional planner user; reads ?id= planId; PlannerWorkspaceRoute loads Fabric canvas 3D catalog autosave (guest or authenticated).
+page,/planner/guest,app/planner/(workspace)/guest/page.tsx,planner,server,optional (guest),force-dynamic,PlannerWorkspaceRoute,Explicit guest planner entry. Always guestMode PlannerWorkspaceRoute without requiring auth.
+layout,—,app/planner/(workspace)/layout.tsx,planner,server,public,static,layout shell,Workspace sub-layout. Imports workspace.css; noindex robots; passthrough children only.
+layout,—,app/planner/layout.tsx,planner,server,public,static,layout shell,Planner root layout. i18n ThemeProvider QueryProvider ServiceWorkerRegister CsrfBootstrap PlannerErrorBoundary and planner CSS bundles.
+page,/planner,app/planner/page.tsx,planner,server,public,static,re-export → PlannerLandingPage,Re-exports app/planner/(marketing)/page.tsx. Planner marketing landing with JSON-LD and PlannerLandingPage.
+api,/api/admin/analytics,app/api/admin/analytics/route.ts,api,route-handler,authenticated,dynamic,—,GET planner usage analytics dashboard aggregates for admin role.
+api,/api/admin/buddy-catalog/[id],app/api/admin/buddy-catalog/[id]/route.ts,api,route-handler,admin,dynamic,DELETE|PATCH,PATCH/DELETE buddy catalog item by id.
+api,/api/admin/buddy-catalog,app/api/admin/buddy-catalog/route.ts,api,route-handler,admin,dynamic,GET|POST,GET/POST buddy assistant catalog items (admin).
+api,/api/admin/catalog/[id],app/api/admin/catalog/[id]/route.ts,api,route-handler,admin,dynamic,DELETE|PATCH,PATCH/DELETE single standard catalog item by id (admin).
+api,/api/admin/catalog,app/api/admin/catalog/route.ts,api,route-handler,admin,dynamic,GET|POST,GET/POST deprecated standard catalog shim; prefer /api/admin/catalogs/standard.
+api,/api/admin/catalogs/[type]/[id],app/api/admin/catalogs/[type]/[id]/route.ts,api,route-handler,admin,dynamic,DELETE|PATCH,PATCH/DELETE catalog entry by type and id.
+api,/api/admin/catalogs/[type],app/api/admin/catalogs/[type]/route.ts,api,route-handler,admin,dynamic,GET|POST,GET/POST list or create catalog entries by type (standard|buddy|planner etc).
+api,/api/admin/configurator-catalog/[id],app/api/admin/configurator-catalog/[id]/route.ts,api,route-handler,admin,dynamic,DELETE|PATCH,PATCH/DELETE configurator catalog item by id.
+api,/api/admin/features,app/api/admin/features/route.ts,api,route-handler,authenticated,dynamic,—,GET/PATCH feature flag toggles for admin.
+api,/api/admin/planner-catalog,app/api/admin/planner-catalog/route.ts,api,route-handler,admin,dynamic,GET|POST,GET/POST planner furniture catalog items (admin).
+api,/api/admin/plans/[id],app/api/admin/plans/[id]/route.ts,api,route-handler,admin,dynamic,GET|PATCH,GET/PATCH single plan admin inspection and status updates.
+api,/api/admin/plans,app/api/admin/plans/route.ts,api,route-handler,admin,dynamic,GET,GET/PATCH/DELETE admin plan management across users; admin role via withAuth.
+api,/api/admin/themes/publish,app/api/admin/themes/publish/route.ts,api,route-handler,admin,dynamic,POST,POST publish theme token JSON to edge CDN from admin ThemeEditor.
+api,/api/ai-advisor,app/api/ai-advisor/route.ts,api,route-handler,authenticated,dynamic,—,POST catalog/configurator AI advisor with product context and streaming; guest rate-limited.
+api,/api/ai-assist,app/api/ai-assist/route.ts,api,route-handler,guest (rate-limited),dynamic,—,POST deprecated generic AI chat proxy; prefer /api/planner/ai-advisor.
+api,/api/ai/advisor,app/api/ai/advisor/route.ts,api,route-handler,guest (rate-limited),dynamic,—,POST deprecated mock rule-based advisor shim; prefer /api/planner/ai-advisor.
+api,/api/audit,app/api/audit/route.ts,api,route-handler,csrf + session,dynamic,POST,POST audit event log insert with CSRF and rate limit.
+api,/api/business-stats,app/api/business-stats/route.ts,api,route-handler,public,dynamic,GET,GET public KPI stats for homepage and marketing pages.
+api,/api/categories,app/api/categories/route.ts,api,route-handler,public,dynamic,GET,GET catalog category list.
+api,/api/configurator/smart-wizard,app/api/configurator/smart-wizard/route.ts,api,route-handler,public (rate-limited),dynamic,—,POST configurator smart wizard step recommendations.
+api,/api/csrf,app/api/csrf/route.ts,api,route-handler,public,dynamic,GET,GET issues CSRF token JSON and sets csrf cookie via generateCsrfToken/setCsrfTokenCookie for browser forms.
+api,/api/customer-queries/manage,app/api/customer-queries/manage/route.ts,api,route-handler,csrf + session,dynamic,—,GET/PATCH ops queue for customer queries; authenticated staff management.
+api,/api/customer-queries,app/api/customer-queries/route.ts,api,route-handler,public (rate-limited),dynamic,—,POST public contact/lead form submission into customer_queries with rate limiting.
+api,/api/dev-tools/lighthouse,app/api/dev-tools/lighthouse/route.ts,api,route-handler,public,dynamic,GET,GET dev-only lighthouse report helper.
+api,/api/filter,app/api/filter/route.ts,api,route-handler,public (rate-limited),dynamic,—,POST AI-assisted product ranking/filter by sustainability price material ergonomic modes.
+api,/api/generate-alt,app/api/generate-alt/route.ts,api,route-handler,public (rate-limited),dynamic,—,POST OpenAI-generated image alt text for catalog assets by category.
+api,/api/log-error,app/api/log-error/route.ts,api,route-handler,public,dynamic,POST,POST client error logging endpoint.
+api,/api/nav-categories,app/api/nav-categories/route.ts,api,route-handler,public,dynamic,GET,GET navigation category tree for site chrome.
+api,/api/nav-search,app/api/nav-search/route.ts,api,route-handler,public (rate-limited),dynamic,—,GET/POST site-wide nav and product search.
+api,/api/planner/ai-advisor,app/api/planner/ai-advisor/route.ts,api,route-handler,guest (rate-limited),dynamic,—,POST canonical planner AI advisor chat and space-suggest modes via provider chain; guest allowed rate-limited.
+api,/api/plans/[id],app/api/plans/[id]/route.ts,api,route-handler,csrf + session,dynamic,GET,GET/PUT/DELETE single planner document by id for authenticated user with CSRF on mutations.
+api,/api/plans,app/api/plans/route.ts,api,route-handler,csrf + session,dynamic,GET,GET lists authenticated user planner documents; POST creates/updates plan with CSRF validation and rate limiting.
+api,/api/products/filter,app/api/products/filter/route.ts,api,route-handler,public,dynamic,—,GET filtered product grid data for category pages.
+api,/api/products,app/api/products/route.ts,api,route-handler,public,dynamic,GET,GET product list/search from catalog with query params.
+api,/api/recommendations,app/api/recommendations/route.ts,api,route-handler,public (rate-limited),dynamic,—,POST personalized product recommendations from catalog and anonymous user id.
+api,/api/theme/active,app/api/theme/active/route.ts,api,route-handler,public,dynamic,GET,GET active published theme tokens for client ThemeProvider.
+api,/api/theme/manage,app/api/theme/manage/route.ts,api,route-handler,admin,dynamic,GET|POST,GET/POST theme management (admin-oriented).
+api,/api/tracking,app/api/tracking/route.ts,api,route-handler,public (rate-limited),dynamic,—,POST analytics/tracking event ingestion.

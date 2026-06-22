@@ -52,7 +52,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/myel/myel-hb.max"
+        "path": "/images/chairs/myel/myel-hb.max"
       }
     ]
   },
@@ -167,7 +167,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/sway/sway-hb.max"
+        "path": "/images/chairs/sway/sway-hb.max"
       }
     ]
   },
@@ -279,7 +279,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/phoenix/phoenix-hb.max"
+        "path": "/images/chairs/phoenix/phoenix-hb.max"
       }
     ]
   },
@@ -429,7 +429,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/fluid/fluid-mb.max"
+        "path": "/images/chairs/fluid/fluid-mb.max"
       }
     ]
   },
@@ -477,7 +477,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/fluid-x/fluid-x-hb.max"
+        "path": "/images/chairs/fluid-x/fluid-x-hb.max"
       }
     ]
   },
@@ -573,7 +573,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/spino/spino-hb.max"
+        "path": "/images/chairs/spino/spino-hb.max"
       }
     ]
   },
@@ -660,7 +660,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/revoq/revoq-hb.max"
+        "path": "/images/chairs/revoq/revoq-hb.max"
       }
     ]
   },
@@ -743,7 +743,7 @@
     "models": [
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/flex/flex.max"
+        "path": "/images/chairs/flex/flex.max"
       }
     ]
   },
@@ -1358,11 +1358,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/arvo/arvo.dwg"
+        "path": "/images/chairs/arvo/arvo.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/arvo/arvo.max"
+        "path": "/images/chairs/arvo/arvo.max"
       }
     ]
   },
@@ -1406,11 +1406,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/ember/ember.dwg"
+        "path": "/images/chairs/ember/ember.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/ember/ember.max"
+        "path": "/images/chairs/ember/ember.max"
       }
     ]
   },
@@ -1453,11 +1453,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/caneva/caneva.dwg"
+        "path": "/images/chairs/caneva/caneva.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/caneva/caneva.max"
+        "path": "/images/chairs/caneva/caneva.max"
       }
     ]
   },
@@ -1502,11 +1502,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/crotch/crotch.dwg"
+        "path": "/images/chairs/crotch/crotch.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/crotch/crotch.max"
+        "path": "/images/chairs/crotch/crotch.max"
       }
     ]
   },
@@ -1551,11 +1551,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/smile/smile.dwg"
+        "path": "/images/chairs/smile/smile.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/smile/smile.max"
+        "path": "/images/chairs/smile/smile.max"
       }
     ]
   },
@@ -1634,11 +1634,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/canaret/canaret.dwg"
+        "path": "/images/chairs/canaret/canaret.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/canaret/canaret.max"
+        "path": "/images/chairs/canaret/canaret.max"
       }
     ]
   },
@@ -1721,11 +1721,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/dive/dive.dwg"
+        "path": "/images/chairs/dive/dive.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/dive/dive.max"
+        "path": "/images/chairs/dive/dive.max"
       }
     ]
   },
@@ -1983,11 +1983,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/fynn/fynn.dwg"
+        "path": "/images/chairs/fynn/fynn.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/fynn/fynn.max"
+        "path": "/images/chairs/fynn/fynn.max"
       }
     ]
   },
@@ -2031,11 +2031,11 @@
     "models": [
       {
         "label": "CAD DWG Model",
-        "path": "/models/chairs/caneva-high/caneva-high.dwg"
+        "path": "/images/chairs/caneva-high/caneva-high.dwg"
       },
       {
         "label": "3D Max Model",
-        "path": "/models/chairs/caneva-high/caneva-high.max"
+        "path": "/images/chairs/caneva-high/caneva-high.max"
       }
     ]
   },
@@ -2109,3 +2109,4 @@
     "models": []
   }
 ]
+

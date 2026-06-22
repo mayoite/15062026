@@ -260,7 +260,7 @@ function collectLocalReferences(relPath: string): ProductRef[] {
     }
   }
 
-  const indexPath = path.resolve(process.cwd(), "data/site/localCatalogIndex.json");
+  const indexPath = path.resolve(process.cwd(), "lib/site-data/localCatalogIndex.json");
   if (fs.existsSync(indexPath)) {
     const index = JSON.parse(fs.readFileSync(indexPath, "utf8")) as Array<Record<string, unknown>>;
     for (const item of index) {

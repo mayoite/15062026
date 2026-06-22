@@ -2,7 +2,7 @@ import { Hero } from "@/components/home/Hero";
 import { ContactTeaser } from "@/components/shared/ContactTeaser";
 import { SectionIntro } from "@/components/shared/SectionIntro";
 import { VisualIVR } from "@/components/support/VisualIVR";
-import { SUPPORT_IVR_PAGE_COPY } from "@/data/site/routeCopy";
+import { SUPPORT_IVR_PAGE_COPY } from "@/lib/site-data/routeCopy";
 
 export function SupportIvrPageView() {
   return (

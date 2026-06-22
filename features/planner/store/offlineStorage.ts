@@ -166,9 +166,10 @@ class OfflineStorageManager {
    * Get plan by ID
    */
   async getPlan(id: string): Promise<OfflinePlan | null> {
-    return await this.transaction(STORE_PLANS, "readonly", (store) => {
+    const result = await this.transaction<OfflinePlan | undefined>(STORE_PLANS, "readonly", (store) => {
       return store.get(id);
     });
+    return result ?? null;
   }
 
   /**

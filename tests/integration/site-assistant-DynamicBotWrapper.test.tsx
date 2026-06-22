@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { AI_ASSISTANT_WELCOME_MESSAGE } from "@/data/site/assistant";
+import { AI_ASSISTANT_WELCOME_MESSAGE } from "@/lib/site-data/assistant";
 
 vi.mock("next/dynamic", async () => {
   const { UnifiedAssistant } = await import("@/features/site-assistant/UnifiedAssistant");

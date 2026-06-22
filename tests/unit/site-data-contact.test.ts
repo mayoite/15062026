@@ -7,7 +7,7 @@ import {
   buildMailtoHref,
   buildWhatsAppHref,
   toTelHref,
-} from "@/data/site/contact";
+} from "@/lib/site-data/contact";
 
 describe("SITE_CONTACT", () => {
   it("has sales and support phone numbers", () => {

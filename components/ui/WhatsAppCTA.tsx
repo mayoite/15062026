@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Mail, MessageCircle, Phone, X } from "lucide-react";
 import { hasConsentChoice } from "@/lib/consent";
 import { trackSiteCtaClick } from "@/lib/analytics/siteEvents";
-import { buildMailtoHref, buildWhatsAppHref, SITE_CONTACT, toTelHref } from "@/data/site/contact";
+import { buildMailtoHref, buildWhatsAppHref, SITE_CONTACT, toTelHref } from "@/lib/site-data/contact";
 import { routeSuppressesFloatingQuickContact } from '@/features/crm/contactSurfaces';
 
 export function WhatsAppCTA() {

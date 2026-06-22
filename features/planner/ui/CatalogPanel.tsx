@@ -15,8 +15,6 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-
-
 import type { CatalogProduct, PlannerStep, RoomPreset } from "@/features/planner/shared/types/planner";
 import { formatDimensionPair, type MeasurementUnit } from "../lib/measurements";
 
@@ -94,12 +92,12 @@ type ExtCatalogProduct = CatalogProduct & {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function colorForName(name: string) {
   const palette = [
-    "bg-blue-100 text-blue-700",
-    "bg-indigo-100 text-indigo-700",
-    "bg-violet-100 text-violet-700",
-    "bg-teal-100 text-teal-700",
-    "pw-catalog-warning",
-    "bg-rose-100 text-rose-700",
+    "pw-catalog-panel__avatar--blue",
+    "pw-catalog-panel__avatar--indigo",
+    "pw-catalog-panel__avatar--violet",
+    "pw-catalog-panel__avatar--teal",
+    "pw-catalog-panel__avatar--amber",
+    "pw-catalog-panel__avatar--rose",
   ];
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffff;
@@ -109,13 +107,24 @@ function colorForName(name: string) {
 function ProductAvatar({ name, src }: { name: string; src?: string }) {
   const [failed, setFailed] = useState(false);
   const initials = name.split(" ").slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
+  const toneClass = colorForName(name);
   if (src && !failed) {
     return (
-      <Image src={src} alt={name} onError={() => setFailed(true)} className="object-contain" fill unoptimized />
+      <div className={`pw-catalog-panel__avatar ${toneClass}`}>
+        <Image
+          src={src}
+          alt={name}
+          onError={() => setFailed(true)}
+          className="pw-catalog-panel__avatar-image"
+          fill
+          sizes="40px"
+          unoptimized
+        />
+      </div>
     );
   }
   return (
-    <span className={`flex h-full w-full items-center justify-center pw-ui-2xs font-bold ${colorForName(name)}`}>
+    <span className={`pw-catalog-panel__avatar pw-catalog-panel__avatar-fallback ${toneClass}`}>
       {initials || "–"}
     </span>
   );
@@ -192,152 +201,161 @@ export function CatalogPanel({
   }, [extProducts, activeCategory, activeSeries, search]);
 
   const structuralTools = [
-    { key: "wall-chain", label: "Wall Chain", icon: <PenTool className="h-3.5 w-3.5" />, onClick: onActivateWallTool },
-    { key: "wall-seg", label: "Wall Segment", icon: <Square className="h-3.5 w-3.5" />, onClick: onAddWallSegment },
-    { key: "room-shape", label: "Room Shape", icon: <Building2 className="h-3.5 w-3.5" />, onClick: onActivateBasicShapeTool },
-    { key: "door", label: "Door Opening", icon: <DoorOpen className="h-3.5 w-3.5" />, onClick: onAddDoorOpening },
+    { key: "wall-chain", label: "Wall Chain", icon: <PenTool className="pw-catalog-panel__tool-icon" />, onClick: onActivateWallTool },
+    { key: "wall-seg", label: "Wall Segment", icon: <Square className="pw-catalog-panel__tool-icon" />, onClick: onAddWallSegment },
+    { key: "room-shape", label: "Room Shape", icon: <Building2 className="pw-catalog-panel__tool-icon" />, onClick: onActivateBasicShapeTool },
+    { key: "door", label: "Door Opening", icon: <DoorOpen className="pw-catalog-panel__tool-icon" />, onClick: onAddDoorOpening },
   ];
 
   return (
-    <div className="flex h-full flex-col bg-[color:var(--planner-panel)] font-sans">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div
-        data-panel-drag-handle="true"
-        className="flex h-9 shrink-0 items-center justify-between border-b border-[color:var(--planner-border-soft)] px-3"
-      >
-        <span className="pw-ui-2xs font-bold uppercase tracking-[0.14em] text-[color:var(--planner-text-muted)]">
+    <div className="pw-catalog-panel">
+      <div data-panel-drag-handle="true" className="pw-catalog-panel__header">
+        <span className="pw-catalog-panel__title">
           {isRoomStep ? "Room Builder" : "Catalog"}
         </span>
-        <div className="flex items-center gap-0.5">
+        <div className="pw-catalog-panel__actions">
           {showPinToggle && (
             <button
-              type="button" onClick={onTogglePin}
+              type="button"
+              onClick={onTogglePin}
               aria-label={pinned ? "Float panel" : "Dock panel"}
               title={pinned ? "Float panel" : "Dock panel"}
-              className={`flex h-6 w-6 items-center justify-center transition-colors ${
-                pinned ? "text-[color:var(--planner-primary)]" : "text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-text-body)]"
-              }`}
+              className={`pw-catalog-panel__icon-button${pinned ? " pw-catalog-panel__icon-button--active" : ""}`}
             >
-              {pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
+              {pinned ? <PinOff className="pw-catalog-panel__icon" /> : <Pin className="pw-catalog-panel__icon" />}
             </button>
           )}
-          <button type="button" onClick={onClose} aria-label="Close panel"
-            className="flex h-6 w-6 items-center justify-center text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-text-body)] transition-colors">
-            <X className="h-3.5 w-3.5" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close panel"
+            className="pw-catalog-panel__icon-button"
+          >
+            <X className="pw-catalog-panel__icon" />
           </button>
         </div>
       </div>
 
-      {/* ── ROOM BUILDER VIEW ─────────────────────────────────────────────── */}
       {isRoomStep ? (
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="shrink-0 border-b border-[color:var(--planner-border-soft)] p-2">
-            <p className="mb-1.5 px-1 pw-ui-2xs font-semibold uppercase tracking-[0.12em] text-[color:var(--planner-text-subtle)]">Presets</p>
-            <div className="space-y-px">
+        <div className="pw-catalog-panel__body">
+          <section className="pw-catalog-panel__section">
+            <p className="pw-catalog-panel__section-label">Presets</p>
+            <div className="pw-catalog-panel__stack">
               {roomPresets.map((preset) => (
-                <button key={preset.id} type="button" onClick={() => onApplyRoomPreset(preset)}
-                  className="group flex w-full items-center justify-between border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-3 py-2 text-left transition-colors hover:border-[color:var(--planner-primary)] hover:bg-[color:var(--planner-primary-soft)]">
-                  <span className="pw-ui-xs font-semibold text-[color:var(--planner-text-strong)]">{preset.name}</span>
-                  <span className="pw-ui-2xs font-medium text-[color:var(--planner-text-subtle)]">
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => onApplyRoomPreset(preset)}
+                  className="pw-catalog-panel__preset"
+                >
+                  <span className="pw-catalog-panel__preset-name">{preset.name}</span>
+                  <span className="pw-catalog-panel__preset-meta">
                     {formatDimensionPair(preset.widthMm, preset.heightMm, unitSystem)}
                   </span>
                 </button>
               ))}
             </div>
-          </div>
-          <div className="flex-1 overflow-y-auto p-2">
-            <p className="mb-1.5 px-1 pw-ui-2xs font-semibold uppercase tracking-[0.12em] text-[color:var(--planner-text-subtle)]">Draw Tools</p>
-            <div className="grid grid-cols-2 gap-px bg-[color:var(--planner-border-soft)]">
+          </section>
+          <section className="pw-catalog-panel__section pw-catalog-panel__section--fill">
+            <p className="pw-catalog-panel__section-label">Draw Tools</p>
+            <div className="pw-catalog-panel__tools-grid">
               {structuralTools.map((tool) => (
-                <button key={tool.key} type="button" onClick={tool.onClick}
-                  className="flex items-center gap-2 bg-[color:var(--planner-panel-strong)] px-2.5 py-2.5 text-left transition-colors hover:bg-[color:var(--planner-primary-soft)]">
-                  <span className="text-[color:var(--planner-primary)]">{tool.icon}</span>
-                  <span className="pw-ui-xs font-medium text-[color:var(--planner-text-body)]">{tool.label}</span>
+                <button
+                  key={tool.key}
+                  type="button"
+                  onClick={tool.onClick}
+                  className="pw-catalog-panel__tool"
+                >
+                  <span className="pw-catalog-panel__tool-mark">{tool.icon}</span>
+                  <span className="pw-catalog-panel__tool-label">{tool.label}</span>
                 </button>
               ))}
             </div>
-            <div className="mt-px flex gap-px bg-[color:var(--planner-border-soft)]">
-              <button type="button" onClick={() => void editor}
-                className="flex flex-1 items-center gap-2 bg-[color:var(--planner-panel-strong)] px-2.5 py-2 transition-colors hover:bg-[color:var(--planner-primary-soft)]">
-                <PenTool className="h-3.5 w-3.5 text-[color:var(--planner-primary)]" />
-                <span className="pw-ui-xs font-medium text-[color:var(--planner-text-body)]">Freehand</span>
+            <div className="pw-catalog-panel__tool-row">
+              <button type="button" onClick={() => void editor} className="pw-catalog-panel__tool pw-catalog-panel__tool--split">
+                <PenTool className="pw-catalog-panel__tool-icon" />
+                <span className="pw-catalog-panel__tool-label">Freehand</span>
               </button>
-              <button type="button" onClick={onResolveWallJoins}
-                className="flex flex-1 items-center gap-2 bg-[color:var(--planner-panel-strong)] px-2.5 py-2 transition-colors hover:bg-[color:var(--planner-primary-soft)]">
-                <GitMerge className="h-3.5 w-3.5 text-[color:var(--planner-primary)]" />
-                <span className="pw-ui-xs font-medium text-[color:var(--planner-text-body)]">Resolve Joins</span>
+              <button type="button" onClick={onResolveWallJoins} className="pw-catalog-panel__tool pw-catalog-panel__tool--split">
+                <GitMerge className="pw-catalog-panel__tool-icon" />
+                <span className="pw-catalog-panel__tool-label">Resolve Joins</span>
               </button>
             </div>
-          </div>
+          </section>
         </div>
       ) : (
-        /* ── CATALOG VIEW ─────────────────────────────────────────────────── */
-        <div className="flex flex-1 flex-col overflow-hidden">
-
-          {/* Search */}
-          <div className="shrink-0 border-b border-[color:var(--planner-border-soft)] px-2 py-2">
-            <div className="flex items-center gap-1.5 border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)] px-2 py-1.5">
-              <Search className="h-3.5 w-3.5 shrink-0 text-[color:var(--planner-text-subtle)]" />
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+        <div className="pw-catalog-panel__body">
+          <div className="pw-catalog-panel__search-shell">
+            <div className="pw-catalog-panel__search-box">
+              <Search className="pw-catalog-panel__search-icon" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search products…"
-                className="min-w-0 flex-1 bg-transparent pw-ui-xs text-[color:var(--planner-text-body)] placeholder:text-[color:var(--planner-text-subtle)] outline-none" />
+                aria-label="Search products"
+                className="pw-catalog-panel__search-input"
+              />
               {search && (
-                <button type="button" onClick={() => setSearch("")} className="text-[color:var(--planner-text-subtle)] hover:text-[color:var(--planner-text-body)]">
-                  <X className="h-3 w-3" />
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  aria-label="Clear search"
+                  className="pw-catalog-panel__search-clear"
+                >
+                  <X className="pw-catalog-panel__search-clear-icon" />
                 </button>
               )}
             </div>
           </div>
 
-          {/* L1: Category chips — 2-row grid, NO rounded corners */}
-          <div className="shrink-0 grid grid-cols-3 gap-px border-b border-[color:var(--planner-border-soft)] bg-[color:var(--planner-border-soft)] p-px">
+          <div className="pw-catalog-panel__chip-grid">
             {categories.map((cat) => (
-              <button key={cat} type="button" onClick={() => handleCategoryChange(cat)}
-                className={`rounded-none px-1.5 py-1.5 pw-ui-2xs font-semibold uppercase tracking-[0.05em] transition-colors ${
-                  activeCategory === cat
-                    ? "bg-[color:var(--planner-primary)] text-white"
-                    : "bg-[color:var(--planner-panel-strong)] text-[color:var(--planner-text-muted)] hover:bg-[color:var(--planner-primary-soft)] hover:text-[color:var(--planner-primary)]"
-                }`}>
+              <button
+                key={cat}
+                type="button"
+                onClick={() => handleCategoryChange(cat)}
+                data-active={activeCategory === cat}
+                className="pw-catalog-panel__chip"
+              >
                 {cat}
               </button>
             ))}
           </div>
 
-          {/* L2: Series/subcategory filter — only when multiple series exist */}
           {seriesInCategory.length > 0 && (
-            <div className="shrink-0 grid grid-cols-2 gap-px border-b border-[color:var(--planner-border-soft)] bg-[color:var(--planner-border-soft)] p-px">
+            <div className="pw-catalog-panel__chip-grid pw-catalog-panel__chip-grid--series">
               {seriesInCategory.map((s) => (
-                <button key={s} type="button" onClick={() => setActiveSeries(s)}
-                  className={`rounded-none px-2 py-1 pw-ui-2xs font-medium tracking-[0.03em] transition-colors truncate ${
-                    activeSeries === s
-                      ? "bg-[color:var(--planner-primary)]/15 text-[color:var(--planner-primary)] font-semibold"
-                      : "bg-[color:var(--planner-panel-strong)] text-[color:var(--planner-text-muted)] hover:text-[color:var(--planner-primary)]"
-                  }`}>
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setActiveSeries(s)}
+                  data-active={activeSeries === s}
+                  className="pw-catalog-panel__chip pw-catalog-panel__chip--series"
+                >
                   {s}
                 </button>
               ))}
             </div>
           )}
 
-          {/* Placement warning */}
           {!canPlaceFurniture && (
-            <div className="shrink-0 border-b border-[color:var(--planner-border-soft)] bg-amber-50 px-3 py-2">
-              <p className="flex items-center gap-1.5 pw-ui-2xs font-medium text-[color:var(--color-bronze-600)]">
-                <PackagePlus className="h-3.5 w-3.5 shrink-0" />
+            <div className="pw-catalog-panel__warning pw-catalog-warning">
+              <p className="pw-catalog-panel__warning-copy">
+                <PackagePlus className="pw-catalog-panel__warning-icon" />
                 Define the room shell first to place products.
               </p>
             </div>
           )}
 
-          {/* L3: Product list */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="pw-catalog-panel__list-wrap">
             {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
-                <PackagePlus className="h-6 w-6 text-[color:var(--planner-text-subtle)]" />
-                <p className="pw-ui-xs text-[color:var(--planner-text-subtle)]">No products match</p>
+              <div className="pw-catalog-panel__empty">
+                <PackagePlus className="pw-catalog-panel__empty-icon" />
+                <p className="pw-catalog-panel__empty-copy">No products match</p>
               </div>
             ) : (
-              <div className="divide-y divide-[color:var(--planner-border-soft)]">
+              <div className="pw-catalog-panel__list">
                 {filtered.map((product, idx) => {
                   const ext = product as ExtCatalogProduct;
                   const img = product.flagship_image || product.images?.[0];
@@ -349,33 +367,26 @@ export function CatalogPanel({
                       disabled={!canPlaceFurniture}
                       onClick={() => onDropFurniture(product)}
                       title={product.name}
-                      className={`group flex w-full items-center gap-2.5 px-2.5 py-2 text-left transition-colors ${
-                        canPlaceFurniture
-                          ? "hover:bg-[color:var(--planner-primary-soft)]"
-                          : "cursor-not-allowed opacity-45"
-                      }`}
+                      className="pw-catalog-panel__item"
                     >
-                      {/* Avatar */}
-                      <div className="h-10 w-10 shrink-0 overflow-hidden border border-[color:var(--planner-border-soft)] bg-[color:var(--planner-panel-strong)]">
+                      <div className="pw-catalog-panel__avatar-shell">
                         <ProductAvatar name={product.name ?? "?"} src={img} />
                       </div>
-                      {/* Info */}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13px] font-semibold leading-tight text-[color:var(--planner-text-strong)]">
+                      <div className="pw-catalog-panel__item-copy">
+                        <p className="pw-catalog-panel__item-name">
                           {product.name}
                         </p>
                         {ext.seriesName && (
-                          <p className="truncate pw-ui-2xs font-medium text-[color:var(--planner-text-muted)]">
+                          <p className="pw-catalog-panel__item-series">
                             {ext.seriesName}
                           </p>
                         )}
                         {dims && (
-                          <p className="pw-ui-2xs text-[color:var(--planner-text-subtle)]">{formatCatalogDimensions(dims, unitSystem)}</p>
+                          <p className="pw-catalog-panel__item-dims">{formatCatalogDimensions(dims, unitSystem)}</p>
                         )}
                       </div>
-                      {/* Add */}
                       {canPlaceFurniture && (
-                        <Plus className="h-3.5 w-3.5 shrink-0 text-[color:var(--planner-text-subtle)] opacity-0 transition-opacity group-hover:opacity-100 group-hover:text-[color:var(--planner-primary)]" />
+                        <Plus className="pw-catalog-panel__add-icon" />
                       )}
                     </button>
                   );
@@ -384,9 +395,8 @@ export function CatalogPanel({
             )}
           </div>
 
-          {/* Footer */}
-          <div className="shrink-0 border-t border-[color:var(--planner-border-soft)] px-3 py-1">
-            <p className="pw-ui-2xs text-[color:var(--planner-text-subtle)]">
+          <div className="pw-catalog-panel__footer">
+            <p className="pw-catalog-panel__count">
               {filtered.length} of {products.length} products
             </p>
           </div>

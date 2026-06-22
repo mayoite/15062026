@@ -25,7 +25,7 @@ function scopeFromPath(filePath) {
 }
 
 const SITE_SCOPE_PREFIXES = [
-  "data/site/",
+  "lib/site-data/",
   "lib/catalog/",
   "lib/configurator/",
   "features/catalog/",

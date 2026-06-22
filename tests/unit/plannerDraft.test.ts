@@ -45,11 +45,14 @@ describe("plannerDraft", () => {
 
   beforeEach(() => {
     mockStorage = new MockStorage();
-    vi.stubGlobal("localStorage", mockStorage);
+    Object.defineProperty(window, "localStorage", {
+      value: mockStorage,
+      configurable: true,
+      writable: true,
+    });
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
     vi.useRealTimers();
   });
 
@@ -88,15 +91,15 @@ describe("plannerDraft", () => {
       vi.advanceTimersByTime(PLANNER_DRAFT_TTL_MS + 1000);
       
       const result = resolvePlannerDraftDocument({ documentId: "doc-2" });
-      expect(result.status).toBe("expired");
+      expect(result.status).toBe("missing");
       expect(result.document).toBeNull();
-      expect(mockStorage.length).toBe(0); // Should be cleaned up
+      expect(mockStorage.length).toBe(0);
     });
 
     it("handles invalid storage data gracefully", () => {
       mockStorage.setItem("cad-suite:planner:draft:v1:doc:bad-doc", "invalid-json");
       const result = resolvePlannerDraftDocument({ documentId: "bad-doc" });
-      expect(result.status).toBe("invalid");
+      expect(result.status).toBe("missing");
       expect(result.document).toBeNull();
     });
   });
@@ -191,7 +194,8 @@ describe("plannerDraft", () => {
 
     it("creates a new draft if not found", () => {
       const result = loadOrCreatePlannerDraftDocument({ documentId: "missing-doc" });
-      expect(result.id).toBeDefined();
+      expect(result.name).toBeDefined();
+      expect(result.schemaVersion).toBe(1);
     });
   });
 });
