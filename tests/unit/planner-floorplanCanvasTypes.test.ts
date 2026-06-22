@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
+import type { FabricObject } from "fabric";
 import { getBoundingRect, resolveLayerCategory } from "@/features/planner/canvas-fabric/hooks/floorplanCanvasTypes";
 
 // ─── getBoundingRect ──────────────────────────────────────────────────────────
 
 describe("getBoundingRect", () => {
   function obj(left: number, top: number) {
-    return { left, top } as import("fabric").FabricObject;
+    return { left, top } as FabricObject;
   }
 
   it("returns correct bounds for 3 objects at distinct positions", () => {
@@ -64,7 +65,7 @@ describe("getBoundingRect", () => {
 
 describe("resolveLayerCategory", () => {
   function fab(name: string) {
-    return { name } as import("fabric").FabricObject & { name: string };
+    return { name } as FabricObject & { name: string };
   }
 
   it.each([
@@ -121,3 +122,4 @@ describe("resolveLayerCategory", () => {
     expect(resolveLayerCategory({})).toBeNull();
   });
 });
+

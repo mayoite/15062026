@@ -1,39 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const {
-  createAutoSaver,
-  loadProject,
-  migrateGuestProjectToMember,
-  buildSessionEnvelope,
-  parseSessionSnapshot,
-  applySessionWorkspace,
-} = vi.hoisted(() => ({
-  createAutoSaver: vi.fn(),
-  loadProject: vi.fn(),
-  migrateGuestProjectToMember: vi.fn(),
-  buildSessionEnvelope: vi.fn((store: unknown) => ({
-    version: "2.0.0",
-    store,
-    updatedAt: "2026-06-15T00:00:00.000Z",
-  })),
-  parseSessionSnapshot: vi.fn(),
-  applySessionWorkspace: vi.fn(),
-}));
-
-vi.mock("@/features/planner/persistence/persistence", () => ({
-  createAutoSaver,
-  getPlannerProjectId: (guestMode: boolean, planId?: string) =>
-    guestMode ? "planner-guest-local" : planId?.trim() ? `planner-member-local:${planId.trim()}` : "planner-member-local",
-  loadProject,
-  migrateGuestProjectToMember,
-}));
-
-vi.mock("@/features/planner/persistence/plannerSession", () => ({
-  buildSessionEnvelope,
-  parseSessionSnapshot,
-  applySessionWorkspace,
-}));
+import * as persistenceMod from "@/features/planner/persistence/persistence";
+import * as plannerSessionMod from "@/features/planner/persistence/plannerSession";
 
 import { usePlannerFabricAutosave } from "@/features/planner/hooks/usePlannerFabricAutosave";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
@@ -62,12 +31,14 @@ describe("usePlannerFabricAutosave", () => {
     vi.clearAllMocks();
     resetWorkspaceStore();
     scheduleSave = vi.fn();
-    createAutoSaver.mockReturnValue({
-      scheduleSave,
-      cancel: vi.fn(),
-    });
-    loadProject.mockResolvedValue(undefined);
-    migrateGuestProjectToMember.mockResolvedValue(undefined);
+    vi.spyOn(persistenceMod, "createAutoSaver").mockReturnValue({ scheduleSave, cancel: vi.fn() } as unknown as ReturnType<typeof persistenceMod.createAutoSaver>);
+    vi.spyOn(persistenceMod, "getPlannerProjectId").mockImplementation(((guestMode: boolean, planId?: string) => guestMode ? "planner-guest-local" : planId?.trim() ? `planner-member-local:${planId.trim()}` : "planner-member-local") as unknown as typeof persistenceMod.getPlannerProjectId);
+    vi.spyOn(persistenceMod, "loadProject").mockResolvedValue(undefined);
+    vi.spyOn(persistenceMod, "migrateGuestProjectToMember").mockResolvedValue(undefined);
+
+    vi.spyOn(plannerSessionMod, "buildSessionEnvelope").mockImplementation(((store: unknown) => ({ version: "2.0.0", store, updatedAt: "2026-06-15T00:00:00.000Z" })) as unknown as typeof plannerSessionMod.buildSessionEnvelope);
+    vi.spyOn(plannerSessionMod, "parseSessionSnapshot").mockReturnValue(undefined as unknown as ReturnType<typeof plannerSessionMod.parseSessionSnapshot>);
+    vi.spyOn(plannerSessionMod, "applySessionWorkspace").mockImplementation(vi.fn());
   });
 
   afterEach(() => {
@@ -85,11 +56,11 @@ describe("usePlannerFabricAutosave", () => {
   });
 
   it("restores a saved snapshot for members", async () => {
-    parseSessionSnapshot.mockReturnValue({
+    vi.spyOn(plannerSessionMod, "parseSessionSnapshot").mockReturnValue({
       store: { objects: [] },
       updatedAt: "2026-06-15T00:00:00.000Z",
-    });
-    loadProject.mockResolvedValue({
+    } as unknown as ReturnType<typeof plannerSessionMod.parseSessionSnapshot>);
+    vi.spyOn(persistenceMod, "loadProject").mockResolvedValue({
       snapshot: JSON.stringify({ version: "2.0.0", store: { objects: [] } }),
       updatedAt: "2026-06-15T00:00:00.000Z",
     });
@@ -102,7 +73,7 @@ describe("usePlannerFabricAutosave", () => {
 
     expect(restored).toBe(true);
     expect(importDraft).toHaveBeenCalled();
-    expect(applySessionWorkspace).toHaveBeenCalled();
+    expect(plannerSessionMod.applySessionWorkspace).toHaveBeenCalled();
   });
 
   it("retries save through retrySave", () => {

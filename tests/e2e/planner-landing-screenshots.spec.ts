@@ -1,5 +1,6 @@
 import path from "node:path";
-import { test } from "@playwright/test";
+import fs from "node:fs";
+import { test, expect } from "@playwright/test";
 
 /**
  * Throwaway capture spec: full-page screenshots of /planner at three
@@ -32,9 +33,11 @@ for (const vp of VIEWPORTS) {
     });
     await page.waitForTimeout(900);
 
+    const outPath = path.join(OUT_DIR, `planner-${vp.name}.png`);
     await page.screenshot({
-      path: path.join(OUT_DIR, `planner-${vp.name}.png`),
+      path: outPath,
       fullPage: true,
     });
+    expect(fs.existsSync(outPath)).toBe(true);
   });
 }

@@ -28,8 +28,6 @@ const DEFAULT_ROOM: PlannerSceneRoom = {
   originMm: { xMm: 0, yMm: 0 },
 };
 
-const FABRIC_TO_MM = 10;
-
 export interface BuildPlannerDocumentFromFabricOptions {
   documentId?: string | null;
   name?: string;

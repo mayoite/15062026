@@ -1,6 +1,7 @@
 {
   "extends": "./config/build/tsconfig.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "./results/typescript/app.tsbuildinfo",
     "paths": {
       "@/types/*": ["./config/database/types/*"],
       "@/app/*": ["./app/*"],

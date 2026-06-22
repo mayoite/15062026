@@ -156,7 +156,6 @@ export function filterCatalogItemsByPurpose(
  * Throws if any store write fails so the caller can handle the error.
  */
 export function applyProjectSetup(metadata: PlannerProjectMetadata): void {
-  const mmPerUnit = resolveGridMmPerUnit(metadata.floorAreaSqFt);
   const { setProjectMetadata } = usePlannerWorkspaceStore.getState();
   const { setPurposeFilter } = usePlannerCatalogStore.getState();
 

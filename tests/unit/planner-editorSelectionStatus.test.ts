@@ -34,3 +34,4 @@ describe("getEditorSelectionStatus", () => {
     expect(getEditorSelectionStatus(null)).toBe("North");
   });
 });
+

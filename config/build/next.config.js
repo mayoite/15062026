@@ -181,6 +181,35 @@ const nextConfig = {
       { source: "/oando-planner/:path*", destination: "/planner/", permanent: true },
     ];
   },
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff"
+          },
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN"
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin"
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains; preload"
+          },
+          {
+            key: "Content-Security-Policy",
+            value: "default-src 'self'"
+          }
+        ]
+      }
+    ];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     unoptimized: useUnoptimizedImages,

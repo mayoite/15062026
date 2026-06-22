@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef } from "react";
-import { buildPlannerDocumentFromEditor } from "../../document/plannerDocumentBridge";
-import { sanitizePlannerPlanName } from "../../lib/sessionState";
+import { useCallback, useMemo } from "react";
+import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
+import { sanitizePlannerPlanName } from "@/features/planner/lib/sessionState";
 
 export function usePlannerDocument({
   planId,
@@ -11,28 +11,20 @@ export function usePlannerDocument({
   planName: string;
   fabricSerializedDraft: string | null;
 }) {
-  const activeDocumentIdRef = useRef<string | null>(planId ?? null);
-  const planNameRef = useRef<string>("Workspace Plan");
-
-  activeDocumentIdRef.current = planId ?? null;
-  planNameRef.current = planName;
-
   const buildCurrentPlannerDocument = useCallback(() => {
     return buildPlannerDocumentFromEditor(null, {
-      id: activeDocumentIdRef.current ?? undefined,
-      title: sanitizePlannerPlanName(planNameRef.current),
+      id: planId,
+      title: sanitizePlannerPlanName(planName),
     });
-  }, []);
+  }, [planId, planName]);
 
   const currentPlannerDocument = useMemo(() => {
     void fabricSerializedDraft;
-    void planName;
     return buildCurrentPlannerDocument();
-  }, [buildCurrentPlannerDocument, fabricSerializedDraft, planName]);
+  }, [buildCurrentPlannerDocument, fabricSerializedDraft]);
 
   return {
     buildCurrentPlannerDocument,
     currentPlannerDocument,
-    activeDocumentIdRef,
   };
 }

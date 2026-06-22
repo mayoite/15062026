@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { enterGuestPlannerWorkspace } from "./guestProjectSetup";
-import { clickOnCanvas, dragOnCanvas, waitForPlannerCanvas, selectPlannerTool } from "./plannerCanvasHelpers";
+import { waitForPlannerCanvas } from "./plannerCanvasHelpers";
 
 test.describe.configure({ timeout: 90_000 });
 

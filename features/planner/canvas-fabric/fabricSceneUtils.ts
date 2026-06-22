@@ -79,7 +79,16 @@ export function fabricObjectCategory(name: string): string {
   return "Furniture";
 }
 
-export function fabricObjectToSceneItem(o: Record<string, unknown>, index: number): any {
+export type SceneItem = {
+  id: string;
+  name: string;
+  category: string;
+  centerMm: { xMm: number; yMm: number };
+  sizeMm: { widthMm: number; depthMm: number; heightMm: number };
+  rotationDeg: number;
+};
+
+export function fabricObjectToSceneItem(o: Record<string, unknown>, index: number): SceneItem {
   const widthCanvas = (Number(o.width) || 60) * (Number(o.scaleX) || 1);
   const heightCanvas = (Number(o.height) || 60) * (Number(o.scaleY) || 1);
   const w = widthCanvas * FABRIC_TO_MM;

@@ -40,3 +40,4 @@ describe("shapeTypeRegistry", () => {
     expect(CATALOG_DRAG_MIME).toBe("application/planner-catalog-item");
   });
 });
+

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ErrorInfo, type ReactNode } from "react";
 import { addAfterEffect, Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   ContactShadows,
@@ -20,6 +20,7 @@ import {
   type PlannerDocument,
 } from "./types";
 import { FOCSS_3D_COLORS } from "./viewerMaterials";
+import { logClientError } from "@/lib/errorLogger";
 
 interface Planner3DViewerProps {
   document: PlannerDocument;
@@ -573,6 +574,37 @@ function PlannerScene({
   );
 }
 
+class ThreeCanvasErrorBoundary extends Component<{ children: ReactNode; fallback?: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    void logClientError({
+      error,
+      label: "Planner3DViewer-canvas",
+      componentStack: errorInfo?.componentStack ?? "",
+    });
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback || (
+          <div className="surface-inverse flex h-full min-h-[420px] items-center justify-center px-6">
+            <div className="planner-viewer-surface max-w-md rounded-[1.35rem] border border-warning px-5 py-4 text-center">
+              <div className="typ-caption font-semibold uppercase tracking-[0.16em] text-warning">WebGL render crash</div>
+              <div className="mt-2 typ-caption-lg text-body">
+                An unexpected error occurred during 3D rendering. You can continue editing in 2D or reload to retry.
+              </div>
+            </div>
+          </div>
+        )
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
   const [cameraMode, setCameraMode] = useState<ViewerCameraMode>("orbit");
   const [webglProbe] = useState<WebGLProbeResult>(() => probeWebGL());
@@ -618,29 +650,31 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
             </div>
           }
         >
-          <Canvas
-            shadows="basic"
-            dpr={[1, 1.75]}
-            gl={{
-              antialias: true,
-              alpha: false,
-              powerPreference: "high-performance",
-              preserveDrawingBuffer: true,
-            }}
-            className="h-full min-h-0 w-full"
-            data-testid="planner-3d-canvas"
-            onCreated={({ gl }) => {
-              // BUG-02: capture renderer so dispose() is called on the right instance.
-              rendererRef.current = gl;
-            }}
-          >
-            <PlannerScene
-              cameraMemoryRef={cameraMemoryRef}
-              cameraMode={cameraMode}
-              sceneDocument={sceneDocument}
-              viewerRef={viewerRef}
-            />
-          </Canvas>
+          <ThreeCanvasErrorBoundary>
+            <Canvas
+              shadows="basic"
+              dpr={[1, 1.75]}
+              gl={{
+                antialias: true,
+                alpha: false,
+                powerPreference: "high-performance",
+                preserveDrawingBuffer: true,
+              }}
+              className="h-full min-h-0 w-full"
+              data-testid="planner-3d-canvas"
+              onCreated={({ gl }) => {
+                // BUG-02: capture renderer so dispose() is called on the right instance.
+                rendererRef.current = gl;
+              }}
+            >
+              <PlannerScene
+                cameraMemoryRef={cameraMemoryRef}
+                cameraMode={cameraMode}
+                sceneDocument={sceneDocument}
+                viewerRef={viewerRef}
+              />
+            </Canvas>
+          </ThreeCanvasErrorBoundary>
         </Suspense>
       ) : (
         <div

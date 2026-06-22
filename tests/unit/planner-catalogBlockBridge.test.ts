@@ -132,3 +132,4 @@ describe("resolveCatalogItemBlock2D workstation seating", () => {
     expect(chairs.south).toBe(4);
   });
 });
+

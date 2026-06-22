@@ -89,6 +89,7 @@ test.describe("Planner chrome v1", () => {
   });
 
   test("reset layout restores defaults after a moved widget", async ({ page }) => {
+    expect(page).toBeDefined();
     await openWorkspace(page);
     await dragChromeHandle(page, "access", 180, 90);
 
@@ -101,6 +102,7 @@ test.describe("Planner chrome v1", () => {
   });
 
   test("keyboard nudge updates access placement", async ({ page }) => {
+    expect(page).toBeDefined();
     await openWorkspace(page);
 
     const handle = page.locator('[data-dock-id="access"] .pw-dockable-chrome__handle');

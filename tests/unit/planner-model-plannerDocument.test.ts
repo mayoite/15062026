@@ -273,3 +273,4 @@ describe("planner document model", () => {
     expect(scene.items[0]?.sizeMm).toEqual({ widthMm: 1524, depthMm: 610, heightMm: 914 });
   });
 });
+

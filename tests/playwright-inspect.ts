@@ -39,7 +39,7 @@ async function main() {
   try {
     await topbar.waitFor({ state: "visible", timeout: 15000 });
     console.log("Topbar is visible!");
-  } catch (err) {
+  } catch (_err) {
     console.log("Topbar did not become visible within 15s. URL:", page.url());
   }
 

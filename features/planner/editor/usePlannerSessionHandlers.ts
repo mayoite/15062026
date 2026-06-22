@@ -3,28 +3,32 @@
  *
  * Extracted from PlannerWorkspace to keep that file under 1 000 lines.
  * Owns all save / load / rename / delete / import / export / open-3D callbacks.
+ * Integrates IndexedDB offlineStorage and SyncQueueProcessor for offline-first capabilities.
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   LOCAL_CURRENT_DRAFT_ID,
   createPlannerExportPayload,
   formatPlannerSavedPlanTimestamp,
   sanitizePlannerPlanName,
 } from "@/features/planner/lib/sessionState";
-import {
-  deletePlannerDraftDocument,
-  listPlannerDraftDocuments,
-  loadPlannerDraftDocument,
-  savePlannerDraftDocument,
-  type PlannerDraftScope,
-} from "@/features/planner/persistence/plannerDraft";
 import { parsePlannerDocumentImportFile } from "@/features/planner/persistence/plannerImport";
 import { normalizePlannerDocument } from "@/features/planner/model";
 import type { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
 import { loadPlannerDocumentIntoFabric } from "@/features/planner/lib/fabricDocumentBridge";
 import type { PlannerSavedEntry } from "@/features/planner/ui/PlannerSessionDialog";
 import type { ChangeEvent } from "react";
+
+import {
+  offlineStorage,
+  updateOfflinePlan,
+  deleteOfflinePlan,
+  type OfflinePlan,
+} from "@/features/planner/store/offlineStorage";
+import { SyncQueueProcessor } from "@/features/planner/store/syncQueueProcessor";
+import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
+import { getBrowserSessionUser } from "@/lib/supabase/client";
 
 type UseSessionHandlersOptions = {
   /** Memoised current planner document (already built — do not re-serialise). */
@@ -48,21 +52,79 @@ export function usePlannerSessionHandlers({
   const [sessionErrorMessage, setSessionErrorMessage] = useState<string | null>(null);
   const [localDraftVersion, setLocalDraftVersion] = useState(0);
 
-  const currentDraftScope = useMemo<PlannerDraftScope>(
-    () => ({ documentId: LOCAL_CURRENT_DRAFT_ID }),
-    [],
-  );
+  const [authUserId, setAuthUserId] = useState<string | null>(null);
+  const [draftPlanName, setDraftPlanName] = useState("Workspace Plan");
+  const [localDraftSessions, setLocalDraftSessions] = useState<OfflinePlan[]>([]);
+  const [currentOfflinePlan, setCurrentOfflinePlan] = useState<OfflinePlan | null>(null);
 
-  const draftPlanName = useMemo(() => {
-    void localDraftVersion;
-    const localDraft = loadPlannerDraftDocument(currentDraftScope);
-    if (!localDraft) return "Workspace Plan";
-    return localDraft.title ?? localDraft.name;
-  }, [currentDraftScope, localDraftVersion]);
+  const isOnline = useOnlineStatus();
+
+  // Load user session on mount
+  useEffect(() => {
+    getBrowserSessionUser()
+      .then((user) => {
+        if (user?.id) {
+          setAuthUserId(user.id);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to retrieve browser session user:", err);
+      });
+  }, []);
+
+  // Synchronize IndexedDB plans when localDraftVersion changes
+  useEffect(() => {
+    let active = true;
+    const loadOfflineData = async () => {
+      try {
+        await offlineStorage.init();
+        const allPlans = await offlineStorage.listPlans();
+        const current = await offlineStorage.getPlan(LOCAL_CURRENT_DRAFT_ID);
+        if (!active) return;
+        setLocalDraftSessions(allPlans.filter((p) => p.id !== LOCAL_CURRENT_DRAFT_ID));
+        setCurrentOfflinePlan(current);
+        if (current) {
+          setDraftPlanName(current.document.title ?? current.document.name ?? "Workspace Plan");
+        }
+      } catch (err) {
+        console.error("Failed to load plans from IndexedDB:", err);
+      }
+    };
+    loadOfflineData();
+    return () => {
+      active = false;
+    };
+  }, [localDraftVersion]);
+
+  // Sync Queue processing helper
+  const handleSyncQueue = useCallback(async () => {
+    if (!authUserId || !isOnline) return;
+    try {
+      const processor = new SyncQueueProcessor({
+        userId: authUserId,
+        onSyncComplete: (result) => {
+          if (result.processed > 0) {
+            setLocalDraftVersion((v) => v + 1);
+            setSessionStatusMessage(`Synced ${result.processed} plans to cloud.`);
+          }
+        },
+      });
+      await processor.processSyncQueue();
+    } catch (err) {
+      console.error("Failed to process sync queue:", err);
+    }
+  }, [authUserId, isOnline]);
+
+  // Process sync queue when online status changes to true
+  useEffect(() => {
+    if (isOnline && authUserId) {
+      handleSyncQueue();
+    }
+  }, [isOnline, authUserId, handleSyncQueue]);
 
   const draftNameKey = useMemo(
-    () => `${currentDraftScope.documentId ?? ""}:${localDraftVersion}`,
-    [currentDraftScope, localDraftVersion],
+    () => `${LOCAL_CURRENT_DRAFT_ID}:${localDraftVersion}`,
+    [localDraftVersion],
   );
 
   const applyPlannerDocument = useCallback(
@@ -88,8 +150,7 @@ export function usePlannerSessionHandlers({
   // ── Save ──────────────────────────────────────────────────────────────────
 
   const handleSaveDraft = useCallback(
-    (planName: string) => {
-      // BUG-04 fix: use the already-memoised document.
+    async (planName: string) => {
       const draftDocument = getCurrentPlannerDocument();
       const namedDocumentId = activeDocumentId ?? draftDocument.id ?? crypto.randomUUID();
       const normalizedName = sanitizePlannerPlanName(planName);
@@ -100,27 +161,79 @@ export function usePlannerSessionHandlers({
         title: normalizedName,
       });
 
-      const savedCurrent = savePlannerDraftDocument(normalizedDraft, currentDraftScope);
-      const savedNamed = savePlannerDraftDocument(normalizedDraft, {
-        documentId: namedDocumentId,
-      });
-      setActiveDocumentId(namedDocumentId);
-      setLocalDraftVersion((v) => v + 1);
-      if (!savedCurrent || !savedNamed) {
+      try {
+        await offlineStorage.init();
+
+        // 1. Save rolling current draft (LOCAL_CURRENT_DRAFT_ID)
+        const currentDraftDoc = normalizePlannerDocument({
+          ...normalizedDraft,
+          id: LOCAL_CURRENT_DRAFT_ID,
+        });
+        const existingCurrent = await offlineStorage.getPlan(LOCAL_CURRENT_DRAFT_ID);
+        if (existingCurrent) {
+          await updateOfflinePlan(LOCAL_CURRENT_DRAFT_ID, currentDraftDoc);
+        } else {
+          const now = new Date().toISOString();
+          await offlineStorage.savePlan({
+            id: LOCAL_CURRENT_DRAFT_ID,
+            document: currentDraftDoc,
+            localId: null,
+            createdAt: now,
+            updatedAt: now,
+            lastSyncedAt: null,
+            syncStatus: "pending",
+          });
+        }
+
+        // 2. Save named draft
+        const existingNamed = await offlineStorage.getPlan(namedDocumentId);
+        let savedNamed: OfflinePlan;
+        if (existingNamed) {
+          savedNamed = await updateOfflinePlan(namedDocumentId, normalizedDraft);
+        } else {
+          const now = new Date().toISOString();
+          const plan: OfflinePlan = {
+            id: namedDocumentId,
+            document: normalizedDraft,
+            localId: null,
+            createdAt: now,
+            updatedAt: now,
+            lastSyncedAt: null,
+            syncStatus: "pending",
+          };
+          await offlineStorage.savePlan(plan);
+          await offlineStorage.addToSyncQueue({
+            id: crypto.randomUUID(),
+            operation: "create",
+            planId: namedDocumentId,
+            remoteId: null,
+            document: normalizedDraft,
+            createdAt: now,
+            retryCount: 0,
+            lastAttempt: null,
+            error: null,
+          });
+          savedNamed = plan;
+        }
+
+        setActiveDocumentId(namedDocumentId);
+        setLocalDraftVersion((v) => v + 1);
+        setSessionErrorMessage(null);
+        setSessionStatusMessage(
+          `Local session saved ${formatPlannerSavedPlanTimestamp(savedNamed.updatedAt)}`,
+        );
+
+        handleSyncQueue();
+      } catch (err) {
+        console.error("Failed to save draft to IndexedDB:", err);
         setSessionErrorMessage("Local draft save is unavailable in this environment.");
-        return;
       }
-      setSessionErrorMessage(null);
-      setSessionStatusMessage(
-        `Local session saved ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`,
-      );
     },
-    [activeDocumentId, getCurrentPlannerDocument, currentDraftScope],
+    [activeDocumentId, getCurrentPlannerDocument, handleSyncQueue],
   );
 
   const handleSaveAsNewSession = useCallback(
-    (planName: string) => {
-      // BUG-04 fix: use the already-memoised document.
+    async (planName: string) => {
       const draftDocument = getCurrentPlannerDocument();
       const newDocumentId = crypto.randomUUID();
       const normalizedName = sanitizePlannerPlanName(
@@ -133,102 +246,171 @@ export function usePlannerSessionHandlers({
         title: normalizedName,
       });
 
-      const savedCurrent = savePlannerDraftDocument(normalizedDraft, currentDraftScope);
-      const savedNamed = savePlannerDraftDocument(normalizedDraft, {
-        documentId: newDocumentId,
-      });
-      setActiveDocumentId(newDocumentId);
-      setPlanNameOverride(normalizedName);
-      setLocalDraftVersion((v) => v + 1);
-      if (!savedCurrent || !savedNamed) {
+      try {
+        await offlineStorage.init();
+
+        // 1. Save rolling current draft (LOCAL_CURRENT_DRAFT_ID)
+        const currentDraftDoc = normalizePlannerDocument({
+          ...normalizedDraft,
+          id: LOCAL_CURRENT_DRAFT_ID,
+        });
+        const existingCurrent = await offlineStorage.getPlan(LOCAL_CURRENT_DRAFT_ID);
+        if (existingCurrent) {
+          await updateOfflinePlan(LOCAL_CURRENT_DRAFT_ID, currentDraftDoc);
+        } else {
+          const now = new Date().toISOString();
+          await offlineStorage.savePlan({
+            id: LOCAL_CURRENT_DRAFT_ID,
+            document: currentDraftDoc,
+            localId: null,
+            createdAt: now,
+            updatedAt: now,
+            lastSyncedAt: null,
+            syncStatus: "pending",
+          });
+        }
+
+        // 2. Save named draft as new plan
+        const now = new Date().toISOString();
+        const plan: OfflinePlan = {
+          id: newDocumentId,
+          document: normalizedDraft,
+          localId: null,
+          createdAt: now,
+          updatedAt: now,
+          lastSyncedAt: null,
+          syncStatus: "pending",
+        };
+        await offlineStorage.savePlan(plan);
+        await offlineStorage.addToSyncQueue({
+          id: crypto.randomUUID(),
+          operation: "create",
+          planId: newDocumentId,
+          remoteId: null,
+          document: normalizedDraft,
+          createdAt: now,
+          retryCount: 0,
+          lastAttempt: null,
+          error: null,
+        });
+
+        setActiveDocumentId(newDocumentId);
+        setPlanNameOverride(normalizedName);
+        setLocalDraftVersion((v) => v + 1);
+        setSessionErrorMessage(null);
+        setSessionStatusMessage(
+          `New local session created ${formatPlannerSavedPlanTimestamp(plan.updatedAt)}`,
+        );
+
+        handleSyncQueue();
+      } catch (err) {
+        console.error("Failed to save as new session to IndexedDB:", err);
         setSessionErrorMessage("New local session could not be created.");
-        return;
       }
-      setSessionErrorMessage(null);
-      setSessionStatusMessage(
-        `New local session created ${formatPlannerSavedPlanTimestamp(savedNamed.savedAt)}`,
-      );
     },
-    [activeDocumentId, getCurrentPlannerDocument, currentDraftScope],
+    [activeDocumentId, getCurrentPlannerDocument, handleSyncQueue],
   );
 
   // ── Load ──────────────────────────────────────────────────────────────────
 
   const handleLoadPlan = useCallback(
-    (plan: PlannerSavedEntry) => {
+    async (plan: PlannerSavedEntry) => {
       if (plan.source !== "local") {
         setSessionErrorMessage(
           "Only local draft loading is enabled in this planner session.",
         );
         return;
       }
-      // P5-09: confirm before replacing an unsaved canvas.
       if (shapeCount > 0 && saveStatus !== "saved") {
         const confirmed = window.confirm(
           `You have unsaved changes (${shapeCount} object${shapeCount !== 1 ? "s" : ""}). Load "${plan.name}" and discard?`,
         );
         if (!confirmed) return;
       }
-      const scope =
-        plan.id === LOCAL_CURRENT_DRAFT_ID ? currentDraftScope : { documentId: plan.id };
-      const draft = loadPlannerDraftDocument(scope);
-      if (!draft) {
+
+      try {
+        await offlineStorage.init();
+        const targetId = plan.id === LOCAL_CURRENT_DRAFT_ID ? LOCAL_CURRENT_DRAFT_ID : plan.id;
+        const offlinePlan = await offlineStorage.getPlan(targetId);
+        if (!offlinePlan) {
+          setSessionErrorMessage("Local draft not found.");
+          return;
+        }
+        applyPlannerDocument(offlinePlan.document);
+      } catch (err) {
+        console.error("Failed to load plan from IndexedDB:", err);
         setSessionErrorMessage("Local draft not found.");
-        return;
       }
-      applyPlannerDocument(draft);
     },
-    [applyPlannerDocument, currentDraftScope, saveStatus, shapeCount],
+    [applyPlannerDocument, saveStatus, shapeCount],
   );
 
   // ── Delete / rename ───────────────────────────────────────────────────────
 
   const handleDeletePlan = useCallback(
-    (plan: PlannerSavedEntry) => {
+    async (plan: PlannerSavedEntry) => {
       if (plan.source !== "local" || plan.id === LOCAL_CURRENT_DRAFT_ID) {
         setSessionErrorMessage("Only named local sessions can be deleted here.");
         return;
       }
-      const deleted = deletePlannerDraftDocument({ documentId: plan.id });
-      if (!deleted) {
+      try {
+        await offlineStorage.init();
+        await deleteOfflinePlan(plan.id);
+        if (activeDocumentId === plan.id) setActiveDocumentId(null);
+        setLocalDraftVersion((v) => v + 1);
+        setSessionErrorMessage(null);
+        setSessionStatusMessage(`Deleted local session: ${plan.name}`);
+
+        handleSyncQueue();
+      } catch (err) {
+        console.error("Failed to delete plan from IndexedDB:", err);
         setSessionErrorMessage("Local session could not be deleted.");
-        return;
       }
-      if (activeDocumentId === plan.id) setActiveDocumentId(null);
-      setLocalDraftVersion((v) => v + 1);
-      setSessionErrorMessage(null);
-      setSessionStatusMessage(`Deleted local session: ${plan.name}`);
     },
-    [activeDocumentId],
+    [activeDocumentId, handleSyncQueue],
   );
 
   const handleRenamePlan = useCallback(
-    (plan: PlannerSavedEntry, nextNameInput: string) => {
+    async (plan: PlannerSavedEntry, nextNameInput: string) => {
       if (plan.source !== "local" || plan.id === LOCAL_CURRENT_DRAFT_ID) {
         setSessionErrorMessage("Only named local sessions can be renamed here.");
         return;
       }
-      const existing = loadPlannerDraftDocument({ documentId: plan.id });
-      if (!existing) {
-        setSessionErrorMessage("Local session not found.");
-        return;
-      }
-      const nextName = sanitizePlannerPlanName(nextNameInput);
-      const renamed = normalizePlannerDocument({ ...existing, name: nextName, title: nextName });
-      const savedNamed = savePlannerDraftDocument(renamed, { documentId: plan.id });
-      if (activeDocumentId === plan.id) {
-        savePlannerDraftDocument(renamed, currentDraftScope);
-        setPlanNameOverride(nextName);
-      }
-      setLocalDraftVersion((v) => v + 1);
-      if (!savedNamed) {
+      try {
+        await offlineStorage.init();
+        const existing = await offlineStorage.getPlan(plan.id);
+        if (!existing) {
+          setSessionErrorMessage("Local session not found.");
+          return;
+        }
+        const nextName = sanitizePlannerPlanName(nextNameInput);
+        const renamed = normalizePlannerDocument({
+          ...existing.document,
+          name: nextName,
+          title: nextName,
+        });
+
+        await updateOfflinePlan(plan.id, renamed);
+
+        if (activeDocumentId === plan.id) {
+          const currentDraftDoc = normalizePlannerDocument({
+            ...renamed,
+            id: LOCAL_CURRENT_DRAFT_ID,
+          });
+          await updateOfflinePlan(LOCAL_CURRENT_DRAFT_ID, currentDraftDoc);
+          setPlanNameOverride(nextName);
+        }
+        setLocalDraftVersion((v) => v + 1);
+        setSessionErrorMessage(null);
+        setSessionStatusMessage(`Renamed local session to ${nextName}`);
+
+        handleSyncQueue();
+      } catch (err) {
+        console.error("Failed to rename plan in IndexedDB:", err);
         setSessionErrorMessage("Local session could not be renamed.");
-        return;
       }
-      setSessionErrorMessage(null);
-      setSessionStatusMessage(`Renamed local session to ${nextName}`);
     },
-    [activeDocumentId, currentDraftScope],
+    [activeDocumentId, handleSyncQueue],
   );
 
   // ── Import / Export ───────────────────────────────────────────────────────
@@ -237,7 +419,6 @@ export function usePlannerSessionHandlers({
     async (event: ChangeEvent<HTMLInputElement>, _planName: string) => {
       const file = event.target.files?.[0];
       if (!file) return;
-      // P5-09
       if (shapeCount > 0 && saveStatus !== "saved") {
         const confirmed = window.confirm(
           `You have unsaved changes (${shapeCount} object${shapeCount !== 1 ? "s" : ""}). Import this file and discard?`,
@@ -265,15 +446,66 @@ export function usePlannerSessionHandlers({
           name: normalizedName,
           title: normalizedName,
         });
-        savePlannerDraftDocument(normalizedDocument, currentDraftScope);
-        savePlannerDraftDocument(normalizedDocument, { documentId });
-        setActiveDocumentId(documentId);
-        setLocalDraftVersion((v) => v + 1);
-        setSessionStatusMessage(`Imported planner JSON: ${normalizedName}`);
+
+        try {
+          await offlineStorage.init();
+
+          // Save current draft
+          const currentDraftDoc = normalizePlannerDocument({
+            ...normalizedDocument,
+            id: LOCAL_CURRENT_DRAFT_ID,
+          });
+          const existingCurrent = await offlineStorage.getPlan(LOCAL_CURRENT_DRAFT_ID);
+          if (existingCurrent) {
+            await updateOfflinePlan(LOCAL_CURRENT_DRAFT_ID, currentDraftDoc);
+          } else {
+            const now = new Date().toISOString();
+            await offlineStorage.savePlan({
+              id: LOCAL_CURRENT_DRAFT_ID,
+              document: currentDraftDoc,
+              localId: null,
+              createdAt: now,
+              updatedAt: now,
+              lastSyncedAt: null,
+              syncStatus: "pending",
+            });
+          }
+
+          // Save named plan
+          const plan: OfflinePlan = {
+            id: documentId,
+            document: normalizedDocument,
+            localId: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            lastSyncedAt: null,
+            syncStatus: "pending",
+          };
+          await offlineStorage.savePlan(plan);
+          await offlineStorage.addToSyncQueue({
+            id: crypto.randomUUID(),
+            operation: "create",
+            planId: documentId,
+            remoteId: null,
+            document: normalizedDocument,
+            createdAt: new Date().toISOString(),
+            retryCount: 0,
+            lastAttempt: null,
+            error: null,
+          });
+
+          setActiveDocumentId(documentId);
+          setLocalDraftVersion((v) => v + 1);
+          setSessionStatusMessage(`Imported planner JSON: ${normalizedName}`);
+
+          handleSyncQueue();
+        } catch (err) {
+          console.error("Failed to save imported plan to IndexedDB:", err);
+        }
       }
       event.currentTarget.value = "";
     },
-    [applyPlannerDocument, currentDraftScope, saveStatus, shapeCount],
+    [applyPlannerDocument, handleSyncQueue, saveStatus, shapeCount],
   );
 
   const handleExportJson = useCallback(
@@ -294,63 +526,47 @@ export function usePlannerSessionHandlers({
 
   // ── Session list ──────────────────────────────────────────────────────────
 
-  const localDraft = useMemo(() => {
-    void localDraftVersion;
-    return loadPlannerDraftDocument(currentDraftScope);
-  }, [currentDraftScope, localDraftVersion]);
-
-  const localDraftSessions = useMemo(() => {
-    void localDraftVersion;
-    return listPlannerDraftDocuments().filter(
-      (entry) => entry.scope.documentId && entry.scope.documentId !== LOCAL_CURRENT_DRAFT_ID,
-    );
-  }, [localDraftVersion]);
-
   const buildSavedEntries = useCallback(
     (activeDocId: string | null): PlannerSavedEntry[] => {
       const namedEntries = localDraftSessions.map((entry) => ({
-        id: entry.scope.documentId ?? entry.envelope.document.id ?? entry.storageKey,
-        name: entry.envelope.document.title ?? entry.envelope.document.name,
+        id: entry.id,
+        name: entry.document.title ?? entry.document.name,
         source: "local" as const,
-        isActive:
-          activeDocId ===
-          (entry.scope.documentId ?? entry.envelope.document.id ?? entry.storageKey),
+        isActive: activeDocId === entry.id,
         canDelete: true,
         canRename: true,
         updatedAtLabel: formatPlannerSavedPlanTimestamp(
-          entry.envelope.document.updatedAt ??
-            entry.envelope.document.createdAt ??
-            entry.envelope.savedAt,
+          entry.updatedAt ?? entry.createdAt,
         ),
-        itemCount: entry.envelope.document.itemCount,
-        detail: `${entry.envelope.document.roomWidthMm}mm x ${entry.envelope.document.roomDepthMm}mm`,
-        subtitle: entry.envelope.document.projectName ?? "Named local session",
+        itemCount: entry.document.itemCount,
+        detail: `${entry.document.roomWidthMm}mm x ${entry.document.roomDepthMm}mm`,
+        subtitle: entry.document.projectName ?? "Named local session",
         statusLabel:
-          entry.envelope.document.unitSystem === "imperial" ? "Imperial units" : "Metric units",
+          entry.document.unitSystem === "imperial" ? "Imperial units" : "Metric units",
       }));
 
-      if (!localDraft) return namedEntries;
+      if (!currentOfflinePlan) return namedEntries;
 
       return [
         {
           id: LOCAL_CURRENT_DRAFT_ID,
-          name: `${localDraft.title ?? localDraft.name} (Current Draft)`,
+          name: `${currentOfflinePlan.document.title ?? currentOfflinePlan.document.name} (Current Draft)`,
           source: "local" as const,
           isActive: !activeDocId || activeDocId === LOCAL_CURRENT_DRAFT_ID,
           canDelete: false,
           canRename: false,
           updatedAtLabel: formatPlannerSavedPlanTimestamp(
-            localDraft.updatedAt ?? localDraft.createdAt,
+            currentOfflinePlan.updatedAt ?? currentOfflinePlan.createdAt,
           ),
-          itemCount: localDraft.itemCount,
-          detail: `${localDraft.roomWidthMm}mm x ${localDraft.roomDepthMm}mm`,
-          subtitle: localDraft.projectName ?? "Rolling browser draft",
-          statusLabel: localDraft.unitSystem === "imperial" ? "Imperial units" : "Metric units",
+          itemCount: currentOfflinePlan.document.itemCount,
+          detail: `${currentOfflinePlan.document.roomWidthMm}mm x ${currentOfflinePlan.document.roomDepthMm}mm`,
+          subtitle: currentOfflinePlan.document.projectName ?? "Rolling browser draft",
+          statusLabel: currentOfflinePlan.document.unitSystem === "imperial" ? "Imperial units" : "Metric units",
         },
         ...namedEntries,
       ];
     },
-    [localDraft, localDraftSessions],
+    [currentOfflinePlan, localDraftSessions],
   );
 
   return {
@@ -364,9 +580,10 @@ export function usePlannerSessionHandlers({
     sessionErrorMessage,
     setSessionErrorMessage,
     localDraftVersion,
-    currentDraftScope,
+    currentDraftScope: { documentId: LOCAL_CURRENT_DRAFT_ID },
     draftPlanName,
     draftNameKey,
+    authUserId,
     // actions
     applyPlannerDocument,
     handleSaveDraft,

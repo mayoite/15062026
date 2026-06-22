@@ -213,3 +213,4 @@ describe("shouldMigrateGuestPlan (P5-15 exhaustive matrix)", () => {
     expect(shouldMigrateGuestPlan(makeProject(GUEST_PROJECT_ID, guestSnap), undefined, true)).toBe(false);
   });
 });
+

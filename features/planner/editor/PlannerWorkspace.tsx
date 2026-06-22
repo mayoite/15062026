@@ -19,7 +19,7 @@ import {
   type ComponentProps,
   type DragEvent,
 } from "react";
-import { X, PanelRightOpen, PanelRightClose, Settings2, PenTool } from "lucide-react";
+import { PanelRightClose, Settings2, PenTool } from "lucide-react";
 import { usePlannerStore } from "@/features/planner/store/plannerStore";
 import { usePlannerUIStore } from "@/features/planner/store/plannerUIStore";
 import dynamic from "next/dynamic";
@@ -28,14 +28,11 @@ const Planner3DViewer = dynamic(
   () => import("@/features/planner/3d/Planner3DViewer").then((m) => ({ default: m.Planner3DViewer })),
   { ssr: false },
 );
-import { SplitViewLayout } from "@/features/planner/shared/components/SplitViewLayout";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
-import { PlannerEmptyCanvas } from "@/features/planner/ui/PlannerEmptyCanvas";
 import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
 import { FabricPropertiesInspector } from "@/features/planner/canvas-fabric/components/FabricPropertiesInspector";
 import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
-import { PlannerMobileDock } from "@/features/planner/editor/PlannerMobileDock";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
 import { PlannerSubTopBar } from "@/features/planner/editor/PlannerSubTopBar";
 import { usePlannerPanels } from "@/features/planner/editor/usePlannerPanels";
@@ -44,7 +41,6 @@ import {
   writePlannerWorkspacePreferences,
 } from "@/features/planner/editor/plannerWorkspacePreferences";
 import { PlannerChromeHost } from "@/features/planner/editor/chrome/PlannerChromeHost";
-import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import type { CatalogItem } from "@/features/planner/catalog/catalogTypes";
 import { resolveCatalogItemBlock2D, shapePropsToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
 import { blockToSvg } from "@/lib/catalog/blocks2d";
@@ -57,17 +53,14 @@ import {
   isCatalogShapeType,
   isRoomCatalogShapeType,
   PlannerCatalogShapeType,
-} from "@/features/planner/catalog/shapeTypeRegistry";
-import { buildTemplateCanvasPlacements, type LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
-import {
   acceptsCatalogDrag,
   readCatalogDragPayload,
 } from "@/features/planner/catalog/shapeTypeRegistry";
+import { buildTemplateCanvasPlacements, type LayoutTemplate } from "@/features/planner/templates/layoutTemplates";
 import { CatalogDropFlash } from "@/features/planner/catalog/CatalogDropFlash";
 import { CatalogDropGhost } from "@/features/planner/catalog/CatalogDropGhost";
-import { FabricCanvasSubToolbar } from "@/features/planner/canvas-fabric/FabricCanvasSubToolbar";
-
 import { PlannerWorkspaceLayout } from "@/features/planner/editor/PlannerWorkspaceLayout";
+import { PlannerErrorBoundary } from "@/features/planner/editor/PlannerErrorBoundary";
 import { PlannerCanvasStage } from "@/features/planner/editor/PlannerCanvasStage";
 
 import { useTheme } from "@/features/planner/components/WorkspaceThemeProvider";
@@ -80,7 +73,6 @@ import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStor
 import { LayerVisibilityPanel } from "@/features/planner/editor/LayerVisibilityPanel";
 import { LayerManagerPanel } from "@/features/planner/editor/LayerManagerPanel";
 import { PlannerStatusBar } from "@/features/planner/editor/PlannerStatusBar";
-import { PlannerWorkflowPanel } from "@/features/planner/editor/PlannerWorkflowPanel";
 import {
   getStepLeftTab,
   getStepToolBinding,
@@ -103,6 +95,7 @@ import {
 import { PlannerSessionDialog } from "@/features/planner/ui/PlannerSessionDialog";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
 import { hydrateCloudPlanIntoIndexedDb } from "@/features/planner/persistence/cloudPlanHydration";
+import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
 
 import { resetPlannerChromeLayout } from "@/features/planner/editor/chrome/plannerChromeStorage";
 import {
@@ -204,9 +197,7 @@ type PlannerWorkspaceProps = {
   planId?: string;
 };
 
-function updateRef<T>(ref: React.MutableRefObject<T>, value: T) {
-  ref.current = value;
-}
+
 
 function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspaceProps) {
   useTheme();
@@ -245,6 +236,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     toggleRightCollapsed,
   } = panels;
   const [viewMode, setViewMode] = useState<"2d" | "3d" | "split">("2d");
+  const isOnline = useOnlineStatus();
   const [preferencesHydrated, setPreferencesHydrated] = useState(false);
 
   const [isTemplateOpen, setIsTemplateOpen] = useState(false);
@@ -267,7 +259,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const workspaceUnitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
   const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
   const [leftTab, setLeftTab] = useState<PlannerLeftTab>(getStepLeftTab(plannerStep));
-  const [stepIntroVisible, setStepIntroVisible] = useState(false);
   const setPlannerTool = usePlannerStore((s) => s.setTool);
   const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
@@ -425,6 +416,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     setSessionErrorMessage,
     draftPlanName,
     draftNameKey,
+    authUserId,
     handleSaveDraft: sessionHandleSaveDraft,
     handleSaveAsNewSession: sessionHandleSaveAsNewSession,
     handleLoadPlan,
@@ -435,9 +427,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     buildSavedEntries,
   } = session;
 
-  // Keep refs in sync so buildCurrentPlannerDocument always sees the latest values.
-  updateRef(activeDocumentIdRef, activeDocumentId);
-
   const [planNameKey, setPlanNameKey] = useState(draftNameKey);
   const [rightTab, setRightTab] = useState<"properties" | "tools">("properties");
   if (planNameKey !== draftNameKey) {
@@ -446,14 +435,19 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   }
 
   const planName = planNameOverride ?? draftPlanName;
-  updateRef(planNameRef, planName);
+
+  // Keep refs in sync so buildCurrentPlannerDocument always sees the latest values.
+  useEffect(() => {
+    activeDocumentIdRef.current = activeDocumentId;
+    planNameRef.current = planName;
+  }, [activeDocumentId, planName]);
 
   const currentPlannerDocument = useMemo(() => {
-    // Reference variables to satisfy eslint dependency analysis
-    void fabricSerializedDraft;
-    void planName;
-    return buildCurrentPlannerDocument();
-  }, [buildCurrentPlannerDocument, fabricSerializedDraft, planName]);
+    return buildPlannerDocumentFromEditor(null, {
+      id: activeDocumentId ?? undefined,
+      title: sanitizePlannerPlanName(planName),
+    });
+  }, [activeDocumentId, planName]);
 
   // Wrap session handlers to pass planName (resolved here)
   const handleSaveDraft = useCallback(() => sessionHandleSaveDraft(planName), [sessionHandleSaveDraft, planName]);
@@ -489,7 +483,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   }, [applyStepLayout, applyToolBinding, setPlannerStep]);
 
   const handlePlannerStepChange = useCallback((step: PlannerStep) => {
-    setStepIntroVisible(false);
     syncPlannerStep(step);
   }, [syncPlannerStep]);
 
@@ -628,7 +621,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     return () => window.clearTimeout(timer);
   }, [dropFlash]);
 
-  const handleCanvasDragOver = useCallback((e: DragEvent) => {
+  const handleCanvasDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     if (!acceptsCatalogDrag(e.dataTransfer)) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = "copy";
@@ -636,7 +629,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     setIsCatalogOverCanvas(true);
   }, []);
 
-  const handleCanvasDrop = useCallback((e: DragEvent) => {
+  const handleCanvasDrop = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const raw = readCatalogDragPayload(e.dataTransfer);
     if (!raw) {
@@ -725,7 +718,9 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const canvas3D = (
     <Suspense fallback={<PlannerSkeleton />}>
       <div className="pw-viewer-host h-full min-h-0 w-full">
-        <Planner3DViewer document={currentPlannerDocument} />
+        <PlannerErrorBoundary label="3D Viewer">
+          <Planner3DViewer document={currentPlannerDocument} />
+        </PlannerErrorBoundary>
       </div>
     </Suspense>
   );
@@ -767,6 +762,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       onImport={handleImportRequest}
       onOpenTemplates={() => setIsTemplateOpen(true)}
       onOpenAi={handleOpenAiAssist}
+      isOnline={isOnline}
     />
   );
 
@@ -846,12 +842,12 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const canvasStage = (
     <PlannerCanvasStage
       viewMode={viewMode}
-      chromeLayerRef={chromeLayerRef as any}
-      canvasSurfaceRef={canvasSurfaceRef as any}
+      chromeLayerRef={chromeLayerRef}
+      canvasSurfaceRef={canvasSurfaceRef}
       dragItem={dragItem}
       isCatalogOverCanvas={isCatalogOverCanvas}
-      handleCanvasDragOver={handleCanvasDragOver as any}
-      handleCanvasDrop={handleCanvasDrop as any}
+      handleCanvasDragOver={handleCanvasDragOver}
+      handleCanvasDrop={handleCanvasDrop}
       canvas2D={canvas2D}
       canvas3D={canvas3D}
       shapeCount={shapeCount}
@@ -895,6 +891,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         closeAll={closeAll}
         toggleLeft={toggleLeft}
         toggleRight={toggleRight}
+        isOnline={isOnline}
         templateModal={
           <TemplatePickerModal
             isOpen={isTemplateOpen}
@@ -909,15 +906,17 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
             planName={planName}
             onPlanNameChange={setPlanNameOverride}
             plans={plannerSavedEntries}
-            isAuthenticated={false}
+            isAuthenticated={!!authUserId}
             statusMessage={sessionStatusMessage}
             errorMessage={sessionErrorMessage}
             canOpen3d={shapeCount > 0}
-            onSaveCloud={() =>
-              setSessionErrorMessage(
-                "Cloud save is intentionally disabled in this local-first planner session.",
-              )
-            }
+            onSaveCloud={() => {
+              if (!isOnline) {
+                setSessionErrorMessage("Cloud save is unavailable while offline.");
+                return;
+              }
+              handleSaveDraft();
+            }}
             onSaveDraft={handleSaveDraft}
             onSaveAsNewSession={handleSaveAsNewSession}
             onLoadPlan={handleLoadPlan}
@@ -927,6 +926,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
             onExportJson={handleExportJson}
             onOpen3d={handleOpen3dSession}
             onDismissError={() => setSessionErrorMessage(null)}
+            isOnline={isOnline}
           />
         }
         dragOverlay={

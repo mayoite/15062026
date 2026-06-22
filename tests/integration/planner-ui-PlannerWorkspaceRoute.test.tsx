@@ -15,46 +15,32 @@ vi.mock("next/dynamic", () => ({
     },
 }));
 
-vi.mock("@/features/planner/components/Providers", () => ({
-  Providers: ({ children }: { children: ReactNode }) => (
-    <div data-testid="planner-providers">{children}</div>
-  ),
-}));
-
-vi.mock("@/features/planner/onboarding/ProjectSetupGate", () => ({
-  ProjectSetupGate: ({
-    guestMode = false,
-    planId,
-    children,
-  }: {
-    guestMode?: boolean;
-    planId?: string;
-    children: ReactNode;
-  }) => (
-    <div
-      data-testid="project-setup-gate"
-      data-guest-mode={guestMode ? "true" : "false"}
-      data-plan-id={planId ?? ""}
-    >
-      {children}
-    </div>
-  ),
-}));
-
-vi.mock("@/features/planner/ui/PlannerCanvasEnhancements", () => ({
-  PlannerCanvasEnhancements: ({ guestMode = false }: { guestMode?: boolean }) => (
-    <div
-      data-testid="planner-canvas-enhancements"
-      data-guest-mode={guestMode ? "true" : "false"}
-    />
-  ),
-}));
+import * as ProvidersMod from "@/features/planner/components/Providers";
+import * as ProjectSetupGateMod from "@/features/planner/onboarding/ProjectSetupGate";
+import * as PlannerCanvasEnhancementsMod from "@/features/planner/ui/PlannerCanvasEnhancements";
 
 import { PlannerWorkspaceRoute } from "@/features/planner/ui/PlannerWorkspaceRoute";
 
 describe("PlannerWorkspaceRoute", () => {
+  beforeEach(() => {
+    vi.spyOn(ProvidersMod, "Providers").mockImplementation(({ children }: { children: ReactNode }) => (
+      <div data-testid="planner-providers">{children}</div>
+    ));
+
+    vi.spyOn(ProjectSetupGateMod, "ProjectSetupGate").mockImplementation(({ guestMode = false, planId, children }: { guestMode?: boolean; planId?: string; children: ReactNode }) => (
+      <div data-testid="project-setup-gate" data-guest-mode={guestMode ? "true" : "false"} data-plan-id={planId ?? ""}>
+        {children}
+      </div>
+    ));
+
+    vi.spyOn(PlannerCanvasEnhancementsMod, "PlannerCanvasEnhancements").mockImplementation(({ guestMode = false }: { guestMode?: boolean }) => (
+      <div data-testid="planner-canvas-enhancements" data-guest-mode={guestMode ? "true" : "false"} />
+    ));
+  });
+
   afterEach(() => {
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("wires member workspace mode through the route shell", () => {

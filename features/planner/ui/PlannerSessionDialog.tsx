@@ -64,6 +64,7 @@ interface PlannerSessionDialogProps {
   onUpsertManagedProduct?: (product: PlannerManagedProductWrite) => void | Promise<void>;
   onDeleteManagedProduct?: (id: string) => void | Promise<void>;
   onDismissError?: () => void;
+  isOnline?: boolean;
 }
 
 type ManagedProductDraft = {
@@ -192,6 +193,7 @@ export function PlannerSessionDialog({
   onUpsertManagedProduct,
   onDeleteManagedProduct,
   onDismissError,
+  isOnline = true,
 }: PlannerSessionDialogProps) {
   const [draft, setDraft] = useState<ManagedProductDraft>(() => emptyDraft());
   const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
@@ -232,9 +234,22 @@ export function PlannerSessionDialog({
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-[color:var(--planner-accent-soft)] bg-[color:var(--planner-accent-soft)]/45 px-2.5 py-1 typ-caption font-semibold uppercase tracking-[0.18em] text-[color:var(--planner-accent-strong)]">Session Hub</span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-theme-soft bg-white/80 px-2.5 py-1 typ-caption font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-primary)]">
-                    {isAuthenticated ? <Cloud className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
-                    {isAuthenticated ? "Cloud Ready" : "Draft Mode"}
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 typ-caption font-semibold uppercase tracking-[0.14em] ${
+                    !isOnline
+                      ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                      : "border-theme-soft bg-white/80 text-[color:var(--planner-primary)]"
+                  }`}>
+                    {!isOnline ? (
+                      <>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        Offline Draft
+                      </>
+                    ) : (
+                      <>
+                        {isAuthenticated ? <Cloud className="h-3 w-3" /> : <ShieldCheck className="h-3 w-3" />}
+                        {isAuthenticated ? "Cloud Ready" : "Draft Mode"}
+                      </>
+                    )}
                   </span>
                   {isAdmin ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-theme-soft bg-white/80 px-2.5 py-1 typ-caption font-semibold uppercase tracking-[0.14em] text-[color:var(--planner-primary)]">
@@ -358,7 +373,7 @@ export function PlannerSessionDialog({
                   <input id="planner-plan-name" value={planName} onChange={(event) => onPlanNameChange(event.target.value)} placeholder="Untitled plan" className="mt-2 w-full rounded-[1rem] border border-theme-soft bg-[color:var(--planner-panel-strong)] px-4 py-3 typ-caption-lg text-body outline-none transition focus:border-[color:var(--planner-primary)]" />
                 </div>
                 <div className="grid gap-3">
-                  <button type="button" onClick={onSaveCloud} disabled={!isAuthenticated || isBusy} className={`${primary} bg-[color:var(--planner-primary)] text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-surface-muted)] disabled:text-[color:var(--planner-text-subtle)]`}><Save className="h-4 w-4" /> {t("saveCloud")}</button>
+                  <button type="button" onClick={onSaveCloud} disabled={!isAuthenticated || isBusy || !isOnline} className={`${primary} bg-[color:var(--planner-primary)] text-white hover:bg-[color:var(--planner-primary-hover)] disabled:bg-[color:var(--planner-surface-muted)] disabled:text-[color:var(--planner-text-subtle)]`}><Save className="h-4 w-4" /> {t("saveCloud")}{!isOnline && " (Offline)"}</button>
                   <button type="button" onClick={onSaveDraft} disabled={isBusy} className={accent}><Download className="h-4 w-4" /> {t("saveDraft")}</button>
                   {onSaveAsNewSession ? <button type="button" onClick={onSaveAsNewSession} disabled={isBusy} className={secondary}><CopyPlus className="h-4 w-4" /> {t("saveAsNew")}</button> : null}
                   <button type="button" onClick={onImport} disabled={isBusy} className={secondary}><Import className="h-4 w-4" /> {t("importJson")}</button>
@@ -366,7 +381,13 @@ export function PlannerSessionDialog({
                   {onOpen3d ? <button type="button" onClick={onOpen3d} disabled={!canOpen3d || isBusy} className={secondary}><FolderOpen className="h-4 w-4" /> {t("open3d")}</button> : null}
                 </div>
                 <div className="rounded-[1.1rem] border border-theme-soft bg-[color:var(--planner-surface-soft)] px-4 py-3 typ-caption-lg text-body">
-                  {isAuthenticated ? isAdmin ? "Authenticated admin session detected. Admin oversight uses the shared browser Supabase client plus RLS." : "Authenticated session detected. Cloud save/load follow the shared Supabase identity model." : "No authenticated session detected. Cloud save is disabled, but local draft and import still work."}
+                  {!isOnline ? (
+                    <span className="text-amber-600 dark:text-amber-400 font-semibold">You are offline. Cloud operations are temporarily disabled, but local autosave and drafts are safe and fully operational.</span>
+                  ) : isAuthenticated ? (
+                    isAdmin ? "Authenticated admin session detected. Admin oversight uses the shared browser Supabase client plus RLS." : "Authenticated session detected. Cloud save/load follow the shared Supabase identity model."
+                  ) : (
+                    "No authenticated session detected. Cloud save is disabled, but local draft and import still work."
+                  )}
                 </div>
                 {errorMessage ? <div className="rounded-[1.1rem] border border-[color:rgba(151,43,26,0.22)] bg-[linear-gradient(180deg,rgba(151,43,26,0.08)_0%,rgba(255,255,255,0.6)_100%)] px-4 py-3"><div className="flex items-start justify-between gap-3"><div><p className="typ-caption font-semibold uppercase tracking-[0.12em] text-[color:var(--planner-accent-strong)]">Planner error</p><p className="mt-1 typ-caption-lg text-body">{errorMessage}</p></div>{onDismissError ? <button type="button" onClick={onDismissError} className="rounded-full border border-[color:rgba(151,43,26,0.18)] bg-white/70 p-1.5 text-[color:var(--planner-accent-strong)] transition hover:bg-white" aria-label="Dismiss planner error"><X className="h-4 w-4" /></button> : null}</div></div> : null}
                 {statusMessage ? <div className="rounded-[1.1rem] border border-theme-soft bg-[color:var(--planner-surface-soft)] px-4 py-3"><div className="flex items-start gap-2"><BadgeCheck className="mt-0.5 h-4 w-4 text-[color:var(--planner-primary)]" /><p className="typ-caption-lg text-body">{statusMessage}</p></div></div> : null}

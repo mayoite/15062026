@@ -13,21 +13,7 @@ vi.mock("@/lib/auth/plannerSession", () => ({
   getOptionalPlannerUser,
 }));
 
-vi.mock("@/features/planner/ui/PlannerWorkspaceRoute", () => ({
-  PlannerWorkspaceRoute: ({
-    guestMode = false,
-    planId,
-  }: {
-    guestMode?: boolean;
-    planId?: string;
-  }) => (
-    <div
-      data-testid="planner-workspace-route"
-      data-guest-mode={guestMode ? "true" : "false"}
-      data-plan-id={planId ?? ""}
-    />
-  ),
-}));
+import * as PlannerWorkspaceRouteMod from "@/features/planner/ui/PlannerWorkspaceRoute";
 
 /**
  * Autosave identity contract:
@@ -37,6 +23,14 @@ vi.mock("@/features/planner/ui/PlannerWorkspaceRoute", () => ({
  *     to that plan, so distinct cloud plans cannot overwrite each other.
  *   - A member with no plan id keeps the single legacy member slot.
  */
+import { beforeEach } from "vitest";
+
+beforeEach(() => {
+  vi.spyOn(PlannerWorkspaceRouteMod, "PlannerWorkspaceRoute").mockImplementation(({ guestMode = false, planId }: { guestMode?: boolean; planId?: string }) => (
+    <div data-testid="planner-workspace-route" data-guest-mode={guestMode ? "true" : "false"} data-plan-id={planId ?? ""} />
+  ));
+});
+
 describe("getPlannerProjectId", () => {
   it("scopes the member key per plan id", () => {
     expect(getPlannerProjectId(false, "A")).toBe(`${MEMBER_PROJECT_ID}:A`);

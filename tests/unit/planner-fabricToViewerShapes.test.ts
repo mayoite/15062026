@@ -75,3 +75,4 @@ describe("fabricSerializedToViewerShapes", () => {
     expect(fabricSerializedToViewerShapes(null)).toEqual([]);
   });
 });
+

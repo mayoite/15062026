@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { applySuggestedLayout } from "@/features/planner/ai/applySuggestedLayout";
 import { suggestLayoutGridPack } from "@/features/planner/ai/spaceSuggest";
 import type { SpaceSuggestInput } from "@/features/planner/ai/types";
-import { getPlannerFabricRuntime, setPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
+import { type getPlannerFabricRuntime, setPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 
 describe("applySuggestedLayout", () => {
   let mockRuntime: ReturnType<typeof getPlannerFabricRuntime>;
@@ -14,7 +14,7 @@ describe("applySuggestedLayout", () => {
       insertObject: vi.fn((payload) => {
         insertedObjects.push(payload);
       }),
-    } as any;
+    } as unknown as ReturnType<typeof getPlannerFabricRuntime>;
     setPlannerFabricRuntime(mockRuntime);
   });
 
@@ -45,7 +45,7 @@ describe("applySuggestedLayout", () => {
 
     const wallObjects = insertedObjects.filter((obj) => obj.type === "WALL");
     expect(wallObjects.length).toBeGreaterThanOrEqual(4);
-    expect(wallObjects.every((w) => (w.object as any).name?.startsWith("WALL:"))).toBe(true);
+    expect(wallObjects.every((w) => (w.object as { name?: string }).name?.startsWith("WALL:"))).toBe(true);
   });
 
   it("places furniture at explicit coordinates", () => {
@@ -59,7 +59,7 @@ describe("applySuggestedLayout", () => {
 
     const genericObjects = insertedObjects.filter((obj) => obj.type === "GENERIC");
     expect(genericObjects.length).toBeGreaterThan(0);
-    expect(genericObjects.every((g) => (g.object as any).left !== undefined && (g.object as any).top !== undefined)).toBe(true);
+    expect(genericObjects.every((g) => (g.object as { left?: number, top?: number }).left !== undefined && (g.object as { left?: number, top?: number }).top !== undefined)).toBe(true);
   });
 
   it("handles empty layout gracefully", () => {

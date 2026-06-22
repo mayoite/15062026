@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { insertEvent } from '@/lib/audit/auditRepository'
 import { rateLimit } from "@/lib/rateLimit"
 import { createServerClient } from "@/lib/supabase/server"
+import { validateCsrfRequest } from "@/lib/security/csrf"
 
 function getRequestIp(req: Request): string {
   const forwarded = req.headers.get("x-forwarded-for")
@@ -25,6 +26,14 @@ export async function POST(req: Request) {
     const userId = authData.user?.id?.trim() || ""
     if (authError || !userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const isCsrfValid = await validateCsrfRequest(req);
+    if (!isCsrfValid) {
+      return NextResponse.json(
+        { error: "Invalid or missing CSRF token" },
+        { status: 403 },
+      );
     }
 
     const body = await req.json().catch(() => ({}))

@@ -15,18 +15,6 @@ vi.mock("@/components/ui/Logo", () => ({
   OneAndOnlyLogo: () => <span data-testid="logo" />,
 }));
 
-vi.mock("@/features/planner/components/WorkspaceThemeProvider", () => ({
-  useTheme: () => ({ resolvedTheme: "light" }),
-}));
-
-vi.mock("@/features/planner/components/PlannerThemeToggle", () => ({
-  PlannerThemeToggle: () => <button type="button">Theme</button>,
-}));
-
-vi.mock("@/features/planner/ui/PlannerSaveIndicator", () => ({
-  PlannerSaveIndicator: () => <span>Saved</span>,
-}));
-
 describe("PlannerTopBar", () => {
   const baseProps = {
     guestMode: false,

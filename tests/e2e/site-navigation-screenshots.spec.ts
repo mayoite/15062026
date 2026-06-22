@@ -38,13 +38,17 @@ for (const [viewportKey, viewport] of Object.entries(VIEWPORTS) as [
     test("02 products catalog", async ({ page }) => {
       await page.goto("/products");
       await page.getByRole("heading", { level: 1, name: /Products selected for performance/i }).waitFor();
-      await page.screenshot({ path: shotPath(viewportKey, "02-products.png"), fullPage: true });
+      const outPath = shotPath(viewportKey, "02-products.png");
+      await page.screenshot({ path: outPath, fullPage: true });
+      expect(fs.existsSync(outPath)).toBe(true);
     });
 
     test("03 planner landing", async ({ page }) => {
       await page.goto("/planner");
       await page.getByRole("heading", { level: 1 }).waitFor();
-      await page.screenshot({ path: shotPath(viewportKey, "03-planner.png"), fullPage: true });
+      const outPath = shotPath(viewportKey, "03-planner.png");
+      await page.screenshot({ path: outPath, fullPage: true });
+      expect(fs.existsSync(outPath)).toBe(true);
     });
 
     if (viewportKey === "iphone" || viewportKey === "android") {
@@ -54,10 +58,12 @@ for (const [viewportKey, viewport] of Object.entries(VIEWPORTS) as [
         await page
           .getByRole("navigation", { name: "Mobile primary navigation" })
           .waitFor({ state: "visible" });
+        const outPath = shotPath(viewportKey, "04-mobile-drawer-open.png");
         await page.screenshot({
-          path: shotPath(viewportKey, "04-mobile-drawer-open.png"),
+          path: outPath,
           fullPage: true,
         });
+        expect(fs.existsSync(outPath)).toBe(true);
       });
 
       test("05 products via mobile nav", async ({ page }) => {
@@ -67,10 +73,12 @@ for (const [viewportKey, viewport] of Object.entries(VIEWPORTS) as [
         await mobileNav.getByRole("button", { name: "Products" }).click();
         await mobileNav.getByRole("link", { name: "All Products", exact: true }).click();
         await page.getByRole("heading", { level: 1, name: /Products selected for performance/i }).waitFor();
+        const outPath = shotPath(viewportKey, "05-products-via-mobile-nav.png");
         await page.screenshot({
-          path: shotPath(viewportKey, "05-products-via-mobile-nav.png"),
+          path: outPath,
           fullPage: true,
         });
+        expect(fs.existsSync(outPath)).toBe(true);
       });
     }
 
@@ -79,10 +87,12 @@ for (const [viewportKey, viewport] of Object.entries(VIEWPORTS) as [
         await page.goto("/");
         await page.getByRole("button", { name: "Products" }).hover();
         await page.locator("#products-mega-menu").waitFor({ state: "visible" });
+        const outPath = shotPath(viewportKey, "04-mega-menu-open.png");
         await page.screenshot({
-          path: shotPath(viewportKey, "04-mega-menu-open.png"),
+          path: outPath,
           fullPage: true,
         });
+        expect(fs.existsSync(outPath)).toBe(true);
       });
 
       test("05 products via mega menu", async ({ page }) => {
@@ -92,10 +102,12 @@ for (const [viewportKey, viewport] of Object.entries(VIEWPORTS) as [
         await megaMenu.waitFor({ state: "visible" });
         await megaMenu.getByRole("link", { name: "All Products >" }).click();
         await page.getByRole("heading", { level: 1, name: /Products selected for performance/i }).waitFor();
+        const outPath = shotPath(viewportKey, "05-products-via-mega-menu.png");
         await page.screenshot({
-          path: shotPath(viewportKey, "05-products-via-mega-menu.png"),
+          path: outPath,
           fullPage: true,
         });
+        expect(fs.existsSync(outPath)).toBe(true);
       });
     }
 
@@ -103,10 +115,12 @@ for (const [viewportKey, viewport] of Object.entries(VIEWPORTS) as [
       test("04 tablet header", async ({ page }) => {
         await page.goto("/");
         await page.locator("#home-hero").waitFor({ state: "visible" });
+        const outPath = shotPath(viewportKey, "04-tablet-header.png");
         await page.screenshot({
-          path: shotPath(viewportKey, "04-tablet-header.png"),
+          path: outPath,
           fullPage: false,
         });
+        expect(fs.existsSync(outPath)).toBe(true);
       });
 
       test("05 tablet products fold", async ({ page }) => {
@@ -114,10 +128,12 @@ for (const [viewportKey, viewport] of Object.entries(VIEWPORTS) as [
         await page.getByRole("heading", { level: 2, name: /Browse by workspace need/i }).waitFor();
         const categoryGrid = page.locator('a[href^="/products/"]').first();
         await categoryGrid.scrollIntoViewIfNeeded();
+        const outPath = shotPath(viewportKey, "05-products-category-grid.png");
         await page.screenshot({
-          path: shotPath(viewportKey, "05-products-category-grid.png"),
+          path: outPath,
           fullPage: false,
         });
+        expect(fs.existsSync(outPath)).toBe(true);
       });
     }
   });

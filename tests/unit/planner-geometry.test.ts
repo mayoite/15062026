@@ -239,3 +239,4 @@ describe('removeTagCaseInsensitive', () => {
     expect(removeTagCaseInsensitive(['a', 'b'], '')).toEqual(['a', 'b']);
   });
 });
+

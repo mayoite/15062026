@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { THEME_PRESETS, getPresetById } from "@/lib/theme/presets";
 import { enforceAdminRateLimit, requireAdminSession } from "@/app/api/admin/_lib/server";
+import { validateCsrfRequest } from "@/lib/security/csrf";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,14 @@ export async function POST(request: NextRequest) {
 
     const authError = await requireAdminSession();
     if (authError) return authError;
+
+    const isCsrfValid = await validateCsrfRequest(request);
+    if (!isCsrfValid) {
+      return NextResponse.json(
+        { error: "Invalid or missing CSRF token" },
+        { status: 403 },
+      );
+    }
 
     const body = await request.json();
     const { presetId } = body as { presetId?: string };

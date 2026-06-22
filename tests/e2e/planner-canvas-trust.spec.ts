@@ -3,7 +3,6 @@ import { expect, test } from "@playwright/test";
 import { enterGuestPlannerWorkspace } from "./guestProjectSetup";
 import {
   dragOnCanvas,
-  expectObjectCountAtLeast,
   getObjectCount,
   selectPlannerTool,
   waitForPlannerCanvas,
@@ -34,7 +33,7 @@ test.describe("Planner canvas trust — WS1", () => {
     const canvas = page.locator('[data-testid="planner-2d-canvas"] canvas');
     await canvas.focus();
     
-    const initialZoom = await page.evaluate(() => {
+    const _initialZoom = await page.evaluate(() => {
       return document.querySelector('[data-testid="planner-2d-canvas"]')?.getAttribute('data-zoom');
     });
     

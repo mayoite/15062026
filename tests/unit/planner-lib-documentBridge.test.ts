@@ -6,7 +6,7 @@ import {
 } from "@/features/planner/lib/documentBridge";
 import { getPlannerSceneEnvelope, isPlannerSceneEnvelope } from "@/features/planner/model";
 import { createPlannerDocument } from "@/features/planner/model";
-import { resetFabricRuntimeState, seedFabricRuntime } from "../integration/planner-fabric-mockRuntime";
+import { resetFabricRuntimeState, seedFabricRuntime } from "../../features/planner/integration/planner-fabric-mockRuntime";
 
 describe("planner document bridge", () => {
   afterEach(() => {
@@ -61,3 +61,4 @@ describe("planner document bridge", () => {
     expect(loadPlannerDocumentIntoEditor(null, document)).toBe(false);
   });
 });
+

@@ -1,32 +1,17 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useFloorplan } from "./context/FloorplanContext";
 import { FloorplanCanvas } from "./FloorplanCanvas";
 import { FabricCanvasContextMenu } from "./FabricCanvasContextMenu";
-import { plannerUnitSystemToMeasurementUnit, formatLength } from "@/features/planner/lib/measurements";
-import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
 
 type FabricCanvasWorkspaceProps = {
   onExport?: () => void;
-  leftPanel?: ReactNode;
-  leftOpen?: boolean;
-  leftCollapsed?: boolean;
 };
-
-const FABRIC_TO_MM = 10;
 
 export function FabricCanvasWorkspace({
   onExport: _onExport,
-  leftPanel,
-  leftOpen = false,
-  leftCollapsed = false,
 }: FabricCanvasWorkspaceProps) {
   const app = useFloorplan();
-  const unitSystem = usePlannerWorkspaceStore((s) => s.unitSystem);
-  const measurementUnit = plannerUnitSystemToMeasurementUnit(unitSystem);
-
-  const formatDim = (value: number) => formatLength(Math.round(value * FABRIC_TO_MM), measurementUnit);
 
   // P7-04: describe canvas state for screen readers.
   const objectCount = app.selections.length > 0

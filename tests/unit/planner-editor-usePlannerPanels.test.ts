@@ -13,3 +13,4 @@ describe("getStepLeftOpenDefault", () => {
     expect(getStepLeftOpenDefault("review", false)).toBe(false);
   });
 });
+

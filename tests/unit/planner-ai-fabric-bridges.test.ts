@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
   applySuggestedLayout,
@@ -9,7 +9,7 @@ import type { SuggestedLayoutJson } from "@/features/planner/ai/types";
 import {
   resetFabricRuntimeState,
   seedFabricRuntime,
-} from "../integration/planner-fabric-mockRuntime";
+} from "../../features/planner/integration/planner-fabric-mockRuntime";
 import { setPlannerFabricRuntimeState } from "@/features/planner/canvas-fabric";
 import { catalogMmToCanvasCm } from "@/features/planner/catalog/catalogBlockBridge";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
@@ -200,3 +200,4 @@ describe("planner ai fabric bridges", () => {
     });
   });
 });
+

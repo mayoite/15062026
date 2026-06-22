@@ -55,9 +55,9 @@ describe("PlannerErrorBoundary", () => {
       </PlannerErrorBoundary>,
     );
     expect(errorSpy).toHaveBeenCalledWith(
-      "[planner-error-boundary]",
-      "surface",
+      "[surface] Logging caught error:",
       expect.any(Error),
+      expect.any(String),
       expect.any(Object),
     );
   });

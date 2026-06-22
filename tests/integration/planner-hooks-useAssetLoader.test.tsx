@@ -311,6 +311,7 @@ describe("useAssetLoader", () => {
 
     unmount();
     await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(loadCatalog).toHaveBeenCalledTimes(1);
   });
 
   it("cancels stale catalog loads on unmount", async () => {
@@ -333,5 +334,6 @@ describe("useAssetLoader", () => {
 
     unmount();
     resolveCatalog([createCatalogItem({ id: "desk-1", name: "Late Desk" })]);
+    expect(loadCatalog).toHaveBeenCalledTimes(1);
   });
 });

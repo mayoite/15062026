@@ -40,3 +40,4 @@ describe("catalog SVG visual QA gate", () => {
     expect(failures, failures.slice(0, 8).join("\n")).toEqual([]);
   });
 });
+

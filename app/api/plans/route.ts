@@ -10,6 +10,7 @@ import {
   savePlannerDocumentToStore,
 } from "@/features/planner/store/plannerSaves";
 import { rateLimit } from "@/lib/rateLimit";
+import { validateCsrfRequest } from "@/lib/security/csrf";
 
 type PublishBody = {
   id?: string;
@@ -67,6 +68,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Too many requests" },
       { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
+    );
+  }
+
+  const isCsrfValid = await validateCsrfRequest(req);
+  if (!isCsrfValid) {
+    return NextResponse.json(
+      { error: "Invalid or missing CSRF token" },
+      { status: 403 },
     );
   }
 

@@ -15,9 +15,14 @@ export default defineConfig({
     },
   },
   test: {
+    pool: 'forks',
     globals: true,
     environment: 'happy-dom',
     setupFiles: ['./tests/setup.ts'],
+    reporters: ['default', 'json'],
+    outputFile: {
+      json: path.resolve(__dirname, 'results/tests/vitest-site-results.json'),
+    },
     include: [
       'tests/**/*.test.ts',
       'tests/**/*.test.tsx',

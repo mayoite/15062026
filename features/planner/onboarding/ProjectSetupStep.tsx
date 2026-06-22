@@ -21,7 +21,7 @@ type ProjectSetupStepProps = {
   onComplete: (metadata: PlannerProjectMetadata) => void;
 };
 
-export function ProjectSetupStep({ guestMode = false, planId, onComplete }: ProjectSetupStepProps) {
+export function ProjectSetupStep({ guestMode = false, planId: _planId, onComplete }: ProjectSetupStepProps) {
   const [draft, setDraft] = useState<PlannerProjectSetupDraft>(() =>
     createDefaultProjectSetupDraft({ guestMode }),
   );

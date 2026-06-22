@@ -11,3 +11,4 @@ describe("planner calibration scale", () => {
     expect(millimetersToCanvasUnits(1200)).toBe(120);
   });
 });
+

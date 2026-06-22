@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutTemplate, MousePointerClick, Upload } from "lucide-react";
+import { LayoutTemplate, MousePointerClick } from "lucide-react";
 
 interface PlannerEmptyCanvasProps {
   guestMode?: boolean;
@@ -13,7 +13,7 @@ interface PlannerEmptyCanvasProps {
 
 export function PlannerEmptyCanvas({
   guestMode = false,
-  allowCanvasDragThrough = false,
+  allowCanvasDragThrough: _allowCanvasDragThrough = false,
   onDrawWalls,
   onOpenTemplates,
 

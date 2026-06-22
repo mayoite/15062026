@@ -3,21 +3,12 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 
 import { ProjectSetupStep } from "@/features/planner/onboarding/ProjectSetupStep";
 
-const setupMocks = vi.hoisted(() => ({
-  applyProjectSetup: vi.fn(),
-}));
-
-vi.mock("@/features/planner/onboarding/projectSetup", async (importOriginal) => {
-  const actual = await importOriginal<Record<string, unknown>>();
-  return {
-    ...actual,
-    applyProjectSetup: setupMocks.applyProjectSetup,
-  };
-});
+import * as projectSetupMod from "@/features/planner/onboarding/projectSetup";
 
 describe("ProjectSetupStep", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(projectSetupMod, "applyProjectSetup").mockImplementation(vi.fn());
   });
 
   it("keeps submit disabled until hydration completes", async () => {
@@ -48,7 +39,7 @@ describe("ProjectSetupStep", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /start placing furniture/i }));
 
-    await waitFor(() => expect(setupMocks.applyProjectSetup).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(projectSetupMod.applyProjectSetup).toHaveBeenCalledTimes(1));
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
 });

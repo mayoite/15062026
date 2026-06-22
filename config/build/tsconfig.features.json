@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "tsBuildInfoFile": "../../results/typescript/features.tsbuildinfo"
   },
   "include": [
     "next-env.d.ts",

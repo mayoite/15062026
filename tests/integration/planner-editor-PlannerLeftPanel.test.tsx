@@ -3,14 +3,6 @@ import { describe, expect, it, vi } from "vitest";
 
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
 
-vi.mock("@/features/planner/catalog/CatalogPanel", () => ({
-  CatalogPanel: () => <div>Browse Oando SVG symbols — click or drag desks, seating, and storage onto the canvas.</div>,
-}));
-
-vi.mock("@/features/planner/ai/AIAssistDrawer", () => ({
-  AIAssistDrawer: () => <div>AI assist drawer</div>,
-}));
-
 describe("PlannerLeftPanel", () => {
   it("switches tabs across the guided planner views", () => {
     render(
@@ -23,10 +15,11 @@ describe("PlannerLeftPanel", () => {
     );
 
     // Default tab for "draw" step is "library"
-    expect(screen.getByText(/Browse Oando SVG symbols/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Search SKU, name, material/i)).toBeInTheDocument();
+    
     // Switch to AI Assist tab
     fireEvent.click(screen.getByRole("tab", { name: /AI Assist/i }));
-    expect(screen.getByText("AI assist drawer")).toBeInTheDocument();
+    expect(screen.getByText(/Use AI for layout ideas, then return to Library to keep editing/i)).toBeInTheDocument();
   });
 
   it("uses controlled tab state when provided", () => {
@@ -40,5 +33,7 @@ describe("PlannerLeftPanel", () => {
         onDragStart={vi.fn()}
       />,
     );
+    
+    expect(screen.getByRole("tab", { name: /Library/i })).toHaveAttribute("aria-selected", "true");
   });
 });

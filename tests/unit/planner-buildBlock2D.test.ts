@@ -213,3 +213,4 @@ describe("buildBlock2D", () => {
     expect(block!.prims.some((p) => p.kind === "circle")).toBe(true);
   });
 });
+

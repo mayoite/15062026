@@ -4,12 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { PlannerWorkflowPanel } from "@/features/planner/editor/PlannerWorkflowPanel";
 import { createPlannerEditorMock } from "./planner-editor-mockEditor";
 
-vi.mock("@/features/planner/lib/compliance", () => ({
-  runPlannerComplianceCheck: vi.fn(() => [
-    "CRITICAL: overlap",
-    "COMPLIANCE WARNING: clearance below ADA minimum.",
-  ]),
-}));
+import * as complianceMod from "@/features/planner/lib/compliance";
 
 describe("PlannerWorkflowPanel", () => {
   const metrics = {
@@ -23,6 +18,10 @@ describe("PlannerWorkflowPanel", () => {
   };
 
   it("shows compliance findings and advances workflow", () => {
+    vi.spyOn(complianceMod, "runPlannerComplianceCheck").mockReturnValue([
+      "CRITICAL: overlap",
+      "COMPLIANCE WARNING: clearance below ADA minimum.",
+    ]);
     const onStepChange = vi.fn();
     const onOpenExport = vi.fn();
     const editor = createPlannerEditorMock();
@@ -43,8 +42,7 @@ describe("PlannerWorkflowPanel", () => {
   });
 
   it("opens export on review step when allowed", async () => {
-    const { runPlannerComplianceCheck } = await import("@/features/planner/lib/compliance");
-    vi.mocked(runPlannerComplianceCheck).mockReturnValueOnce([]);
+    vi.spyOn(complianceMod, "runPlannerComplianceCheck").mockReturnValueOnce([]);
 
     const onOpenExport = vi.fn();
     const editor = createPlannerEditorMock();

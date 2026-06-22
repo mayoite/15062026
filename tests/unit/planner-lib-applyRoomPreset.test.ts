@@ -30,3 +30,4 @@ describe("planner apply room preset", () => {
     expect(() => applyRoomPreset(null, ROOM_PRESETS[0])).not.toThrow();
   });
 });
+
