@@ -26,6 +26,9 @@ import {
   PLANNER_MAX_CANVAS_UNITS,
   PLANNER_MM_PER_CANVAS_UNIT,
   PLANNER_VIEWPORT,
+  PLANNER_EMPTY_VIEWPORT_FIT_UNITS,
+  clampViewportTransform,
+  clampCanvasPoint,
   plannerCanvasWorldCenter,
 } from '@/features/planner/lib/canvasBounds';
 
@@ -63,6 +66,7 @@ export function createFloorplanCanvasApi(
   let copied: PlannerFabricObject | null = null;
   let selections: FabricObject[] = [];
   let CTRL_KEY_DOWN = false;
+  let SPACE_PAN_DOWN = false;
   let DEFAULT_CHAIR: Record<string, unknown> | null = null;
   let REMOVE_DW = false;
   let gridPattern: Pattern | null = null;
@@ -143,6 +147,9 @@ export function createFloorplanCanvasApi(
       } else if (key === "g" || key === "G") {
         group();
       }
+    } else if (key === " " || key === "Spacebar") {
+      event.preventDefault();
+      SPACE_PAN_DOWN = true;
     } else if (key === "Delete" || key === "Backspace") {
       deleteOp();
     } else if (key === "ArrowLeft") {
@@ -162,6 +169,25 @@ export function createFloorplanCanvasApi(
   function onKeyUp(event: KeyboardEvent) {
     if (event.key === 'Control') {
       CTRL_KEY_DOWN = false;
+    }
+    if (event.key === ' ' || event.key === 'Spacebar') {
+      SPACE_PAN_DOWN = false;
+      drawToolsController?.applyCanvasMode();
+    }
+  }
+
+  function clientToSceneUnits(clientX: number, clientY: number): { x: number; y: number } | null {
+    if (!view) return null;
+    view.calcOffset();
+    try {
+      const point = view.getScenePoint(
+        new PointerEvent("pointermove", { clientX, clientY, bubbles: true }),
+      );
+      const clamped = clampCanvasPoint({ x: point.x, y: point.y });
+      const origin = roomOrigin();
+      return { x: clamped.x - origin, y: clamped.y - origin };
+    } catch {
+      return null;
     }
   }
 
@@ -249,6 +275,63 @@ export function createFloorplanCanvasApi(
     if (dx !== 0) target.left = (target.left ?? 0) + dx;
     if (dy !== 0) target.top = (target.top ?? 0) + dy;
     target.setCoords();
+  }
+
+  function applyViewportClamp() {
+    if (!view) return;
+    const vpt = view.viewportTransform;
+    if (!vpt) return;
+    const zoom = view.getZoom();
+    const clamped = clampViewportTransform(
+      view.getWidth(),
+      view.getHeight(),
+      zoom,
+      vpt[4],
+      vpt[5],
+    );
+    if (clamped.translateX !== vpt[4] || clamped.translateY !== vpt[5]) {
+      view.setViewportTransform([zoom, 0, 0, zoom, clamped.translateX, clamped.translateY]);
+      view.requestRenderAll();
+    }
+  }
+
+  function fitViewportToWorldRect(
+    left: number,
+    top: number,
+    width: number,
+    height: number,
+    padding = PLANNER_VIEWPORT.fitPaddingPx,
+  ): number {
+    if (!view || !canvasEl || width <= 0 || height <= 0) return ctxRef.current.zoom;
+
+    resizeViewportToContainer();
+    const viewportW = view.getWidth();
+    const viewportH = view.getHeight();
+    const center = left + width / 2;
+    const middle = top + height / 2;
+    const zoom = Math.min(
+      (viewportW - padding * 2) / width,
+      (viewportH - padding * 2) / height,
+      PLANNER_VIEWPORT.fitMaxZoomFactor,
+    );
+    const zoomPct = Math.max(
+      PLANNER_VIEWPORT.zoomMinPercent,
+      Math.min(PLANNER_VIEWPORT.zoomMaxPercent, Math.round(zoom * 100)),
+    );
+    const zoomFactor = zoomPct / 100;
+    let tx = viewportW / 2 - center * zoomFactor;
+    let ty = viewportH / 2 - middle * zoomFactor;
+    const clamped = clampViewportTransform(viewportW, viewportH, zoomFactor, tx, ty, padding);
+    tx = clamped.translateX;
+    ty = clamped.translateY;
+
+    view.setViewportTransform([zoomFactor, 0, 0, zoomFactor, tx, ty]);
+    ctxRef.current.zoom = zoomPct;
+    ctxRef.current.syncZoom(zoomPct);
+    view.calcOffset();
+    view.requestRenderAll();
+    applyViewportClamp();
+    return zoomPct;
   }
 
   function setCanvasView() {
@@ -398,6 +481,8 @@ export function createFloorplanCanvasApi(
       getDrawColor: () => drawColor,
       getDrawFillColor: () => drawFillColor,
       roomEditActive: () => false,
+      spacePanActive: () => SPACE_PAN_DOWN,
+      clampViewport: applyViewportClamp,
       saveState,
     });
 
@@ -870,6 +955,7 @@ export function createFloorplanCanvasApi(
     const center = new Point(view.getWidth() / 2, view.getHeight() / 2);
     view.zoomToPoint(center, zoom);
     view.calcOffset();
+    applyViewportClamp();
     view.requestRenderAll();
 
     const canvasContainer = document.querySelector('[data-testid="planner-2d-canvas"]');
@@ -960,12 +1046,8 @@ export function createFloorplanCanvasApi(
 
     const objects = view.getObjects();
     if (objects.length === 0) {
-      view.setViewportTransform([1, 0, 0, 1, 0, 0]);
-      view.setZoom(1);
-      ctxRef.current.zoom = PLANNER_VIEWPORT.defaultZoomPercent;
-      ctxRef.current.syncZoom(PLANNER_VIEWPORT.defaultZoomPercent);
-      view.requestRenderAll();
-      return PLANNER_VIEWPORT.defaultZoomPercent;
+      const fitUnits = Math.min(PLANNER_EMPTY_VIEWPORT_FIT_UNITS, PLANNER_MAX_CANVAS_UNITS);
+      return fitViewportToWorldRect(0, 0, fitUnits, fitUnits, padding);
     }
 
     const bound = getBoundingRect(objects);
@@ -990,6 +1072,7 @@ export function createFloorplanCanvasApi(
     ctxRef.current.zoom = zoomPct;
     ctxRef.current.syncZoom(zoomPct);
     view.calcOffset();
+    applyViewportClamp();
     view.requestRenderAll();
 
     const canvasContainer = document.querySelector('[data-testid="planner-2d-canvas"]');
@@ -1021,6 +1104,7 @@ export function createFloorplanCanvasApi(
     ctxRef.current.zoom = nextZoomPct;
     ctxRef.current.syncZoom(nextZoomPct);
     view.calcOffset();
+    applyViewportClamp();
     view.requestRenderAll();
   }
 
@@ -1229,6 +1313,7 @@ export function createFloorplanCanvasApi(
     resizeObject,
     setObjectRotation,
     setObjectLock,
+    clientToSceneUnits,
   };
   return api;
 }

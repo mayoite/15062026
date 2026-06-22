@@ -22,6 +22,7 @@
     "fitMaxZoomFactor": 1.5,
     "wheelZoomMin": 0.2,
     "wheelZoomMax": 1.5,
-    "defaultZoomPercent": 100
+    "defaultZoomPercent": 100,
+    "emptyViewportFitMeters": 30
   }
 }

@@ -72,6 +72,7 @@ export type FloorplanCanvasApi = {
   resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
   setObjectRotation: (shapeId: string, angleDeg: number) => void;
   setObjectLock: (shapeId: string, locked: boolean) => void;
+  clientToSceneUnits: (clientX: number, clientY: number) => { x: number; y: number } | null;
 };
 
 type FloorplanContextValue = {
@@ -135,6 +136,7 @@ type FloorplanContextValue = {
   resizeObject: (shapeId: string, widthMm: number, heightMm: number) => void;
   setObjectRotation: (shapeId: string, angleDeg: number) => void;
   setObjectLock: (shapeId: string, locked: boolean) => void;
+  clientToSceneUnits: (clientX: number, clientY: number) => { x: number; y: number } | null;
 };
 
 const FloorplanContext = createContext<FloorplanContextValue | null>(null);
@@ -362,6 +364,10 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
     apiRef.current?.setObjectLock(shapeId, locked);
   }, []);
 
+  const clientToSceneUnits = useCallback((clientX: number, clientY: number) => {
+    return apiRef.current?.clientToSceneUnits(clientX, clientY) ?? null;
+  }, []);
+
   const zoomIn = useCallback(() => {
     setZoomState((z) => {
       if (z >= PLANNER_VIEWPORT.zoomMaxPercent) return z;
@@ -447,6 +453,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       resizeObject,
       setObjectRotation,
       setObjectLock,
+      clientToSceneUnits,
     }),
     [
       roomEdit,
@@ -490,6 +497,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       resizeObject,
       setObjectRotation,
       setObjectLock,
+      clientToSceneUnits,
     ],
   );
 

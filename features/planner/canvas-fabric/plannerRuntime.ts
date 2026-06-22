@@ -18,6 +18,7 @@ export type PlannerFabricRuntime = {
   editRoom: () => void;
   endEditRoom: () => void;
   fitToContent: (padding?: number) => number;
+  clientToSceneUnits: (clientX: number, clientY: number) => { x: number; y: number } | null;
 };
 
 export type PlannerFabricRuntimeState = {

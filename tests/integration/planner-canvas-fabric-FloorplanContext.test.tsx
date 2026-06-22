@@ -51,6 +51,7 @@ function makeMockApi(overrides: Partial<FloorplanCanvasApi> = {}): FloorplanCanv
     recalcOffset: vi.fn(),
     setLayerVisibility: vi.fn(),
     resizeObject: vi.fn(),
+    clientToSceneUnits: vi.fn(() => null),
     ...overrides,
   };
 }

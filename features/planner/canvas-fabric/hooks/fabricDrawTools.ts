@@ -10,6 +10,7 @@ import type { Canvas as FabricCanvas, CanvasEvents, FabricObject, TPointerEventI
 import type { FabricDrawTool } from "../fabricDrawToolTypes";
 import { DEFAULT_FABRIC_DRAW_COLOR } from "../fabricDrawToolTypes";
 import { applyFabricTransformLocks } from "../fabricObjectUtils";
+import { clampCanvasPoint } from "@/features/planner/lib/canvasBounds";
 
 const ANNOTATION_PREFIX = "DRAW:";
 const MIN_DRAW_GESTURE_PX = 5;
@@ -50,6 +51,8 @@ export function wireFabricDrawTools(options: {
   getDrawColor: () => string;
   getDrawFillColor: () => string;
   roomEditActive: () => boolean;
+  spacePanActive?: () => boolean;
+  clampViewport?: () => void;
   saveState: () => void;
 }) {
   let activeTool: FabricDrawTool = "select";
@@ -57,8 +60,17 @@ export function wireFabricDrawTools(options: {
   let drawStart: Point | null = null;
   let previewObject: PlannerFabricObject | null = null;
   let curvePoints: Point[] = [];
+  let panning = false;
+  let lastPanScreen: Point | null = null;
 
   const getView = () => options.getView();
+
+  function isPanGesture(tool: FabricDrawTool, event: TPointerEventInfo): boolean {
+    if (tool === "pan") return true;
+    const native = event.e as MouseEvent | undefined;
+    if (native?.button === 1) return true;
+    return options.spacePanActive?.() === true;
+  }
 
   function clearPreview() {
     const view = getView();
@@ -87,7 +99,16 @@ export function wireFabricDrawTools(options: {
     if (options.roomEditActive() || tool === "select") {
       view.isDrawingMode = false;
       view.selection = true;
-      view.defaultCursor = "default";
+      view.defaultCursor = options.spacePanActive?.() ? "grab" : "default";
+      resetDraft();
+      return;
+    }
+
+    if (tool === "pan") {
+      view.isDrawingMode = false;
+      view.selection = false;
+      view.defaultCursor = "grab";
+      view.hoverCursor = "grab";
       resetDraft();
       return;
     }
@@ -165,13 +186,20 @@ export function wireFabricDrawTools(options: {
     view.add(label);
   }
 
+  function clampPoint(point: Point): Point {
+    const clamped = clampCanvasPoint({ x: point.x, y: point.y });
+    return new Point(clamped.x, clamped.y);
+  }
+
   function finalizeLine(end: Point, asMeasure = false) {
     if (!drawStart) return;
-    if (Math.hypot(end.x - drawStart.x, end.y - drawStart.y) < MIN_DRAW_GESTURE_PX) {
+    const start = clampPoint(drawStart);
+    const endPoint = clampPoint(end);
+    if (Math.hypot(endPoint.x - start.x, endPoint.y - start.y) < MIN_DRAW_GESTURE_PX) {
       resetDraft();
       return;
     }
-    const line = new Line([drawStart.x, drawStart.y, end.x, end.y], {
+    const line = new Line([start.x, start.y, endPoint.x, endPoint.y], {
       stroke: activeColor,
       strokeWidth: 2,
       fill: "",
@@ -180,17 +208,19 @@ export function wireFabricDrawTools(options: {
     });
     commitAnnotation(line);
     if (asMeasure) {
-      addMeasureLabel(drawStart.x, drawStart.y, end.x, end.y);
+      addMeasureLabel(start.x, start.y, endPoint.x, endPoint.y);
     }
     resetDraft();
   }
 
   function finalizeRectangle(end: Point) {
     if (!drawStart) return;
-    const left = Math.min(drawStart.x, end.x);
-    const top = Math.min(drawStart.y, end.y);
-    const width = Math.abs(end.x - drawStart.x);
-    const height = Math.abs(end.y - drawStart.y);
+    const start = clampPoint(drawStart);
+    const endPoint = clampPoint(end);
+    const left = Math.min(start.x, endPoint.x);
+    const top = Math.min(start.y, endPoint.y);
+    const width = Math.abs(endPoint.x - start.x);
+    const height = Math.abs(endPoint.y - start.y);
     if (width < MIN_DRAW_GESTURE_PX || height < MIN_DRAW_GESTURE_PX) {
       resetDraft();
       return;
@@ -242,7 +272,20 @@ export function wireFabricDrawTools(options: {
 
   view.on("mouse:down", (event: CanvasEvents["mouse:down"]) => {
     const tool = options.getDrawTool();
-    if (options.roomEditActive() || tool === "select" || tool === "pen") return;
+    if (options.roomEditActive()) return;
+
+    if (isPanGesture(tool, event)) {
+      const native = event.e as MouseEvent;
+      panning = true;
+      lastPanScreen = new Point(native.clientX, native.clientY);
+      const viewRef = getView();
+      if (viewRef) {
+        viewRef.defaultCursor = "grabbing";
+      }
+      return;
+    }
+
+    if (tool === "select" || tool === "pen") return;
 
     const pointer = options.getScenePointer(event);
     if (!pointer) return;
@@ -266,10 +309,23 @@ export function wireFabricDrawTools(options: {
       return;
     }
 
-    drawStart = new Point(pointer.x, pointer.y);
+    drawStart = clampPoint(new Point(pointer.x, pointer.y));
   });
 
   view.on("mouse:move", (event: CanvasEvents["mouse:move"]) => {
+    if (panning && lastPanScreen) {
+      const native = event.e as MouseEvent;
+      const viewRef = getView();
+      if (viewRef) {
+        const dx = native.clientX - lastPanScreen.x;
+        const dy = native.clientY - lastPanScreen.y;
+        viewRef.relativePan(new Point(dx, dy));
+        lastPanScreen = new Point(native.clientX, native.clientY);
+        options.clampViewport?.();
+      }
+      return;
+    }
+
     const tool = options.getDrawTool();
     if (!drawStart || options.roomEditActive()) return;
     if (tool !== "line" && tool !== "measure" && tool !== "rectangle" && tool !== "wall") return;
@@ -311,6 +367,13 @@ export function wireFabricDrawTools(options: {
   });
 
   view.on("mouse:up", (event: CanvasEvents["mouse:up"]) => {
+    if (panning) {
+      panning = false;
+      lastPanScreen = null;
+      applyCanvasMode();
+      return;
+    }
+
     const tool = options.getDrawTool();
     if (!drawStart || options.roomEditActive()) return;
     if (tool !== "line" && tool !== "measure" && tool !== "rectangle" && tool !== "wall") return;
