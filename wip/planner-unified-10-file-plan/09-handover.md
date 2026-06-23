@@ -1,6 +1,6 @@
 # Unified Planner Handover
 
-Archived snapshot of the planner packet. Live work continues in `features/planner/` and `app/planner/`.
+Live packet for the planner workspace. Active code continues in `features/planner/` and `app/planner/`.
 
 ## Current Resume Point
 
@@ -125,7 +125,7 @@ Reason: lane 1 is still the first incomplete lane in the canonical order.
 Done:
 - Lane 6 completed with source/report proof.
 - Lane 8 completed with governance and handover proof.
-- The legacy packet folder was archived to `wip/archived/old-plannerplan/`.
+- The packet lives in `wip/planner-unified-10-file-plan/`.
 
 Verified:
 - The canonical resume point is still `02-runtime-cleanup.md`.

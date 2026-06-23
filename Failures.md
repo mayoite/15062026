@@ -50,9 +50,9 @@ This file records the current packet blockers, proof gaps, and the historical no
 
 ### Lane 8 - Verification and Governance (2026-06-23)
 - Status: [~] Source-verified only
-- Files touched: `wip/archived/old-plannerplan/09-handover.md`, `Failures.md`
+- Files touched: `wip/planner-unified-10-file-plan/09-handover.md`, `Failures.md`
 - Proof gaps: no new proof gaps; this lane was a governance / handover update only
-- Action needed: keep the handover aligned with the actual packet state and resume point; the legacy packet folder has now been archived to `wip/archived/old-plannerplan/`
+- Action needed: keep the handover aligned with the actual packet state and resume point; the packet lives in `wip/planner-unified-10-file-plan/`
 
 ## Historical / Cross-Cutting Open Items
 
@@ -124,11 +124,11 @@ This file records the current packet blockers, proof gaps, and the historical no
 
 ### Unified Planner Packet Created
 - Status: [~] Not verified
-- Files touched: `wip/archived/old-plannerplan/*.md`
+- Files touched: `wip/planner-unified-10-file-plan/*.md`
 - Proof gaps: docs/planning pass only
 - Action needed: keep the packet synchronized with the actual repo state and logged evidence
 
 ### Repo State Notes
 - Most lanes remain source-verified only; no build or runtime verification has been done for them.
-- Recent Git history does show file-level deletions inside `tests/`, but the `tests/` tree still exists in the current checkout, so a claim of full-folder deletion would be inaccurate here.
+- Recent Git history does show file-level deletions inside `tests/`; the current checkout still contains `tests/`, so a claim of full-folder deletion would be inaccurate here.
 - Stale references to removed test files should be treated as historical.
