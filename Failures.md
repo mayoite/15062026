@@ -11,11 +11,11 @@ This file records the current packet blockers, proof gaps, and the historical no
 - Action needed: run lane-1 runtime verification only after permission is granted
 
 ### Lane 2 - Startup Performance (2026-06-23)
-- Status: [!] Blocked
+- Status: [~] Source-verified only
 - Files touched: `features/planner/ui/PlannerWorkspaceRoute.tsx`, `features/planner/ui/UnifiedPlannerPage.tsx`, `features/planner/editor/PlannerWorkspace.tsx`, `features/planner/catalog/usePlannerCatalogHydration.ts`, `features/planner/hooks/usePlannerFabricAutosave.ts`, `features/planner/editor/usePlannerPanels.ts`, `features/planner/hooks/usePlannerSession.ts`, `features/planner/hooks/useAssetLoader.ts`, `features/planner/canvas-fabric/FloorplanCanvas.tsx`, `features/planner/3d/Planner3DViewer.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`
 - Proof gaps: no bundle metric, no timing metric, no chunk-graph or import-trace proof, no throttled shell-first validation, no cold-start network comparison
-- Blocker: `lib/api/schemas.ts` still has duplicate `SketchToPlan*` schema definitions that block the normal build path used for measurement
-- Action needed: resolve the unrelated schema duplication or use another approved verification path, then collect before/after metrics
+- Source blocker: resolved at source level; `rg -n "SketchToPlan(Request|Response|RouteError)Schema" lib/api/schemas.ts` returns one definition for each schema name.
+- Action needed: collect the before/after bundle and timing metrics when permissioned verification is available.
 
 ### Lane 3 - State, Persistence, Autosave, Offline Sync (2026-06-23)
 - Status: [~] Source-verified only
@@ -50,9 +50,9 @@ This file records the current packet blockers, proof gaps, and the historical no
 
 ### Lane 8 - Verification and Governance (2026-06-23)
 - Status: [~] Source-verified only
-- Files touched: `wip/planner-unified-10-file-plan/09-handover.md`, `Failures.md`
+- Files touched: `wip/archived/old-plannerplan/09-handover.md`, `Failures.md`
 - Proof gaps: no new proof gaps; this lane was a governance / handover update only
-- Action needed: keep the handover aligned with the actual packet state and resume point
+- Action needed: keep the handover aligned with the actual packet state and resume point; the legacy packet folder has now been archived to `wip/archived/old-plannerplan/`
 
 ## Historical / Cross-Cutting Open Items
 
@@ -124,6 +124,11 @@ This file records the current packet blockers, proof gaps, and the historical no
 
 ### Unified Planner Packet Created
 - Status: [~] Not verified
-- Files touched: `wip/planner-unified-10-file-plan/*.md`
+- Files touched: `wip/archived/old-plannerplan/*.md`
 - Proof gaps: docs/planning pass only
 - Action needed: keep the packet synchronized with the actual repo state and logged evidence
+
+### Repo State Notes
+- Most lanes remain source-verified only; no build or runtime verification has been done for them.
+- Recent Git history does show file-level deletions inside `tests/`, but the `tests/` tree still exists in the current checkout, so a claim of full-folder deletion would be inaccurate here.
+- Stale references to removed test files should be treated as historical.

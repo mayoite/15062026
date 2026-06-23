@@ -1,5 +1,7 @@
 # Unified Planner Handover
 
+Archived snapshot of the planner packet. Live work continues in `features/planner/` and `app/planner/`.
+
 ## Current Resume Point
 
 Next lane to run: `02-runtime-cleanup.md`
@@ -33,7 +35,7 @@ Reason: lane 1 is still the first incomplete lane in the canonical order.
 | Lane | Status | Proof level | Remaining gaps |
 |---|---|---|---|
 | 1 | incomplete | source-only | No runtime remount/teardown proof; no async-stale-mutation proof |
-| 2 | incomplete | source-only | No bundle/timing/chunk/network proof; no throttled shell-first validation; build was blocked by duplicate schema definitions in `lib/api/schemas.ts` |
+| 2 | incomplete | source-only | No bundle/timing/chunk/network proof; no throttled shell-first validation; source blocker resolved at source level |
 | 3 | incomplete | source-only | No permission-gated verification; visible save/sync UI proof is missing |
 | 4 | incomplete | source-only | No runtime/browser proof for fallback classification, abort hygiene, schema gating, deterministic apply, or visible AI status states |
 | 5 | incomplete | source-only | No runtime/browser proof for typed failure taxonomy, underlay-first behavior, preview/rollback, retry preservation, or workspace recovery UI |
@@ -50,7 +52,7 @@ Reason: lane 1 is still the first incomplete lane in the canonical order.
 ### Lane 2
 - Startup performance changes are source-only.
 - Missing proof: before/after bundle metric, before/after timing metric, chunk-graph or import-trace proof, throttled shell-first validation, and cold-start network comparison.
-- Build blocker: `lib/api/schemas.ts` contains duplicate `SketchToPlan*` schema definitions, which blocked `npm run build` before performance metrics could be harvested.
+- Source blocker resolved: `lib/api/schemas.ts` now has one clean definition for each `SketchToPlan*` schema, so the remaining work is metrics and runtime proof.
 
 ### Lane 3
 - State/persistence changes are source-only.
@@ -93,6 +95,8 @@ Reason: lane 1 is still the first incomplete lane in the canonical order.
 - Playwright e2e failures remain open:
   - `tests/e2e` nav flows have route/assertion failures
   - `tests/e2e/test:planner-catalog` has multiple `page.goto` timeouts
+- Most lanes are still source-verified only; no build or runtime verification has been run for them.
+- The `tests/` tree still exists in this checkout, but recent history shows file-level deletions inside it, so any missing test-file references should be treated as historical rather than a full folder deletion.
 - Site assistant shell refactor is not verified.
 - Lint still surfaces unrelated planner-admin hook errors.
 - The hardcoded audit rerun hit a locked CSV output.
@@ -103,14 +107,14 @@ Reason: lane 1 is still the first incomplete lane in the canonical order.
 ## Risks
 
 - The packet cannot be called fully complete because lanes 1, 2, 3, 4, 5, and 7 still lack the proof type their own packet files require.
-- Lane 2 is additionally blocked by an unrelated schema duplication in `lib/api/schemas.ts` if runtime measurement is attempted through the standard build path.
+- Lane 2 still needs metrics and runtime proof, but the schema duplication blocker is resolved at source level.
 - Lane 7 cannot be closed honestly until a configured database environment is available for query-plan and route-observability evidence.
 - Any attempt to promote source-only changes to "complete" would violate the packet rules.
 
 ## Recommended Next Steps
 
 1. Resume at `02-runtime-cleanup.md`.
-2. If lane 2 is revisited, fix the duplicate schema definitions before trying to harvest bundle/timing evidence.
+2. If lane 2 is revisited, collect the bundle/timing evidence now that the schema blocker is resolved at source level.
 3. When a lane requires runtime proof, run only the permission-gated verification for that lane.
 4. If lane 7 is revisited, provision the database environment and capture before/after query evidence plus route headers.
 5. Keep lane 5 separate from baseline AI work; do not merge sketch conversion back into lane 4.
@@ -121,9 +125,11 @@ Reason: lane 1 is still the first incomplete lane in the canonical order.
 Done:
 - Lane 6 completed with source/report proof.
 - Lane 8 completed with governance and handover proof.
+- The legacy packet folder was archived to `wip/archived/old-plannerplan/`.
 
 Verified:
 - The canonical resume point is still `02-runtime-cleanup.md`.
+- Lane 2's schema blocker is resolved at source level.
 - The remaining lanes are still incomplete or blocked where proof is missing.
 
 Skipped:
@@ -136,7 +142,7 @@ Skipped:
 
 Risks:
 - Source-only progress remains unclosed for lanes 1, 2, 3, 4, 5, and 7.
-- The build-blocking schema duplication can prevent startup metric collection.
+- Lane 2 still lacks the metrics needed to call it complete.
 
 Next:
 - Start `02-runtime-cleanup.md` unless a higher-priority blocker is intentionally being cleared first.
