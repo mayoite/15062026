@@ -2,10 +2,8 @@ import { getPlannerFabricRuntime } from "@/features/planner/canvas-fabric";
 import { getPlacementCatalogItem } from "@/features/planner/catalog/placementCatalogResolver";
 import {
   catalogFootprintToCanvasUnits,
-  resolveCatalogPlacementFootprintMm,
 } from "@/features/planner/catalog/catalogBlockBridge";
 import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatalog";
-import { millimetersToCanvasUnits } from "@/features/planner/lib/canvasBounds";
 import type { PlannerCanvasShape } from "@/features/planner/editor/plannerShapeFactories";
 import type { SuggestedLayoutJson } from "./types";
 import { validateLayoutSchema } from "./aiStatus";
@@ -42,6 +40,13 @@ function mmToCanvasUnits(widthMm: number, heightMm: number): { width: number; he
   return { width: units.width, height: units.depth };
 }
 
+function mmToFabricRoomUnits(widthMm: number, heightMm: number): { width: number; height: number } {
+  return {
+    width: Math.round(widthMm / 25.4),
+    height: Math.round(heightMm / 25.4),
+  };
+}
+
 function resolveCatalogDimensions(catalogItemId: string): SuggestedLayoutCatalogDimensions | null {
   const placementItem = getPlacementCatalogItem(catalogItemId);
   if (placementItem) {
@@ -53,11 +58,9 @@ function resolveCatalogDimensions(catalogItemId: string): SuggestedLayoutCatalog
 
   const workspaceItem = PLANNER_CATALOG_ITEMS.find((item) => item.id === catalogItemId);
   if (!workspaceItem) return null;
-
-  const footprint = resolveCatalogPlacementFootprintMm(workspaceItem);
   return {
-    widthMm: footprint.widthMm,
-    heightMm: footprint.depthMm,
+    widthMm: workspaceItem.widthMm,
+    heightMm: workspaceItem.heightMm,
   };
 }
 
@@ -163,7 +166,7 @@ export function applySuggestedLayout(_editor?: null, layout?: SuggestedLayoutJso
   const runtime = getPlannerFabricRuntime();
   if (!runtime) return;
 
-  const roomUnits = mmToCanvasUnits(layout.room.widthMm, layout.room.depthMm);
+  const roomUnits = mmToFabricRoomUnits(layout.room.widthMm, layout.room.depthMm);
 
   runtime.insertObject({
     type: "ROOM",

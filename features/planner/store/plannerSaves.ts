@@ -1,10 +1,5 @@
 import type { PlannerDocument } from "@/features/planner/model/plannerDocument";
-import {
-  savePlannerDocument,
-  loadPlannerDocument,
-  listPlannerDocumentSummaries,
-  deletePlannerDocument,
-} from "./plannerPersistence";
+import * as plannerPersistence from "./plannerPersistence";
 
 export type PlannerRepositoryAccessMode = "owner" | "admin";
 
@@ -47,7 +42,7 @@ export async function savePlannerDocumentToStore(
   if (!userId) {
     throw new Error("savePlannerDocumentToStore requires a userId");
   }
-  const res = await savePlannerDocument(userId, document, options.saveId);
+  const res = await plannerPersistence.savePlannerDocument(userId, document, options.saveId);
   if (!res.success) {
     throw new Error(res.error.message);
   }
@@ -58,7 +53,7 @@ export async function loadPlannerDocumentFromStore(
   saveId: string,
   userId?: string,
 ): Promise<PlannerDocument | null> {
-  const res = await loadPlannerDocument(saveId, userId);
+  const res = await plannerPersistence.loadPlannerDocument(saveId, userId);
   if (!res.success) {
     if (res.error.code === "NOT_FOUND") return null;
     throw new Error(res.error.message);
@@ -71,32 +66,32 @@ export async function listPlannerDocumentsFromStore(
 ): Promise<PlannerSaveSummary[]> {
   const userId = options.userId ?? options.ownerUserId;
   if (!userId) return [];
-  const res = await listPlannerDocumentSummaries(userId);
+  const res = await plannerPersistence.listPlannerDocuments(userId);
   if (!res.success) {
     throw new Error(res.error.message);
   }
-  return res.summaries.map((summary) => ({
-    id: summary.id,
-    user_id: summary.user_id,
-    name: summary.name,
-    project_name: summary.project_name,
-    client_name: summary.client_name,
-    prepared_by: summary.prepared_by,
-    room_width_mm: summary.room_width_mm,
-    room_depth_mm: summary.room_depth_mm,
-    seat_target: summary.seat_target,
-    unit_system: summary.unit_system,
-    item_count: summary.item_count,
-    thumbnail_url: summary.thumbnail_url,
-    created_at: summary.created_at,
-    updated_at: summary.updated_at,
+  return res.documents.map(({ id, document }) => ({
+    id,
+    user_id: userId,
+    name: document.name,
+    project_name: document.projectName ?? null,
+    client_name: document.clientName ?? null,
+    prepared_by: document.preparedBy ?? null,
+    room_width_mm: document.roomWidthMm,
+    room_depth_mm: document.roomDepthMm,
+    seat_target: document.seatTarget,
+    unit_system: document.unitSystem,
+    item_count: document.itemCount,
+    thumbnail_url: document.previewImageDataUrl ?? null,
+    created_at: document.createdAt ?? document.updatedAt ?? new Date(0).toISOString(),
+    updated_at: document.updatedAt ?? document.createdAt ?? new Date(0).toISOString(),
   }));
 }
 
 export async function deletePlannerDocumentFromStore(
   saveId: string,
 ): Promise<boolean> {
-  const res = await deletePlannerDocument(saveId);
+  const res = await plannerPersistence.deletePlannerDocument(saveId);
   return res.success;
 }
 

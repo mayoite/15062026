@@ -4,6 +4,13 @@ This file records the current packet blockers, proof gaps, and the historical no
 
 ## Current Packet Lanes
 
+### Lane 9 - Planner Typecheck and Lint Repair (2026-06-23)
+- Status: [x] Verified
+- Files touched: `features/planner/admin/AdminAnalyticsPageView.tsx`, `features/planner/admin/AdminCatalogManager.tsx`, `features/planner/admin/AdminFeatureFlagsPageView.tsx`, `features/planner/ai/AIAssistDrawer.tsx`, `features/planner/canvas-fabric/FloorplanCanvas.tsx`, `features/planner/canvas-fabric/hooks/floorplanCanvas.ts`, `features/planner/editor/ExportModal.tsx`, `features/planner/editor/PlannerWorkspace.tsx`, `features/planner/editor/inspector/PropertiesInspector.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`
+- Proof: `npm.cmd run typecheck` passes; `npm.cmd run lint` passes
+- Skipped: repo tests and Playwright were not run because explicit user permission was not provided
+- Action needed: run the relevant planner test suite only if you want runtime verification beyond static gates
+
 ### Lane 1 - Runtime Cleanup (2026-06-23)
 - Status: [~] Source-verified only
 - Files touched: `features/planner/canvas-fabric/context/FloorplanContext.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`, `features/planner/editor/usePlannerPanels.ts`, `features/planner/persistence/persistence.ts`, `features/planner/catalog/catalogStore.ts`, `features/planner/editor/PlannerWorkspace.tsx`, `features/planner/canvas-fabric/hooks/floorplanCanvas.ts`

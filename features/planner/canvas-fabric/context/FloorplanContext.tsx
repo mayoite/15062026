@@ -152,8 +152,8 @@ const FloorplanContext = createContext<FloorplanContextValue | null>(null);
 
 export function FloorplanProvider({ children }: { children: ReactNode }) {
   const apiRef = useRef<FloorplanCanvasApi | null>(null);
-  const gridVisibilityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cloneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const gridVisibilityTimerRef = useRef<number | null>(null);
+  const cloneTimerRef = useRef<number | null>(null);
   const isActiveRef = useRef(false);
   const [roomEdit, setRoomEdit] = useState(false);
   const [states, setStates] = useState<string[]>([]);

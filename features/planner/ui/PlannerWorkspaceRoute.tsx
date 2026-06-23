@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { Providers } from "@/features/planner/components/Providers";
 import { ProjectSetupGate } from "@/features/planner/onboarding/ProjectSetupGate";
 import { PlannerSkeleton } from "@/features/planner/ui/PlannerSkeleton";
+import { PlannerCanvasEnhancements } from "./PlannerCanvasEnhancements";
 
 const PlannerWorkspace = dynamic(
   () =>
@@ -13,14 +14,6 @@ const PlannerWorkspace = dynamic(
     })),
   { loading: () => <PlannerSkeleton />, ssr: false },
 );
-const PlannerCanvasEnhancements = dynamic(
-  () =>
-    import("./PlannerCanvasEnhancements").then((mod) => ({
-      default: mod.PlannerCanvasEnhancements,
-    })),
-  { loading: () => null, ssr: false },
-);
-
 export function PlannerWorkspaceRoute({
   guestMode = false,
   planId,

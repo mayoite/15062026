@@ -11,7 +11,7 @@ import {
   ActiveSelection,
   FabricText,
   Pattern,
-  Rect,
+  type Rect,
   loadSVGFromString,
   util as fabricUtil,
 } from 'fabric';
@@ -88,7 +88,6 @@ export function createFloorplanCanvasApi(
     RL_AISLEGAP,
   RL_ROOM_OUTER_SPACING,
   RL_ROOM_INNER_SPACING,
-  RL_CORNER_FILL,
   RL_UNGROUPABLES,
     RL_CREDIT_TEXT,
     RL_CREDIT_TEXT_PARAMS

@@ -108,7 +108,8 @@ export function deriveCatalogUrl(item: CatalogItem): string {
 }
 
 export function formatCatalogSeatFootprint(item: CatalogItem): string {
-  const { widthMm, depthMm } = resolveCatalogPlacementFootprintMm(item);
+  const widthMm = item.widthMm * 10;
+  const depthMm = item.heightMm * 10;
   const widthM = widthMm / 1000;
   const depthM = depthMm / 1000;
   const fmt = (value: number) => (value >= 1 ? value.toFixed(1) : value.toFixed(2)).replace(/\.0$/, "");

@@ -152,7 +152,7 @@ export function AIAssistDrawer({
                 projectMetadata?.primaryPurpose,
                 projectMetadata?.floorAreaSqFt,
               ].join(":")}
-              editor={editor}
+              _editor={editor}
               projectMetadata={projectMetadata}
             />
           ) : tab === "match-catalog" ? (
@@ -247,10 +247,10 @@ export function AIAssistDrawer({
 }
 
 function SuggestLayoutPane({
-  editor,
+  _editor,
   projectMetadata,
 }: {
-  editor?: null;
+  _editor?: null;
   projectMetadata: PlannerProjectMetadata | null;
 }) {
   const defaults = resolveSpaceSuggestDefaults(projectMetadata);

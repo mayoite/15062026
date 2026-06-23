@@ -33,6 +33,8 @@ import {
   offlineStorage,
   updateOfflinePlan,
   deleteOfflinePlan,
+  computeContentHash,
+  CANONICAL_SCHEMA_VERSION,
   type OfflinePlan,
 } from "@/features/planner/store/offlineStorage";
 import { SyncQueueProcessor } from "@/features/planner/store/syncQueueProcessor";
@@ -215,19 +217,24 @@ export function usePlannerSessionHandlers({
 
   useEffect(() => {
     if (!bootstrapEnabled) return;
-    void syncCloudInventory();
+    const loadCloudInventory = async () => {
+      await syncCloudInventory();
+    };
+    void loadCloudInventory();
   }, [bootstrapEnabled, cloudInventoryVersion, syncCloudInventory]);
 
   // Synchronize IndexedDB plans when localDraftVersion changes
   useEffect(() => {
-    if (guestMode || typeof indexedDB === "undefined") {
-      setLocalDraftSessions([]);
-      setCurrentOfflinePlan(null);
-      return;
-    }
-
     let active = true;
     const loadOfflineData = async () => {
+      if (guestMode || typeof indexedDB === "undefined") {
+        if (!active) return;
+        setLocalDraftSessions([]);
+        setCurrentOfflinePlan(null);
+        setDraftPlanName("Workspace Plan");
+        return;
+      }
+
       try {
         await offlineStorage.init();
         const allPlans = await offlineStorage.listPlans();
@@ -242,7 +249,7 @@ export function usePlannerSessionHandlers({
         console.error("Failed to load plans from IndexedDB:", err);
       }
     };
-    loadOfflineData();
+    void loadOfflineData();
     return () => {
       active = false;
     };
@@ -329,6 +336,7 @@ export function usePlannerSessionHandlers({
           await updateOfflinePlan(LOCAL_CURRENT_DRAFT_ID, currentDraftDoc);
         } else {
           const now = new Date().toISOString();
+          const contentHash = await computeContentHash(currentDraftDoc);
           await offlineStorage.savePlan({
             id: LOCAL_CURRENT_DRAFT_ID,
             document: currentDraftDoc,
@@ -336,7 +344,13 @@ export function usePlannerSessionHandlers({
             createdAt: now,
             updatedAt: now,
             lastSyncedAt: null,
-            syncStatus: "pending",
+            schemaVersion: CANONICAL_SCHEMA_VERSION,
+            source: "local",
+            contentHash,
+            remoteRevision: null,
+            localSaveState: "saved_local",
+            syncState: "queued",
+            syncErrorCode: null,
           });
         }
 
@@ -354,7 +368,13 @@ export function usePlannerSessionHandlers({
             createdAt: now,
             updatedAt: now,
             lastSyncedAt: null,
-            syncStatus: "pending",
+            schemaVersion: CANONICAL_SCHEMA_VERSION,
+            source: "local",
+            contentHash: await computeContentHash(normalizedDraft),
+            remoteRevision: null,
+            localSaveState: "saved_local",
+            syncState: "queued",
+            syncErrorCode: null,
           };
           await offlineStorage.savePlan(plan);
           await offlineStorage.addToSyncQueue({
@@ -469,6 +489,7 @@ export function usePlannerSessionHandlers({
           await updateOfflinePlan(LOCAL_CURRENT_DRAFT_ID, currentDraftDoc);
         } else {
           const now = new Date().toISOString();
+          const contentHash = await computeContentHash(currentDraftDoc);
           await offlineStorage.savePlan({
             id: LOCAL_CURRENT_DRAFT_ID,
             document: currentDraftDoc,
@@ -476,12 +497,19 @@ export function usePlannerSessionHandlers({
             createdAt: now,
             updatedAt: now,
             lastSyncedAt: null,
-            syncStatus: "pending",
+            schemaVersion: CANONICAL_SCHEMA_VERSION,
+            source: "local",
+            contentHash,
+            remoteRevision: null,
+            localSaveState: "saved_local",
+            syncState: "queued",
+            syncErrorCode: null,
           });
         }
 
         // 2. Save named draft as new plan
         const now = new Date().toISOString();
+        const contentHash = await computeContentHash(normalizedDraft);
         const plan: OfflinePlan = {
           id: newDocumentId,
           document: normalizedDraft,
@@ -489,7 +517,13 @@ export function usePlannerSessionHandlers({
           createdAt: now,
           updatedAt: now,
           lastSyncedAt: null,
-          syncStatus: "pending",
+          schemaVersion: CANONICAL_SCHEMA_VERSION,
+          source: "local",
+          contentHash,
+          remoteRevision: null,
+          localSaveState: "saved_local",
+          syncState: "queued",
+          syncErrorCode: null,
         };
         await offlineStorage.savePlan(plan);
         await offlineStorage.addToSyncQueue({
@@ -740,7 +774,7 @@ export function usePlannerSessionHandlers({
         setSessionErrorMessage("Local session could not be renamed.");
       }
     },
-    [activeDocumentId, handleSyncQueue],
+    [activeDocumentId, authUserId, handleSyncQueue],
   );
 
   // ── Import / Export ───────────────────────────────────────────────────────
@@ -790,6 +824,7 @@ export function usePlannerSessionHandlers({
             await updateOfflinePlan(LOCAL_CURRENT_DRAFT_ID, currentDraftDoc);
           } else {
             const now = new Date().toISOString();
+            const contentHash = await computeContentHash(currentDraftDoc);
             await offlineStorage.savePlan({
               id: LOCAL_CURRENT_DRAFT_ID,
               document: currentDraftDoc,
@@ -797,11 +832,18 @@ export function usePlannerSessionHandlers({
               createdAt: now,
               updatedAt: now,
               lastSyncedAt: null,
-              syncStatus: "pending",
+              schemaVersion: CANONICAL_SCHEMA_VERSION,
+              source: "local",
+              contentHash,
+              remoteRevision: null,
+              localSaveState: "saved_local",
+              syncState: "queued",
+              syncErrorCode: null,
             });
           }
 
           // Save named plan
+          const namedContentHash = await computeContentHash(normalizedDocument);
           const plan: OfflinePlan = {
             id: documentId,
             document: normalizedDocument,
@@ -809,7 +851,13 @@ export function usePlannerSessionHandlers({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             lastSyncedAt: null,
-            syncStatus: "pending",
+            schemaVersion: CANONICAL_SCHEMA_VERSION,
+            source: "local",
+            contentHash: namedContentHash,
+            remoteRevision: null,
+            localSaveState: "saved_local",
+            syncState: "queued",
+            syncErrorCode: null,
           };
           await offlineStorage.savePlan(plan);
           await offlineStorage.addToSyncQueue({

@@ -43,25 +43,39 @@ export async function browserApiFetch(
   input: string,
   init: RequestInit = {},
 ): Promise<Response> {
-  const url = apiPath(input);
   const method = (init.method ?? "GET").toUpperCase();
-  const headers = new Headers(init.headers);
+  const url = apiPath(input);
+  const execute = async (csrfToken?: string): Promise<Response> => {
+    const headers = new Headers(init.headers);
+    if (csrfToken) {
+      headers.set(CSRF_HEADER_NAME, csrfToken);
+    }
+    const normalizedHeaders =
+      headers.size > 0 ? Object.fromEntries(headers.entries()) : undefined;
 
-  if (MUTATING_METHODS.has(method)) {
-    const token = await ensureCsrfToken();
-    headers.set(CSRF_HEADER_NAME, token);
+    return fetch(url, {
+      ...init,
+      method,
+      headers: normalizedHeaders,
+      credentials: init.credentials ?? "include",
+    });
+  };
+
+  if (!MUTATING_METHODS.has(method)) {
+    return execute();
   }
 
-  const response = await fetch(url, {
-    ...init,
-    method,
-    headers,
-    credentials: init.credentials ?? "include",
-  });
+  const existingToken = csrfTokenPromise ? await csrfTokenPromise.catch(() => null) : null;
+  let response = await execute(existingToken ?? undefined);
+  if (response.status !== 403) {
+    return response;
+  }
 
-  if (response.status === 403 && MUTATING_METHODS.has(method)) {
+  invalidateCsrfToken();
+  const retryToken = await ensureCsrfToken();
+  response = await execute(retryToken);
+  if (response.status === 403) {
     invalidateCsrfToken();
   }
-
   return response;
 }

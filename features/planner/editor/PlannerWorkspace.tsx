@@ -445,6 +445,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   usePlannerCatalogHydration({ enabled: shellVisible });
   const searchParams = useSearchParams();
   const didBootstrapRef = useRef(false);
+  const freshRequested = searchParams?.get("fresh") === "1";
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
@@ -630,7 +631,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     setSessionErrorMessage,
     sessionBusy,
     draftPlanName,
-    draftNameKey,
     authUserId,
     isAdmin,
     plannerManagedProducts,
@@ -647,13 +647,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     handleExportJson: sessionHandleExportJson,
     buildSavedEntries,
   } = session;
-
-  const [planNameKey, setPlanNameKey] = useState(draftNameKey);
-  useEffect(() => {
-    if (planNameKey === draftNameKey) return;
-    setPlanNameKey(draftNameKey);
-    setPlanNameOverride(null);
-  }, [draftNameKey, planNameKey, setPlanNameOverride]);
 
   const planName = planNameOverride ?? draftPlanName;
 
@@ -796,7 +789,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
 
     void (async () => {
       if (cancelled) return;
-      if (searchParams?.get("fresh") === "1") {
+      if (freshRequested) {
         await handleStartFreshLayout();
         return;
       }
@@ -806,9 +799,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     return () => {
       cancelled = true;
     };
-    // One-shot bootstrap on mount — do not re-run when handlers change.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [freshRequested, handleStartFreshLayout, importDraft, restoreSnapshot, setPlannerTool]);
 
   const clearCatalogDrag = useCallback(() => {
     setDragItem(null);
@@ -1130,7 +1121,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     [
       applySketchUnderlay,
       exportDraft,
-      importDraft,
       setSessionErrorMessage,
       setSessionStatusMessage,
       setSketchRecoveryFallback,
@@ -1166,7 +1156,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     setSketchRecovery({ status: "accepted", fileName: fn });
     setSessionErrorMessage(null);
     setSessionStatusMessage(`Sketch conversion accepted: ${fn}`);
-  }, [sketchRecovery, importDraft, applySketchUnderlay, setSessionErrorMessage, setSessionStatusMessage]);
+  }, [sketchRecovery, importDraft, applySketchUnderlay, setSessionErrorMessage, setSessionStatusMessage, setSketchRecoveryFallback]);
 
   const handleSketchReject = useCallback(async () => {
     if (sketchRecovery.status !== "preview") return;
@@ -1204,7 +1194,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     } else if (sketchRecovery.status === "rejected") {
       setSessionStatusMessage(`Continue tracing the sketch reference: ${sketchRecovery.fileName}`);
     }
-  }, [applyToolBinding, sketchRecovery.fileName, sketchRecovery.status, setSessionErrorMessage, setSessionStatusMessage]);
+  }, [applyToolBinding, sketchRecovery, setSessionErrorMessage, setSessionStatusMessage]);
 
   const handleSketchDismiss = useCallback(() => {
     setSketchRecovery({ status: "idle" });

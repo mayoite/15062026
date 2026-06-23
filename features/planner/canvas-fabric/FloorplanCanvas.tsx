@@ -9,6 +9,10 @@ export function FloorplanCanvas() {
   const ctx = useFloorplan();
   const layerVisible = usePlannerWorkspaceStore((s) => s.layerVisible);
   const canvasHostRef = useRef<HTMLCanvasElement>(null);
+  const lifecycleRef = useRef({
+    registerCanvasApi: ctx.registerCanvasApi,
+    syncZoom: ctx.setZoom,
+  });
   const ctxRef = useRef<FloorplanCtx>({
     roomEdit: ctx.roomEdit,
     zoom: ctx.zoom,
@@ -30,6 +34,13 @@ export function FloorplanCanvas() {
     exitRoomEdit: ctx.endEditRoom,
     syncZoom: ctx.setZoom,
   });
+
+  useEffect(() => {
+    lifecycleRef.current = {
+      registerCanvasApi: ctx.registerCanvasApi,
+      syncZoom: ctx.setZoom,
+    };
+  }, [ctx.registerCanvasApi, ctx.setZoom]);
 
   useEffect(() => {
     ctxRef.current = {
@@ -61,14 +72,14 @@ export function FloorplanCanvas() {
 
     const api = createFloorplanCanvasApi(ctxRef, el);
     api.init();
-    ctx.registerCanvasApi(api);
+    lifecycleRef.current.registerCanvasApi(api);
     performance.mark("planner-fabric-ready");
 
     const wrap = el.closest('.canvas-wrap');
     const applyFit = () => {
       if (!wrap || wrap.clientWidth < PLANNER_VIEWPORT.minContainerWidthPx) return;
       const zoomPct = api.fitToContent();
-      ctx.setZoom(zoomPct);
+      lifecycleRef.current.syncZoom(zoomPct);
       api.recalcOffset();
     };
     const fitFrame = window.requestAnimationFrame(applyFit);
@@ -97,9 +108,8 @@ export function FloorplanCanvas() {
       window.removeEventListener('orientationchange', onViewportChange);
       resizeObserver?.disconnect();
       api.dispose();
-      ctx.registerCanvasApi(null);
+      lifecycleRef.current.registerCanvasApi(null);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

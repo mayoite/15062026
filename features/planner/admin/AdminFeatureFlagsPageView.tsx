@@ -21,7 +21,6 @@ export default function AdminFeatureFlagsPageView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingKey, setPendingKey] = useState<FeatureFlagName | null>(null);
-
   const loadFlags = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -41,7 +40,10 @@ export default function AdminFeatureFlagsPageView() {
   }, []);
 
   useEffect(() => {
-    void loadFlags();
+    const timeoutId = window.setTimeout(() => {
+      void loadFlags();
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
   }, [loadFlags]);
 
   const toggleFlag = useCallback(async (key: FeatureFlagName, enabled: boolean) => {

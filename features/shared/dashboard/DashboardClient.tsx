@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Lock } from "lucide-react";
 import { PLANNER_GUEST_COOKIE } from "@/lib/auth/constants";
@@ -92,18 +92,14 @@ function HubCard({
 
 export function DashboardClient({ userEmail, isAdmin }: DashboardClientProps) {
   const router = useRouter();
-  const [plannerDraftCount, setPlannerDraftCount] = useState(0);
+  const [plannerDraftCount] = useState(() => readPlannerDraftCount());
   const [isSigningOut, setIsSigningOut] = useState(false);
-
-  useEffect(() => {
-    Promise.resolve().then(() => setPlannerDraftCount(readPlannerDraftCount()));
-  }, []);
 
   const plannerSummary = useMemo(
     () =>
       plannerDraftCount > 0
-        ? `${plannerDraftCount} local planner draft${plannerDraftCount === 1 ? "" : "s"} ready to resume.`
-        : "No local planner drafts yet — open the canvas to start a layout.",
+        ? `${plannerDraftCount} saved local planner session${plannerDraftCount === 1 ? "" : "s"} ready to resume.`
+        : "No saved local planner sessions yet — open the canvas to start a layout.",
     [plannerDraftCount],
   );
 
@@ -137,11 +133,14 @@ export function DashboardClient({ userEmail, isAdmin }: DashboardClientProps) {
               <p className="workspace-hub__eyebrow text-[11px] font-semibold uppercase tracking-[0.3em]">
                 Workspace hub
               </p>
+              <p className="workspace-hub__eyebrow mt-2 text-xs font-medium">{
+                plannerDraftCount > 0 ? "Recent work available" : "Ready for first draft"
+              }</p>
               <h1 className="workspace-hub__title mt-4 text-4xl font-semibold tracking-tight">
                 One dashboard for every tool
               </h1>
               <p className="workspace-hub__lead mt-4 text-sm leading-7 sm:text-base">
-                Signed in as <strong>{userEmail}</strong>. {plannerSummary} Pick any destination below — planner,
+                Signed in as {userEmail}. {plannerSummary} Pick any destination below — planner,
                 CRM, and admin use the same sign-in.
               </p>
               <p className="workspace-hub__meta mt-3 text-xs">
@@ -151,7 +150,7 @@ export function DashboardClient({ userEmail, isAdmin }: DashboardClientProps) {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Link href="/planner/canvas" className="workspace-hub__primary-btn rounded-full px-5 py-3 text-sm font-semibold">
+              <Link href="/planner" className="workspace-hub__primary-btn rounded-full px-5 py-3 text-sm font-semibold">
                 Open planner
               </Link>
               <button

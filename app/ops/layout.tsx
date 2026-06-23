@@ -1,5 +1,4 @@
 import type { Viewport } from "next";
-import { redirect } from "next/navigation";
 import "@/app/(site)/globals.css";
 import { requireAdminUser } from "@/lib/auth/adminSession";
 import { SITE_VIEWPORT } from "@/lib/siteViewport";

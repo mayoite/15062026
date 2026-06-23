@@ -166,7 +166,7 @@ async function handlePlannerAdvisor(req: NextRequest): Promise<NextResponse> {
     let lastError: unknown;
     for (const provider of providers) {
       try {
-        usedProvider = provider.name || "unknown";
+        usedProvider = provider.provider || "unknown";
         aiResponse = await requestProviderText(provider, chatMessages, {
           temperature: mode === "space-suggest" ? 0.2 : 0.7,
           jsonMode: mode === "space-suggest",

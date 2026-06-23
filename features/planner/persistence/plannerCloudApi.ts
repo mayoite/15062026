@@ -43,7 +43,10 @@ function normalizeSummaryRows(rows: unknown[]): PlannerSaveSummary[] {
 }
 
 export async function listOwnerPlansFromApi(): Promise<PlannerSaveSummary[]> {
-  const response = await browserApiFetch(apiPath("/api/plans"), { method: "GET" });
+  const response = await fetch("/api/plans", {
+    method: "GET",
+    credentials: "include",
+  });
   if (response.status === 401) {
     throw new PlannerCloudApiError("Authentication required.", "planner:no-auth", 401);
   }
@@ -62,8 +65,9 @@ export async function listOwnerPlansFromApi(): Promise<PlannerSaveSummary[]> {
 }
 
 export async function listAdminPlansFromApi(): Promise<PlannerSaveSummary[]> {
-  const response = await browserApiFetch(apiPath("/api/admin/plans?limit=100"), {
+  const response = await fetch("/api/admin/plans?limit=100", {
     method: "GET",
+    credentials: "include",
   });
   if (response.status === 401 || response.status === 403) {
     throw new PlannerCloudApiError("Admin access required.", "planner:no-auth", response.status);

@@ -1,4 +1,4 @@
-const DEFAULT_REDIRECT = "/dashboard";
+const DEFAULT_REDIRECT = "/choose-product";
 
 export function sanitizeNextPath(
   value: string | null | undefined,

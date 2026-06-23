@@ -37,7 +37,6 @@ export default function AdminAnalyticsPageView() {
   const [data, setData] = useState<AnalyticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const loadAnalytics = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -56,7 +55,10 @@ export default function AdminAnalyticsPageView() {
   }, [period]);
 
   useEffect(() => {
-    void loadAnalytics();
+    const timeoutId = window.setTimeout(() => {
+      void loadAnalytics();
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
   }, [loadAnalytics]);
 
   return (

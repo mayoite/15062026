@@ -36,40 +36,20 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
   const app = useFloorplan();
   const emphasis = inspectorEmphasis(step);
   const [data, setData] = useState(() => readInspectorSelection());
-  const [rotationInput, setRotationInput] = useState("");
 
   useEffect(() => {
     return syncSelectionFromEditor(editor ?? null, setData);
   }, [editor]);
 
-  useEffect(() => {
-    setRotationInput(data ? String(Math.round(data.rotation)) : "");
-  }, [data?.id, data?.rotation]);
-
-  const [widthInput, setWidthInput] = useState("");
-  const [depthInput, setDepthInput] = useState("");
-
-  useEffect(() => {
-    if (!data) {
-      setWidthInput("");
-      setDepthInput("");
-      return;
-    }
-    setWidthInput(String(data.widthMm));
-    setDepthInput(String(data.heightMm));
-  }, [data?.id, data?.widthMm, data?.heightMm]);
-
   const handleDimensionChange = (field: "widthMm" | "heightMm", value: string) => {
     const num = parseInt(value, 10);
     if (!data || isNaN(num) || num <= 0) return;
     applyInspectorChanges(null, data.id, { [field]: num });
-    if (field === "widthMm") setWidthInput(String(num));
-    else setDepthInput(String(num));
   };
 
-  const handleRotationBlur = () => {
+  const handleRotationBlur = (value: string) => {
     if (!data || data.isLocked) return;
-    const angle = Number(rotationInput);
+    const angle = Number(value);
     if (!isNaN(angle)) {
       app.setObjectRotation(data.id, angle);
     }
@@ -116,10 +96,10 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
               <div className="pwx-field">
                 <span className="pwx-field-label">W</span>
                 <input
+                  key={`${data.id}-width-${data.widthMm}`}
                   type="number"
                   className="pwx-field-input"
-                  value={widthInput}
-                  onChange={(e) => setWidthInput(e.target.value)}
+                  defaultValue={String(data.widthMm)}
                   onBlur={(e) => handleDimensionChange("widthMm", e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -135,10 +115,10 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
               <div className="pwx-field">
                 <span className="pwx-field-label">D</span>
                 <input
+                  key={`${data.id}-depth-${data.heightMm}`}
                   type="number"
                   className="pwx-field-input"
-                  value={depthInput}
-                  onChange={(e) => setDepthInput(e.target.value)}
+                  defaultValue={String(data.heightMm)}
                   onBlur={(e) => handleDimensionChange("heightMm", e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -157,11 +137,11 @@ export function PropertiesInspector({ editor, step = "review" }: PropertiesInspe
             <p className="typ-label text-muted mb-2">Rotation</p>
             <div className="pwx-field">
               <input
+                key={`${data.id}-rotation-${Math.round(data.rotation)}`}
                 type="number"
                 className="pwx-field-input"
-                value={rotationInput}
-                onChange={(e) => setRotationInput(e.target.value)}
-                onBlur={handleRotationBlur}
+                defaultValue={String(Math.round(data.rotation))}
+                onBlur={(e) => handleRotationBlur(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.currentTarget.blur();

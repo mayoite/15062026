@@ -6,7 +6,6 @@
 import { 
   offlineStorage, 
   markPlanAsSynced,
-  computeContentHash,
   type SyncQueueItem,
 } from "./offlineStorage";
 import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
@@ -191,22 +190,27 @@ export class SyncQueueProcessor {
    * Update plan's sync state in offline storage
    */
   private async updatePlanSyncState(planId: string, syncState: "syncing" | "synced" | "sync_failed" | "conflict"): Promise<void> {
-    const plan = await offlineStorage.getPlan(planId);
-    if (!plan) return;
+    try {
+      const plan = await offlineStorage.getPlan(planId);
+      if (!plan) return;
 
-    plan.syncState = syncState;
-    if (syncState === "sync_failed") {
-      plan.syncErrorCode = "SYNC_FAILED";
-    } else if (syncState === "synced") {
-      plan.syncErrorCode = null;
+      plan.syncState = syncState;
+      plan.syncStatus = syncState === "synced" ? "synced" : "pending";
+      if (syncState === "sync_failed") {
+        plan.syncErrorCode = "SYNC_FAILED";
+      } else if (syncState === "synced") {
+        plan.syncErrorCode = null;
+      }
+      await offlineStorage.savePlan(plan);
+    } catch {
+      // Sync status persistence is best-effort and should not hide the transport error.
     }
-    await offlineStorage.savePlan(plan);
   }
 
   /**
    * Mark plan and queue item as sync failed
    */
-  private async markSyncFailed(item: SyncQueueItem, error: string): Promise<void> {
+  private async markSyncFailed(item: SyncQueueItem, _error: string): Promise<void> {
     await this.updatePlanSyncState(item.planId, "sync_failed");
   }
 

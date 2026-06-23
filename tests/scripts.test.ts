@@ -3,24 +3,13 @@ import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import { runAudit } from '@/scripts/audit-test-quality';
 
 describe('Scripts', () => {
   describe('audit-test-quality.ts', () => {
     it('should execute the audit script without crashing', () => {
-      let output = '';
-      try {
-        output = execSync('npx tsx scripts/audit-test-quality.ts', {
-          cwd: process.cwd(),
-          encoding: 'utf-8',
-          stdio: 'pipe',
-        });
-      } catch (error: unknown) {
-        const err = error as { stdout?: string | Buffer; stderr?: string | Buffer; status?: number };
-        const stdout = typeof err.stdout === 'string' ? err.stdout : err.stdout?.toString() ?? '';
-        const stderr = typeof err.stderr === 'string' ? err.stderr : err.stderr?.toString() ?? '';
-        output = `${stdout}${stderr}`;
-      }
-      expect(output).toContain('AUDIT COMPLETE');
+      const result = runAudit(process.cwd());
+      expect(result.output).toContain('AUDIT COMPLETE');
     });
   });
 

@@ -19,7 +19,7 @@ const DB_NAME = "planner-offline-db";
 const DB_VERSION = 1;
 const STORE_PLANS = "plans";
 const STORE_SYNC_QUEUE = "sync_queue";
-const CANONICAL_SCHEMA_VERSION = "1.0.0";
+export const CANONICAL_SCHEMA_VERSION = "1.0.0";
 
 // Canonical state envelope types (Lane 3 requirement)
 export type PlanSource = "local" | "cloud" | "queue" | "recovered";
@@ -40,6 +40,7 @@ export interface OfflinePlan {
   remoteRevision: string | null; // Sync token/revision from remote
   localSaveState: LocalSaveState; // Local durability state
   syncState: SyncState; // Cloud sync state
+  syncStatus?: "pending" | "synced"; // Legacy alias retained for older readers/tests
   syncErrorCode: string | null; // Specific sync failure code
 }
 
@@ -71,9 +72,34 @@ export async function computeContentHash(document: PlannerDocument): Promise<str
   const json = JSON.stringify(document);
   const encoder = new TextEncoder();
   const data = encoder.encode(json);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const subtle = globalThis.crypto?.subtle;
+  const hashBuffer = subtle
+    ? await subtle.digest("SHA-256", data)
+    : await (await import("node:crypto")).webcrypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function toLegacySyncStatus(syncState: SyncState): "pending" | "synced" {
+  return syncState === "synced" ? "synced" : "pending";
+}
+
+function normalizeOfflinePlanShape(plan: OfflinePlan): OfflinePlan {
+  if (plan.syncState) {
+    return {
+      ...plan,
+      syncStatus: plan.syncStatus ?? toLegacySyncStatus(plan.syncState),
+    };
+  }
+
+  if (plan.syncStatus) {
+    return plan;
+  }
+
+  return {
+    ...plan,
+    syncStatus: "pending",
+  };
 }
 
 // IndexedDB error types
@@ -183,8 +209,9 @@ class OfflineStorageManager {
    * Save plan to offline storage
    */
   async savePlan(plan: OfflinePlan): Promise<void> {
+    const normalizedPlan = normalizeOfflinePlanShape(plan);
     await this.transaction(STORE_PLANS, "readwrite", (store) => {
-      return store.put(plan);
+      return store.put(normalizedPlan);
     });
   }
 
@@ -382,6 +409,7 @@ export async function createOfflinePlan(document: PlannerDocument): Promise<Offl
     remoteRevision: null,
     localSaveState: "saved_local",
     syncState: "queued",
+    syncStatus: "pending",
     syncErrorCode: null,
   };
   
@@ -429,6 +457,7 @@ export async function updateOfflinePlan(
     remoteRevision: existing.remoteRevision,
     localSaveState: "saving_local",
     syncState: "queued",
+    syncStatus: "pending",
     syncErrorCode: null,
   };
   
@@ -438,9 +467,10 @@ export async function updateOfflinePlan(
   
   // Lane 3: Queue dedup/compaction - replace pending item with newest, don't duplicate
   const existingQueueItems = await offlineStorage.listSyncQueueForPlan(id);
-  const pendingItem = existingQueueItems.find(
-    (item) => item.operation === operation && item.retryCount < 1
-  );
+  const pendingItem =
+    operation === "update"
+      ? existingQueueItems.find((item) => item.operation === operation && item.retryCount < 1)
+      : undefined;
   
   if (pendingItem && pendingItem.contentHash === contentHash) {
     return updated;
@@ -482,6 +512,7 @@ export async function markPlanAsSynced(id: string, remoteId: string, remoteRevis
     schemaVersion: CANONICAL_SCHEMA_VERSION,
     localSaveState: "saved_local",
     syncState: "synced",
+    syncStatus: "synced",
     remoteRevision: remoteRevision ?? null,
     syncErrorCode: null,
   };

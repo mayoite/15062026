@@ -126,16 +126,16 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = ADMIN_NAV_GROUPS.flatMap((group) 
 export const ADMIN_HUB_SECTIONS: { title: string; items: AdminNavItem[] }[] = [
   {
     title: "Planner operations",
-    items: ADMIN_NAV_GROUPS.find((g) => g.title === "Planner")!.items,
+    items: ADMIN_NAV_GROUPS.find((g) => g.title === "Planner")?.items ?? [],
   },
   {
     title: "Catalog & library",
-    items: ADMIN_NAV_GROUPS.find((g) => g.title === "Catalog")!.items,
+    items: ADMIN_NAV_GROUPS.find((g) => g.title === "Catalog")?.items ?? [],
   },
   {
     title: "Platform & ops",
     items: [
-      ...ADMIN_NAV_GROUPS.find((g) => g.title === "Platform")!.items,
+      ...(ADMIN_NAV_GROUPS.find((g) => g.title === "Platform")?.items ?? []),
       {
         href: "/admin/customer-queries",
         label: "Customer queries",

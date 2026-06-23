@@ -160,8 +160,7 @@ export function ExportModal({ isOpen, onClose }: ExportModalProps) {
       setDownloadState("error");
       setStatusMessage(message);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [downloadState, selectedFormat, selectedPreset]);
+  }, [downloadState, selectedFormat, selectedPreset, t]);
 
   const handleCopyLink = useCallback(() => {
     const hash = btoa(JSON.stringify({ preset: selectedPreset, format: selectedFormat, ts: Date.now() }));

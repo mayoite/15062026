@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { RefreshCw, Save } from "lucide-react";
-import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
+import { ensureCsrfToken, invalidateCsrfToken } from "@/lib/api/browserApi";
+import { CSRF_HEADER_NAME } from "@/lib/security/csrfConstants";
 
 type QueryStatus = "new" | "in_progress" | "closed" | "spam";
 type FollowUpChannel = "email" | "whatsapp" | "phone" | "none";
@@ -52,6 +53,42 @@ function formatDate(value: string): string {
 
 const tokenStorageKey = "customer_queries_admin_token";
 
+async function patchCustomerQuery(
+  body: string,
+  adminToken: string,
+): Promise<Response> {
+  const baseHeaders = {
+    "Content-Type": "application/json",
+    ...(adminToken ? { "x-admin-token": adminToken } : {}),
+  };
+
+  let response = await fetch("/api/customer-queries/manage", {
+    method: "PATCH",
+    credentials: "include",
+    headers: baseHeaders,
+    body,
+  });
+  if (response.status !== 403) {
+    return response;
+  }
+
+  invalidateCsrfToken();
+  const csrfToken = await ensureCsrfToken();
+  response = await fetch("/api/customer-queries/manage", {
+    method: "PATCH",
+    credentials: "include",
+    headers: {
+      ...baseHeaders,
+      [CSRF_HEADER_NAME]: csrfToken,
+    },
+    body,
+  });
+  if (response.status === 403) {
+    invalidateCsrfToken();
+  }
+  return response;
+}
+
 export default function CustomerQueriesOpsPageView({ embedded = false }: { embedded?: boolean }) {
   const [adminTokenInput, setAdminTokenInput] = useState("");
   const [adminToken, setAdminToken] = useState("");
@@ -97,13 +134,11 @@ export default function CustomerQueriesOpsPageView({ embedded = false }: { embed
       const params = new URLSearchParams({ limit: "200" });
       if (statusFilter !== "all") params.set("status", statusFilter);
 
-      const response = await browserApiFetch(
-        apiPath(`/api/customer-queries/manage?${params.toString()}`),
-        {
-          headers: adminToken ? { "x-admin-token": adminToken } : undefined,
-          cache: "no-store",
-        },
-      );
+      const response = await fetch(`/api/customer-queries/manage?${params.toString()}`, {
+        credentials: "include",
+        headers: adminToken ? { "x-admin-token": adminToken } : undefined,
+        cache: "no-store",
+      });
       const json = (await response.json()) as { items?: CustomerQuery[]; error?: string };
       if (!response.ok) {
         setError(json.error || "Unable to load queries.");
@@ -140,20 +175,14 @@ export default function CustomerQueriesOpsPageView({ embedded = false }: { embed
     setSavingId(id);
     setError("");
     try {
-      const response = await browserApiFetch(apiPath("/api/customer-queries/manage"), {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          ...(adminToken ? { "x-admin-token": adminToken } : {}),
-        },
-        body: JSON.stringify({
-          id,
-          status: draft.status,
-          followUpChannel: draft.followUpChannel,
-          followUpTarget: draft.followUpTarget,
-          followUpNotes: draft.followUpNotes,
-        }),
+      const requestBody = JSON.stringify({
+        id,
+        status: draft.status,
+        followUpChannel: draft.followUpChannel,
+        followUpTarget: draft.followUpTarget,
+        followUpNotes: draft.followUpNotes,
       });
+      const response = await patchCustomerQuery(requestBody, adminToken);
       const json = (await response.json()) as { item?: CustomerQuery; error?: string };
       if (!response.ok || !json.item) {
         setError(json.error || "Unable to update query.");

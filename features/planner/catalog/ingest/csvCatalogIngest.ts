@@ -105,7 +105,7 @@ function parseLinearRows(
       continue;
     }
 
-    const lShapeInline = line.match(/^,,\s*(\d{3,4})\s*-\s*(\d{3,4})\s*X\s*(\d{3,4})/i);
+    const lShapeInline = line.match(/^(?:,,\s*)?(\d{3,4})\s*-\s*(\d{3,4})\s*X\s*(\d{3,4})/i);
     if (lShapeInline) {
       const prev = rows[rows.length - 1];
       if (prev) {

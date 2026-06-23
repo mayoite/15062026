@@ -121,7 +121,7 @@ function standardFromItem(item: StandardCatalogItem): StandardDraft {
     width_mm: String(item.width_mm ?? ""),
     depth_mm: String(item.depth_mm ?? ""),
     height_mm: String(item.height_mm ?? ""),
-    price: item.price != null ? String(item.price) : "",
+    price: item.price !== null ? String(item.price) : "",
     mesh_type: item.mesh_type ?? "box",
     image_url: item.image_url ?? "",
     visible: item.visible !== false && item.active !== false,
@@ -602,7 +602,10 @@ export function AdminCatalogManager({ title, description, catalogType }: Catalog
   }, [catalogType, categoryFilter, isStandard, page, search, visibleFilter]);
 
   useEffect(() => {
-    void loadItems();
+    const timeoutId = window.setTimeout(() => {
+      void loadItems();
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
   }, [loadItems]);
 
   const categories = useMemo(() => {
