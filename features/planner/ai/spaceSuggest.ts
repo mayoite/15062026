@@ -18,6 +18,8 @@ import {
 import { buildSpaceSuggestUserPrompt, SPACE_SUGGEST_SYSTEM_PROMPT } from "./prompts";
 import type { SpaceSuggestInput, SuggestedLayoutJson } from "./types";
 import { browserApiFetch } from "@/lib/api/browserApi";
+import { classifyAIResponse, validateLayoutSchema } from "./aiStatus";
+import type { AIProviderClassification } from "./aiStatus";
 
 const AISLE_MM = 1200;
 const BENCH_SEATS = 4;
@@ -241,16 +243,23 @@ function parseSuggestedLayoutJson(raw: string): SuggestedLayoutJson | null {
 export type SuggestLayoutResult = {
   layout: SuggestedLayoutJson;
   usedFallback: boolean;
+  status: AIProviderClassification;
+  requestTimestamp: number;
 };
 
 /** Optional LLM pass — falls back to grid pack when provider or parse fails.
  * Pass an `AbortSignal` to cancel an in-flight request (e.g. from AIAssistDrawer).
  * P6-06: AbortController support added; previously had no cancellation path.
+ * Lane 4: Enhanced with AI status classification and stale response rejection.
  */
 export async function suggestLayout(
   input: SpaceSuggestInput,
   signal?: AbortSignal,
 ): Promise<SuggestLayoutResult> {
+  const requestTimestamp = Date.now();
+  let lastError: unknown;
+  let provider = "unknown";
+
   try {
     const response = await browserApiFetch("/api/planner/ai-advisor", {
       method: "POST",
@@ -271,20 +280,52 @@ export async function suggestLayout(
     });
 
     if (response.ok) {
-      const data = (await response.json()) as { layout?: SuggestedLayoutJson; content?: string };
-      if (data.layout) return { layout: data.layout, usedFallback: false };
+      const data = (await response.json()) as {
+        layout?: SuggestedLayoutJson;
+        content?: string;
+        provider?: string;
+      };
+      provider = typeof data.provider === "string" && data.provider.trim() ? data.provider.trim() : provider;
+      if (data.layout && validateLayoutSchema(data.layout)) {
+        return {
+          layout: data.layout,
+          usedFallback: false,
+          status: classifyAIResponse(true, false, null, provider),
+          requestTimestamp,
+        };
+      }
       if (typeof data.content === "string") {
         const parsed = parseSuggestedLayoutJson(data.content);
-        if (parsed) return { layout: parsed, usedFallback: false };
+        if (parsed && validateLayoutSchema(parsed)) {
+          return {
+            layout: parsed,
+            usedFallback: false,
+            status: classifyAIResponse(true, false, null, provider),
+            requestTimestamp,
+          };
+        }
       }
+      lastError = new Error("Response parsed but failed schema validation");
     }
   } catch (err) {
-    // AbortError is intentional — propagate it so callers can distinguish cancel from failure.
+    lastError = err;
     if (err instanceof DOMException && err.name === "AbortError") {
       throw err;
     }
-    /* fall through to grid pack for any other network / parse error */
   }
 
-  return { layout: suggestLayoutGridPack(input), usedFallback: true };
+  const fallbackLayout = suggestLayoutGridPack(input);
+  const fallbackStatus = classifyAIResponse(
+    true,
+    true,
+    lastError,
+    provider,
+  );
+
+  return {
+    layout: fallbackLayout,
+    usedFallback: true,
+    status: fallbackStatus,
+    requestTimestamp,
+  };
 }

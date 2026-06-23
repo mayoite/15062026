@@ -25,6 +25,7 @@ import { extractCanvasPlacements } from "./extractCanvasPlacements";
 import { LayoutPreviewSvg } from "./LayoutPreviewSvg";
 import { suggestLayout, suggestLayoutGridPack } from "./spaceSuggest";
 import type { PlannerProjectMetadata } from "@/features/planner/onboarding/projectSetup";
+import type { AIProviderClassification } from "./aiStatus";
 
 import type { CatalogMatchResult, SuggestedLayoutJson } from "./types";
 
@@ -259,9 +260,10 @@ function SuggestLayoutPane({
   const [layoutBusy, setLayoutBusy] = useState(false);
   const [layoutError, setLayoutError] = useState<string | null>(null);
   const [previewLayout, setPreviewLayout] = useState<SuggestedLayoutJson | null>(null);
+  const [aiStatus, setAiStatus] = useState<AIProviderClassification | null>(null);
 
-  // P6-06: track in-flight AI request so it can be aborted on cancel.
   const abortRef = useRef<AbortController | null>(null);
+  const userActionTimestampRef = useRef<number>(0);
 
   const handleCancelLayout = useCallback(() => {
     abortRef.current?.abort();
@@ -275,11 +277,13 @@ function SuggestLayoutPane({
 
     const controller = new AbortController();
     abortRef.current = controller;
+    userActionTimestampRef.current = Date.now();
     setLayoutBusy(true);
     setLayoutError(null);
+    setAiStatus(null);
 
     try {
-      const { layout, usedFallback } = await suggestLayout(
+      const { layout, usedFallback, status, requestTimestamp } = await suggestLayout(
         {
           seatCount: Math.round(seatCount),
           purpose,
@@ -287,13 +291,28 @@ function SuggestLayoutPane({
         },
         controller.signal,
       );
+
+      setAiStatus(status);
+
+      if (requestTimestamp < userActionTimestampRef.current) {
+        setLayoutError("Request was cancelled or superseded by newer action.");
+        return;
+      }
+
       setPreviewLayout(layout);
       if (usedFallback) {
-        setLayoutError("AI was unavailable — showing a grid-packed starter layout instead.");
+        setLayoutError(
+          status.kind === "degraded_fallback"
+            ? `AI ${status.provider} unavailable — showing grid-packed layout.`
+            : status.kind === "invalid_response"
+              ? "AI returned invalid layout data — showing grid-packed layout."
+            : "AI unavailable — showing grid-packed layout.",
+        );
       }
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
         setLayoutError("Cancelled.");
+        setAiStatus({ kind: "request_aborted", reason: "User cancelled", timestamp: Date.now() });
       } else {
         setPreviewLayout(
           suggestLayoutGridPack({
@@ -303,6 +322,11 @@ function SuggestLayoutPane({
           }),
         );
         setLayoutError("AI was unavailable — showing a grid-packed starter layout instead.");
+        setAiStatus({
+          kind: "hard_failure",
+          error: err instanceof Error ? err.message : "Unknown error",
+          timestamp: Date.now(),
+        });
       }
     } finally {
       abortRef.current = null;
@@ -372,6 +396,16 @@ function SuggestLayoutPane({
       </div>
 
       {layoutError ? <p className="pw-ai-drawer-note pw-ai-drawer-note--warn">{layoutError}</p> : null}
+
+      {aiStatus ? (
+        <p className="pw-ai-drawer-note pw-ai-drawer-note--status">
+          {aiStatus.kind === "live_success" && `Live success from ${aiStatus.provider}`}
+          {aiStatus.kind === "degraded_fallback" && `Degraded: ${aiStatus.reason}`}
+          {aiStatus.kind === "request_aborted" && `Aborted: ${aiStatus.reason}`}
+          {aiStatus.kind === "invalid_response" && `Invalid response: ${aiStatus.error}`}
+          {aiStatus.kind === "hard_failure" && `Hard failure: ${aiStatus.error}`}
+        </p>
+      ) : null}
 
       <button
         type="button"

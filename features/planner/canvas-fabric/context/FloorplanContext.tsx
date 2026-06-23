@@ -1,6 +1,7 @@
 import {
   createContext,
   useCallback,
+  useEffect,
   useContext,
   useMemo,
   useRef,
@@ -151,6 +152,9 @@ const FloorplanContext = createContext<FloorplanContextValue | null>(null);
 
 export function FloorplanProvider({ children }: { children: ReactNode }) {
   const apiRef = useRef<FloorplanCanvasApi | null>(null);
+  const gridVisibilityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cloneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isActiveRef = useRef(false);
   const [roomEdit, setRoomEdit] = useState(false);
   const [states, setStates] = useState<string[]>([]);
   const [redoStates, setRedoStates] = useState<string[]>([]);
@@ -166,6 +170,21 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
   const [drawFillColor, setDrawFillColorState] = useState<string>(DEFAULT_FABRIC_FILL_COLOR);
   const [contextMenu, setContextMenu] = useState<FabricContextMenuState | null>(null);
   const [defaultChair, setDefaultChair] = useState<unknown>(null);
+
+  useEffect(() => {
+    isActiveRef.current = true;
+    return () => {
+      isActiveRef.current = false;
+      if (gridVisibilityTimerRef.current) {
+        clearTimeout(gridVisibilityTimerRef.current);
+      }
+      if (cloneTimerRef.current) {
+        clearTimeout(cloneTimerRef.current);
+      }
+      gridVisibilityTimerRef.current = null;
+      cloneTimerRef.current = null;
+    };
+  }, []);
 
   const registerCanvasApi = useCallback((api: FloorplanCanvasApi | null) => {
     apiRef.current = api;
@@ -260,6 +279,7 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
     if (!api) return;
 
     await api.importState(serialized);
+    if (!isActiveRef.current) return;
     setSelections([]);
     setUngroupable(false);
     setRoomEdit(false);
@@ -332,8 +352,16 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
   const setGridEnabled = useCallback(
     (value: boolean) => {
       setGridEnabledState(value);
-      setTimeout(() => {
+      if (gridVisibilityTimerRef.current) {
+        clearTimeout(gridVisibilityTimerRef.current);
+      }
+      gridVisibilityTimerRef.current = window.setTimeout(() => {
+        if (!isActiveRef.current) {
+          gridVisibilityTimerRef.current = null;
+          return;
+        }
         apiRef.current?.setGridVisible(value);
+        gridVisibilityTimerRef.current = null;
       }, 0);
     },
     [],
@@ -442,7 +470,17 @@ export function FloorplanProvider({ children }: { children: ReactNode }) {
       redo,
       clone: () => {
         performOperation('COPY');
-        setTimeout(() => performOperation('PASTE'), 100);
+        if (cloneTimerRef.current) {
+          clearTimeout(cloneTimerRef.current);
+        }
+        cloneTimerRef.current = window.setTimeout(() => {
+          if (!isActiveRef.current) {
+            cloneTimerRef.current = null;
+            return;
+          }
+          cloneTimerRef.current = null;
+          performOperation('PASTE');
+        }, 100);
       },
       copy: () => performOperation('COPY'),
       paste: () => performOperation('PASTE'),

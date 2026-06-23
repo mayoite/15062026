@@ -38,6 +38,7 @@ export interface UseAssetLoaderOptions {
   catalogIds: readonly string[];
   catalogItems?: readonly CatalogItem[] | null;
   loadCatalog?: () => Promise<CatalogItem[]>;
+  enabled?: boolean;
 }
 
 interface UseAssetLoaderResult {
@@ -97,10 +98,14 @@ export function useAssetLoader({
   catalogIds,
   catalogItems = null,
   loadCatalog = loadPlannerCatalog,
+  enabled = true,
 }: UseAssetLoaderOptions): UseAssetLoaderResult {
   const [loadedCatalog, setLoadedCatalog] = useState<readonly CatalogItem[] | null>(null);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     if (catalogItems) {
       return;
     }
@@ -122,7 +127,7 @@ export function useAssetLoader({
     return () => {
       cancelled = true;
     };
-  }, [catalogItems, loadCatalog]);
+  }, [catalogItems, enabled, loadCatalog]);
 
   const runtimeCatalog = useMemo(
     () => catalogItems ?? loadedCatalog ?? [],
@@ -172,7 +177,7 @@ export function useAssetLoader({
     });
   }, [requestedModelUrls]);
 
-  const gltfList = useLoader(GLTFLoader, requestedModelUrls) as unknown as GLTF[];
+  const gltfList = useLoader(GLTFLoader, enabled ? requestedModelUrls : []) as unknown as GLTF[];
 
   const assetsByCatalogId = useMemo(() => {
     const primitivesByUrl = new Map<string, LoadedAssetPrimitive[]>();

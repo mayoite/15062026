@@ -1,9 +1,22 @@
 "use client";
 
-import { PlannerWorkspace } from "@/features/planner/editor/PlannerWorkspace";
+import dynamic from "next/dynamic";
 import { ProjectSetupGate } from "@/features/planner/onboarding/ProjectSetupGate";
 
-import { PlannerCanvasEnhancements } from "./PlannerCanvasEnhancements";
+const PlannerWorkspace = dynamic(
+  () =>
+    import("@/features/planner/editor/PlannerWorkspace").then((mod) => ({
+      default: mod.PlannerWorkspace,
+    })),
+  { ssr: false },
+);
+const PlannerCanvasEnhancements = dynamic(
+  () =>
+    import("./PlannerCanvasEnhancements").then((mod) => ({
+      default: mod.PlannerCanvasEnhancements,
+    })),
+  { ssr: false, loading: () => null },
+);
 
 export function UnifiedPlannerPage({
   guestMode = false,

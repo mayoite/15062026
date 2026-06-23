@@ -15,6 +15,7 @@ import { fetchPlannerCatalogItems } from "./plannerCatalogApi";
 
 const RECENT_STORAGE_KEY = "planner-catalog-recent";
 const RECENT_LIMIT = 8;
+let catalogHydrationGeneration = 0;
 
 function readRecentIds(): string[] {
   if (typeof window === "undefined") return [];
@@ -73,10 +74,11 @@ export const usePlannerCatalogStore = create<PlannerCatalogState>((set, get) => 
   setQuery: (query) => set({ query }),
   setPurposeFilter: (purpose) => set({ purposeFilter: purpose }),
   hydrateCatalog: async () => {
-    if (get().catalogHydrating) return;
+    const generation = ++catalogHydrationGeneration;
     set({ catalogHydrating: true });
     try {
       const { items: managedItems, source } = await fetchPlannerCatalogItems();
+      if (generation !== catalogHydrationGeneration) return;
       const merged = mergeWorkspaceCatalogItems(PLANNER_CATALOG_ITEMS, managedItems);
       set({
         items: enrichCatalogItems(merged),
@@ -84,13 +86,16 @@ export const usePlannerCatalogStore = create<PlannerCatalogState>((set, get) => 
         managedCount: managedItems.length,
       });
     } catch {
+      if (generation !== catalogHydrationGeneration) return;
       set({
         items: enrichCatalogItems(PLANNER_CATALOG_ITEMS),
         catalogSource: "static",
         managedCount: 0,
       });
     } finally {
-      set({ catalogHydrating: false });
+      if (generation === catalogHydrationGeneration) {
+        set({ catalogHydrating: false });
+      }
     }
   },
   recordRecentPlacement: (itemId) =>

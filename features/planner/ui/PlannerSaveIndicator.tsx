@@ -2,7 +2,7 @@
 
 import { Cloud, CloudOff, Loader2 } from "lucide-react";
 
-import type { PlannerSaveStatus } from "../hooks/usePlannerAutosave";
+import type { PlannerEnvelopeStatus, PlannerSaveStatus } from "../hooks/usePlannerFabricAutosave";
 
 function formatRelativeTime(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -19,37 +19,77 @@ function formatRelativeTime(iso: string): string {
 export function PlannerSaveIndicator({
   status,
   lastSavedAt,
+  envelopeStatus,
   onRetry,
 }: {
   status: PlannerSaveStatus;
   lastSavedAt: string | null;
+  envelopeStatus?: PlannerEnvelopeStatus;
   onRetry?: () => void;
 }) {
+  const localSaveState = envelopeStatus?.localSaveState;
+  const syncState = envelopeStatus?.syncState;
+  const hasTruthfulEnvelope = Boolean(envelopeStatus);
+
   const label =
-    status === "saving"
-      ? "Saving…"
-      : status === "saved" && lastSavedAt
-        ? `Saved ${formatRelativeTime(lastSavedAt)}`
-        : status === "error"
-          ? "Save failed"
-          : status === "unsaved"
-            ? "Unsaved"
-            : "Ready";
+    localSaveState === "saving_local"
+      ? "Saving locally…"
+      : localSaveState === "local_save_failed"
+        ? "Local save failed"
+        : syncState === "conflict"
+          ? "Sync conflict"
+          : syncState === "sync_failed"
+            ? "Sync failed"
+            : syncState === "syncing"
+              ? "Syncing to cloud…"
+              : syncState === "queued"
+                ? "Queued for sync"
+                : localSaveState === "saved_local" && lastSavedAt
+                  ? `Saved locally ${formatRelativeTime(lastSavedAt)}`
+                  : localSaveState === "dirty"
+                    ? "Unsaved changes"
+                    : status === "saving"
+                      ? "Saving…"
+                      : status === "saved" && lastSavedAt
+                        ? `Saved ${formatRelativeTime(lastSavedAt)}`
+                        : status === "error"
+                          ? "Save failed"
+                          : status === "unsaved"
+                            ? "Unsaved"
+                            : "Ready";
 
   const pillStatus =
-    status === "saved" ? "saved" : status === "error" ? "error" : status === "unsaved" ? "unsaved" : "idle";
+    syncState === "conflict"
+      ? "conflict"
+      : syncState === "sync_failed" || localSaveState === "local_save_failed"
+        ? "error"
+        : syncState === "queued"
+          ? "queued"
+          : syncState === "syncing"
+            ? "syncing"
+            : localSaveState === "saving_local"
+              ? "saving"
+              : localSaveState === "saved_local" && lastSavedAt && hasTruthfulEnvelope
+                ? "saved"
+                : status === "saved"
+                  ? "saved"
+                  : status === "error"
+                    ? "error"
+                    : status === "unsaved"
+                      ? "unsaved"
+                      : "idle";
 
   const Icon =
-    status === "saving"
+    syncState === "syncing" || localSaveState === "saving_local" || status === "saving"
       ? Loader2
-      : status === "error"
+      : syncState === "sync_failed" || localSaveState === "local_save_failed" || status === "error"
         ? CloudOff
         : Cloud;
 
   const content = (
     <>
       <Icon
-        className={`h-3.5 w-3.5 shrink-0 ${status === "saving" ? "animate-spin" : ""}`}
+        className={`h-3.5 w-3.5 shrink-0 ${Icon === Loader2 ? "animate-spin" : ""}`}
         aria-hidden
       />
       <span className="truncate">{label}</span>
@@ -64,7 +104,7 @@ export function PlannerSaveIndicator({
       aria-live="polite"
       aria-atomic="true"
     >
-      {status === "error" && onRetry ? (
+      {(status === "error" || syncState === "sync_failed" || localSaveState === "local_save_failed") && onRetry ? (
         <button
           type="button"
           onClick={onRetry}

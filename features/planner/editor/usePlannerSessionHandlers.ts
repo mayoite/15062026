@@ -6,7 +6,7 @@
  * Integrates IndexedDB offlineStorage and SyncQueueProcessor for offline-first capabilities.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LOCAL_CURRENT_DRAFT_ID,
   createPlannerExportPayload,
@@ -52,6 +52,34 @@ import {
 
 const EMPTY_FABRIC_SNAPSHOT = JSON.stringify({ objects: [] });
 
+function describeOfflinePlanStatus(plan: OfflinePlan): string {
+  if (plan.syncState === "conflict") {
+    return "Conflict needs review";
+  }
+  if (plan.syncState === "sync_failed") {
+    return plan.syncErrorCode ? `Sync failed (${plan.syncErrorCode})` : "Sync failed";
+  }
+  if (plan.syncState === "syncing") {
+    return "Syncing to cloud";
+  }
+  if (plan.syncState === "queued") {
+    return "Queued for sync";
+  }
+  if (plan.localSaveState === "local_save_failed") {
+    return "Local save failed";
+  }
+  if (plan.localSaveState === "saving_local") {
+    return "Saving locally";
+  }
+  if (plan.localSaveState === "dirty") {
+    return "Unsaved changes";
+  }
+  if (plan.syncState === "synced") {
+    return "Saved locally and synced";
+  }
+  return "Saved locally";
+}
+
 type UseSessionHandlersOptions = {
   /** Memoised current planner document (already built — do not re-serialise). */
   getCurrentPlannerDocument: () => ReturnType<typeof buildPlannerDocumentFromEditor>;
@@ -61,6 +89,7 @@ type UseSessionHandlersOptions = {
   shapeCount: number;
   saveStatus: string;
   fitToContent?: () => number;
+  bootstrapEnabled?: boolean;
 };
 
 export function usePlannerSessionHandlers({
@@ -71,6 +100,7 @@ export function usePlannerSessionHandlers({
   shapeCount,
   saveStatus,
   fitToContent,
+  bootstrapEnabled = true,
 }: UseSessionHandlersOptions) {
   const [planNameOverride, setPlanNameOverride] = useState<string | null>(null);
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(planId ?? null);
@@ -87,27 +117,48 @@ export function usePlannerSessionHandlers({
   const [draftPlanName, setDraftPlanName] = useState("Workspace Plan");
   const [localDraftSessions, setLocalDraftSessions] = useState<OfflinePlan[]>([]);
   const [currentOfflinePlan, setCurrentOfflinePlan] = useState<OfflinePlan | null>(null);
+  const mountedRef = useRef(false);
+  const authLoadGenerationRef = useRef(0);
+  const cloudInventoryRequestRef = useRef(0);
 
   const isOnline = useOnlineStatus();
 
+  useEffect(() => {
+    if (!bootstrapEnabled) return;
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, [bootstrapEnabled]);
+
   // Load user session on mount
   useEffect(() => {
+    if (!bootstrapEnabled) return;
+    const generation = ++authLoadGenerationRef.current;
     if (guestMode) {
-      setAuthUserId(null);
-      setAuthRole(null);
-      setPlannerManagedProducts([]);
-      return;
+      if (mountedRef.current) {
+        setAuthUserId(null);
+        setAuthRole(null);
+        setPlannerManagedProducts([]);
+      }
+      return () => {
+        if (authLoadGenerationRef.current === generation) {
+          authLoadGenerationRef.current += 1;
+        }
+      };
     }
     const supabase = createClient();
     void (async () => {
       try {
         const user = await getBrowserSessionUser(supabase);
+        if (!mountedRef.current || authLoadGenerationRef.current !== generation) return;
         if (!user?.id) {
           setAuthUserId(null);
           setAuthRole(null);
           setPlannerManagedProducts([]);
           return;
         }
+        if (!mountedRef.current || authLoadGenerationRef.current !== generation) return;
         setAuthUserId(user.id);
         const { data: profileData } = await supabase
           .from("profiles")
@@ -119,22 +170,33 @@ export function usePlannerSessionHandlers({
             ? String((profileData as { role?: string }).role ?? "")
             : "";
         const role = profileRole === "admin" ? "admin" : "customer";
+        if (!mountedRef.current || authLoadGenerationRef.current !== generation) return;
         setAuthRole(role);
         if (role === "admin") {
           const managed = await listPlannerManagedProductsFromSupabase(supabase);
+          if (!mountedRef.current || authLoadGenerationRef.current !== generation) return;
           setPlannerManagedProducts(managed);
         } else {
           setPlannerManagedProducts([]);
         }
       } catch (err) {
+        if (!mountedRef.current || authLoadGenerationRef.current !== generation) return;
         console.error("Failed to retrieve browser session user:", err);
       }
     })();
-  }, [guestMode]);
+    return () => {
+      if (authLoadGenerationRef.current === generation) {
+        authLoadGenerationRef.current += 1;
+      }
+    };
+  }, [bootstrapEnabled, guestMode]);
 
   const syncCloudInventory = useCallback(async () => {
+    const requestId = ++cloudInventoryRequestRef.current;
     if (!authUserId || !isFeatureEnabled("supabaseSync")) {
-      setCloudPlans([]);
+      if (mountedRef.current && requestId === cloudInventoryRequestRef.current) {
+        setCloudPlans([]);
+      }
       return;
     }
     try {
@@ -143,15 +205,18 @@ export function usePlannerSessionHandlers({
         userId: authUserId,
         accessMode: "owner",
       });
+      if (!mountedRef.current || requestId !== cloudInventoryRequestRef.current) return;
       setCloudPlans(plans);
     } catch (err) {
+      if (!mountedRef.current || requestId !== cloudInventoryRequestRef.current) return;
       console.error("Failed to load cloud planner documents:", err);
     }
   }, [authUserId]);
 
   useEffect(() => {
+    if (!bootstrapEnabled) return;
     void syncCloudInventory();
-  }, [syncCloudInventory, cloudInventoryVersion]);
+  }, [bootstrapEnabled, cloudInventoryVersion, syncCloudInventory]);
 
   // Synchronize IndexedDB plans when localDraftVersion changes
   useEffect(() => {
@@ -190,6 +255,7 @@ export function usePlannerSessionHandlers({
       const processor = new SyncQueueProcessor({
         userId: authUserId,
         onSyncComplete: (result) => {
+          if (!mountedRef.current) return;
           if (result.processed > 0) {
             setLocalDraftVersion((v) => v + 1);
             setSessionStatusMessage(`Synced ${result.processed} plans to cloud.`);
@@ -204,10 +270,11 @@ export function usePlannerSessionHandlers({
 
   // Process sync queue when online status changes to true
   useEffect(() => {
+    if (!bootstrapEnabled) return;
     if (isOnline && authUserId) {
       handleSyncQueue();
     }
-  }, [isOnline, authUserId, handleSyncQueue]);
+  }, [authUserId, bootstrapEnabled, handleSyncQueue, isOnline]);
 
   const draftNameKey = useMemo(
     () => `${LOCAL_CURRENT_DRAFT_ID}:${localDraftVersion}`,
@@ -216,6 +283,7 @@ export function usePlannerSessionHandlers({
 
   const applyPlannerDocument = useCallback(
     (document: ReturnType<typeof normalizePlannerDocument>) => {
+      if (!mountedRef.current) return false;
       const normalized = normalizePlannerDocument(document);
       const loaded = loadPlannerDocumentIntoFabric(importDraft, normalized);
       if (!loaded) {
@@ -303,6 +371,7 @@ export function usePlannerSessionHandlers({
           savedNamed = plan;
         }
 
+        if (!mountedRef.current) return;
         setActiveDocumentId(namedDocumentId);
         setLocalDraftVersion((v) => v + 1);
         setSessionErrorMessage(null);
@@ -313,6 +382,7 @@ export function usePlannerSessionHandlers({
         handleSyncQueue();
       } catch (err) {
         console.error("Failed to save draft to IndexedDB:", err);
+        if (!mountedRef.current) return;
         setSessionErrorMessage("Local draft save is unavailable in this environment.");
       }
     },
@@ -352,17 +422,21 @@ export function usePlannerSessionHandlers({
           saveId: namedDocumentId,
         });
 
+        if (!mountedRef.current) return;
         setActiveDocumentId(saved.id ?? namedDocumentId);
         setPlanNameOverride(saved.title ?? saved.name);
         setSessionErrorMessage(null);
         setSessionStatusMessage(`Cloud save updated: ${saved.name}`);
         setCloudInventoryVersion((v) => v + 1);
       } catch (err) {
+        if (!mountedRef.current) return;
         setSessionErrorMessage(
           err instanceof Error ? err.message : "Unable to save planner document to cloud.",
         );
       } finally {
-        setSessionBusy(false);
+        if (mountedRef.current) {
+          setSessionBusy(false);
+        }
       }
     },
     [activeDocumentId, authUserId, getCurrentPlannerDocument, isOnline],
@@ -430,6 +504,7 @@ export function usePlannerSessionHandlers({
           error: null,
         });
 
+        if (!mountedRef.current) return;
         setActiveDocumentId(newDocumentId);
         setPlanNameOverride(normalizedName);
         setLocalDraftVersion((v) => v + 1);
@@ -441,6 +516,7 @@ export function usePlannerSessionHandlers({
         handleSyncQueue();
       } catch (err) {
         console.error("Failed to save as new session to IndexedDB:", err);
+        if (!mountedRef.current) return;
         setSessionErrorMessage("New local session could not be created.");
       }
     },
@@ -481,13 +557,17 @@ export function usePlannerSessionHandlers({
             return;
           }
           applyPlannerDocument(cloudDocument);
+          if (!mountedRef.current) return;
           setSessionStatusMessage(`Loaded cloud plan: ${cloudDocument.name}`);
         } catch (err) {
+          if (!mountedRef.current) return;
           setSessionErrorMessage(
             err instanceof Error ? err.message : "Unable to load cloud plan.",
           );
         } finally {
-          setSessionBusy(false);
+          if (mountedRef.current) {
+            setSessionBusy(false);
+          }
         }
         return;
       }
@@ -503,6 +583,7 @@ export function usePlannerSessionHandlers({
         applyPlannerDocument(offlinePlan.document);
       } catch (err) {
         console.error("Failed to load plan from IndexedDB:", err);
+        if (!mountedRef.current) return;
         setSessionErrorMessage("Local draft not found.");
       }
     },
@@ -529,16 +610,20 @@ export function usePlannerSessionHandlers({
           const deleted = await deletePlannerDocumentFromSupabase(supabase, plan.id, {
             userId: authUserId,
           });
+          if (!mountedRef.current) return;
           if (activeDocumentId === plan.id) setActiveDocumentId(null);
           setSessionErrorMessage(null);
           setSessionStatusMessage(deleted ? "Cloud plan removed." : "Cloud plan was not found.");
           setCloudInventoryVersion((v) => v + 1);
         } catch (err) {
+          if (!mountedRef.current) return;
           setSessionErrorMessage(
             err instanceof Error ? err.message : "Unable to delete cloud plan.",
           );
         } finally {
-          setSessionBusy(false);
+          if (mountedRef.current) {
+            setSessionBusy(false);
+          }
         }
         return;
       }
@@ -550,6 +635,7 @@ export function usePlannerSessionHandlers({
       try {
         await offlineStorage.init();
         await deleteOfflinePlan(plan.id);
+        if (!mountedRef.current) return;
         if (activeDocumentId === plan.id) setActiveDocumentId(null);
         setLocalDraftVersion((v) => v + 1);
         setSessionErrorMessage(null);
@@ -558,6 +644,7 @@ export function usePlannerSessionHandlers({
         handleSyncQueue();
       } catch (err) {
         console.error("Failed to delete plan from IndexedDB:", err);
+        if (!mountedRef.current) return;
         setSessionErrorMessage("Local session could not be deleted.");
       }
     },
@@ -593,6 +680,7 @@ export function usePlannerSessionHandlers({
             userId: authUserId,
             saveId: plan.id,
           });
+          if (!mountedRef.current) return;
           if (activeDocumentId === plan.id) {
             setPlanNameOverride(nextName);
           }
@@ -600,11 +688,14 @@ export function usePlannerSessionHandlers({
           setSessionStatusMessage(`Renamed cloud plan to ${nextName}`);
           setCloudInventoryVersion((v) => v + 1);
         } catch (err) {
+          if (!mountedRef.current) return;
           setSessionErrorMessage(
             err instanceof Error ? err.message : "Cloud plan could not be renamed.",
           );
         } finally {
-          setSessionBusy(false);
+          if (mountedRef.current) {
+            setSessionBusy(false);
+          }
         }
         return;
       }
@@ -629,6 +720,7 @@ export function usePlannerSessionHandlers({
 
         await updateOfflinePlan(plan.id, renamed);
 
+        if (!mountedRef.current) return;
         if (activeDocumentId === plan.id) {
           const currentDraftDoc = normalizePlannerDocument({
             ...renamed,
@@ -644,6 +736,7 @@ export function usePlannerSessionHandlers({
         handleSyncQueue();
       } catch (err) {
         console.error("Failed to rename plan in IndexedDB:", err);
+        if (!mountedRef.current) return;
         setSessionErrorMessage("Local session could not be renamed.");
       }
     },
@@ -731,6 +824,7 @@ export function usePlannerSessionHandlers({
             error: null,
           });
 
+          if (!mountedRef.current) return;
           setActiveDocumentId(documentId);
           setLocalDraftVersion((v) => v + 1);
           setSessionStatusMessage(`Imported planner JSON: ${normalizedName}`);
@@ -778,8 +872,7 @@ export function usePlannerSessionHandlers({
         itemCount: entry.document.itemCount,
         detail: `${entry.document.roomWidthMm}mm x ${entry.document.roomDepthMm}mm`,
         subtitle: entry.document.projectName ?? "Named local session",
-        statusLabel:
-          entry.document.unitSystem === "imperial" ? "Imperial units" : "Metric units",
+        statusLabel: describeOfflinePlanStatus(entry),
       }));
 
       const cloudEntries: PlannerSavedEntry[] = isFeatureEnabled("supabaseSync")
@@ -817,10 +910,7 @@ export function usePlannerSessionHandlers({
               itemCount: currentOfflinePlan.document.itemCount,
               detail: `${currentOfflinePlan.document.roomWidthMm}mm x ${currentOfflinePlan.document.roomDepthMm}mm`,
               subtitle: currentOfflinePlan.document.projectName ?? "Rolling browser draft",
-              statusLabel:
-                currentOfflinePlan.document.unitSystem === "imperial"
-                  ? "Imperial units"
-                  : "Metric units",
+              statusLabel: describeOfflinePlanStatus(currentOfflinePlan),
             },
             ...namedEntries,
           ];
@@ -840,6 +930,7 @@ export function usePlannerSessionHandlers({
       setSessionBusy(true);
       try {
         const saved = await upsertPlannerManagedProduct(supabase, product);
+        if (!mountedRef.current) return;
         setPlannerManagedProducts((current) =>
           [...current.filter((entry) => entry.id !== saved.id), saved].sort((a, b) =>
             b.updated_at.localeCompare(a.updated_at),
@@ -849,11 +940,14 @@ export function usePlannerSessionHandlers({
         setSessionStatusMessage(`Catalog product saved: ${saved.name}`);
         setSessionErrorMessage(null);
       } catch (error) {
+        if (!mountedRef.current) return;
         setSessionErrorMessage(
           error instanceof Error ? error.message : "Unable to save planner-managed product.",
         );
       } finally {
-        setSessionBusy(false);
+        if (mountedRef.current) {
+          setSessionBusy(false);
+        }
       }
     },
     [authRole],
@@ -870,17 +964,21 @@ export function usePlannerSessionHandlers({
       try {
         const deleted = await deletePlannerManagedProduct(supabase, id);
         if (deleted) {
+          if (!mountedRef.current) return;
           setPlannerManagedProducts((current) => current.filter((entry) => entry.id !== id));
           await usePlannerCatalogStore.getState().hydrateCatalog();
         }
         setSessionStatusMessage(deleted ? "Catalog product removed." : "Product was not found.");
         setSessionErrorMessage(null);
       } catch (error) {
+        if (!mountedRef.current) return;
         setSessionErrorMessage(
           error instanceof Error ? error.message : "Unable to delete planner-managed product.",
         );
       } finally {
-        setSessionBusy(false);
+        if (mountedRef.current) {
+          setSessionBusy(false);
+        }
       }
     },
     [authRole],
@@ -893,17 +991,21 @@ export function usePlannerSessionHandlers({
       await deleteProject(projectId);
       await importDraft(EMPTY_FABRIC_SNAPSHOT);
       fitToContent?.();
+      if (!mountedRef.current) return;
       setPlanNameOverride("Workspace Plan");
       setActiveDocumentId(null);
       setSessionStatusMessage("Started a new blank layout.");
       setSessionErrorMessage(null);
       setLocalDraftVersion((v) => v + 1);
     } catch (error) {
+      if (!mountedRef.current) return;
       setSessionErrorMessage(
         error instanceof Error ? error.message : "Unable to start a fresh layout.",
       );
     } finally {
-      setSessionBusy(false);
+      if (mountedRef.current) {
+        setSessionBusy(false);
+      }
     }
   }, [fitToContent, guestMode, importDraft, planId]);
 

@@ -16,6 +16,7 @@ import { PlannerThemeToggle } from "@/features/planner/components/PlannerThemeTo
 import { useTheme } from "@/features/planner/components/WorkspaceThemeProvider";
 import { OneAndOnlyLogo } from "@/components/ui/Logo";
 import type { PlannerSaveStatus } from "@/features/planner/hooks/usePlannerAutosave";
+import type { PlannerEnvelopeStatus } from "@/features/planner/hooks/usePlannerFabricAutosave";
 import { PlannerSaveIndicator } from "@/features/planner/ui/PlannerSaveIndicator";
 import { PlannerStepBar } from "@/features/planner/editor/PlannerStepBar";
 import type { PlannerStep } from "@/features/planner/editor/plannerStep";
@@ -27,6 +28,7 @@ interface PlannerTopBarProps {
   disabledSteps: Partial<Record<PlannerStep, boolean>>;
   onPlannerStepChange: (step: PlannerStep) => void;
   saveStatus: PlannerSaveStatus;
+  saveEnvelopeStatus?: PlannerEnvelopeStatus;
   lastSavedAt: string | null;
   onRetrySave: () => void;
   onOpenSession: () => void;
@@ -45,6 +47,7 @@ export function PlannerTopBar({
   disabledSteps,
   onPlannerStepChange,
   saveStatus,
+  saveEnvelopeStatus,
   lastSavedAt,
   onRetrySave,
   onOpenSession,
@@ -109,6 +112,7 @@ export function PlannerTopBar({
           <PlannerThemeToggle />
           <PlannerSaveIndicator
             status={saveStatus}
+            envelopeStatus={saveEnvelopeStatus}
             lastSavedAt={lastSavedAt}
             onRetry={onRetrySave}
           />

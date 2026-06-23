@@ -13,6 +13,7 @@ import {
 } from "./aiAdvisorConfig";
 import { extractCanvasPlacements } from "./extractCanvasPlacements";
 import { browserApiFetch } from "@/lib/api/browserApi";
+import type { AIProviderClassification } from "./aiStatus";
 
 type ChatRole = "user" | "assistant" | "system";
 
@@ -61,17 +62,28 @@ export function AiAdvisorChatPane({
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [aiStatus, setAiStatus] = useState<AIProviderClassification | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const requestSeqRef = useRef(0);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    return () => {
+      requestSeqRef.current += 1;
+      abortRef.current?.abort();
+    };
+  }, []);
 
   const send = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed || isLoading) return;
 
+      abortRef.current?.abort();
       const userMessage: ChatMessage = {
         id: createMessageId("user"),
         role: "user",
@@ -86,12 +98,18 @@ export function AiAdvisorChatPane({
       });
       setInput("");
       setIsLoading(true);
+      setAiStatus(null);
+
+      const requestSeq = ++requestSeqRef.current;
+      const controller = new AbortController();
+      abortRef.current = controller;
 
       try {
         const placementCount = editor ? extractCanvasPlacements(editor).length : 0;
         const response = await browserApiFetch("/api/planner/ai-advisor", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
           body: JSON.stringify({
             mode: "chat",
             messages: outbound
@@ -114,14 +132,50 @@ export function AiAdvisorChatPane({
           content?: string;
           suggestion?: LayoutSuggestion;
           degraded?: boolean;
+          provider?: string;
         };
+
+        if (requestSeq !== requestSeqRef.current || controller.signal.aborted) {
+          return;
+        }
+
+        if (typeof data.content !== "string") {
+          setAiStatus({
+            kind: "invalid_response",
+            error: "Chat response was missing content",
+            timestamp: Date.now(),
+          });
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: createMessageId("assistant"),
+              role: "assistant",
+              content: "AI returned an invalid response. Please try again.",
+              timestamp: 0,
+            },
+          ]);
+          return;
+        }
 
         const assistantContent =
           data.content || "I couldn't process that request. Try rephrasing?";
         const degradedNote = data.degraded
           ? "\n\n(Using offline tips — add a valid AI API key or check provider quota for live answers.)"
           : "";
+        const status: AIProviderClassification = data.degraded
+          ? {
+              kind: "degraded_fallback",
+              provider: data.provider || "unknown",
+              reason: "Provider unavailable, using fallback",
+              timestamp: Date.now(),
+            }
+          : {
+              kind: "live_success",
+              provider: data.provider || "unknown",
+              timestamp: Date.now(),
+            };
 
+        setAiStatus(status);
         setMessages((prev) => [
           ...prev,
           {
@@ -133,6 +187,22 @@ export function AiAdvisorChatPane({
           },
         ]);
       } catch {
+        if (requestSeq !== requestSeqRef.current) {
+          return;
+        }
+        if (abortRef.current?.signal.aborted) {
+          setAiStatus({
+            kind: "request_aborted",
+            reason: "User cancelled",
+            timestamp: Date.now(),
+          });
+          return;
+        }
+        setAiStatus({
+          kind: "hard_failure",
+          error: "AI request failed",
+          timestamp: Date.now(),
+        });
         setMessages((prev) => [
           ...prev,
           {
@@ -143,7 +213,10 @@ export function AiAdvisorChatPane({
           },
         ]);
       } finally {
-        setIsLoading(false);
+        if (requestSeq === requestSeqRef.current) {
+          setIsLoading(false);
+          abortRef.current = null;
+        }
       }
     },
     [editor, isLoading, projectMetadata, setInput, setIsLoading, setMessages],
@@ -159,6 +232,17 @@ export function AiAdvisorChatPane({
       </p>
 
       <div className="pw-ai-chat-stream custom-scrollbar" aria-live="polite">
+        {aiStatus ? (
+          <p className="pw-ai-drawer-note pw-ai-drawer-note--status">
+            {aiStatus.kind === "live_success" && `Live success from ${aiStatus.provider}`}
+            {aiStatus.kind === "degraded_fallback" && `Degraded: ${aiStatus.reason}`}
+            {aiStatus.kind === "request_aborted" && `Aborted: ${aiStatus.reason}`}
+            {aiStatus.kind === "invalid_response" && `Invalid response: ${aiStatus.error}`}
+            {aiStatus.kind === "hard_failure" && `Hard failure: ${aiStatus.error}`}
+          </p>
+        ) : isLoading ? (
+          <p className="pw-ai-drawer-note pw-ai-drawer-note--status">Requesting AI…</p>
+        ) : null}
         {messages.map((msg) => (
           <div key={msg.id} className="pw-ai-chat-row" data-role={msg.role}>
             <div

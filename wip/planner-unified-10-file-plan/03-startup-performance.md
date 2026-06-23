@@ -89,9 +89,9 @@ Proof for this file is strong only if a reviewer can show:
 
 ## Completion Checklist
 
-- [ ] Baseline startup path is measured with at least one bundle metric and one timing metric.
-- [ ] Synchronous import ownership on the initial route is named.
-- [ ] Heavy surfaces are behind explicit load boundaries.
-- [ ] Cold-start network activity is lighter or the exact reason it is not is logged.
-- [ ] Throttled shell-first validation exists or the exact gap is logged.
-- [ ] Before/after evidence exists or the exact gap is logged.
+- [ ] Baseline startup path is measured with at least one bundle metric and one timing metric. <!-- partial: source-only lazy boundaries and telemetry marks exist, but bundle/timing proof is missing -->
+- [x] Synchronous import ownership on the initial route is named.
+- [x] Heavy surfaces are behind explicit load boundaries.
+- [ ] Cold-start network activity is lighter or the exact reason it is not is logged. <!-- partial: exact gap is logged, but no cold-start network comparison exists -->
+- [ ] Throttled shell-first validation exists or the exact gap is logged. <!-- partial: exact gap is logged, but no throttled browser run exists -->
+- [ ] Before/after evidence exists or the exact gap is logged. <!-- partial: exact gap is logged, but no before/after capture exists -->

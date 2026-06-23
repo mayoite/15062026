@@ -101,10 +101,10 @@ Responsible proof for this lane can include:
 
 ## Completion Checklist
 
-- [ ] Canonical ingest output is named and used.
-- [ ] Source-family validation is explicit.
-- [ ] Normalization is not left for runtime render paths.
-- [ ] Asset metadata source of truth is manifest or registry-backed.
-- [ ] Asset resolution is centralized.
-- [ ] Golden-output proof exists or the exact gap is logged.
-- [ ] Duplicate, invalid-row, stale-artifact, and missing-asset audits are available or the exact gap is logged.
+- [x] Canonical ingest output is named and used.
+- [x] Source-family validation is explicit.
+- [x] Normalization is not left for runtime render paths.
+- [x] Asset metadata source of truth is manifest or registry-backed.
+- [x] Asset resolution is centralized.
+- [x] Golden-output proof exists or the exact gap is logged.
+- [x] Duplicate, invalid-row, stale-artifact, and missing-asset audits are available or the exact gap is logged.

@@ -2,7 +2,7 @@ import type { PlannerDocument } from "@/features/planner/model/plannerDocument";
 import {
   savePlannerDocument,
   loadPlannerDocument,
-  listPlannerDocuments,
+  listPlannerDocumentSummaries,
   deletePlannerDocument,
 } from "./plannerPersistence";
 
@@ -71,25 +71,25 @@ export async function listPlannerDocumentsFromStore(
 ): Promise<PlannerSaveSummary[]> {
   const userId = options.userId ?? options.ownerUserId;
   if (!userId) return [];
-  const res = await listPlannerDocuments(userId);
+  const res = await listPlannerDocumentSummaries(userId);
   if (!res.success) {
     throw new Error(res.error.message);
   }
-  return res.documents.map((d) => ({
-    id: d.id,
-    user_id: userId,
-    name: d.document.title ?? d.document.name ?? "Untitled plan",
-    project_name: d.document.projectName ?? null,
-    client_name: d.document.clientName ?? null,
-    prepared_by: d.document.preparedBy ?? null,
-    room_width_mm: d.document.roomWidthMm,
-    room_depth_mm: d.document.roomDepthMm,
-    seat_target: d.document.seatTarget,
-    unit_system: d.document.unitSystem,
-    item_count: d.document.itemCount,
-    thumbnail_url: d.document.thumbnailUrl ?? null,
-    created_at: d.document.createdAt || new Date().toISOString(),
-    updated_at: d.document.updatedAt || new Date().toISOString(),
+  return res.summaries.map((summary) => ({
+    id: summary.id,
+    user_id: summary.user_id,
+    name: summary.name,
+    project_name: summary.project_name,
+    client_name: summary.client_name,
+    prepared_by: summary.prepared_by,
+    room_width_mm: summary.room_width_mm,
+    room_depth_mm: summary.room_depth_mm,
+    seat_target: summary.seat_target,
+    unit_system: summary.unit_system,
+    item_count: summary.item_count,
+    thumbnail_url: summary.thumbnail_url,
+    created_at: summary.created_at,
+    updated_at: summary.updated_at,
   }));
 }
 

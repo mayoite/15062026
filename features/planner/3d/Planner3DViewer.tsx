@@ -670,6 +670,7 @@ export function Planner3DViewer({ document, className }: Planner3DViewerProps) {
               onCreated={({ gl }) => {
                 // BUG-02: capture renderer so dispose() is called on the right instance.
                 rendererRef.current = gl;
+                performance.mark("planner-3d-ready");
               }}
             >
               <PlannerScene

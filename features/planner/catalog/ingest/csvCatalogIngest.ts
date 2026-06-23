@@ -17,6 +17,29 @@ export type CsvWorkstationRow = {
   armLengthMm?: number;
 };
 
+export type CsvSourceFamily =
+  | "accessories"
+  | "privacy-screens"
+  | "cabin-tables"
+  | "storage-discrete"
+  | "l-shape-grid"
+  | "linear-workstations"
+  | "unclassified";
+
+export type CatalogIngestWarning = {
+  file: string;
+  family: CsvSourceFamily;
+  line?: number;
+  reason: string;
+  snippet?: string;
+};
+
+export type ParsedCatalogCsv = {
+  family: CsvSourceFamily;
+  items: CatalogItem[];
+  warnings: CatalogIngestWarning[];
+};
+
 const CSV_DIR = "features/planner/catalog/ingest/csv";
 
 function slugify(value: string): string {
@@ -40,11 +63,39 @@ function seriesFromContent(firstLines: string): string {
   return "Workstation";
 }
 
-function parseLinearRows(series: string, lines: string[]): CsvWorkstationRow[] {
+function detectCsvSourceFamily(raw: string): CsvSourceFamily {
+  const lower = raw.toLowerCase();
+  if (lower.includes("accessories")) return "accessories";
+  if (lower.includes("privacy screens")) return "privacy-screens";
+  if (lower.includes("cabin tables")) return "cabin-tables";
+  if (lower.includes("product: pedestal") || lower.includes("product: storage")) return "storage-discrete";
+  if (lower.includes("l shape") && lower.includes("l1 x l2")) return "l-shape-grid";
+  if (lower.includes("seater") || lower.includes("workstation")) return "linear-workstations";
+  return "unclassified";
+}
+
+function makeWarning(
+  file: string,
+  family: CsvSourceFamily,
+  reason: string,
+  line?: number,
+  snippet?: string,
+): CatalogIngestWarning {
+  return { file, family, reason, line, snippet };
+}
+
+function parseLinearRows(
+  file: string,
+  family: CsvSourceFamily,
+  series: string,
+  lines: string[],
+  warnings: CatalogIngestWarning[],
+): CsvWorkstationRow[] {
   const rows: CsvWorkstationRow[] = [];
   let mode: "NS" | "SH" = "NS";
 
-  for (const line of lines) {
+  for (const [lineIndex, line] of lines.entries()) {
+    const lineNumber = lineIndex + 1;
     if (/WORKSTATION:\s*SHARING/i.test(line)) {
       mode = "SH";
       continue;
@@ -54,7 +105,7 @@ function parseLinearRows(series: string, lines: string[]): CsvWorkstationRow[] {
       continue;
     }
 
-    const lShapeInline = line.match(/(\d{3,4})\s*-\s*(\d{3,4})\s*X\s*(\d{3,4})/i);
+    const lShapeInline = line.match(/^,,\s*(\d{3,4})\s*-\s*(\d{3,4})\s*X\s*(\d{3,4})/i);
     if (lShapeInline) {
       const prev = rows[rows.length - 1];
       if (prev) {
@@ -66,6 +117,16 @@ function parseLinearRows(series: string, lines: string[]): CsvWorkstationRow[] {
           shape: "l-shape",
           name: prev.name.replace(/\(\d+mm\)/, `(${lShapeInline[2]}mm)`),
         });
+      } else {
+        warnings.push(
+          makeWarning(
+            file,
+            family,
+            "Detected inline L-shape dimensions without a preceding workstation row",
+            lineNumber,
+            line.trim(),
+          ),
+        );
       }
       continue;
     }
@@ -74,9 +135,31 @@ function parseLinearRows(series: string, lines: string[]): CsvWorkstationRow[] {
       const parts = line.split(",");
       const desc = (parts[1] ?? "").trim();
       const length = parseInt((parts[2] ?? "").trim(), 10);
-      if (!desc || Number.isNaN(length)) continue;
+      if (!desc || Number.isNaN(length)) {
+        warnings.push(
+          makeWarning(
+            file,
+            family,
+            "Skipped malformed workstation row",
+            lineNumber,
+            line.trim(),
+          ),
+        );
+        continue;
+      }
       const seaters = parseInt(desc.split(/\s+/)[0], 10);
-      if (Number.isNaN(seaters)) continue;
+      if (Number.isNaN(seaters)) {
+        warnings.push(
+          makeWarning(
+            file,
+            family,
+            "Could not derive seater count from workstation row",
+            lineNumber,
+            line.trim(),
+          ),
+        );
+        continue;
+      }
       const isSharing = mode === "SH" || /\bSH\b/i.test(desc);
       rows.push({
         series,
@@ -100,6 +183,16 @@ function parseLinearRows(series: string, lines: string[]): CsvWorkstationRow[] {
           lengthMm: length,
           name: `${prev.name.split(" (")[0]} (${length}mm)`,
         });
+      } else {
+        warnings.push(
+          makeWarning(
+            file,
+            family,
+            "Found continuation length with no preceding workstation row",
+            lineNumber,
+            line.trim(),
+          ),
+        );
       }
     }
   }
@@ -107,13 +200,20 @@ function parseLinearRows(series: string, lines: string[]): CsvWorkstationRow[] {
   return rows;
 }
 
-function parseLShapeGrid(series: string, lines: string[]): CsvWorkstationRow[] {
+function parseLShapeGrid(
+  file: string,
+  family: CsvSourceFamily,
+  series: string,
+  lines: string[],
+  warnings: CatalogIngestWarning[],
+): CsvWorkstationRow[] {
   const rows: CsvWorkstationRow[] = [];
   let mode: "NS" | "SH" = "NS";
   let currentSeaters = 0;
   let currentLabel = "";
 
-  for (const line of lines) {
+  for (const [lineIndex, line] of lines.entries()) {
+    const lineNumber = lineIndex + 1;
     if (/WORKSTATION:\s*SHARING/i.test(line)) {
       mode = "SH";
       continue;
@@ -146,17 +246,54 @@ function parseLShapeGrid(series: string, lines: string[]): CsvWorkstationRow[] {
         isSharing,
         shape: "l-shape",
       });
+      continue;
+    }
+
+    if (/L1 X L2 X D|L=Length|D=Depth/i.test(line)) {
+      continue;
+    }
+
+    if (currentSeaters > 0 && /x/i.test(line) && /seater/i.test(currentLabel)) {
+      warnings.push(
+        makeWarning(
+          file,
+          family,
+          "Skipped malformed L-shape grid row",
+          lineNumber,
+          line.trim(),
+        ),
+      );
     }
   }
 
   return rows;
 }
 
-function parseCabinTables(series: string, lines: string[]): CsvWorkstationRow[] {
+function parseCabinTables(
+  file: string,
+  family: CsvSourceFamily,
+  series: string,
+  lines: string[],
+  warnings: CatalogIngestWarning[],
+): CsvWorkstationRow[] {
   const rows: CsvWorkstationRow[] = [];
-  for (const line of lines) {
+  for (const [lineIndex, line] of lines.entries()) {
+    const lineNumber = lineIndex + 1;
     const match = line.match(/^\d+,([^,]+),(\d{3,4})\s*X\s*(\d{3,4})/i);
-    if (!match) continue;
+    if (!match) {
+      if (/^\d+,/.test(line) && /x/i.test(line)) {
+        warnings.push(
+          makeWarning(
+            file,
+            family,
+            "Skipped malformed cabin table row",
+            lineNumber,
+            line.trim(),
+          ),
+        );
+      }
+      continue;
+    }
     const label = match[1].trim();
     const lengthMm = parseInt(match[2], 10);
     const depthMm = parseInt(match[3], 10);
@@ -205,6 +342,170 @@ function parseAccessories(series: string, lines: string[]): CatalogItem[] {
   return items;
 }
 
+function parsePrivacyScreens(
+  file: string,
+  family: CsvSourceFamily,
+  series: string,
+  lines: string[],
+  warnings: CatalogIngestWarning[],
+): CatalogItem[] {
+  const items: CatalogItem[] = [];
+  let section = "privacy screen";
+  let currentLabel = "";
+
+  for (const [lineIndex, line] of lines.entries()) {
+    const lineNumber = lineIndex + 1;
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (/privacy screens/i.test(trimmed)) continue;
+    if (/screen/i.test(trimmed) && !/table top size/i.test(trimmed) && !/line drawing/i.test(trimmed)) {
+      section = trimmed;
+      continue;
+    }
+
+    const parts = trimmed
+      .split(",")
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+
+    if (parts.length === 0) continue;
+
+    const labelCandidate = parts[0];
+    const tail = parts.slice(-2);
+    const numericTail = tail.length === 2 && tail.every((part) => /^\d{3,4}$/.test(part));
+
+    if (!numericTail && /screen/i.test(labelCandidate) && !/^\d+$/.test(labelCandidate)) {
+      currentLabel = labelCandidate;
+      continue;
+    }
+
+    if (!numericTail) {
+      if (/^\d+/.test(labelCandidate)) {
+        warnings.push(
+          makeWarning(
+            file,
+            family,
+            "Skipped malformed privacy-screen row",
+            lineNumber,
+            trimmed,
+          ),
+        );
+      }
+      continue;
+    }
+
+    const label = parts.length >= 3 && !/^\d{3,4}$/.test(parts[0]) ? parts[0] : currentLabel || section;
+    const widthRaw = parseInt(tail[0], 10);
+    const heightRaw = parseInt(tail[1], 10);
+    if (!Number.isFinite(widthRaw) || !Number.isFinite(heightRaw)) {
+      warnings.push(
+        makeWarning(
+          file,
+          family,
+          "Skipped privacy-screen size with invalid numbers",
+          lineNumber,
+          trimmed,
+        ),
+      );
+      continue;
+    }
+
+    currentLabel = label;
+    items.push({
+      id: `${slugify(series)}-${slugify(label)}-${slugify(`${tail[0]}x${tail[1]}`)}-${items.length}`,
+      name: `${series} — ${label}`,
+      category: "equipment",
+      shapeType: PlannerCatalogShapeType.table,
+      widthMm: toCatalogDim(widthRaw),
+      heightMm: toCatalogDim(heightRaw),
+      depthMm: 0,
+      description: `Privacy screen: ${section}`,
+      tags: ["screen", "privacy", slugify(series)],
+    });
+  }
+
+  return items;
+}
+
+function parseStorageDiscrete(
+  file: string,
+  family: CsvSourceFamily,
+  series: string,
+  lines: string[],
+  warnings: CatalogIngestWarning[],
+): CatalogItem[] {
+  const items: CatalogItem[] = [];
+  let currentSection = "storage";
+  let currentLabel = "";
+
+  for (const [lineIndex, line] of lines.entries()) {
+    const lineNumber = lineIndex + 1;
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    if (/^PRODUCT:/i.test(trimmed)) {
+      currentSection = trimmed.replace(/^PRODUCT:\s*/i, "").split(",")[0].trim() || currentSection;
+      continue;
+    }
+    if (/^\d+,configuration/i.test(trimmed)) continue;
+    if (/^SL NO/i.test(trimmed)) continue;
+
+    const chunks = trimmed
+      .split(",,")
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+
+    if (chunks.length === 0) continue;
+
+    for (const chunk of chunks) {
+      const labelMatch = chunk.match(/^\d+,([^,]+)$/);
+      if (labelMatch) {
+        currentLabel = labelMatch[1].trim();
+        if (/drawer|filling/i.test(currentLabel)) {
+          currentSection = "pedestal";
+        } else if (/storage/i.test(currentLabel)) {
+          currentSection = "storage";
+        }
+        continue;
+      }
+
+      const sizeMatch = chunk.match(/^(\d{3,4})\s*X\s*(\d{3,4})\s*X\s*(\d{3,4})$/i);
+      if (sizeMatch) {
+        if (!currentLabel) {
+          warnings.push(
+            makeWarning(
+              file,
+              family,
+              "Encountered storage size row without a label",
+              lineNumber,
+              trimmed,
+            ),
+          );
+          continue;
+        }
+
+        const widthMm = toCatalogDim(parseInt(sizeMatch[1], 10));
+        const heightMm = toCatalogDim(parseInt(sizeMatch[2], 10));
+        const depthMm = toCatalogDim(parseInt(sizeMatch[3], 10));
+        items.push({
+          id: `${slugify(series)}-${slugify(currentSection)}-${slugify(currentLabel)}-${slugify(sizeMatch[1])}-${slugify(sizeMatch[2])}-${slugify(sizeMatch[3])}-${items.length}`,
+          name: `${series} — ${currentLabel}`,
+          category: "storage",
+          shapeType: PlannerCatalogShapeType.storage,
+          widthMm,
+          heightMm,
+          depthMm,
+          description: `Discrete storage: ${currentSection}`,
+          tags: ["storage", slugify(currentSection), slugify(series)],
+        });
+        continue;
+      }
+    }
+  }
+
+  return items;
+}
+
 export function rowToCatalogItem(row: CsvWorkstationRow, index: number): CatalogItem {
   const seriesSlug = slugify(row.series);
   const id = `${seriesSlug}-${slugify(row.name)}-${index}`;
@@ -237,33 +538,86 @@ export function rowToCatalogItem(row: CsvWorkstationRow, index: number): Catalog
   };
 }
 
-export function parseCsvFile(relativePath: string, raw: string): CatalogItem[] {
+export function parseCsvFileWithAudit(relativePath: string, raw: string): ParsedCatalogCsv {
   const series = seriesFromContent(raw.slice(0, 600));
   const lines = raw.split(/\r?\n/);
+  const family = detectCsvSourceFamily(raw);
+  const warnings: CatalogIngestWarning[] = [];
   const lower = raw.toLowerCase();
 
-  if (lower.includes("accessories")) {
-    return parseAccessories(series, lines);
+  if (family === "accessories") {
+    return { family, items: parseAccessories(series, lines), warnings };
   }
 
-  if (lower.includes("cabin tables")) {
-    return parseCabinTables(series, lines).map(rowToCatalogItem);
+  if (family === "privacy-screens") {
+    return {
+      family,
+      items: parsePrivacyScreens(relativePath, family, series, lines, warnings),
+      warnings,
+    };
   }
 
-  if (lower.includes("l shape") && lower.includes("l1 x l2")) {
-    return parseLShapeGrid(series, lines).map((row, i) => rowToCatalogItem(row, i));
+  if (family === "storage-discrete") {
+    return {
+      family,
+      items: parseStorageDiscrete(relativePath, family, series, lines, warnings),
+      warnings,
+    };
   }
 
-  const linear = parseLinearRows(series, lines);
+  if (family === "cabin-tables") {
+    return {
+      family,
+      items: parseCabinTables(relativePath, family, series, lines, warnings).map(rowToCatalogItem),
+      warnings,
+    };
+  }
+
+  if (family === "l-shape-grid") {
+    return {
+      family,
+      items: parseLShapeGrid(relativePath, family, series, lines, warnings).map((row, i) =>
+        rowToCatalogItem(row, i),
+      ),
+      warnings,
+    };
+  }
+
+  if (family === "unclassified") {
+    warnings.push(
+      makeWarning(
+        relativePath,
+        family,
+        "No supported planner catalog source family matched this file",
+      ),
+    );
+    return { family, items: [], warnings };
+  }
+
+  const linear = parseLinearRows(relativePath, family, series, lines, warnings);
   if (linear.length > 0) {
-    return linear.map((row, i) => rowToCatalogItem(row, i));
+    return {
+      family: "linear-workstations",
+      items: linear.map((row, i) => rowToCatalogItem(row, i)),
+      warnings,
+    };
   }
 
   if (lower.includes("l shape")) {
-    return parseLShapeGrid(series, lines).map((row, i) => rowToCatalogItem(row, i));
+    return {
+      family: "l-shape-grid",
+      items: parseLShapeGrid(relativePath, "l-shape-grid", series, lines, warnings).map((row, i) =>
+        rowToCatalogItem(row, i),
+      ),
+      warnings,
+    };
   }
 
-  return [];
+  return { family, items: [], warnings };
+}
+
+export function parseCsvFile(relativePath: string, raw: string): CatalogItem[] {
+  return parseCsvFileWithAudit(relativePath, raw).items;
 }
 
 export const PLANNER_CSV_FILES = [
@@ -282,11 +636,15 @@ export const PLANNER_CSV_FILES = [
 export function dedupeCatalogItems(items: CatalogItem[]): CatalogItem[] {
   const seen = new Set<string>();
   return items.filter((item) => {
-    const key = `${item.name}|${item.widthMm}|${item.heightMm}|${item.seatCount ?? 0}`;
+    const key = catalogItemIdentityKey(item);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+}
+
+export function catalogItemIdentityKey(item: CatalogItem): string {
+  return `${item.name}|${item.widthMm}|${item.heightMm}|${item.seatCount ?? 0}`;
 }
 
 export { CSV_DIR };

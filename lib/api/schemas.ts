@@ -182,6 +182,56 @@ export const SketchToPlanResponseSchema = z.object({
   warnings: z.array(z.string().trim().max(300)).default([]),
 });
 
+/** Planner sketch recovery reasons shared by API + workspace state. */
+export const SketchRecoveryReasonSchema = z.enum([
+  "missing_provider",
+  "timeout",
+  "invalid_response",
+  "low_confidence",
+  "unsupported_input",
+  "server_error",
+]);
+export type SketchRecoveryReason = z.infer<typeof SketchRecoveryReasonSchema>;
+
+/** Planner sketch-to-plan preview response (`status: "preview"`). */
+export const SketchToPlanPreviewResponseSchema = z.object({
+  success: z.literal(true),
+  status: z.literal("preview"),
+  fileName: z.string().trim().min(1).max(200),
+  objects: z.array(z.union([SketchToPlanWallSchema, SketchToPlanRoomSchema])),
+  warnings: z.array(z.string().trim().max(300)).default([]),
+});
+
+/** Planner sketch-to-plan recoverable fallback response (`status: "fallback"`). */
+export const SketchToPlanFallbackResponseSchema = z.object({
+  success: z.literal(true),
+  status: z.literal("fallback"),
+  fileName: z.string().trim().min(1).max(200),
+  reason: SketchRecoveryReasonSchema,
+  message: z.string().trim().min(1).max(500),
+});
+
+/** Planner sketch-to-plan route success/fallback response union. */
+export const SketchToPlanRouteResponseSchema = z.discriminatedUnion("status", [
+  SketchToPlanPreviewResponseSchema,
+  SketchToPlanFallbackResponseSchema,
+]);
+
+/** Planner sketch-to-plan server error envelope. */
+export const SketchToPlanRouteErrorSchema = z.object({
+  success: z.literal(false),
+  error: z.object({
+    code: z.string().trim().min(1).max(80),
+    message: z.string().trim().min(1).max(500),
+    details: z
+      .object({
+        reason: SketchRecoveryReasonSchema.optional(),
+        fileName: z.string().trim().max(200).optional(),
+      })
+      .optional(),
+  }),
+});
+
 /** Legacy mock advisor request (`/api/ai/advisor`). */
 export const LegacyAdvisorRequestSchema = z.object({
   messages: z

@@ -8,6 +8,7 @@ import { PLANNER_CATALOG_ITEMS } from "@/features/planner/catalog/workspaceCatal
 import { millimetersToCanvasUnits } from "@/features/planner/lib/canvasBounds";
 import type { PlannerCanvasShape } from "@/features/planner/editor/plannerShapeFactories";
 import type { SuggestedLayoutJson } from "./types";
+import { validateLayoutSchema } from "./aiStatus";
 
 const DEFAULT_FURNITURE_WIDTH_MM = 1200;
 const DEFAULT_FURNITURE_HEIGHT_MM = 600;
@@ -154,60 +155,73 @@ export function buildShapesFromSuggestedLayout(layout: SuggestedLayoutJson): Pla
 export function applySuggestedLayout(_editor?: null, layout?: SuggestedLayoutJson): void {
   if (!layout) return;
 
+  if (!validateLayoutSchema(layout)) {
+    console.error("[applySuggestedLayout] Schema validation failed for layout:", layout);
+    return;
+  }
+
   const runtime = getPlannerFabricRuntime();
   if (!runtime) return;
+
+  const roomUnits = mmToCanvasUnits(layout.room.widthMm, layout.room.depthMm);
 
   runtime.insertObject({
     type: "ROOM",
     object: {
       title: layout.room.label,
-      width: millimetersToCanvasUnits(layout.room.widthMm),
-      height: millimetersToCanvasUnits(layout.room.depthMm),
+      width: roomUnits.width,
+      height: roomUnits.height,
     },
   });
 
-  layout.walls?.forEach((wall) => {
-    const endX = wall.x + wall.endX;
-    const endY = wall.y + wall.endY;
-    runtime.insertObject({
-      type: "WALL",
-      object: {
-        x1: wall.x,
-        y1: wall.y,
-        x2: endX,
-        y2: endY,
-        name: `WALL:${Date.now()}`,
-      },
+  if (Array.isArray(layout.walls)) {
+    layout.walls.forEach((wall, index) => {
+      const endX = wall.x + wall.endX;
+      const endY = wall.y + wall.endY;
+      runtime.insertObject({
+        type: "WALL",
+        object: {
+          x1: wall.x,
+          y1: wall.y,
+          x2: endX,
+          y2: endY,
+          name: `WALL:${index + 1}:${wall.x},${wall.y}->${endX},${endY}`,
+        },
+      });
     });
-  });
+  }
 
-  layout.zones.forEach((zone) => {
-    const units = mmToCanvasUnits(zone.widthMm, zone.heightMm);
-    runtime.insertObject({
-      type: "ZONE",
-      object: buildOutlinedRect(zone.label, units.width, units.height, {
-        fill: "transparent",
-        stroke: "#64748b",
-        dashed: true,
-      }),
+  if (Array.isArray(layout.zones)) {
+    layout.zones.forEach((zone) => {
+      const units = mmToCanvasUnits(zone.widthMm, zone.heightMm);
+      runtime.insertObject({
+        type: "ZONE",
+        object: buildOutlinedRect(zone.label, units.width, units.height, {
+          fill: "transparent",
+          stroke: "#64748b",
+          dashed: true,
+        }),
+      });
     });
-  });
+  }
 
-  layout.furniture.forEach((item) => {
-    const dimensions = resolveCatalogDimensions(item.catalogItemId) ?? {
-      widthMm: DEFAULT_FURNITURE_WIDTH_MM,
-      heightMm: DEFAULT_FURNITURE_HEIGHT_MM,
-    };
-    const units = mmToCanvasUnits(dimensions.widthMm, dimensions.heightMm);
-    runtime.insertObject({
-      type: "GENERIC",
-      object: {
-        title: item.label,
-        width: units.width,
-        height: units.height,
-        left: item.x,
-        top: item.y,
-      },
+  if (Array.isArray(layout.furniture)) {
+    layout.furniture.forEach((item) => {
+      const dimensions = resolveCatalogDimensions(item.catalogItemId) ?? {
+        widthMm: DEFAULT_FURNITURE_WIDTH_MM,
+        heightMm: DEFAULT_FURNITURE_HEIGHT_MM,
+      };
+      const units = mmToCanvasUnits(dimensions.widthMm, dimensions.heightMm);
+      runtime.insertObject({
+        type: "GENERIC",
+        object: {
+          title: item.label,
+          width: units.width,
+          height: units.height,
+          left: item.x,
+          top: item.y,
+        },
+      });
     });
-  });
+  }
 }

@@ -11,6 +11,7 @@ import {
 } from "@/features/planner/store/plannerSaves";
 import { rateLimit } from "@/lib/rateLimit";
 import { validateCsrfRequest } from "@/lib/security/csrf";
+import { applyPlannerRouteTelemetry, jsonWithPlannerRouteTelemetry } from "@/lib/api/routeObservability";
 
 type PublishBody = {
   id?: string;
@@ -28,12 +29,23 @@ function getRequestIp(req: NextRequest): string {
 }
 
 export async function GET(req: NextRequest) {
+  const startedAt = performance.now();
+  const routeName = "api/plans";
+  const queryShape = "user-summary-list";
+  const telemetry = () => ({
+    route: routeName,
+    queryShape,
+    durationMs: performance.now() - startedAt,
+  });
   const ip = getRequestIp(req);
   const limitRes = await rateLimit(`plans:get:${ip}`, 20, 60 * 1000);
   if (!limitRes.success) {
-    return NextResponse.json(
-      { error: "Too many requests" },
-      { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
+      ),
+      { ...telemetry(), rowCount: 0 },
     );
   }
 
@@ -42,40 +54,57 @@ export async function GET(req: NextRequest) {
   const userId = authData.user?.id ?? null;
 
   if (!userId) {
-    return NextResponse.json(
-      { error: "Authentication required" },
-      { status: 401 },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Authentication required" }, { status: 401 }),
+      { ...telemetry(), rowCount: 0 },
     );
   }
 
   try {
     const documents = await listPlannerDocumentsFromStore({ userId });
-    return NextResponse.json({ documents });
+    return jsonWithPlannerRouteTelemetry(
+      { documents },
+      { ...telemetry(), rowCount: documents.length, source: "drizzle_plans" },
+    );
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: `Failed to list plans: ${error instanceof Error ? error.message : String(error)}`,
-      },
-      { status: 500 },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json(
+        {
+          error: `Failed to list plans: ${error instanceof Error ? error.message : String(error)}`,
+        },
+        { status: 500 },
+      ),
+      { ...telemetry(), rowCount: 0, source: "drizzle_plans" },
     );
   }
 }
 
 export async function POST(req: NextRequest) {
+  const startedAt = performance.now();
+  const routeName = "api/plans";
+  const queryShape = "user-publish-write";
+  const telemetry = () => ({
+    route: routeName,
+    queryShape,
+    durationMs: performance.now() - startedAt,
+  });
   const ip = getRequestIp(req);
   const limitRes = await rateLimit(`plans:post:${ip}`, 15, 60 * 1000);
   if (!limitRes.success) {
-    return NextResponse.json(
-      { error: "Too many requests" },
-      { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429, headers: { "X-RateLimit-Reset": limitRes.reset.toString() } },
+      ),
+      { ...telemetry(), rowCount: 0 },
     );
   }
 
   const isCsrfValid = await validateCsrfRequest(req);
   if (!isCsrfValid) {
-    return NextResponse.json(
-      { error: "Invalid or missing CSRF token" },
-      { status: 403 },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Invalid or missing CSRF token" }, { status: 403 }),
+      { ...telemetry(), rowCount: 0 },
     );
   }
 
@@ -85,13 +114,22 @@ export async function POST(req: NextRequest) {
   const data = body.data;
 
   if (!id) {
-    return NextResponse.json({ error: "Plan id is required" }, { status: 400 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Plan id is required" }, { status: 400 }),
+      { ...telemetry(), rowCount: 0 },
+    );
   }
   if (!projectName) {
-    return NextResponse.json({ error: "Project name is required" }, { status: 400 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Project name is required" }, { status: 400 }),
+      { ...telemetry(), rowCount: 0 },
+    );
   }
   if (!data || typeof data !== "object") {
-    return NextResponse.json({ error: "Plan data is required" }, { status: 400 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Plan data is required" }, { status: 400 }),
+      { ...telemetry(), rowCount: 0 },
+    );
   }
   const status: "draft" | "active" = body.status === "draft" ? "draft" : "active";
 
@@ -100,9 +138,12 @@ export async function POST(req: NextRequest) {
   const userId = authData.user?.id ?? null;
 
   if (!userId) {
-    return NextResponse.json(
-      { error: "Authentication required to publish to portal" },
-      { status: 401 },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json(
+        { error: "Authentication required to publish to portal" },
+        { status: 401 },
+      ),
+      { ...telemetry(), rowCount: 0 },
     );
   }
 
@@ -128,19 +169,25 @@ export async function POST(req: NextRequest) {
       saveId: id,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error: `Failed to publish plan: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      },
-      { status: 500 },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json(
+        {
+          error: `Failed to publish plan: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        },
+        { status: 500 },
+      ),
+      { ...telemetry(), rowCount: 0, source: "drizzle_plans" },
     );
   }
 
-  return NextResponse.json({
-    success: true,
-    id,
-    portalPath: `/portal/${id}`,
-  });
+  return jsonWithPlannerRouteTelemetry(
+    {
+      success: true,
+      id,
+      portalPath: `/portal/${id}`,
+    },
+    { ...telemetry(), rowCount: 1, source: "drizzle_plans" },
+  );
 }

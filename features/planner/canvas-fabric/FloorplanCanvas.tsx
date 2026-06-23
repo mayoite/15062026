@@ -62,6 +62,7 @@ export function FloorplanCanvas() {
     const api = createFloorplanCanvasApi(ctxRef, el);
     api.init();
     ctx.registerCanvasApi(api);
+    performance.mark("planner-fabric-ready");
 
     const wrap = el.closest('.canvas-wrap');
     const applyFit = () => {

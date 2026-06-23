@@ -48,6 +48,7 @@ interface PlannerSessionOptions {
   router: { push: (href: string) => void };
   buildCurrentPlannerDocument: () => PlannerDocument;
   applyPlannerDocument: (document: PlannerDocument) => void;
+  bootstrapEnabled?: boolean;
 }
 
 interface PlannerDraftScope {
@@ -122,6 +123,7 @@ export function usePlannerSession({
   router,
   buildCurrentPlannerDocument,
   applyPlannerDocument,
+  bootstrapEnabled = true,
 }: PlannerSessionOptions) {
   const [authUserId, setAuthUserId] = useState<string | null>(null);
   const [authRole, setAuthRole] = useState<"customer" | "admin" | null>(null);
@@ -233,6 +235,7 @@ export function usePlannerSession({
   }, [reportSessionError, supabase]);
 
   useEffect(() => {
+    if (!bootstrapEnabled) return;
     const timeoutId = window.setTimeout(() => {
       void syncSessionInventory();
     }, 0);
@@ -240,7 +243,7 @@ export function usePlannerSession({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [syncSessionInventory]);
+  }, [bootstrapEnabled, syncSessionInventory]);
 
   const handleSaveCloud = useCallback(async () => {
     if (typeof navigator !== "undefined" && !navigator.onLine) {

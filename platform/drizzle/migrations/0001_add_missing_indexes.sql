@@ -18,6 +18,7 @@ create index if not exists "plans_created_at_idx" on "plans" ("created_at");--> 
 create index if not exists "plans_updated_at_idx" on "plans" ("updated_at");--> statement-breakpoint
 create index if not exists "plans_user_id_status_idx" on "plans" ("user_id", "status");--> statement-breakpoint
 create index if not exists "plans_user_id_created_at_idx" on "plans" ("user_id", "created_at");--> statement-breakpoint
+create index if not exists "plans_user_id_updated_at_idx" on "plans" ("user_id", "updated_at");--> statement-breakpoint
 create index if not exists "teams_created_at_idx" on "teams" ("created_at");--> statement-breakpoint
 
 -- team_members: add composite PK if missing, then FK indexes.

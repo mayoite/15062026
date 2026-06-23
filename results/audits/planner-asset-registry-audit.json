@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-06-23T11:57:19.022Z",
+  "registrySize": 5,
+  "missingCount": 5,
+  "entries": [
+    {
+      "catalogId": "chair-arvo",
+      "glbUrl": "/models/chairs/arvo/arvo.glb",
+      "glbExists": false,
+      "thumbnailUrl": "/models/chairs/arvo/arvo-thumb.webp",
+      "thumbnailExists": false
+    },
+    {
+      "catalogId": "chair-canaret",
+      "glbUrl": "/models/chairs/canaret/canaret.glb",
+      "glbExists": false,
+      "thumbnailUrl": "/models/chairs/canaret/canaret-thumb.webp",
+      "thumbnailExists": false
+    },
+    {
+      "catalogId": "chair-caneva",
+      "glbUrl": "/models/chairs/caneva/caneva.glb",
+      "glbExists": false,
+      "thumbnailUrl": "/models/chairs/caneva/caneva-thumb.webp",
+      "thumbnailExists": false
+    },
+    {
+      "catalogId": "chair-dive",
+      "glbUrl": "/models/chairs/dive/dive.glb",
+      "glbExists": false,
+      "thumbnailUrl": "/models/chairs/dive/dive-thumb.webp",
+      "thumbnailExists": false
+    },
+    {
+      "catalogId": "chair-ember",
+      "glbUrl": "/models/chairs/ember/ember.glb",
+      "glbExists": false,
+      "thumbnailUrl": "/models/chairs/ember/ember-thumb.webp",
+      "thumbnailExists": false
+    }
+  ]
+}

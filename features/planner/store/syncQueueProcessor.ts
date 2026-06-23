@@ -6,6 +6,7 @@
 import { 
   offlineStorage, 
   markPlanAsSynced,
+  computeContentHash,
   type SyncQueueItem,
 } from "./offlineStorage";
 import { apiPath, browserApiFetch } from "@/lib/api/browserApi";
@@ -141,12 +142,11 @@ export class SyncQueueProcessor {
    * Process a single sync queue item
    */
   private async processSyncItem(item: SyncQueueItem): Promise<void> {
-    // Check retry count
     if (item.retryCount >= MAX_RETRY_COUNT) {
+      await this.markSyncFailed(item, `Max retry count exceeded for item ${item.id}`);
       throw new Error(`Max retry count exceeded for item ${item.id}`);
     }
 
-    // Check if enough time has passed since last attempt
     if (item.lastAttempt) {
       const lastAttemptTime = new Date(item.lastAttempt).getTime();
       const now = Date.now();
@@ -155,7 +155,6 @@ export class SyncQueueProcessor {
       }
     }
 
-    // Update attempt count
     const updatedItem: SyncQueueItem = {
       ...item,
       retryCount: item.retryCount + 1,
@@ -163,6 +162,8 @@ export class SyncQueueProcessor {
     };
 
     try {
+      await this.updatePlanSyncState(item.planId, "syncing");
+
       switch (item.operation) {
         case "create":
           await this.processCreate(item);
@@ -177,14 +178,36 @@ export class SyncQueueProcessor {
           throw new Error(`Unknown operation: ${item.operation}`);
       }
 
-      // Remove successfully processed item from queue
       await offlineStorage.removeSyncQueueItem(item.id);
     } catch (error) {
-      // Update item with error
       updatedItem.error = error instanceof Error ? error.message : "Unknown error";
       await offlineStorage.updateSyncQueueItem(updatedItem);
+      await this.markSyncFailed(item, updatedItem.error);
       throw error;
     }
+  }
+
+  /**
+   * Update plan's sync state in offline storage
+   */
+  private async updatePlanSyncState(planId: string, syncState: "syncing" | "synced" | "sync_failed" | "conflict"): Promise<void> {
+    const plan = await offlineStorage.getPlan(planId);
+    if (!plan) return;
+
+    plan.syncState = syncState;
+    if (syncState === "sync_failed") {
+      plan.syncErrorCode = "SYNC_FAILED";
+    } else if (syncState === "synced") {
+      plan.syncErrorCode = null;
+    }
+    await offlineStorage.savePlan(plan);
+  }
+
+  /**
+   * Mark plan and queue item as sync failed
+   */
+  private async markSyncFailed(item: SyncQueueItem, error: string): Promise<void> {
+    await this.updatePlanSyncState(item.planId, "sync_failed");
   }
 
   /**
@@ -207,9 +230,9 @@ export class SyncQueueProcessor {
     }
 
     const result = await response.json();
+    const remoteRevision = result.revision || result.updatedAt || undefined;
 
-    // Mark plan as synced with remote ID
-    await markPlanAsSynced(item.planId, result.id);
+    await markPlanAsSynced(item.planId, result.id, remoteRevision);
   }
 
   /**
@@ -235,8 +258,10 @@ export class SyncQueueProcessor {
       throw new Error(`Update failed: ${response.status} ${errorText}`);
     }
 
-    // Mark plan as synced
-    await markPlanAsSynced(item.planId, item.remoteId);
+    const result = await response.json();
+    const remoteRevision = result.revision || result.updatedAt || undefined;
+
+    await markPlanAsSynced(item.planId, item.remoteId, remoteRevision);
   }
 
   /**

@@ -78,6 +78,8 @@ export function createFloorplanCanvasApi(
   let contextMenuListener: ((state: FabricContextMenuState | null) => void) | null = null;
   let drawToolsController: ReturnType<typeof wireFabricDrawTools> | null = null;
   let floorPlanUnderlay: FabricImage | null = null;
+  let restoreFrameId: number | null = null;
+  let disposed = false;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wc: any = null;
 
@@ -539,6 +541,7 @@ export function createFloorplanCanvasApi(
   }
 
   async function handleObjectInsertion({ type, object }: InsertPayload) {
+    if (disposed || !view || view.destroyed) return;
     const payloadObj = object as InsertPayloadObj;
 
     if (type === 'ROOM') {
@@ -548,6 +551,7 @@ export function createFloorplanCanvasApi(
         title?: string;
       };
       const { Rect, FabricText } = await import('fabric');
+      if (disposed || !view || view.destroyed) return;
       const origin = roomOrigin();
       const room = new Rect({
         left: origin,
@@ -587,6 +591,7 @@ export function createFloorplanCanvasApi(
     if (type === 'WALL') {
       const { x1, y1, x2, y2, name } = payloadObj as { x1: number; y1: number; x2: number; y2: number; name?: string };
       const { Line } = await import('fabric');
+      if (disposed || !view || view.destroyed) return;
       const wall = new Line([x1, y1, x2, y2], {
         stroke: '#1f2937',
         strokeWidth: 2,
@@ -607,6 +612,7 @@ export function createFloorplanCanvasApi(
     if (type === 'GENERIC' && payloadObj.svg) {
       try {
         const parsed = await loadSVGFromString(payloadObj.svg);
+        if (disposed || !view || view.destroyed) return;
         const objects = parsed.objects.filter((obj): obj is FabricObject => Boolean(obj));
         if (objects.length) {
           group = fabricUtil.groupSVGElements(objects, parsed.options);
@@ -697,9 +703,14 @@ export function createFloorplanCanvasApi(
 
 
   async function restoreFromState(current: string | null) {
-    if (!current) return;
+    if (!current || disposed || !view || view.destroyed) return;
+    if (restoreFrameId !== null) {
+      window.cancelAnimationFrame(restoreFrameId);
+      restoreFrameId = null;
+    }
     view.clear();
     await view.loadFromJSON(current);
+    if (disposed || !view || view.destroyed) return;
     view.discardActiveObject();
     view.renderAll();
     corners = view.getObjects().filter((obj) => (obj as PlannerFabricObject).name === 'CORNER') as Rect[];
@@ -713,7 +724,9 @@ export function createFloorplanCanvasApi(
     ctxRef.current.setSelections([]);
     ctxRef.current.setUngroupable(false);
     syncGrid();
-    window.requestAnimationFrame(() => {
+    restoreFrameId = window.requestAnimationFrame(() => {
+      restoreFrameId = null;
+      if (disposed || !view || view.destroyed) return;
       const zoomPct = fitToContent();
       ctxRef.current.syncZoom(zoomPct);
       view.calcOffset();
@@ -853,22 +866,25 @@ export function createFloorplanCanvasApi(
 
   /** Copy operation */
   async function copy() {
-    if (ctxRef.current.roomEdit) {
+    if (disposed || !view || view.destroyed || ctxRef.current.roomEdit) {
       return;
     }
     const active = view.getActiveObject();
     if (!active || isWallOrCorner(active)) {
       return;
     }
-    copied = await active.clone(['name', 'hasControls']);
+    const nextCopied = await active.clone(['name', 'hasControls']);
+    if (disposed || !view || view.destroyed) return;
+    copied = nextCopied;
   }
 
   /** Paste operation */
   async function paste() {
-    if (!copied || ctxRef.current.roomEdit) {
+    if (disposed || !view || view.destroyed || !copied || ctxRef.current.roomEdit) {
       return;
     }
     const cloned = await copied.clone(['name', 'hasControls']);
+    if (disposed || !view || view.destroyed) return;
     view.discardActiveObject();
     cloned.set({
       left: cloned.left + RL_AISLEGAP,
@@ -1038,14 +1054,12 @@ export function createFloorplanCanvasApi(
     source: string,
     options?: { opacity?: number; fileName?: string },
   ) {
-    if (!view) return;
+    if (disposed || !view || view.destroyed) return;
 
-    if (floorPlanUnderlay) {
-      view.remove(floorPlanUnderlay);
-      floorPlanUnderlay = null;
-    }
+    const previousUnderlay = floorPlanUnderlay;
 
     const image = await FabricImage.fromURL(source, { crossOrigin: 'anonymous' });
+    if (disposed || !view || view.destroyed) return;
     const origin = roomOrigin();
     const maxWidthUnits = Math.min(PLANNER_MAX_CANVAS_UNITS * 0.75, 6000);
     const naturalWidth = image.width || 1;
@@ -1073,6 +1087,9 @@ export function createFloorplanCanvasApi(
 
     view.add(image);
     view.sendObjectToBack(image);
+    if (previousUnderlay) {
+      view.remove(previousUnderlay);
+    }
     floorPlanUnderlay = image;
     view.discardActiveObject();
     clampFabricObjectToCanvas(image);
@@ -1365,6 +1382,11 @@ export function createFloorplanCanvasApi(
 
 
   function dispose() {
+    disposed = true;
+    if (restoreFrameId !== null) {
+      window.cancelAnimationFrame(restoreFrameId);
+      restoreFrameId = null;
+    }
     drawToolsController?.dispose?.();
     drawToolsController = null;
     contextMenuListener = null;

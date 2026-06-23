@@ -3,7 +3,7 @@
 import { useCallback, useEffect } from "react";
 import { usePlannerCatalogStore } from "./catalogStore";
 
-export function usePlannerCatalogHydration() {
+export function usePlannerCatalogHydration({ enabled = true }: { enabled?: boolean } = {}) {
   const hydrateCatalog = usePlannerCatalogStore((s) => s.hydrateCatalog);
   const catalogSource = usePlannerCatalogStore((s) => s.catalogSource);
   const managedCount = usePlannerCatalogStore((s) => s.managedCount);
@@ -14,8 +14,9 @@ export function usePlannerCatalogHydration() {
   }, [hydrateCatalog]);
 
   useEffect(() => {
+    if (!enabled) return;
     void hydrateCatalog();
-  }, [hydrateCatalog]);
+  }, [enabled, hydrateCatalog]);
 
   return { catalogSource, managedCount, catalogHydrating, refreshCatalog };
 }

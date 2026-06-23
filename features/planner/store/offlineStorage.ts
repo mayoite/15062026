@@ -19,6 +19,12 @@ const DB_NAME = "planner-offline-db";
 const DB_VERSION = 1;
 const STORE_PLANS = "plans";
 const STORE_SYNC_QUEUE = "sync_queue";
+const CANONICAL_SCHEMA_VERSION = "1.0.0";
+
+// Canonical state envelope types (Lane 3 requirement)
+export type PlanSource = "local" | "cloud" | "queue" | "recovered";
+export type LocalSaveState = "dirty" | "saving_local" | "saved_local" | "local_save_failed";
+export type SyncState = "idle" | "queued" | "syncing" | "synced" | "sync_failed" | "conflict";
 
 // Types
 export interface OfflinePlan {
@@ -28,7 +34,13 @@ export interface OfflinePlan {
   createdAt: string;
   updatedAt: string;
   lastSyncedAt: string | null;
-  syncStatus: "pending" | "synced" | "conflict";
+  schemaVersion: string; // Canonical state envelope version
+  source: PlanSource; // Where this plan came from
+  contentHash: string; // SHA256 or similar hash of document content
+  remoteRevision: string | null; // Sync token/revision from remote
+  localSaveState: LocalSaveState; // Local durability state
+  syncState: SyncState; // Cloud sync state
+  syncErrorCode: string | null; // Specific sync failure code
 }
 
 export interface SyncQueueItem {
@@ -41,6 +53,7 @@ export interface SyncQueueItem {
   retryCount: number;
   lastAttempt: string | null;
   error: string | null;
+  contentHash?: string; // Content hash at time of queue entry for dedup
 }
 
 export function getSyncQueueOperation(
@@ -48,6 +61,19 @@ export function getSyncQueueOperation(
   requestedRemoteId: string | null,
 ): SyncQueueItem["operation"] {
   return requestedRemoteId ?? existingRemoteId ? "update" : "create";
+}
+
+/**
+ * Compute content hash for a PlannerDocument
+ * Used for dedup and conflict detection per Lane 3 requirements
+ */
+export async function computeContentHash(document: PlannerDocument): Promise<string> {
+  const json = JSON.stringify(document);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(json);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // IndexedDB error types
@@ -341,6 +367,7 @@ const offlineStorage = new OfflineStorageManager();
 export async function createOfflinePlan(document: PlannerDocument): Promise<OfflinePlan> {
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
+  const contentHash = await computeContentHash(document);
   
   const plan: OfflinePlan = {
     id,
@@ -349,12 +376,17 @@ export async function createOfflinePlan(document: PlannerDocument): Promise<Offl
     createdAt: now,
     updatedAt: now,
     lastSyncedAt: null,
-    syncStatus: "pending",
+    schemaVersion: CANONICAL_SCHEMA_VERSION,
+    source: "local",
+    contentHash,
+    remoteRevision: null,
+    localSaveState: "saved_local",
+    syncState: "queued",
+    syncErrorCode: null,
   };
   
   await offlineStorage.savePlan(plan);
   
-  // Add to sync queue
   const syncItem: SyncQueueItem = {
     id: crypto.randomUUID(),
     operation: "create",
@@ -365,6 +397,7 @@ export async function createOfflinePlan(document: PlannerDocument): Promise<Offl
     retryCount: 0,
     lastAttempt: null,
     error: null,
+    contentHash,
   };
   
   await offlineStorage.addToSyncQueue(syncItem);
@@ -383,20 +416,43 @@ export async function updateOfflinePlan(
   }
   
   const now = new Date().toISOString();
+  const contentHash = await computeContentHash(document);
+  
   const updated: OfflinePlan = {
     ...existing,
     document: validatePlannerDocument(document),
     localId: remoteId ?? existing.localId,
     updatedAt: now,
-    syncStatus: "pending",
+    schemaVersion: CANONICAL_SCHEMA_VERSION,
+    source: existing.source,
+    contentHash,
+    remoteRevision: existing.remoteRevision,
+    localSaveState: "saving_local",
+    syncState: "queued",
+    syncErrorCode: null,
   };
   
   await offlineStorage.savePlan(updated);
   
-  // Add to sync queue
+  const operation = getSyncQueueOperation(existing.localId, remoteId);
+  
+  // Lane 3: Queue dedup/compaction - replace pending item with newest, don't duplicate
+  const existingQueueItems = await offlineStorage.listSyncQueueForPlan(id);
+  const pendingItem = existingQueueItems.find(
+    (item) => item.operation === operation && item.retryCount < 1
+  );
+  
+  if (pendingItem && pendingItem.contentHash === contentHash) {
+    return updated;
+  }
+  
+  if (pendingItem) {
+    await offlineStorage.removeSyncQueueItem(pendingItem.id);
+  }
+  
   const syncItem: SyncQueueItem = {
     id: crypto.randomUUID(),
-    operation: getSyncQueueOperation(existing.localId, remoteId),
+    operation,
     planId: id,
     remoteId: remoteId ?? existing.localId,
     document,
@@ -404,6 +460,7 @@ export async function updateOfflinePlan(
     retryCount: 0,
     lastAttempt: null,
     error: null,
+    contentHash,
   };
   
   await offlineStorage.addToSyncQueue(syncItem);
@@ -411,7 +468,7 @@ export async function updateOfflinePlan(
   return updated;
 }
 
-export async function markPlanAsSynced(id: string, remoteId: string): Promise<void> {
+export async function markPlanAsSynced(id: string, remoteId: string, remoteRevision?: string): Promise<void> {
   const existing = await offlineStorage.getPlan(id);
   if (!existing) {
     throw new OfflineStorageError("Plan not found", "PLAN_NOT_FOUND");
@@ -422,12 +479,15 @@ export async function markPlanAsSynced(id: string, remoteId: string): Promise<vo
     ...existing,
     localId: remoteId,
     lastSyncedAt: now,
-    syncStatus: "synced",
+    schemaVersion: CANONICAL_SCHEMA_VERSION,
+    localSaveState: "saved_local",
+    syncState: "synced",
+    remoteRevision: remoteRevision ?? null,
+    syncErrorCode: null,
   };
   
   await offlineStorage.savePlan(updated);
   
-  // Clear sync queue items for this plan
   const queueItems = await offlineStorage.listSyncQueueForPlan(id);
   for (const item of queueItems) {
     await offlineStorage.removeSyncQueueItem(item.id);
@@ -440,7 +500,6 @@ export async function deleteOfflinePlan(id: string): Promise<void> {
     throw new OfflineStorageError("Plan not found", "PLAN_NOT_FOUND");
   }
   
-  // Add delete to sync queue if it was synced
   if (existing.localId) {
     const syncItem: SyncQueueItem = {
       id: crypto.randomUUID(),

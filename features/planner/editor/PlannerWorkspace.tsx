@@ -103,9 +103,17 @@ import {
   type PlannerToolBinding,
 } from "@/features/planner/editor/plannerKeyboardShortcuts";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
-import { hydrateCloudPlanIntoIndexedDb } from "@/features/planner/persistence/cloudPlanHydration";
 import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
-import { buildSketchPlanFabricDraft } from "@/features/planner/ai/sketchToPlan";
+import {
+  buildSketchPlanFabricDraft,
+  getSketchRecoveryMessage,
+  type SketchRecoveryState,
+} from "@/features/planner/ai/sketchToPlan";
+import {
+  SketchToPlanRouteErrorSchema,
+  SketchToPlanRouteResponseSchema,
+  type SketchRecoveryReason,
+} from "@/lib/api/schemas";
 
 import { resetPlannerChromeLayout } from "@/features/planner/editor/chrome/plannerChromeStorage";
 import {
@@ -190,6 +198,142 @@ function PlannerStatusBarWithFabricGrid(
   );
 }
 
+type SketchRecoveryPanelProps = {
+  recovery: SketchRecoveryState;
+  onTraceManual: () => void;
+  onRetry: () => void;
+  onAccept: () => void;
+  onReject: () => void;
+  onDismiss: () => void;
+};
+
+function SketchRecoveryPanel({
+  recovery,
+  onTraceManual,
+  onRetry,
+  onAccept,
+  onReject,
+  onDismiss,
+}: SketchRecoveryPanelProps) {
+  if (recovery.status === "idle") return null;
+
+  const isPreview = recovery.status === "preview";
+  const isFallback = recovery.status === "fallback";
+  const isConverting = recovery.status === "converting";
+  const isAccepted = recovery.status === "accepted";
+  const isRejected = recovery.status === "rejected";
+  const title =
+    recovery.status === "preview"
+      ? `Preview ready: ${recovery.fileName}`
+      : recovery.status === "fallback"
+        ? `Trace from reference: ${recovery.fileName}`
+        : recovery.status === "converting"
+          ? `Converting sketch: ${recovery.fileName}`
+          : recovery.status === "accepted"
+            ? `Sketch conversion accepted: ${recovery.fileName}`
+            : `Sketch kept as reference: ${recovery.fileName}`;
+  const body =
+    recovery.status === "preview"
+      ? "Review the generated geometry before it becomes the working draft."
+      : recovery.status === "fallback"
+        ? recovery.message
+        : recovery.status === "converting"
+          ? "The sketch is already underlaid so you can keep tracing while conversion runs."
+          : recovery.status === "accepted"
+            ? "The generated plan is now the active draft."
+            : "The previous draft has been restored and the sketch stays visible as a reference.";
+
+  return (
+    <div className="fixed right-4 top-20 z-[9998] w-[min(34rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur dark:border-slate-700 dark:bg-slate-950/95">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
+            Sketch recovery
+          </p>
+          <h3 className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {title}
+          </h3>
+        </div>
+        {isFallback || isAccepted || isRejected ? (
+          <button
+            type="button"
+            className="rounded-full border border-slate-200 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            onClick={onDismiss}
+          >
+            Dismiss
+          </button>
+        ) : null}
+      </div>
+
+      <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{body}</p>
+
+      {recovery.status === "preview" && recovery.warnings.length ? (
+        <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/80 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-100">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em]">Warnings</p>
+          <ul className="mt-2 list-disc space-y-1 pl-4">
+            {recovery.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {isPreview ? (
+          <>
+            <button
+              type="button"
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              onClick={onAccept}
+            >
+              Accept preview
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              onClick={onReject}
+            >
+              Reject preview
+            </button>
+          </>
+        ) : null}
+        {isFallback || isRejected ? (
+          <>
+            <button
+              type="button"
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              onClick={onTraceManual}
+            >
+              Trace manually
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              onClick={onRetry}
+            >
+              Retry conversion
+            </button>
+          </>
+        ) : null}
+        {isAccepted ? (
+          <button
+            type="button"
+            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+            onClick={onDismiss}
+          >
+            Close
+          </button>
+        ) : null}
+        {isConverting ? (
+          <span className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
+            Waiting for conversion...
+          </span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function Fabric2DWith3DSync({
   viewMode,
 }: {
@@ -243,7 +387,9 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     selections,
     states,
   } = useFloorplan();
-  const panels = usePlannerPanels();
+  const [viewMode, setViewMode] = useState<"2d" | "3d" | "split">("2d");
+  const [shellVisible, setShellVisible] = useState(false);
+  const panels = usePlannerPanels({ enabled: shellVisible });
   const {
     applyStepLayout,
     closeAll,
@@ -261,7 +407,6 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     toggleLeftCollapsed,
     toggleRightCollapsed,
   } = panels;
-  const [viewMode, setViewMode] = useState<"2d" | "3d" | "split">("2d");
   const isOnline = useOnlineStatus();
   const [preferencesHydrated, setPreferencesHydrated] = useState(false);
 
@@ -278,6 +423,13 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const chromeLayerRef = useRef<HTMLDivElement | null>(null);
   const [isCanvasDragging] = useState(false);
   const selectionOpenedRightPanelRef = useRef(false);
+  const sketchUploadPayloadRef = useRef<{
+    dataUrl: string;
+    fileName: string;
+    prompt: string;
+    includeRooms: boolean;
+  } | null>(null);
+  const [sketchRecovery, setSketchRecovery] = useState<SketchRecoveryState>({ status: "idle" });
 
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const floorPlanInputRef = useRef<HTMLInputElement | null>(null);
@@ -290,17 +442,30 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const plannerTool = usePlannerStore((s) => s.tool);
   const setActiveCatalogId = usePlannerStore((s) => s.setActiveCatalogId);
   const recordRecentPlacement = usePlannerCatalogStore((s) => s.recordRecentPlacement);
-  usePlannerCatalogHydration();
+  usePlannerCatalogHydration({ enabled: shellVisible });
   const searchParams = useSearchParams();
   const didBootstrapRef = useRef(false);
 
   useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      setShellVisible(true);
+      performance.mark("planner-shell-visible");
+    });
+    return () => window.cancelAnimationFrame(frameId);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     Promise.resolve().then(() => {
+      if (cancelled) return;
       const saved = readPlannerWorkspacePreferences();
       setViewMode(saved.viewMode);
       usePlannerCatalogStore.getState().setQuery(saved.catalogQuery);
       setPreferencesHydrated(true);
     });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -353,10 +518,13 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   const exportFabricDraft = useCallback(() => fabricSerializedDraft, [fabricSerializedDraft]);
   const {
     status: saveStatus,
+    envelopeStatus: saveEnvelopeStatus,
     lastSavedAt,
     restoreSnapshot,
     retrySave,
-  } = usePlannerFabricAutosave(exportFabricDraft, guestMode, planId, fabricRevisionKey);
+  } = usePlannerFabricAutosave(exportFabricDraft, guestMode, planId, fabricRevisionKey, {
+    enabled: shellVisible,
+  });
 
   const measurementUnit = useMemo<MeasurementUnit>(
     () => plannerUnitSystemToMeasurementUnit(workspaceUnitSystem),
@@ -449,6 +617,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     shapeCount,
     saveStatus,
     fitToContent,
+    bootstrapEnabled: shellVisible,
   });
 
   const {
@@ -620,20 +789,23 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   useEffect(() => {
     if (didBootstrapRef.current) return;
     didBootstrapRef.current = true;
+    let cancelled = false;
 
     const initialBinding = getStepToolBinding(usePlannerWorkspaceStore.getState().plannerStep);
     setPlannerTool(initialBinding.plannerTool);
 
     void (async () => {
-      if (!guestMode && planId?.trim()) {
-        await hydrateCloudPlanIntoIndexedDb(planId, guestMode);
-      }
+      if (cancelled) return;
       if (searchParams?.get("fresh") === "1") {
         await handleStartFreshLayout();
         return;
       }
+      if (cancelled) return;
       await restoreSnapshot(importDraft);
     })();
+    return () => {
+      cancelled = true;
+    };
     // One-shot bootstrap on mount — do not re-run when handlers change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -814,6 +986,232 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
     floorPlanInputRef.current?.click();
   }, []);
 
+  const applySketchUnderlay = useCallback(
+    async (payload: {
+      dataUrl: string;
+      fileName: string;
+      prompt: string;
+      includeRooms: boolean;
+    }) => {
+      await setFloorPlanUnderlay(payload.dataUrl, { fileName: payload.fileName });
+    },
+    [setFloorPlanUnderlay],
+  );
+
+  const setSketchRecoveryFallback = useCallback(
+    (fileName: string, reason: SketchRecoveryReason) => {
+      const message = getSketchRecoveryMessage(reason);
+      setSketchRecovery({ status: "fallback", fileName, reason, message });
+      setSessionStatusMessage(message);
+      setSessionErrorMessage(message);
+    },
+    [setSessionErrorMessage, setSessionStatusMessage],
+  );
+
+  const startSketchConversion = useCallback(
+    async (payload: {
+      dataUrl: string;
+      fileName: string;
+      prompt: string;
+      includeRooms: boolean;
+    }) => {
+      const previousDraftJson = exportDraft() ?? JSON.stringify({ objects: [] });
+      sketchUploadPayloadRef.current = payload;
+      setSketchRecovery({ status: "converting", fileName: payload.fileName });
+      setSessionErrorMessage(null);
+      setSessionStatusMessage("Converting sketch into an editable plan...");
+
+      try {
+        await applySketchUnderlay(payload);
+      } catch (err) {
+        const reason =
+          err instanceof Error && /decode|unsupported|mime|image/i.test(err.message)
+            ? "unsupported_input"
+            : "server_error";
+        setSketchRecoveryFallback(payload.fileName, reason);
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/planner/sketch-to-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            imageDataUrl: payload.dataUrl,
+            fileName: payload.fileName,
+            prompt: payload.prompt,
+            includeRooms: payload.includeRooms,
+          }),
+        });
+        const rawBody = await response.json().catch(() => null);
+
+        if (response.ok) {
+          const parsed = SketchToPlanRouteResponseSchema.safeParse(rawBody);
+          if (!parsed.success) {
+            setSketchRecoveryFallback(payload.fileName, "invalid_response");
+            return;
+          }
+          if (parsed.data.status === "fallback") {
+            setSketchRecovery({
+              status: "fallback",
+              fileName: parsed.data.fileName,
+              reason: parsed.data.reason,
+              message: parsed.data.message,
+            });
+            setSessionStatusMessage(parsed.data.message);
+            setSessionErrorMessage(parsed.data.message);
+            return;
+          }
+
+          const generatedDraftJson = buildSketchPlanFabricDraft({
+            objects: parsed.data.objects as Parameters<typeof buildSketchPlanFabricDraft>[0]["objects"],
+            warnings: Array.isArray(parsed.data.warnings)
+              ? parsed.data.warnings.filter((warning): warning is string => typeof warning === "string")
+              : [],
+          });
+          try {
+            await applySketchUnderlay(payload);
+          } catch (previewUnderlayErr) {
+            const reason =
+              previewUnderlayErr instanceof Error && /decode|unsupported|mime|image/i.test(previewUnderlayErr.message)
+                ? "unsupported_input"
+                : "server_error";
+            setSketchRecoveryFallback(payload.fileName, reason);
+            return;
+          }
+          setSketchRecovery({
+            status: "preview",
+            fileName: parsed.data.fileName,
+            generatedDraftJson,
+            previousDraftJson,
+            warnings: parsed.data.warnings,
+          });
+          setSessionErrorMessage(null);
+          setSessionStatusMessage(`Preview ready: ${parsed.data.fileName}`);
+          return;
+        }
+
+        const parsedError = SketchToPlanRouteErrorSchema.safeParse(rawBody);
+        if (parsedError.success) {
+          const reason = parsedError.data.error.details?.reason ?? "server_error";
+          if (reason === "server_error") {
+            setSketchRecoveryFallback(payload.fileName, reason);
+            return;
+          }
+          setSketchRecovery({
+            status: "fallback",
+            fileName: parsedError.data.error.details?.fileName ?? payload.fileName,
+            reason,
+            message: getSketchRecoveryMessage(reason),
+          });
+          setSessionStatusMessage(getSketchRecoveryMessage(reason));
+          setSessionErrorMessage(getSketchRecoveryMessage(reason));
+          return;
+        }
+
+        const reason = response.status >= 500 ? "server_error" : "invalid_response";
+        setSketchRecoveryFallback(payload.fileName, reason);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Could not convert the sketch image.";
+        const reason =
+          /timeout|timed out|aborted/i.test(message) ? "timeout" :
+          /decode|unsupported|mime|image/i.test(message) ? "unsupported_input" :
+          "server_error";
+        setSketchRecovery({
+          status: "fallback",
+          fileName: payload.fileName,
+          reason,
+          message: getSketchRecoveryMessage(reason),
+        });
+        setSessionStatusMessage(getSketchRecoveryMessage(reason));
+        setSessionErrorMessage(getSketchRecoveryMessage(reason));
+      }
+    },
+    [
+      applySketchUnderlay,
+      exportDraft,
+      importDraft,
+      setSessionErrorMessage,
+      setSessionStatusMessage,
+      setSketchRecoveryFallback,
+    ],
+  );
+
+  const handleSketchRetry = useCallback(() => {
+    const payload = sketchUploadPayloadRef.current;
+    if (!payload) return;
+    void startSketchConversion(payload);
+  }, [startSketchConversion]);
+
+  const handleSketchAccept = useCallback(async () => {
+    if (sketchRecovery.status !== "preview") return;
+    const gen = "generatedDraftJson" in sketchRecovery ? sketchRecovery.generatedDraftJson : null;
+    const fn = "fileName" in sketchRecovery ? sketchRecovery.fileName : "unknown";
+    const payload = sketchUploadPayloadRef.current;
+    if (!gen) return;
+    try {
+      await importDraft(gen);
+      if (payload) {
+        await applySketchUnderlay(payload);
+      }
+    } catch (acceptErr) {
+      const reason =
+        acceptErr instanceof Error && /decode|unsupported|mime|image/i.test(acceptErr.message)
+          ? "unsupported_input"
+          : "server_error";
+      setSketchRecoveryFallback(fn, reason);
+      return;
+    }
+    sketchUploadPayloadRef.current = null;
+    setSketchRecovery({ status: "accepted", fileName: fn });
+    setSessionErrorMessage(null);
+    setSessionStatusMessage(`Sketch conversion accepted: ${fn}`);
+  }, [sketchRecovery, importDraft, applySketchUnderlay, setSessionErrorMessage, setSessionStatusMessage]);
+
+  const handleSketchReject = useCallback(async () => {
+    if (sketchRecovery.status !== "preview") return;
+    const payload = sketchUploadPayloadRef.current;
+    try {
+      await importDraft(sketchRecovery.previousDraftJson);
+      if (payload) {
+        await applySketchUnderlay(payload);
+      }
+    } catch (underlayErr) {
+      const reason =
+        underlayErr instanceof Error && /decode|unsupported|mime|image/i.test(underlayErr.message)
+          ? "unsupported_input"
+          : "server_error";
+      setSketchRecoveryFallback(sketchRecovery.fileName, reason);
+      return;
+    }
+    setSketchRecovery({ status: "rejected", fileName: sketchRecovery.fileName });
+    setSessionErrorMessage(null);
+    setSessionStatusMessage(`Sketch kept as reference: ${sketchRecovery.fileName}`);
+  }, [
+    applySketchUnderlay,
+    importDraft,
+    sketchRecovery,
+    setSessionErrorMessage,
+    setSessionStatusMessage,
+    setSketchRecoveryFallback,
+  ]);
+
+  const handleSketchTraceManual = useCallback(() => {
+    applyToolBinding({ toolId: "planner-wall", plannerTool: "wall" });
+    setSessionErrorMessage(null);
+    if (sketchRecovery.status === "fallback") {
+      setSessionStatusMessage(`Trace manually from the sketch reference: ${sketchRecovery.fileName}`);
+    } else if (sketchRecovery.status === "rejected") {
+      setSessionStatusMessage(`Continue tracing the sketch reference: ${sketchRecovery.fileName}`);
+    }
+  }, [applyToolBinding, sketchRecovery.fileName, sketchRecovery.status, setSessionErrorMessage, setSessionStatusMessage]);
+
+  const handleSketchDismiss = useCallback(() => {
+    setSketchRecovery({ status: "idle" });
+    setSessionErrorMessage(null);
+    setSessionStatusMessage(null);
+  }, [setSessionErrorMessage, setSessionStatusMessage]);
+
   const handleFloorPlanFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
@@ -821,41 +1219,26 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       if (!file) return;
       try {
         const payload = await readFloorPlanImageFile(file);
-        setSessionStatusMessage("Converting sketch into an editable plan...");
-        const response = await fetch("/api/planner/sketch-to-plan", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            imageDataUrl: payload.dataUrl,
-            fileName: payload.fileName,
-            prompt: "Convert this sketch into an editable floor plan with walls and rooms.",
-            includeRooms: true,
-          }),
+        await startSketchConversion({
+          dataUrl: payload.dataUrl,
+          fileName: payload.fileName,
+          prompt: "Convert this sketch into an editable floor plan with walls and rooms.",
+          includeRooms: true,
         });
-        if (!response.ok) {
-          throw new Error(`Sketch conversion failed (${response.status}).`);
-        }
-        const result = (await response.json()) as {
-          success?: boolean;
-          objects?: Array<Record<string, unknown>>;
-          warnings?: string[];
-          error?: { message?: string };
-        };
-        if (!result.success || !Array.isArray(result.objects)) {
-          throw new Error(result.error?.message ?? "Sketch conversion returned an invalid plan.");
-        }
-        await importDraft(buildSketchPlanFabricDraft({
-          objects: result.objects as Parameters<typeof buildSketchPlanFabricDraft>[0]["objects"],
-          warnings: Array.isArray(result.warnings) ? result.warnings.filter((warning): warning is string => typeof warning === "string") : [],
-        }));
-        setSessionStatusMessage(`Sketch converted into an editable plan: ${payload.fileName}`);
       } catch (err) {
-        setSessionErrorMessage(
-          err instanceof Error ? err.message : "Could not convert the sketch image.",
-        );
+        const message =
+          err instanceof Error ? err.message : "Could not convert the sketch image.";
+        setSketchRecovery({
+          status: "fallback",
+          fileName: file.name,
+          reason: "unsupported_input",
+          message: getSketchRecoveryMessage("unsupported_input"),
+        });
+        setSessionStatusMessage(message);
+        setSessionErrorMessage(getSketchRecoveryMessage("unsupported_input"));
       }
     },
-    [importDraft, setSessionErrorMessage, setSessionStatusMessage],
+    [setSessionErrorMessage, setSessionStatusMessage, startSketchConversion],
   );
 
   const topBar = (
@@ -866,6 +1249,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       disabledSteps={disabledSteps}
       onPlannerStepChange={handlePlannerStepChange}
       saveStatus={saveStatus}
+      saveEnvelopeStatus={saveEnvelopeStatus}
       lastSavedAt={lastSavedAt}
       onRetrySave={retrySave}
       onOpenSession={() => setIsSessionOpen(true)}
@@ -1040,6 +1424,14 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
         }
         dragOverlay={
           <>
+            <SketchRecoveryPanel
+              recovery={sketchRecovery}
+              onTraceManual={handleSketchTraceManual}
+              onRetry={handleSketchRetry}
+              onAccept={handleSketchAccept}
+              onReject={() => void handleSketchReject()}
+              onDismiss={handleSketchDismiss}
+            />
             {dragItem && ghostPos && ghostFootprint ? (
               <CatalogDropGhost
                 item={dragItem}

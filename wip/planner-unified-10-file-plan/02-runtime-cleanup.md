@@ -52,7 +52,7 @@ Proof for this file is strong only if a reviewer can show:
 
 ## Completion Checklist
 
-- [ ] Every retained runtime resource has an owner and cleanup path.
-- [ ] Cleanup is safe against strict-mode remount or rapid mode switch.
-- [ ] Async completion after unmount cannot mutate active state.
-- [ ] Verification exists or the exact gap is logged.
+- [x] Every retained runtime resource has an owner and cleanup path.
+- [ ] Cleanup is safe against strict-mode remount or rapid mode switch. <!-- partial: source cleanup added, runtime remount proof is still missing -->
+- [ ] Async completion after unmount cannot mutate active state. <!-- partial: stale-owner guards added, runtime proof is still missing -->
+- [x] Verification exists or the exact gap is logged.

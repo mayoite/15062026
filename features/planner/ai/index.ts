@@ -32,3 +32,12 @@ export type {
   CatalogSkuMatch,
   CatalogMatchResult,
 } from "./types";
+
+export {
+  classifyAIResponse,
+  isStaleResponse,
+  validateLayoutSchema,
+  type AIStatusState,
+  type AIProviderStatus,
+  type AIProviderClassification,
+} from "./aiStatus";

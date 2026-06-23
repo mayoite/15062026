@@ -7,8 +7,14 @@ import type { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/lib/api/withAuth";
 import { error, success, validationError } from "@/lib/api/apiResponse";
 import { ApiError, API_ERROR_CODES } from "@/lib/api/ApiError";
-import { SketchToPlanRequestSchema } from "@/lib/api/schemas";
-import { requestSketchToPlan } from "@/features/planner/ai/sketchToPlan";
+import {
+  SketchToPlanRequestSchema,
+} from "@/lib/api/schemas";
+import {
+  classifySketchConversionError,
+  requestSketchToPlan,
+  getSketchRecoveryMessage,
+} from "@/features/planner/ai/sketchToPlan";
 
 async function handleSketchToPlan(req: NextRequest): Promise<NextResponse> {
   const rawBody = await req.json().catch(() => null);
@@ -17,13 +23,32 @@ async function handleSketchToPlan(req: NextRequest): Promise<NextResponse> {
 
   try {
     const result = await requestSketchToPlan(parsed.data);
-    return success(result);
+    return success({
+      status: "preview",
+      fileName: parsed.data.fileName,
+      objects: result.objects,
+      warnings: result.warnings,
+    });
   } catch (err) {
+    const sketchError = classifySketchConversionError(err, parsed.data.fileName);
+    if (sketchError.reason !== "server_error") {
+      return success({
+        status: "fallback",
+        fileName: parsed.data.fileName,
+        reason: sketchError.reason,
+        message: getSketchRecoveryMessage(sketchError.reason),
+      });
+    }
+
     return error(
       new ApiError(
         503,
         API_ERROR_CODES.SERVICE_UNAVAILABLE,
-        err instanceof Error ? err.message : "Sketch conversion unavailable.",
+        sketchError.message,
+        {
+          reason: sketchError.reason,
+          fileName: parsed.data.fileName,
+        },
       ),
     );
   }

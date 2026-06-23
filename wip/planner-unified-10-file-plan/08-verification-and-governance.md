@@ -151,8 +151,8 @@ Proof for this file is strong only if a reviewer can show:
 
 ## Completion Checklist
 
-- [ ] Every lane has named evidence expectations.
-- [ ] Permission-gated verification is treated honestly.
-- [ ] `Failures.md` is updated for every real verification gap.
-- [ ] A missing proof keeps the lane incomplete.
-- [ ] Handover can be written from evidence, not assumption.
+- [x] Every lane has named evidence expectations.
+- [x] Permission-gated verification is treated honestly.
+- [x] `Failures.md` is updated for every real verification gap.
+- [x] A missing proof keeps the lane incomplete.
+- [x] Handover can be written from evidence, not assumption.

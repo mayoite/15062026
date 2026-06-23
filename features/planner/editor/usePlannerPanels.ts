@@ -26,7 +26,7 @@ export function getStepLeftEmphasis(step: PlannerStep): "muted" | "prominent" {
   return step === "place" ? "prominent" : "muted";
 }
 
-export function usePlannerPanels() {
+export function usePlannerPanels({ enabled = true }: { enabled?: boolean } = {}) {
   const [isCompact, setIsCompact] = useState(false);
   const [leftOpen, setLeftOpenState] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
@@ -37,7 +37,10 @@ export function usePlannerPanels() {
   const [preferencesHydrated, setPreferencesHydrated] = useState(false);
 
   useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
     Promise.resolve().then(() => {
+      if (cancelled) return;
       const saved = readPlannerWorkspacePreferences();
       setLeftOpenState(saved.leftOpen);
       setRightOpen(saved.rightOpen);
@@ -45,12 +48,15 @@ export function usePlannerPanels() {
       setRightCollapsed(saved.rightCollapsed);
       setPreferencesHydrated(true);
     });
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled]);
 
   useEffect(() => {
-    if (!preferencesHydrated) return;
+    if (!enabled || !preferencesHydrated) return;
     writePlannerWorkspacePreferences({ leftOpen, rightOpen, leftCollapsed, rightCollapsed });
-  }, [leftCollapsed, leftOpen, preferencesHydrated, rightCollapsed, rightOpen]);
+  }, [enabled, leftCollapsed, leftOpen, preferencesHydrated, rightCollapsed, rightOpen]);
 
   const setLeftOpen = useCallback((open: boolean) => {
     setLeftManualOverride(true);

@@ -153,13 +153,13 @@ Named tests to run only after explicit user permission:
 
 ### Lane 3 Completion Checklist
 
-- [ ] Canonical state envelope exists with shared freshness metadata.
-- [ ] Local durability no longer depends on cloud success.
-- [ ] Queue dedupe/compaction/reload behavior is explicit.
-- [ ] Hydration precedence is explicit and deterministic.
-- [ ] Conflict handling is explicit instead of silent overwrite.
-- [ ] Visible save/sync states are truthful or the exact UI gap is logged.
-- [ ] Permission-gated proof exists or the exact gap is logged.
+- [x] Canonical state envelope exists with shared freshness metadata.
+- [x] Local durability no longer depends on cloud success.
+- [x] Queue dedupe/compaction/reload behavior is explicit.
+- [x] Hydration precedence is explicit and deterministic.
+- [x] Conflict handling is explicit instead of silent overwrite.
+- [ ] Visible save/sync states are truthful or the exact UI gap is logged. <!-- partial: source wiring added, runtime UI proof is still missing -->
+- [ ] Permission-gated proof exists or the exact gap is logged. <!-- partial: the exact gap is logged in Failures.md, but the gated tests were not run -->
 
 ## Lane 4: Baseline AI Reliability
 
@@ -243,10 +243,10 @@ Named tests to run only after explicit user permission:
 
 ### Lane 4 Completion Checklist
 
-- [ ] Provider fallback, abort, invalid response, and hard failure are distinct.
-- [ ] Stale AI responses cannot win over newer user work.
-- [ ] Validation gates block invalid canvas mutation.
-- [ ] Apply-to-canvas is deterministic for the same validated input.
-- [ ] Visible AI status states are truthful or the exact UI gap is logged.
-- [ ] Sketch conversion is not silently mixed into this lane.
-- [ ] Permission-gated proof exists or the exact gap is logged.
+- [x] Provider fallback, abort, invalid response, and hard failure are distinct.
+- [x] Stale AI responses cannot win over newer user work.
+- [x] Validation gates block invalid canvas mutation.
+- [x] Apply-to-canvas is deterministic for the same validated input.
+- [ ] Visible AI status states are truthful or the exact UI gap is logged. <!-- partial: source status text is in place, but no browser proof exists -->
+- [x] Sketch conversion is not silently mixed into this lane.
+- [ ] Permission-gated proof exists or the exact gap is logged. <!-- partial: the exact gap is logged in Failures.md, but the gated tests were not run -->

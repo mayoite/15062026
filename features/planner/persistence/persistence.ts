@@ -293,47 +293,72 @@ export async function restoreFromHistory(entryId: string): Promise<HistoryEntry 
 
 // ─── Auto-save Hook Logic ───────────────────────────────────────────────────
 
+type AutoSaverCallbacks = {
+  onSaved?: (event: { projectId: string; updatedAt: number; snapshot: string }) => void;
+  onError?: (error: unknown) => void;
+};
+
 /**
  * Creates a debounced auto-save function.
  * Call with project data on every store change.
  */
-export function createAutoSaver(projectId: string) {
+export function createAutoSaver(projectId: string, callbacks: AutoSaverCallbacks = {}) {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
   let lastSaved = 0;
+  let active = true;
+
+  function clearPendingSave() {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  }
 
   return {
     scheduleSave(snapshot: string) {
-      if (timeoutId) clearTimeout(timeoutId);
+      if (!active) return;
+      clearPendingSave();
       timeoutId = setTimeout(async () => {
+        timeoutId = null;
+        if (!active) return;
         const now = Date.now();
         if (now - lastSaved < AUTO_SAVE_DEBOUNCE_MS) return;
-        lastSaved = now;
 
-        // Preserve original createdAt if project already exists
-        const existing = await loadProject(projectId).catch(() => undefined);
-        await saveProject({
-          id: projectId,
-          name: existing?.name || projectId,
-          createdAt: existing?.createdAt || now,
-          updatedAt: now,
-          snapshot,
-        });
+        try {
+          // Preserve original createdAt if project already exists.
+          const existing = await loadProject(projectId).catch(() => undefined);
+          if (!active) return;
 
-        await saveHistoryEntry({
-          id: `${projectId}-${now}`,
-          projectId,
-          timestamp: now,
-          snapshot,
-          label: `Auto-save`,
-        });
+          await saveProject({
+            id: projectId,
+            name: existing?.name || projectId,
+            createdAt: existing?.createdAt || now,
+            updatedAt: now,
+            snapshot,
+          });
+          if (!active) return;
+
+          await saveHistoryEntry({
+            id: `${projectId}-${now}`,
+            projectId,
+            timestamp: now,
+            snapshot,
+            label: `Auto-save`,
+          });
+          if (!active) return;
+
+          lastSaved = now;
+          callbacks.onSaved?.({ projectId, updatedAt: now, snapshot });
+        } catch (error) {
+          if (!active) return;
+          callbacks.onError?.(error);
+        }
       }, AUTO_SAVE_DEBOUNCE_MS);
     },
 
     cancel() {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+      active = false;
+      clearPendingSave();
     },
   };
 }

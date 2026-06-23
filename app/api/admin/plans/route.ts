@@ -13,6 +13,10 @@ import {
   patchPlannerDocumentAdmin,
   planRowToAdminSummary,
 } from "@/features/planner/store/plannerPersistence";
+import {
+  applyPlannerRouteTelemetry,
+  jsonWithPlannerRouteTelemetry,
+} from "@/lib/api/routeObservability";
 
 function parseInteger(value: string | null, fallback: number) {
   const parsed = Number.parseInt(value || "", 10);
@@ -20,18 +24,33 @@ function parseInteger(value: string | null, fallback: number) {
 }
 
 export async function GET(req: NextRequest) {
+  const startedAt = performance.now();
+  const routeName = "api/admin/plans";
+  const queryShape = "admin-summary-list";
+  const telemetry = () => ({
+    route: routeName,
+    queryShape,
+    durationMs: performance.now() - startedAt,
+  });
   const rateError = await enforceAdminRateLimit(req, "plans:get");
-  if (rateError) return rateError;
+  if (rateError) {
+    return applyPlannerRouteTelemetry(rateError, { ...telemetry(), rowCount: 0 });
+  }
 
   const authError = await requireAdminSession();
-  if (authError) return authError;
+  if (authError) {
+    return applyPlannerRouteTelemetry(authError, { ...telemetry(), rowCount: 0 });
+  }
 
   if (!isPlannerDatabaseConfigured()) {
-    return NextResponse.json({
-      plans: [],
-      pagination: { page: 1, limit: 20, total: 0, pages: 0 },
-      source: "unconfigured",
-    });
+    return jsonWithPlannerRouteTelemetry(
+      {
+        plans: [],
+        pagination: { page: 1, limit: 20, total: 0, pages: 0 },
+        source: "unconfigured",
+      },
+      { ...telemetry(), rowCount: 0, source: "unconfigured" },
+    );
   }
 
   const { searchParams } = new URL(req.url);
@@ -52,7 +71,10 @@ export async function GET(req: NextRequest) {
   });
 
   if (!result.success) {
-    return NextResponse.json({ error: "Failed to fetch plans" }, { status: 500 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Failed to fetch plans" }, { status: 500 }),
+      { ...telemetry(), rowCount: 0, source: "drizzle_plans" },
+    );
   }
 
   const plans = result.plans.map((plan) => ({
@@ -60,41 +82,62 @@ export async function GET(req: NextRequest) {
     review_status: plan.status === "active" ? "approved" : "pending",
   }));
 
-  return NextResponse.json({
-    plans,
-    pagination: {
-      page,
-      limit,
-      total: result.total,
-      pages: Math.ceil(result.total / limit),
+  return jsonWithPlannerRouteTelemetry(
+    {
+      plans,
+      pagination: {
+        page,
+        limit,
+        total: result.total,
+        pages: Math.ceil(result.total / limit),
+      },
+      source: "drizzle_plans",
     },
-    source: "drizzle_plans",
-  });
+    { ...telemetry(), rowCount: plans.length, source: "drizzle_plans" },
+  );
 }
 
 export async function PATCH(req: NextRequest) {
+  const startedAt = performance.now();
+  const routeName = "api/admin/plans";
+  const queryShape = "admin-summary-write";
+  const telemetry = () => ({
+    route: routeName,
+    queryShape,
+    durationMs: performance.now() - startedAt,
+  });
   const rateError = await enforceAdminRateLimit(req, "plans:patch", 20);
-  if (rateError) return rateError;
+  if (rateError) {
+    return applyPlannerRouteTelemetry(rateError, { ...telemetry(), rowCount: 0 });
+  }
 
   const authError = await requireAdminSession();
-  if (authError) return authError;
+  if (authError) {
+    return applyPlannerRouteTelemetry(authError, { ...telemetry(), rowCount: 0 });
+  }
 
   const isCsrfValid = await validateCsrfRequest(req);
   if (!isCsrfValid) {
-    return NextResponse.json(
-      { error: "Invalid or missing CSRF token" },
-      { status: 403 },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Invalid or missing CSRF token" }, { status: 403 }),
+      { ...telemetry(), rowCount: 0 },
     );
   }
 
   if (!isPlannerDatabaseConfigured()) {
-    return NextResponse.json({ error: "Admin storage is not configured" }, { status: 503 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Admin storage is not configured" }, { status: 503 }),
+      { ...telemetry(), rowCount: 0, source: "unconfigured" },
+    );
   }
 
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
   const id = typeof body.id === "string" ? body.id.trim() : "";
   if (!id) {
-    return NextResponse.json({ error: "Plan ID is required" }, { status: 400 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Plan ID is required" }, { status: 400 }),
+      { ...telemetry(), rowCount: 0 },
+    );
   }
 
   const patch: {
@@ -124,50 +167,83 @@ export async function PATCH(req: NextRequest) {
   }
 
   if (Object.keys(patch).length === 0) {
-    return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "No valid fields to update" }, { status: 400 }),
+      { ...telemetry(), rowCount: 0 },
+    );
   }
 
   const result = await patchPlannerDocumentAdmin(id, patch);
   if (!result.success) {
     const status = result.error.code === "NOT_FOUND" ? 404 : 500;
-    return NextResponse.json({ error: "Failed to update plan" }, { status });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Failed to update plan" }, { status }),
+      { ...telemetry(), rowCount: 0, source: "drizzle_plans" },
+    );
   }
 
-  return NextResponse.json({
-    plan: planRowToAdminSummary(result.row),
-    source: "drizzle_plans",
-  });
+  return jsonWithPlannerRouteTelemetry(
+    {
+      plan: planRowToAdminSummary(result.row),
+      source: "drizzle_plans",
+    },
+    { ...telemetry(), rowCount: 1, source: "drizzle_plans" },
+  );
 }
 
 export async function DELETE(req: NextRequest) {
+  const startedAt = performance.now();
+  const routeName = "api/admin/plans";
+  const queryShape = "admin-summary-delete";
+  const telemetry = () => ({
+    route: routeName,
+    queryShape,
+    durationMs: performance.now() - startedAt,
+  });
   const rateError = await enforceAdminRateLimit(req, "plans:delete", 15);
-  if (rateError) return rateError;
+  if (rateError) {
+    return applyPlannerRouteTelemetry(rateError, { ...telemetry(), rowCount: 0 });
+  }
 
   const authError = await requireAdminSession();
-  if (authError) return authError;
+  if (authError) {
+    return applyPlannerRouteTelemetry(authError, { ...telemetry(), rowCount: 0 });
+  }
 
   const isCsrfValid = await validateCsrfRequest(req);
   if (!isCsrfValid) {
-    return NextResponse.json(
-      { error: "Invalid or missing CSRF token" },
-      { status: 403 },
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Invalid or missing CSRF token" }, { status: 403 }),
+      { ...telemetry(), rowCount: 0 },
     );
   }
 
   if (!isPlannerDatabaseConfigured()) {
-    return NextResponse.json({ error: "Admin storage is not configured" }, { status: 503 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Admin storage is not configured" }, { status: 503 }),
+      { ...telemetry(), rowCount: 0, source: "unconfigured" },
+    );
   }
 
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id")?.trim();
   if (!id) {
-    return NextResponse.json({ error: "Plan ID is required" }, { status: 400 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Plan ID is required" }, { status: 400 }),
+      { ...telemetry(), rowCount: 0 },
+    );
   }
 
   const result = await deletePlannerDocument(id);
   if (!result.success) {
-    return NextResponse.json({ error: "Failed to delete plan" }, { status: 500 });
+    return applyPlannerRouteTelemetry(
+      NextResponse.json({ error: "Failed to delete plan" }, { status: 500 }),
+      { ...telemetry(), rowCount: 0, source: "drizzle_plans" },
+    );
   }
 
-  return NextResponse.json({ success: true, source: "drizzle_plans" });
+  return jsonWithPlannerRouteTelemetry(
+    { success: true, source: "drizzle_plans" },
+    { ...telemetry(), rowCount: 1, source: "drizzle_plans" },
+  );
 }

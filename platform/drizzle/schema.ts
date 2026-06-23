@@ -29,6 +29,7 @@ export const plans = pgTable('plans', {
   index('plans_updated_at_idx').on(table.updatedAt),
   index('plans_user_id_status_idx').on(table.userId, table.status),
   index('plans_user_id_created_at_idx').on(table.userId, table.createdAt),
+  index('plans_user_id_updated_at_idx').on(table.userId, table.updatedAt),
 ]);
 
 // Teams & collaboration

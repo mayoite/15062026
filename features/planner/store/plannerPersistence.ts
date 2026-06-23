@@ -39,6 +39,80 @@ export class PlannerPersistenceError extends Error {
 /** Shape of a row returned by Drizzle from the `plans` table. */
 type PlanRow = typeof plans.$inferSelect;
 
+type PlanSummaryProjectionRow = {
+  id: string;
+  userId: string;
+  name: string;
+  projectName: string | null;
+  clientName: string | null;
+  preparedBy: string | null;
+  roomWidthMm: number | null;
+  roomDepthMm: number | null;
+  seatTarget: number | null;
+  unitSystem: PlannerDocument["unitSystem"] | null;
+  itemCount: number | null;
+  thumbnailUrl: string | null;
+  status: PlannerDocument["status"];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PlannerSummaryRow = {
+  id: string;
+  user_id: string | null;
+  name: string;
+  project_name: string | null;
+  client_name: string | null;
+  prepared_by: string | null;
+  room_width_mm: number;
+  room_depth_mm: number;
+  seat_target: number;
+  unit_system: PlannerDocument["unitSystem"];
+  item_count: number;
+  thumbnail_url: string | null;
+  status: PlannerDocument["status"];
+  created_at: string;
+  updated_at: string;
+};
+
+const plannerSummarySelect = {
+  id: plans.id,
+  userId: plans.userId,
+  name: plans.name,
+  projectName: sql<string | null>`${plans.payload} ->> 'projectName'`,
+  clientName: sql<string | null>`${plans.payload} ->> 'clientName'`,
+  preparedBy: sql<string | null>`${plans.payload} ->> 'preparedBy'`,
+  roomWidthMm: sql<number | null>`NULLIF(${plans.payload} ->> 'roomWidthMm', '')::integer`,
+  roomDepthMm: sql<number | null>`NULLIF(${plans.payload} ->> 'roomDepthMm', '')::integer`,
+  seatTarget: sql<number | null>`NULLIF(${plans.payload} ->> 'seatTarget', '')::integer`,
+  unitSystem: sql<PlannerDocument["unitSystem"] | null>`NULLIF(${plans.payload} ->> 'unitSystem', '')`,
+  itemCount: sql<number | null>`NULLIF(${plans.payload} ->> 'itemCount', '')::integer`,
+  thumbnailUrl: plans.thumbnailUrl,
+  status: plans.status,
+  createdAt: plans.createdAt,
+  updatedAt: plans.updatedAt,
+} satisfies Record<string, unknown>;
+
+function normalizePlanSummaryProjectionRow(row: PlanSummaryProjectionRow): PlannerSummaryRow {
+  return {
+    id: row.id,
+    user_id: row.userId ?? null,
+    name: row.name,
+    project_name: row.projectName ?? null,
+    client_name: row.clientName ?? null,
+    prepared_by: row.preparedBy ?? null,
+    room_width_mm: row.roomWidthMm ?? 6000,
+    room_depth_mm: row.roomDepthMm ?? 8000,
+    seat_target: row.seatTarget ?? 10,
+    unit_system: row.unitSystem ?? "metric",
+    item_count: row.itemCount ?? 0,
+    thumbnail_url: row.thumbnailUrl ?? null,
+    status: row.status,
+    created_at: row.createdAt.toISOString(),
+    updated_at: row.updatedAt.toISOString(),
+  };
+}
+
 /**
  * Reconstruct a PlannerDocument from a `plans` row. The authoritative document
  * lives in `payload`; row metadata (id, timestamps, status) is merged on top so
@@ -218,6 +292,41 @@ export async function listPlannerDocuments(
 }
 
 /**
+ * List a user's planner documents as summary rows only.
+ */
+export async function listPlannerDocumentSummaries(
+  userId: string,
+): Promise<
+  | { success: true; summaries: PlannerSummaryRow[] }
+  | { success: false; error: PlannerPersistenceError }
+> {
+  try {
+    const rows = await db
+      .select(plannerSummarySelect)
+      .from(plans)
+      .where(eq(plans.userId, userId))
+      .orderBy(desc(plans.updatedAt));
+
+    return {
+      success: true,
+      summaries: rows.map((row) => normalizePlanSummaryProjectionRow(row as PlanSummaryProjectionRow)),
+    };
+  } catch (error) {
+    if (error instanceof PlannerPersistenceError) {
+      return { success: false, error };
+    }
+    return {
+      success: false,
+      error: new PlannerPersistenceError(
+        `Summary list failed: ${error instanceof Error ? error.message : String(error)}`,
+        "LIST_FAILED",
+        error,
+      ),
+    };
+  }
+}
+
+/**
  * Delete a planner document by id.
  */
 export async function deletePlannerDocument(
@@ -265,6 +374,24 @@ export function planRowToAdminSummary(row: PlanRow) {
     status: row.status as PlannerDocument["status"],
     created_at: row.createdAt.toISOString(),
     updated_at: row.updatedAt.toISOString(),
+  };
+}
+
+export function planSummaryRowToAdminSummary(row: PlannerSummaryRow) {
+  return {
+    id: row.id,
+    user_id: row.user_id,
+    title: row.name,
+    project_name: row.project_name,
+    client_name: row.client_name,
+    prepared_by: row.prepared_by,
+    item_count: row.item_count,
+    room_width_mm: row.room_width_mm,
+    room_depth_mm: row.room_depth_mm,
+    seat_target: row.seat_target,
+    status: row.status,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
   };
 }
 
@@ -351,7 +478,7 @@ export async function listPlannerDocumentsAdmin(
 ): Promise<
   | {
       success: true;
-      plans: ReturnType<typeof planRowToAdminSummary>[];
+      plans: ReturnType<typeof planSummaryRowToAdminSummary>[];
       total: number;
     }
   | { success: false; error: PlannerPersistenceError }
@@ -370,13 +497,13 @@ export async function listPlannerDocumentsAdmin(
     const [{ total }] = await countQuery;
 
     const rowsQuery = whereClause
-      ? db.select().from(plans).where(whereClause).orderBy(orderBy).limit(limit).offset(offset)
-      : db.select().from(plans).orderBy(orderBy).limit(limit).offset(offset);
+      ? db.select(plannerSummarySelect).from(plans).where(whereClause).orderBy(orderBy).limit(limit).offset(offset)
+      : db.select(plannerSummarySelect).from(plans).orderBy(orderBy).limit(limit).offset(offset);
     const rows = await rowsQuery;
 
     return {
       success: true,
-      plans: rows.map(planRowToAdminSummary),
+      plans: rows.map((row) => planSummaryRowToAdminSummary(normalizePlanSummaryProjectionRow(row as PlanSummaryProjectionRow))),
       total: Number(total ?? 0),
     };
   } catch (error) {

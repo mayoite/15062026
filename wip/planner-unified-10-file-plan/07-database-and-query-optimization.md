@@ -84,10 +84,10 @@ Responsible proof for this lane can include:
 
 ## Completion Checklist
 
-- [ ] Hot query paths are named and measured.
-- [ ] Summary, detail, and write-side lookup boundaries are explicit.
-- [ ] JSON search predicates are flattened where hot-path evidence justifies it, or the exact reason not to is logged.
-- [ ] RLS policy-column assumptions are explicit.
-- [ ] Index changes match actual query patterns.
-- [ ] Route-level observability exists or the exact gap is logged.
-- [ ] Explain or equivalent evidence exists, or the exact gap is logged.
+- [ ] Hot query paths are named and measured. <!-- partial: routes are named and telemetry exists, but runtime measurement is still missing -->
+- [x] Summary, detail, and write-side lookup boundaries are explicit.
+- [x] JSON search predicates are flattened where hot-path evidence justifies it, or the exact reason not to is logged.
+- [ ] RLS policy-column assumptions are explicit. <!-- partial: no live RLS verification is available here -->
+- [x] Index changes match actual query patterns.
+- [x] Route-level observability exists or the exact gap is logged.
+- [ ] Explain or equivalent evidence exists, or the exact gap is logged. <!-- partial: exact gap is logged, but no live EXPLAIN capture exists -->

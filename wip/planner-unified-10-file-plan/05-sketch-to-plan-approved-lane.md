@@ -208,12 +208,12 @@ Expected proof coverage:
 
 ## Completion Checklist
 
-- [ ] Sketch lane is treated as a separate approved lane, not hidden inside baseline AI reliability.
-- [ ] Typed failure taxonomy exists and is reflected in the workspace state.
-- [ ] Upload preservation and no-AI fallback both exist.
-- [ ] Underlay is applied before or at conversion start and does not clear user geometry.
-- [ ] Generated geometry never becomes final without explicit user acceptance.
-- [ ] Reject restores the prior draft and keeps the sketch available.
-- [ ] Retry does not erase manual work and still routes through preview.
-- [ ] Workspace recovery copy and actions are visible in the planner shell.
-- [ ] Permission-gated proof exists or the exact gap is logged.
+- [x] Sketch lane is treated as a separate approved lane, not hidden inside baseline AI reliability.
+- [x] Typed failure taxonomy exists and is reflected in the workspace state.
+- [x] Upload preservation and no-AI fallback both exist.
+- [x] Underlay is applied before or at conversion start and does not clear user geometry.
+- [x] Generated geometry never becomes final without explicit user acceptance.
+- [x] Reject restores the prior draft and keeps the sketch available.
+- [x] Retry does not erase manual work and still routes through preview.
+- [ ] Workspace recovery copy and actions are visible in the planner shell. <!-- partial: source wiring exists, but browser proof is still missing -->
+- [ ] Permission-gated proof exists or the exact gap is logged. <!-- partial: the exact gap is logged in Failures.md, but the gated tests were not run -->
