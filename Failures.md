@@ -34,15 +34,6 @@ This file documents critical blockers, failed parameters, and required follow-up
 
 ## Repo Hygiene Follow-ups
 
-### Toolbar utility cleanup
-- **Status:** `[x] Resolved` (2026-06-22)
-- **Files:** `features/planner/shared/components/editor/Toolbar.tsx`, `app/css/core/planner/editor-chrome.css`
-- **Note:** Replaced repeated toolbar icon sizing utilities with a shared chrome CSS class. Verification was intentionally skipped because Playwright/test runs were not permitted for this task.
-
-### Planner panel orchestrator refactor completed
-- **Status:** `[x] Resolved` (2026-06-22)
-- **Files:** `features/planner/ui/PlannerDesktopPanels.tsx`, `features/planner/ui/PlannerMobilePanels.tsx`
-- **Note:** Rewrapped the desktop/mobile planner panel orchestrators to reduce wrapper noise without changing catalog, inspector, layers, or session dialog code. Verification was not run because explicit permission was not given.
 
 ### Site assistant shell refactor
 - **Status:** `[~] Not verified` (2026-06-22)
@@ -54,26 +45,12 @@ This file documents critical blockers, failed parameters, and required follow-up
 - **Files:** `features/planner/admin/AdminAnalyticsPageView.tsx`, `features/planner/admin/AdminCatalogListView.tsx`, `features/planner/admin/AdminFeatureFlagsPageView.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`
 - **Note:** `npm run lint` still fails on pre-existing `react-hooks/set-state-in-effect` and `react-hooks/exhaustive-deps` violations outside the assistant refactor; I left those untouched to stay in scope.
 
-### Generated hardcoded audit CSV refreshed successfully
-- **Status:** `[x] Resolved` (2026-06-22)
-- **File:** `results/hardcoded-audit-detail.csv`, `results/hardcoded-audit-summary.csv`
-- **Note:** The audit was regenerated after the lock cleared, and the stale `data/site/*` hit now points at `lib/site-data/*` in the generated output.
-- **Action:** Keep the generator on the atomic temp-file write path so future refreshes survive transient file locks.
 
 ### Hardcoded audit rerun hit a locked CSV
 - **Status:** `[~] Follow-up`
 - **File:** `results/hardcoded-audit-detail.csv`, `results/hardcoded-audit-summary.csv`
 - **Note:** A fresh audit pass for TSX plus non-base CSS failed to overwrite the canonical CSV because the destination file was locked (`EPERM` on rename). The same scan completed successfully when written to alternate temp outputs.
 - **Action:** Re-run the audit after the lock clears, or keep using an alternate output path when the canonical CSV is held open.
-
-### 1. Stale root test/typecheck artifacts
-- **Status:** `[x] Resolved` (2026-06-22)
-- **Guards:** `.gitignore` scratch patterns; `npm run test:clean` + `pretest`; coverage/Playwright scripts call `test:clean`; `tests/root-configs.test.ts` + `tests/unit/clean-test-artifacts.test.ts`; `docs/TESTING.md`.
-- **Canonical outputs:** `results/tests/` (Vitest), `results/test-results/` (Playwright), `results/coverage*`.
-
-### 5. Test folder docs are out of sync with the live tree
-- **Status:** `[x] Resolved` (2026-06-22)
-- **Action:** Removed stale `tests/CONTENTS.md` and `tests/INVENTORY.md`; layout guarded by `npm run test:layout:check`.
 
 ### 6. Planner asset pipeline still references separate `/models/chairs` GLB assets
 - **Status:** `[ ] Open`
@@ -83,12 +60,6 @@ This file documents critical blockers, failed parameters, and required follow-up
 
 ## Security & Resilience Audits Follow-ups (Parameters 31-40)
 
-### 2. Unused CSRF Protection on Mutating Endpoints (Parameter 32)
-- **File:** `lib/security/csrf.ts`, `lib/api/browserApi.ts`, `app/api/csrf/route.ts`
-- **Status:** `[x] Resolved` (2026-06-22)
-- **Protected (session/admin mutations):** `app/api/plans/route.ts` POST; `app/api/plans/[id]/route.ts` PUT/DELETE; `app/api/admin/plans/**`; `app/api/admin/themes/publish/route.ts`; `app/api/theme/manage/route.ts` POST; `app/api/audit/route.ts` POST; `app/api/customer-queries/manage/route.ts` PATCH.
-- **Client wiring:** `GET /api/csrf/` issues cookie + token; `browserApiFetch` sends `x-csrf-token`; `CsrfBootstrap` prefetches on site/planner/crm/ops/admin layouts.
-- **Intentionally unprotected (public/rate-limited/anonymous):** `customer-queries` POST, `tracking` POST, `log-error` POST, `nav-search` POST, `filter` POST, `recommendations` POST, `generate-alt` POST, `configurator/smart-wizard` POST.
 
 ### 4. Unused IndexedDB Storage & Sync Queue (Parameter 38)
 - **Files:** `features/planner/store/offlineStorage.ts`, `features/planner/store/syncQueueProcessor.ts`, `features/planner/editor/usePlannerSessionHandlers.ts`
@@ -109,3 +80,14 @@ This file documents critical blockers, failed parameters, and required follow-up
 - **File:** `outputs/2026-06-22-txt-inventory/txt-files-inventory.xlsx`
 - **Status:** `[~] Verified structurally`
 - **Note:** The workbook package was checked and opens as a valid XLSX with 2 sheets, but the visual render pass was skipped for the same reason.
+
+## Agent Plan Follow-up
+
+- **Files:** `wip/sketch-to-plan-10-file-plan/*.md`
+- **Status:** `[~] Not verified` (2026-06-23)
+- **Note:** Wrote a standalone 10-file sketch-to-plan execution packet under `wip/`, then reread the original source packet and folded its key truths back in: underlay-plus-trace fallback priority, secondary save/retry paths, the review finding that preview/rollback is mandatory, and the failure-visibility problem behind Session Hub. This was still a planning/docs pass only, so no tests were run.
+
+### Unified planner packet created
+- **Files:** `wip/planner-unified-10-file-plan/*.md`
+- **Status:** `[~] Not verified` (2026-06-23)
+- **Note:** Revised the unified planner packet to restore the correct lane split between state/persistence/offline sync and baseline AI reliability, deepen the persistence and sketch lanes with executable contract details, strengthen startup/catalog/database proof requirements, and tighten verification/handover rules so the packet stands on its own. This was still a docs/planning pass only, so no tests were run.

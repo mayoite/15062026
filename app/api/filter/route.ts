@@ -107,7 +107,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid rankBy" }, { status: 400 });
     }
 
-    const apiKey = env.OPENROUTER_API_KEY || env.OPENAI_API_KEY;
+    const apiKey =
+      env.OPENROUTER_API_KEY_PRIMARY ||
+      env.OPENROUTER_API_KEY_BACKUP ||
+      env.OPENAI_API_KEY;
     if (!apiKey || products.length === 0) {
       return NextResponse.json({
         rankedIds: fallbackSort(products, rankBy),
@@ -141,7 +144,9 @@ export async function POST(req: NextRequest) {
       productList,
     ].join("\n");
 
-    const useOpenRouter = Boolean(env.OPENROUTER_API_KEY);
+    const useOpenRouter = Boolean(
+      env.OPENROUTER_API_KEY_PRIMARY || env.OPENROUTER_API_KEY_BACKUP,
+    );
     const openai = new OpenAI({
       apiKey,
       ...(useOpenRouter && {

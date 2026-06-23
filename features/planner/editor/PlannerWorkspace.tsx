@@ -38,8 +38,6 @@ import { PlannerToolRail } from "@/features/planner/editor/PlannerToolRail";
 import { PlannerToolFabricSync } from "@/features/planner/editor/PlannerToolFabricSync";
 import { plannerToolToToolId } from "@/features/planner/editor/plannerToolFabricBridge";
 import { readPlannerToolVisibilityMode } from "@/features/planner/editor/plannerToolVisibility";
-import { PropertiesInspector } from "@/features/planner/editor/inspector/PropertiesInspector";
-import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
 import { PlannerLeftPanel } from "@/features/planner/editor/PlannerLeftPanel";
 import { PlannerTopBar } from "@/features/planner/editor/PlannerTopBar";
 import { PlannerSubTopBar } from "@/features/planner/editor/PlannerSubTopBar";
@@ -83,9 +81,9 @@ import {
   useFabricSelectionStatus,
 } from "@/features/planner/hooks/useFabricPlannerState";
 import { usePlannerWorkspaceStore } from "@/features/planner/store/workspaceStore";
-import { LayerVisibilityPanel } from "@/features/planner/editor/LayerVisibilityPanel";
-import { LayerManagerPanel } from "@/features/planner/editor/LayerManagerPanel";
 import { PlannerStatusBar } from "@/features/planner/editor/PlannerStatusBar";
+import { TemplatePickerModal } from "@/features/planner/editor/templates/TemplatePickerModal";
+import { ExportModal } from "@/features/planner/editor/ExportModal";
 import {
   getStepLeftTab,
   getStepToolBinding,
@@ -96,7 +94,6 @@ import {
   getDisabledPlannerSteps,
   type PlannerStep,
 } from "@/features/planner/editor/plannerStep";
-import { ExportModal } from "@/features/planner/editor/ExportModal";
 import {
   plannerUnitSystemToMeasurementUnit,
   type MeasurementUnit,
@@ -105,10 +102,10 @@ import {
   resolvePlannerToolKey,
   type PlannerToolBinding,
 } from "@/features/planner/editor/plannerKeyboardShortcuts";
-import { PlannerSessionDialog } from "@/features/planner/ui/PlannerSessionDialog";
 import { buildPlannerDocumentFromEditor } from "@/features/planner/document/plannerDocumentBridge";
 import { hydrateCloudPlanIntoIndexedDb } from "@/features/planner/persistence/cloudPlanHydration";
 import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
+import { buildSketchPlanFabricDraft } from "@/features/planner/ai/sketchToPlan";
 
 import { resetPlannerChromeLayout } from "@/features/planner/editor/chrome/plannerChromeStorage";
 import {
@@ -123,6 +120,23 @@ import {
 import { applyLayerVisibility } from "@/features/planner/editor/layerVisibility";
 import { sanitizePlannerPlanName } from "@/features/planner/lib/sessionState";
 import { usePlannerSessionHandlers } from "@/features/planner/editor/usePlannerSessionHandlers";
+
+const PropertiesInspector = dynamic(
+  () => import("@/features/planner/editor/inspector/PropertiesInspector").then((m) => ({ default: m.PropertiesInspector })),
+  { ssr: false, loading: () => null },
+);
+const LayerVisibilityPanel = dynamic(
+  () => import("@/features/planner/editor/LayerVisibilityPanel").then((m) => ({ default: m.LayerVisibilityPanel })),
+  { ssr: false, loading: () => null },
+);
+const LayerManagerPanel = dynamic(
+  () => import("@/features/planner/editor/LayerManagerPanel").then((m) => ({ default: m.LayerManagerPanel })),
+  { ssr: false, loading: () => null },
+);
+const PlannerSessionDialog = dynamic(
+  () => import("@/features/planner/ui/PlannerSessionDialog").then((m) => ({ default: m.PlannerSessionDialog })),
+  { ssr: false, loading: () => null },
+);
 
 function isEditableKeyboardTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -186,11 +200,6 @@ function Fabric2DWith3DSync({
     const timer = window.setTimeout(() => refitCanvas(), 80);
     return () => window.clearTimeout(timer);
   }, [refitCanvas]);
-
-  useEffect(() => {
-    if (viewMode !== "2d") return;
-    return refitCanvasSoon();
-  }, [refitCanvasSoon, viewMode]);
 
   useEffect(() => {
     if (viewMode !== "2d") return;
@@ -471,10 +480,11 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
   } = session;
 
   const [planNameKey, setPlanNameKey] = useState(draftNameKey);
-  if (planNameKey !== draftNameKey) {
+  useEffect(() => {
+    if (planNameKey === draftNameKey) return;
     setPlanNameKey(draftNameKey);
     setPlanNameOverride(null);
-  }
+  }, [draftNameKey, planNameKey, setPlanNameOverride]);
 
   const planName = planNameOverride ?? draftPlanName;
 
@@ -618,7 +628,7 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       if (!guestMode && planId?.trim()) {
         await hydrateCloudPlanIntoIndexedDb(planId, guestMode);
       }
-      if (searchParams.get("fresh") === "1") {
+      if (searchParams?.get("fresh") === "1") {
         await handleStartFreshLayout();
         return;
       }
@@ -811,17 +821,41 @@ function PlannerWorkspaceContent({ guestMode = false, planId }: PlannerWorkspace
       if (!file) return;
       try {
         const payload = await readFloorPlanImageFile(file);
-        await setFloorPlanUnderlay(payload.dataUrl, {
-          fileName: payload.fileName,
+        setSessionStatusMessage("Converting sketch into an editable plan...");
+        const response = await fetch("/api/planner/sketch-to-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            imageDataUrl: payload.dataUrl,
+            fileName: payload.fileName,
+            prompt: "Convert this sketch into an editable floor plan with walls and rooms.",
+            includeRooms: true,
+          }),
         });
-        setSessionStatusMessage(`Floor plan image loaded: ${payload.fileName}`);
+        if (!response.ok) {
+          throw new Error(`Sketch conversion failed (${response.status}).`);
+        }
+        const result = (await response.json()) as {
+          success?: boolean;
+          objects?: Array<Record<string, unknown>>;
+          warnings?: string[];
+          error?: { message?: string };
+        };
+        if (!result.success || !Array.isArray(result.objects)) {
+          throw new Error(result.error?.message ?? "Sketch conversion returned an invalid plan.");
+        }
+        await importDraft(buildSketchPlanFabricDraft({
+          objects: result.objects as Parameters<typeof buildSketchPlanFabricDraft>[0]["objects"],
+          warnings: Array.isArray(result.warnings) ? result.warnings.filter((warning): warning is string => typeof warning === "string") : [],
+        }));
+        setSessionStatusMessage(`Sketch converted into an editable plan: ${payload.fileName}`);
       } catch (err) {
         setSessionErrorMessage(
-          err instanceof Error ? err.message : "Could not load the floor plan image.",
+          err instanceof Error ? err.message : "Could not convert the sketch image.",
         );
       }
     },
-    [setFloorPlanUnderlay, setSessionErrorMessage, setSessionStatusMessage],
+    [importDraft, setSessionErrorMessage, setSessionStatusMessage],
   );
 
   const topBar = (

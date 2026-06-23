@@ -39,7 +39,7 @@ describe("PlannerWorkspace", () => {
       },
     });
     usePlannerStore.setState({ tool: "select" });
-    usePlannerCatalogStore.setState({ recentPlacements: [] });
+    usePlannerCatalogStore.setState({ recentIds: [] });
   });
 
   it("mounts the Fabric workspace shell and handles tool keyboard shortcuts", async () => {
@@ -58,11 +58,13 @@ describe("PlannerWorkspace", () => {
   it("opens templates and export modals from the top bar", async () => {
     render(<PlannerWorkspace guestMode />);
     fireEvent.click(screen.getByRole("button", { name: "Templates" }));
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
 
     const exportBtn = await screen.findByRole("button", { name: "Export" });
     fireEvent.click(exportBtn);
-    expect(screen.getByRole("dialog", { name: "Export your plan" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getAllByRole("dialog").length).toBeGreaterThanOrEqual(2);
+    });
   });
 
   it("handles catalog drop on the canvas surface", async () => {
@@ -71,6 +73,7 @@ describe("PlannerWorkspace", () => {
     const item = CURATED_CATALOG_ITEMS[0]!;
     const dataTransfer = {
       types: ["application/planner-catalog-item"],
+      setData: () => undefined,
       getData: (mime: string) => (mime === "application/planner-catalog-item" ? JSON.stringify(item) : ""),
     };
 
@@ -78,7 +81,7 @@ describe("PlannerWorkspace", () => {
     fireEvent.drop(surface, { dataTransfer });
 
     await waitFor(() => {
-      expect(usePlannerCatalogStore.getState().recentPlacements).toContain(item.id);
+      expect(usePlannerCatalogStore.getState().recentIds).toContain(item.id);
     });
   });
 

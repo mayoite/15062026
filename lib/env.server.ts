@@ -7,14 +7,8 @@ const optionalEnvString = z.preprocess(
 
 const envSchema = z.object({
   OPENAI_API_KEY: optionalEnvString,
-  OPENROUTER_API_KEY: optionalEnvString,
-  GOOGLE_API_KEY: optionalEnvString,
-  GOOGLE_GENERATIVE_AI_API_KEY: optionalEnvString,
-  NOVA_ACT_API_KEY: optionalEnvString,
-  AWS_BEARER_TOKEN_BEDROCK: optionalEnvString,
-  GOOGLE_MODEL: optionalEnvString,
-  AWS_NOVA_MODEL: optionalEnvString,
-  AWS_BEDROCK_REGION: optionalEnvString,
+  OPENROUTER_API_KEY_PRIMARY: optionalEnvString,
+  OPENROUTER_API_KEY_BACKUP: optionalEnvString,
   OPENROUTER_MODEL: optionalEnvString,
 });
 

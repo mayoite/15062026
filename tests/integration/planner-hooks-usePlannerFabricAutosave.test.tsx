@@ -89,4 +89,32 @@ describe("usePlannerFabricAutosave", () => {
     });
     expect(scheduleSave).toHaveBeenCalled();
   });
+
+  it("ignores a stale restore after unmount", async () => {
+    let resolveLoad: ((value: Awaited<ReturnType<typeof persistenceMod.loadProject>>) => void) | null = null;
+    const loadProjectPromise = new Promise<Awaited<ReturnType<typeof persistenceMod.loadProject>>>((resolve) => {
+      resolveLoad = resolve;
+    });
+    vi.spyOn(persistenceMod, "loadProject").mockReturnValue(loadProjectPromise);
+    vi.spyOn(plannerSessionMod, "parseSessionSnapshot").mockReturnValue({
+      store: { objects: [] },
+      updatedAt: "2026-06-15T00:00:00.000Z",
+    } as unknown as ReturnType<typeof plannerSessionMod.parseSessionSnapshot>);
+
+    const { result, unmount } = renderHook(() => usePlannerFabricAutosave(exportDraft, false));
+    const restorePromise = result.current.restoreSnapshot(importDraft);
+    unmount();
+
+    await act(async () => {
+      resolveLoad?.({
+        snapshot: JSON.stringify({ version: "2.0.0", store: { objects: [] } }),
+        updatedAt: "2026-06-15T00:00:00.000Z",
+      });
+      await restorePromise;
+    });
+
+    expect(await restorePromise).toBe(false);
+    expect(importDraft).not.toHaveBeenCalled();
+    expect(plannerSessionMod.applySessionWorkspace).not.toHaveBeenCalled();
+  });
 });

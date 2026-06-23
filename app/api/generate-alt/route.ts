@@ -216,12 +216,17 @@ export async function POST(req: NextRequest) {
       .filter(Boolean)
       .join("\n");
 
-    const apiKey = env.OPENROUTER_API_KEY || env.OPENAI_API_KEY;
+    const apiKey =
+      env.OPENROUTER_API_KEY_PRIMARY ||
+      env.OPENROUTER_API_KEY_BACKUP ||
+      env.OPENAI_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ altText: fallbackAltText(category, name) });
     }
 
-    const useOpenRouter = Boolean(env.OPENROUTER_API_KEY);
+    const useOpenRouter = Boolean(
+      env.OPENROUTER_API_KEY_PRIMARY || env.OPENROUTER_API_KEY_BACKUP,
+    );
     const openai = new OpenAI({
       apiKey,
       ...(useOpenRouter && {

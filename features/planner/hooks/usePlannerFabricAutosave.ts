@@ -32,17 +32,22 @@ export function usePlannerFabricAutosave(
   const saverRef = useRef<ReturnType<typeof createAutoSaver> | null>(null);
   const savingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didReceiveRevisionRef = useRef(false);
+  const mountedRef = useRef(false);
+  const restoreSequenceRef = useRef(0);
 
   const markSaving = useCallback(() => {
+    if (!mountedRef.current) return;
     setStatus("saving");
     if (savingTimerRef.current) clearTimeout(savingTimerRef.current);
     savingTimerRef.current = setTimeout(() => {
+      if (!mountedRef.current) return;
       setStatus((prev) => (prev === "saving" ? "saved" : prev));
       setLastSavedAt(new Date().toISOString());
     }, 5200);
   }, []);
 
   const schedulePersist = useCallback(() => {
+    if (!mountedRef.current) return;
     const serialized = exportDraft();
     if (!serialized) return;
     setStatus("unsaved");
@@ -53,16 +58,21 @@ export function usePlannerFabricAutosave(
   }, [exportDraft, markSaving]);
 
   const restoreSnapshot = useCallback(async (importDraft: (serialized: string) => Promise<void>) => {
+    const restoreId = ++restoreSequenceRef.current;
     try {
       if (!guestMode) {
         await migrateGuestProjectToMember();
       }
+      if (!mountedRef.current || restoreSequenceRef.current !== restoreId) return false;
       const existing: BuddyProject | undefined = await loadProject(projectId);
+      if (!mountedRef.current || restoreSequenceRef.current !== restoreId) return false;
       if (!existing?.snapshot) return false;
       const envelope = parseSessionSnapshot(existing.snapshot);
+      if (!mountedRef.current || restoreSequenceRef.current !== restoreId) return false;
       if (!envelope?.store) return false;
       const storeJson = JSON.stringify(envelope.store);
       await importDraft(storeJson);
+      if (!mountedRef.current || restoreSequenceRef.current !== restoreId) return false;
       applySessionWorkspace(envelope);
       setLastSavedAt(new Date(existing.updatedAt).toISOString());
       setStatus("saved");
@@ -73,6 +83,7 @@ export function usePlannerFabricAutosave(
   }, [guestMode, projectId]);
 
   useEffect(() => {
+    mountedRef.current = true;
     saverRef.current = createAutoSaver(projectId);
 
     const cleanupWorkspace = usePlannerWorkspaceStore.subscribe(() => {
@@ -80,9 +91,13 @@ export function usePlannerFabricAutosave(
     });
 
     return () => {
+      mountedRef.current = false;
+      restoreSequenceRef.current += 1;
       cleanupWorkspace();
       saverRef.current?.cancel();
+      saverRef.current = null;
       if (savingTimerRef.current) clearTimeout(savingTimerRef.current);
+      savingTimerRef.current = null;
     };
   }, [projectId, schedulePersist]);
 

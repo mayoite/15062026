@@ -172,7 +172,9 @@ async function aiRank(
   context: SearchContext,
   localCandidates: SearchResultItem[],
 ): Promise<string[]> {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey =
+    process.env.OPENROUTER_API_KEY_PRIMARY ||
+    process.env.OPENROUTER_API_KEY_BACKUP;
   if (!apiKey || localCandidates.length === 0) return [];
 
   const client = new OpenAI({
@@ -234,7 +236,10 @@ async function executeSearch(
   const fallbackUsed = indexFallbackUsed;
   let rankingMode: SearchRankingMode = indexFallbackUsed ? "static-fallback" : "local";
 
-  if (process.env.OPENROUTER_API_KEY && localResults.length > 0) {
+  if (
+    (process.env.OPENROUTER_API_KEY_PRIMARY || process.env.OPENROUTER_API_KEY_BACKUP) &&
+    localResults.length > 0
+  ) {
     try {
       const rankedIds = await aiRank(query, context, localResults);
       if (rankedIds.length > 0) {

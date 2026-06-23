@@ -151,6 +151,37 @@ export const PlannerAdvisorRequestSchema = z.object({
   context: z.unknown().optional(),
 });
 
+/** Planner sketch-to-plan request (`/api/planner/sketch-to-plan`). */
+export const SketchToPlanRequestSchema = z.object({
+  imageDataUrl: z.string().trim().min(1).max(5_000_000),
+  fileName: z.string().trim().min(1).max(200),
+  prompt: z.string().trim().min(1).max(2000),
+  includeRooms: z.boolean().optional().default(true),
+});
+
+export const SketchToPlanWallSchema = z.object({
+  type: z.literal("wall"),
+  x1: z.number().finite(),
+  y1: z.number().finite(),
+  x2: z.number().finite(),
+  y2: z.number().finite(),
+});
+
+export const SketchToPlanRoomSchema = z.object({
+  type: z.literal("room"),
+  left: z.number().finite(),
+  top: z.number().finite(),
+  width: z.number().finite().positive(),
+  height: z.number().finite().positive(),
+  label: z.string().trim().min(1).max(120).optional(),
+});
+
+/** Planner sketch-to-plan response (`/api/planner/sketch-to-plan`). */
+export const SketchToPlanResponseSchema = z.object({
+  objects: z.array(z.union([SketchToPlanWallSchema, SketchToPlanRoomSchema])),
+  warnings: z.array(z.string().trim().max(300)).default([]),
+});
+
 /** Legacy mock advisor request (`/api/ai/advisor`). */
 export const LegacyAdvisorRequestSchema = z.object({
   messages: z

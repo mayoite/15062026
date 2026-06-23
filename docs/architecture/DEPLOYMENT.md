@@ -46,8 +46,7 @@ flowchart TB
 - `NEXT_ADMIN_SUPABASE_URL` — Admin Supabase URL
 - `DATABASE_URL` — DigitalOcean Postgres connection string
 - `ORIGIN_ENDPOINT` — DigitalOcean Spaces CDN
-- `GOOGLE_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY` — Gemini AI advisor access
-- `OPENROUTER_API_KEY` — AI model access
+- `OPENROUTER_API_KEY_PRIMARY` and `OPENROUTER_API_KEY_BACKUP` — AI model access
 - `RESEND_API_KEY` — Email sending
 
 ## Self-Hosted Configuration

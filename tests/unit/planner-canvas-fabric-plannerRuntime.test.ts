@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   getPlannerFabricRuntime,
   getPlannerFabricRuntimeState,
+  createPlannerFabricRuntimeCleanup,
   setPlannerFabricRuntime,
   setPlannerFabricRuntimeState,
   subscribePlannerFabricRuntimeState,
@@ -57,6 +58,38 @@ describe("plannerRuntime", () => {
     expect(getPlannerFabricRuntime()).toBe(runtime);
     setPlannerFabricRuntime(null);
     expect(getPlannerFabricRuntime()).toBe(null);
+  });
+
+  it("keeps a newer runtime when an older generation cleanup runs", () => {
+    const runtime1 = {
+      exportDraft: () => null,
+      importDraft: vi.fn(),
+      exportSvg: () => null,
+      exportPngBlob: vi.fn(),
+      placeCatalogItem: vi.fn(),
+      insertObject: vi.fn(),
+      setLayerVisibility: vi.fn(),
+      editRoom: vi.fn(),
+      endEditRoom: vi.fn(),
+    };
+    const runtime2 = {
+      exportDraft: () => null,
+      importDraft: vi.fn(),
+      exportSvg: () => null,
+      exportPngBlob: vi.fn(),
+      placeCatalogItem: vi.fn(),
+      insertObject: vi.fn(),
+      setLayerVisibility: vi.fn(),
+      editRoom: vi.fn(),
+      endEditRoom: vi.fn(),
+    };
+
+    setPlannerFabricRuntime(runtime1);
+    const cleanup1 = createPlannerFabricRuntimeCleanup();
+    setPlannerFabricRuntime(runtime2);
+    cleanup1();
+
+    expect(getPlannerFabricRuntime()).toBe(runtime2);
   });
 
   it("patches state while copying layerVisible and selections defensively", () => {

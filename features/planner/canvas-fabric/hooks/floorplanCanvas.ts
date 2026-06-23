@@ -256,6 +256,14 @@ export function createFloorplanCanvasApi(
    */
   function resizeViewportToContainer() {
     if (!view || !canvasEl) return;
+    if (
+      typeof view.getWidth !== 'function' ||
+      typeof view.getHeight !== 'function' ||
+      typeof view.setDimensions !== 'function' ||
+      typeof view.calcOffset !== 'function'
+    ) {
+      return;
+    }
     const wrap = canvasEl.closest('.canvas-wrap') as HTMLElement | null;
     if (!wrap) return;
     const width = Math.max(PLANNER_VIEWPORT.minContainerWidthPx, wrap.clientWidth);
@@ -267,8 +275,16 @@ export function createFloorplanCanvasApi(
   }
 
   function clampFabricObjectToCanvas(target: FabricObject) {
-    target.setCoords();
-    const bounds = target.getBoundingRect();
+    target.setCoords?.();
+    const bounds =
+      typeof target.getBoundingRect === 'function'
+        ? target.getBoundingRect()
+        : {
+            left: target.left ?? 0,
+            top: target.top ?? 0,
+            width: target.width ?? 0,
+            height: target.height ?? 0,
+          };
     const max = PLANNER_MAX_CANVAS_UNITS;
     let dx = 0;
     let dy = 0;
@@ -278,7 +294,7 @@ export function createFloorplanCanvasApi(
     if (bounds.top + bounds.height > max) dy = max - (bounds.top + bounds.height);
     if (dx !== 0) target.left = (target.left ?? 0) + dx;
     if (dy !== 0) target.top = (target.top ?? 0) + dy;
-    target.setCoords();
+    target.setCoords?.();
   }
 
   function applyViewportClamp() {
@@ -307,6 +323,15 @@ export function createFloorplanCanvasApi(
     padding = PLANNER_VIEWPORT.fitPaddingPx,
   ): number {
     if (!view || !canvasEl || width <= 0 || height <= 0) return ctxRef.current.zoom;
+    if (
+      typeof view.getWidth !== 'function' ||
+      typeof view.getHeight !== 'function' ||
+      typeof view.setViewportTransform !== 'function' ||
+      typeof view.calcOffset !== 'function' ||
+      typeof view.requestRenderAll !== 'function'
+    ) {
+      return ctxRef.current.zoom;
+    }
 
     resizeViewportToContainer();
     const viewportW = view.getWidth();
@@ -1032,10 +1057,15 @@ export function createFloorplanCanvasApi(
       scaleX: scale,
       scaleY: scale,
       opacity: options?.opacity ?? 0.55,
-      selectable: true,
-      evented: true,
-      hasControls: true,
-      hasBorders: true,
+      selectable: false,
+      evented: false,
+      hasControls: false,
+      hasBorders: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      lockRotation: true,
+      lockScalingX: true,
+      lockScalingY: true,
       originX: 'left',
       originY: 'top',
       name: `FLOORPLAN:${options?.fileName || 'underlay'}`,
@@ -1044,7 +1074,7 @@ export function createFloorplanCanvasApi(
     view.add(image);
     view.sendObjectToBack(image);
     floorPlanUnderlay = image;
-    view.setActiveObject(image);
+    view.discardActiveObject();
     clampFabricObjectToCanvas(image);
     saveState();
     const zoomPct = fitToContent();
@@ -1142,6 +1172,15 @@ export function createFloorplanCanvasApi(
 
   function fitToContent(padding = PLANNER_VIEWPORT.fitPaddingPx) {
     if (!view || !canvasEl) return ctxRef.current.zoom;
+    if (
+      typeof view.getWidth !== 'function' ||
+      typeof view.getHeight !== 'function' ||
+      typeof view.setViewportTransform !== 'function' ||
+      typeof view.calcOffset !== 'function' ||
+      typeof view.requestRenderAll !== 'function'
+    ) {
+      return ctxRef.current.zoom;
+    }
     resizeViewportToContainer();
 
     const objects = view.getObjects();
@@ -1328,9 +1367,29 @@ export function createFloorplanCanvasApi(
   function dispose() {
     drawToolsController?.dispose?.();
     drawToolsController = null;
+    contextMenuListener = null;
+    floorPlanUnderlay = null;
+    copied = null;
+    lastObject = null;
+    lastObjectDefinition = null;
+    selections = [];
+    corners = [];
+    walls.length = 0;
+    CTRL_KEY_DOWN = false;
+    SPACE_PAN_DOWN = false;
+    REMOVE_DW = false;
+    gridPattern = null;
     if (view && !view.destroyed) {
-      view.dispose();
+      try {
+        view.discardActiveObject();
+        view.getObjects().slice().forEach((obj) => view.remove(obj));
+        view.off();
+        view.clear();
+      } finally {
+        view.dispose();
+      }
     }
+    view = null as unknown as FabricCanvas;
   }
 
   function setDrawTool(tool: FabricDrawTool) {

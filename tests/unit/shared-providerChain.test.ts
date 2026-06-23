@@ -8,36 +8,24 @@ describe("ai provider chain", () => {
 
   beforeEach(() => {
     process.env = { ...originalEnv };
-    delete process.env.GOOGLE_API_KEY;
-    delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-    delete process.env.NOVA_ACT_API_KEY;
-    delete process.env.AWS_BEARER_TOKEN_BEDROCK;
-    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.OPENROUTER_API_KEY_PRIMARY;
+    delete process.env.OPENROUTER_API_KEY_BACKUP;
   });
 
   afterAll(() => {
     process.env = originalEnv;
   });
 
-  test("resolves providers in google then nova then openrouter order", () => {
-    process.env.GOOGLE_API_KEY = "google-key";
-    process.env.NOVA_ACT_API_KEY = "nova-key";
-    process.env.OPENROUTER_API_KEY = "openrouter-key";
+  test("resolves primary then backup openrouter order", () => {
+    process.env.OPENROUTER_API_KEY_PRIMARY = "primary-key";
+    process.env.OPENROUTER_API_KEY_BACKUP = "backup-key";
 
     expect(resolveProviderChain().map((entry) => entry.provider)).toEqual([
-      "google",
-      "aws-nova",
+      "openrouter",
       "openrouter",
     ]);
-  });
-
-  test("accepts the documented Gemini key alias", () => {
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY = "google-generative-key";
-
-    expect(resolveProviderChain().map((entry) => entry.provider)).toEqual([
-      "google",
-    ]);
-    expect(resolveProviderChain()[0]?.apiKey).toBe("google-generative-key");
+    expect(resolveProviderChain()[0]?.apiKey).toBe("primary-key");
+    expect(resolveProviderChain()[1]?.apiKey).toBe("backup-key");
   });
 
   test("builds the expected bedrock mantle base url", () => {

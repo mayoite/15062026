@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import OpenAI from "openai";
 
 import { env } from "../env.server";
@@ -9,23 +8,17 @@ export type ServerChatMessage = {
   content: string;
 };
 
-export type ProviderId = "google" | "openai" | "aws-nova" | "openrouter";
+export type ProviderId = "openrouter";
 
-type GoogleProvider = {
-  provider: "google";
-  model: string;
-  apiKey: string;
-};
-
-type OpenAiCompatibleProvider = {
-  provider: "openai" | "aws-nova" | "openrouter";
+type OpenRouterProvider = {
+  provider: "openrouter";
   model: string;
   apiKey: string;
   baseURL: string;
   defaultHeaders?: Record<string, string>;
 };
 
-export type ResolvedProvider = GoogleProvider | OpenAiCompatibleProvider;
+export type ResolvedProvider = OpenRouterProvider;
 
 type RequestProviderTextOptions = {
   jsonMode?: boolean;
@@ -35,20 +28,10 @@ type RequestProviderTextOptions = {
   onDelta?: (delta: string) => void;
 };
 
-const DEFAULT_GOOGLE_MODEL = env.GOOGLE_MODEL || "gemini-2.0-flash-lite";
-const DEFAULT_OPENAI_MODEL = "gpt-4o-mini";
-const DEFAULT_NOVA_MODEL = env.AWS_NOVA_MODEL || "us.amazon.nova-lite-v1:0";
-const DEFAULT_BEDROCK_REGION = env.AWS_BEDROCK_REGION || "us-east-1";
 const DEFAULT_OPENROUTER_MODEL = env.OPENROUTER_MODEL || "openrouter/auto";
 
-export function getBedrockMantleBaseUrl(
-  region = DEFAULT_BEDROCK_REGION,
-): string {
+export function getBedrockMantleBaseUrl(region: string): string {
   return `https://bedrock-mantle.${region}.api.aws/v1`;
-}
-
-function resolveGoogleApiKey(): string | undefined {
-  return env.GOOGLE_API_KEY?.trim() || env.GOOGLE_GENERATIVE_AI_API_KEY?.trim();
 }
 
 function createOpenRouterClient(apiKey: string) {
@@ -62,54 +45,28 @@ function createOpenRouterClient(apiKey: string) {
   });
 }
 
-function createBedrockNovaClient(apiKey: string, region = DEFAULT_BEDROCK_REGION) {
-  return new OpenAI({
-    baseURL: getBedrockMantleBaseUrl(region),
-    apiKey,
-  });
-}
-
 export function resolveProviderChain(): ResolvedProvider[] {
   const providers: ResolvedProvider[] = [];
 
-  const googleKey = resolveGoogleApiKey();
-  if (googleKey) {
-    providers.push({
-      provider: "google",
-      apiKey: googleKey,
-      model: DEFAULT_GOOGLE_MODEL,
-    });
-  }
-
-  const openAiKey = env.OPENAI_API_KEY?.trim();
-  if (openAiKey) {
-    providers.push({
-      provider: "openai",
-      apiKey: openAiKey,
-      baseURL: "https://api.openai.com/v1",
-      model: DEFAULT_OPENAI_MODEL,
-    });
-  }
-
-  // Amazon Bedrock accepts bearer-style API keys. Preserve NOVA_ACT_API_KEY
-  // as a local alias because that is the key already present in .env.local.
-  const novaKey =
-    env.AWS_BEARER_TOKEN_BEDROCK?.trim() ||
-    env.NOVA_ACT_API_KEY?.trim();
-  if (novaKey) {
-    providers.push({
-      provider: "aws-nova",
-      apiKey: novaKey,
-      baseURL: getBedrockMantleBaseUrl(DEFAULT_BEDROCK_REGION),
-      model: DEFAULT_NOVA_MODEL,
-    });
-  }
-
-  const openRouterKey = env.OPENROUTER_API_KEY?.trim();
-  if (openRouterKey) {
+  const primaryKey = env.OPENROUTER_API_KEY_PRIMARY?.trim();
+  if (primaryKey) {
     providers.push({
       provider: "openrouter",
-      apiKey: openRouterKey,
+      apiKey: primaryKey,
+      baseURL: "https://openrouter.ai/api/v1",
+      defaultHeaders: {
+        "HTTP-Referer": SITE_URL,
+        "X-Title": "One&Only",
+      },
+      model: DEFAULT_OPENROUTER_MODEL,
+    });
+  }
+
+  const backupKey = env.OPENROUTER_API_KEY_BACKUP?.trim();
+  if (backupKey) {
+    providers.push({
+      provider: "openrouter",
+      apiKey: backupKey,
       baseURL: "https://openrouter.ai/api/v1",
       defaultHeaders: {
         "HTTP-Referer": SITE_URL,
@@ -146,58 +103,12 @@ function extractStreamChunkText(chunk: unknown): string {
   return extractCompletionText(content);
 }
 
-async function requestGoogleText(
-  provider: GoogleProvider,
-  messages: ServerChatMessage[],
-  options: RequestProviderTextOptions,
-): Promise<string> {
-  const systemInstruction =
-    messages.find((message) => message.role === "system")?.content || "";
-
-  const history = messages
-    .filter((message) => message.role !== "system")
-    .map((message) => ({
-      role: message.role === "assistant" ? "model" : "user",
-      parts: [{ text: message.content }],
-    }));
-
-  const currentMessage = history.pop();
-  if (!currentMessage || currentMessage.role !== "user") {
-    throw new Error("Last message must be from user");
-  }
-
-  const genAI = new GoogleGenerativeAI(provider.apiKey);
-  const model = genAI.getGenerativeModel({
-    model: provider.model,
-    systemInstruction,
-    generationConfig: options.jsonMode
-      ? { responseMimeType: "application/json" }
-      : undefined,
-  });
-
-  const chat = model.startChat({ history });
-  const result = await chat.sendMessage(currentMessage.parts[0].text);
-  const response = await result.response;
-  const text = response.text();
-
-  if (options.stream && text) {
-    options.onDelta?.(text);
-  }
-
-  return text;
-}
-
 async function requestOpenAiCompatibleText(
-  provider: OpenAiCompatibleProvider,
+  provider: OpenRouterProvider,
   messages: ServerChatMessage[],
   options: RequestProviderTextOptions,
 ): Promise<string> {
-  const client =
-    provider.provider === "openrouter"
-      ? createOpenRouterClient(provider.apiKey)
-      : provider.provider === "openai"
-        ? new OpenAI({ apiKey: provider.apiKey })
-        : createBedrockNovaClient(provider.apiKey, DEFAULT_BEDROCK_REGION);
+  const client = createOpenRouterClient(provider.apiKey);
   const requestBody = {
     model: provider.model,
     messages,
@@ -240,9 +151,5 @@ export async function requestProviderText(
   messages: ServerChatMessage[],
   options: RequestProviderTextOptions = {},
 ): Promise<string> {
-  if (provider.provider === "google") {
-    return requestGoogleText(provider, messages, options);
-  }
-
   return requestOpenAiCompatibleText(provider, messages, options);
 }

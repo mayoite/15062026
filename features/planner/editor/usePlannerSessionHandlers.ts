@@ -92,6 +92,12 @@ export function usePlannerSessionHandlers({
 
   // Load user session on mount
   useEffect(() => {
+    if (guestMode) {
+      setAuthUserId(null);
+      setAuthRole(null);
+      setPlannerManagedProducts([]);
+      return;
+    }
     const supabase = createClient();
     void (async () => {
       try {
@@ -124,7 +130,7 @@ export function usePlannerSessionHandlers({
         console.error("Failed to retrieve browser session user:", err);
       }
     })();
-  }, []);
+  }, [guestMode]);
 
   const syncCloudInventory = useCallback(async () => {
     if (!authUserId || !isFeatureEnabled("supabaseSync")) {
@@ -149,6 +155,12 @@ export function usePlannerSessionHandlers({
 
   // Synchronize IndexedDB plans when localDraftVersion changes
   useEffect(() => {
+    if (guestMode || typeof indexedDB === "undefined") {
+      setLocalDraftSessions([]);
+      setCurrentOfflinePlan(null);
+      return;
+    }
+
     let active = true;
     const loadOfflineData = async () => {
       try {
@@ -169,7 +181,7 @@ export function usePlannerSessionHandlers({
     return () => {
       active = false;
     };
-  }, [localDraftVersion]);
+  }, [guestMode, localDraftVersion]);
 
   // Sync Queue processing helper
   const handleSyncQueue = useCallback(async () => {

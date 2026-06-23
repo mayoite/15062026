@@ -87,7 +87,15 @@ export function getBoundingRect(objects: FabricObject[]) {
 
   objects.forEach((obj) => {
     obj.setCoords?.();
-    const bounds = obj.getBoundingRect();
+    const bounds =
+      typeof obj.getBoundingRect === 'function'
+        ? obj.getBoundingRect()
+        : {
+            left: obj.left ?? 0,
+            top: obj.top ?? 0,
+            width: obj.width ?? 0,
+            height: obj.height ?? 0,
+          };
     left = Math.min(left, bounds.left);
     top = Math.min(top, bounds.top);
     right = Math.max(right, bounds.left + bounds.width);

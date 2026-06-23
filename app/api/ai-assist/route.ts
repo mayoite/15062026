@@ -39,7 +39,7 @@ async function handleAiAssist(req: NextRequest): Promise<NextResponse> {
       new ApiError(
         500,
         API_ERROR_CODES.INTERNAL_ERROR,
-        "Missing AI provider credentials. Configure GOOGLE_API_KEY or GOOGLE_GENERATIVE_AI_API_KEY, NOVA_ACT_API_KEY/AWS_BEARER_TOKEN_BEDROCK, or OPENROUTER_API_KEY.",
+        "Missing AI provider credentials. Configure OPENROUTER_API_KEY_PRIMARY or OPENROUTER_API_KEY_BACKUP.",
       ),
     );
   }

@@ -38,6 +38,8 @@ describe("floorplanCanvas helpers", () => {
       bottom: 300,
       center: 330,
       middle: 195,
+      width: 300,
+      height: 210,
     });
   });
 });
