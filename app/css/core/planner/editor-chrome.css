@@ -592,7 +592,7 @@
   text-align: center;
   font-size: 0.625rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-body);
 }
 
 .planner-workspace .pwx-field-input {
@@ -612,7 +612,7 @@
   flex-shrink: 0;
   font-size: 0.5625rem;
   font-weight: 600;
-  color: var(--text-subtle);
+  color: var(--text-body);
 }
 
 .planner-workspace .pwx-stepper-btn {

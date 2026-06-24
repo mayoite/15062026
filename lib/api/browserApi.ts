@@ -50,8 +50,9 @@ export async function browserApiFetch(
     if (csrfToken) {
       headers.set(CSRF_HEADER_NAME, csrfToken);
     }
+    const headerEntries = Array.from(headers.entries());
     const normalizedHeaders =
-      headers.size > 0 ? Object.fromEntries(headers.entries()) : undefined;
+      headerEntries.length > 0 ? Object.fromEntries(headerEntries) : undefined;
 
     return fetch(url, {
       ...init,

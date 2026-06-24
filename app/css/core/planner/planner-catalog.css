@@ -157,7 +157,7 @@
 .planner-workspace .pw-catalog-purpose-tab[data-active="true"] {
   border-color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 12%, var(--surface-panel));
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 /* Layer 2 — Sub-category chips */
@@ -185,8 +185,8 @@
 }
 
 .planner-workspace .pw-catalog-subchip[data-active="true"] {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
+  border-color: var(--color-primary-hover);
+  background: var(--color-primary-hover);
   color: var(--text-inverse);
 }
 

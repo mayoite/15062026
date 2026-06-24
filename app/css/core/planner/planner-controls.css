@@ -205,7 +205,7 @@
 }
 
 .planner-workspace .pw-segment-btn[data-active="true"] {
-  background: var(--color-primary);
+  background: var(--color-primary-hover);
   color: var(--text-inverse);
   box-shadow: 0 1px 2px color-mix(in srgb, var(--color-primary) 28%, transparent);
 }

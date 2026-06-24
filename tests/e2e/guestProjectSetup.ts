@@ -57,5 +57,10 @@ export async function enterGuestPlannerWorkspace(
     await page.getByRole("button", { name: /Start placing furniture/i }).click();
   }
 
+  const startFromScratchButton = page.getByRole("button", { name: /Start from Scratch/i });
+  if (await startFromScratchButton.isVisible({ timeout: 10_000 }).catch(() => false)) {
+    await startFromScratchButton.click();
+  }
+
   await expect(topbar).toBeVisible({ timeout: 25_000 });
 }

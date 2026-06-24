@@ -1,15 +1,125 @@
-# Failures, Blockers, and Follow-ups
+## Migration – Pre-flight Snapshot
+- Pre-migration SHA: <!-- paste `git rev-parse HEAD` output here -->
+- Branch: migration/root-6-folder
+- Date: 2026-06-24
+- Working tree clean: <!-- YES / NO -->
 
-This file records the current packet blockers, proof gaps, and the historical notes that still matter for the Unified Planner Packet.
+## Phase 0 – Safety Checkpoint
+- Skips: none
+- Blockers: <!-- any uncommitted changes? -->
+- Risks: none
+
+## Phase 1 – Audit & Mapping
+- Skips: <!-- list any absent folders -->
+- Blockers: none
+- Risks: none
+
+## Phase 2 – Archive Sweep
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 3 – Plans Consolidation
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 4 – Tech Stack Split
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 5 – Docs Isolation
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 6 – App Relocation
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 7 – Known Risks
+- next.config.js must be found by Next.js CLI at invocation time.
+  All scripts must use `cd site && next dev` pattern.
+  If dev server silently falls back to defaults, this is the cause.
+- eslint script references `app components features lib tests` at root.
+  After Phase 6 these folders are under site/. Phase 7a rewrites this.
+- playwright.config.ts path in 40+ scripts becomes site/config/build/playwright.config.ts.
+- scripts/generate-docs.mjs likely hardcodes root-level folder paths.
+
+## Phase 7a – Root package.json Scripts
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 7b – site/tsconfig aliases
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 7c – Tailwind + PostCSS
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 7d – Vite outDir
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 8 – Typecheck + Lint
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 9 – Test Config Alignment
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 10 – Manifest Regeneration
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 11 – Test Execution
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 12 – Test Repair
+- Post-migration test blockers:
+  <!-- paste failing test traces here -->
+
+## Phase 13 – Release Gate
+- Skips:
+- Blockers:
+- Risks:
+
+## Phase 14 – Final Report
+- Migration complete: <!-- YES / NO -->
+- Remaining open items:
 
 ## Current Packet Lanes
 
-### Lane 9 - Planner Typecheck and Lint Repair (2026-06-23)
+### Lane 9 - Planner Typecheck and Lint Repair (2026-06-24)
 - Status: [x] Verified
-- Files touched: `features/planner/admin/AdminAnalyticsPageView.tsx`, `features/planner/admin/AdminCatalogManager.tsx`, `features/planner/admin/AdminFeatureFlagsPageView.tsx`, `features/planner/ai/AIAssistDrawer.tsx`, `features/planner/canvas-fabric/FloorplanCanvas.tsx`, `features/planner/canvas-fabric/hooks/floorplanCanvas.ts`, `features/planner/editor/ExportModal.tsx`, `features/planner/editor/PlannerWorkspace.tsx`, `features/planner/editor/inspector/PropertiesInspector.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`
-- Proof: `npm.cmd run typecheck` passes; `npm.cmd run lint` passes
-- Skipped: repo tests and Playwright were not run because explicit user permission was not provided
-- Action needed: run the relevant planner test suite only if you want runtime verification beyond static gates
+- Files touched: `features/planner/admin/AdminAnalyticsPageView.tsx`, `features/planner/admin/AdminCatalogManager.tsx`, `features/planner/admin/AdminFeatureFlagsPageView.tsx`, `features/planner/ai/AIAssistDrawer.tsx`, `features/planner/canvas-fabric/FloorplanCanvas.tsx`, `features/planner/canvas-fabric/hooks/floorplanCanvas.ts`, `features/planner/editor/ExportModal.tsx`, `features/planner/editor/PlannerWorkspace.tsx`, `features/planner/editor/inspector/PropertiesInspector.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`, `features/planner/store/plannerSaves.ts`, `lib/api/browserApi.ts`
+- Proof: `npm.cmd run typecheck` passes; `npm.cmd run lint` passes; `npm.cmd test` passes with `248` files and `1772` tests passing
+- Action needed: none
+
+### Lane 10 - Diagnostic Rerun via Subagents (2026-06-24)
+- Status: [~] Proof collected; browser lane incomplete
+- Files touched: `Failures.md`
+- Proof:
+  - Mini agent static lane reran `npm.cmd run typecheck`, `npm.cmd run lint`, and `npm.cmd test`
+  - Mini agent browser lane started `cmd /c "set CI=1&& npm.cmd run test:a11y"` to force a fresh server instead of local server reuse
+- Verified:
+  - `results/audits/raw-playwright.json` and `results/playwright-report/index.html` remain timestamped `2026-06-24 9:03 AM`
+  - The only browser artifact currently on disk is stale output from an earlier run whose config still shows `reuseExistingServer: true`
+- Blocker: the fresh Playwright attempt did not produce a new artifact before status collection, so no new browser pass/fail claim is justified yet
+- Action needed: rerun `cmd /c "set CI=1&& npm.cmd run test:a11y"` to completion and confirm the report timestamps advance before trusting any accessibility result
 
 ### Lane 1 - Runtime Cleanup (2026-06-23)
 - Status: [~] Source-verified only
@@ -88,10 +198,10 @@ This file records the current packet blockers, proof gaps, and the historical no
 - Action needed: verify the styling refactor in a permitted browser pass if it remains important
 
 ### Lint Check Surfaced Unrelated Planner-Admin Hook Errors
-- Status: [~] Open
+- Status: [x] Resolved in current rerun
 - Files touched: `features/planner/admin/AdminAnalyticsPageView.tsx`, `features/planner/admin/AdminCatalogListView.tsx`, `features/planner/admin/AdminFeatureFlagsPageView.tsx`, `features/planner/editor/usePlannerSessionHandlers.ts`
-- Proof gaps: `npm run lint` still fails on pre-existing `react-hooks/set-state-in-effect` and `react-hooks/exhaustive-deps` issues outside the lane work
-- Action needed: keep those separate unless explicitly asked to clean them up
+- Proof: `npm.cmd run lint` passed during the 2026-06-24 diagnostic rerun
+- Action needed: none unless new lint regressions appear
 
 ### Hardcoded Audit Rerun Hit a Locked CSV
 - Status: [~] Follow-up

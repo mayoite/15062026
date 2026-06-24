@@ -108,27 +108,29 @@ export function PlannerLeftPanel({
       className="pw-left-panel"
       aria-label="Planner Sidebar"
     >
-      <div className="pw-panel-tabs" role="tablist" aria-label="Left panel">
-        {tabs.map((tabId) => {
-          const { label, Icon } = TAB_META[tabId];
-          return (
-            <button
-              key={tabId}
-              type="button"
-              role="tab"
-              className="pw-panel-tab pwx-panel-tab"
-              data-active={tab === tabId}
-              data-relevant={tabId === primaryTab}
-              data-collapsed={panelCollapsed || undefined}
-              aria-selected={tab === tabId}
-              aria-label={label}
-              onClick={() => selectTab(tabId)}
-            >
-              <Icon size={14} strokeWidth={2} aria-hidden />
-              <span>{label}</span>
-            </button>
-          );
-        })}
+      <div className="pw-panel-tabs">
+        <div className="pw-panel-tablist" role="tablist" aria-label="Left panel">
+          {tabs.map((tabId) => {
+            const { label, Icon } = TAB_META[tabId];
+            return (
+              <button
+                key={tabId}
+                type="button"
+                role="tab"
+                className="pw-panel-tab pwx-panel-tab"
+                data-active={tab === tabId}
+                data-relevant={tabId === primaryTab}
+                data-collapsed={panelCollapsed || undefined}
+                aria-selected={tab === tabId}
+                aria-label={label}
+                onClick={() => selectTab(tabId)}
+              >
+                <Icon size={14} strokeWidth={2} aria-hidden />
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
         {showPanelToggle && onTogglePanel ? (
           <button
             type="button"

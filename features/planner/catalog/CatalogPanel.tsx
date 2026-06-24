@@ -167,7 +167,7 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
   const isSearchActive = searchQuery.trim().length > 0;
 
   return (
-    <aside className="pw-catalog">
+    <section className="pw-catalog" aria-label="Catalog browser">
       <div className={`pw-catalog-header${embedded ? "" : " pw-catalog-header--standalone"}`}>
         {!embedded ? (
           <div className="pw-catalog-header-row">
@@ -285,7 +285,7 @@ export function CatalogPanel({ onDragStart, onDragEnd, onItemClick, embedded = f
           </div>
         )}
       </div>
-    </aside>
+    </section>
   );
 }
 

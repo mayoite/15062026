@@ -82,7 +82,7 @@ export async function listPlannerDocumentsFromStore(
     seat_target: document.seatTarget,
     unit_system: document.unitSystem,
     item_count: document.itemCount,
-    thumbnail_url: document.previewImageDataUrl ?? null,
+    thumbnail_url: document.thumbnailUrl ?? null,
     created_at: document.createdAt ?? document.updatedAt ?? new Date(0).toISOString(),
     updated_at: document.updatedAt ?? document.createdAt ?? new Date(0).toISOString(),
   }));

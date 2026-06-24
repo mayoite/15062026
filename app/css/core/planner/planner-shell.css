@@ -1,6 +1,8 @@
 .planner-workspace {
-  --color-primary: var(--color-ocean-boat-blue-500);
-  --color-primary-hover: var(--color-ocean-boat-blue-600);
+  --color-primary: var(--color-ocean-boat-blue-650);
+  --color-primary-hover: var(--color-ocean-boat-blue-700);
+  --text-muted: #33485f;
+  --text-subtle: #4a6077;
   /* Material finish swatches for inspector (not UI chrome) */
   --finish-oak: var(--color-bronze-300);
   --finish-walnut: var(--color-dark-midnight-blue-700);
@@ -230,6 +232,14 @@
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-2);
+}
+
+.planner-workspace .pw-panel-tablist {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
 }
 
 .planner-workspace .pw-topbar-actions-primary,
@@ -524,7 +534,7 @@
 }
 
 .planner-workspace .pw-panel-tab[data-relevant="false"] {
-  opacity: 0.72;
+  opacity: 0.92;
 }
 
 .planner-workspace .pw-panel-tab[data-active="true"] {
@@ -556,7 +566,7 @@
 /* Desktop slide-over panel sizing lives in planner-canvas-layout.css */
 
 .planner-workspace .pw-left-panel[data-step="draw"] .pw-panel-tab[data-relevant="false"] {
-  opacity: 0.56;
+  opacity: 0.88;
   flex: 0.82;
 }
 
@@ -591,7 +601,7 @@
 }
 
 .planner-workspace .pw-left-panel[data-step="review"] .pw-panel-tab[data-relevant="false"] {
-  opacity: 0.62;
+  opacity: 0.9;
 }
 
 .planner-workspace .pw-left-panel[data-step="review"] .pw-panel-body[data-active-tab="library"] .pw-catalog {
